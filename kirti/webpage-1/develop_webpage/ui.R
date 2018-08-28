@@ -50,9 +50,19 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                                            tabPanel(title = "Tab 1", br(), textOutput("out_1")),
                                            tabPanel(title = "Tab 2", br(), textOutput("out_2")),
                                            tabPanel(title = "Tab 3", br(), textOutput("out_3"))
-                               )
-                             )
-                           )
-                         ))
-                
+                                           )
+                                       )
+                                        )
+                                     ) 
+                         ),
+                tabPanel(title = "Leaflet",
+                         fluidPage(leafletOutput("mymap"), 
+                                   p(), 
+                                   actionButton("recalc", "New points")
+                                   )
+                         )
 )
+
+
+
+
