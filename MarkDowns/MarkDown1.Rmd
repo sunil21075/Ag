@@ -1,0 +1,107 @@
+---
+title: "First MarkDown"
+author: "Hossein Noorazar"
+date: "8/5/2018"
+output: html_document
+  # beamer_presentation: default
+  # ioslides_presentation: default
+
+# to make it reactive uncomment below:
+runtime: shiny
+
+---
+
+ ```{r setup, include=FALSE}
+ knitr::opts_chunk$set(echo = FALSE)
+ ```
+
+```{r echo = FALSE}
+selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20)
+  
+sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+```
+
+### ...that build a histogram.
+
+```{r echo = FALSE}
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, 
+       breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", 
+       main = "Geyser eruption duration")
+  
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+
+
+## New slide
+some content
+
+*** 
+Slide without a title
+What goes on here. so the '***' starts a new slide without
+any title.
+
+## Title
+### Top level subheading
+#### A second level subheading
+what goes here is usual text
+
+- *italicized text comes with one asteric on each end of the text, just like youtube bold-maker.*
+- **Bold comes with two asetrix at each end.**
+- Code comes with a (\`) at each end: 
+
+   <center> `for i in len(range(x))` </center>
+
+## R-code slide having R code ran in it.
+
+```{R, comment="", echo=TRUE}
+head(mtcars)
+```
+
+## Plot slide
+
+```{r, echo=FALSE, fig.align='center', fig.cap="First Figure"}
+plot(mtcars$wt, mtcars$mpg, xlab = "Weight", ylab = "MPG")
+```
+
+
+
+
+
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a 
+simple formatting syntax for authoring HTML, PDF, 
+and MS Word documents. For more details on using 
+R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document 
+will be generated that includes both content 
+as well as the output of any embedded R 
+code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
