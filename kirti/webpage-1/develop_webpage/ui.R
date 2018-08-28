@@ -8,12 +8,25 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                          fluidRow(
                            column(6, offset = 0,  
                                  navlistPanel(
-                                   tabPanel(title = "About", br(), bootstrapPage(htmlTemplate("about-html.html", name = "About"))   ),
-                                   tabPanel(title = "People", br(), textOutput('PeopleNames')),
+                                   
+                                   tabPanel(title = "About", 
+                                            br(), 
+                                            bootstrapPage(htmlTemplate("about-template.html", name = "About"))
+                                            ),
+                                   
+                                   tabPanel(title = "People", 
+                                            br(),
+                                            bootstrapPage(htmlTemplate("people-template.html", name = "People"))
+                                            ),
+                                   
                                    tabPanel(title = "Codling Moth Life Cycle and Management"),
+                                   
                                    tabPanel(title = "climate Data"),
+                                   
                                    tabPanel(title = "What's the Story", br()),
+                                   
                                    tabPanel(title = "Contact"),
+                                   
                                    tabPanel(title = "Take a Tour (video)")
                                               ) # navlistPanel ends here
                                  )
@@ -39,6 +52,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                            ),
                 
                 tabPanel(title = "CM Diapause"),
+                
                 tabPanel(title = "Regional Plots"),
                 
                 tabPanel(title = "Test",
@@ -69,7 +83,6 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                                    actionButton("recalc", "New points")
                                    )
                          )
-
                 ) # navbarPage Ends here
 
 
