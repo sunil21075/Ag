@@ -34,7 +34,9 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                                             bootstrapPage(htmlTemplate("story-template.html", name = "Story"))
                                             ),
                                    
-                                   tabPanel(title = "Contact"),
+                                   tabPanel(title = "Contact",
+                                            br(),
+                                            bootstrapPage(htmlTemplate("contact-template.html", name = "Story"))),
                                    
                                    tabPanel(title = "Take a Tour (video)")
                                               ) # navlistPanel ends here
