@@ -19,7 +19,10 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                                             bootstrapPage(htmlTemplate("people-template.html", name = "People"))
                                             ),
                                    
-                                   tabPanel(title = "Codling Moth Life Cycle and Management"),
+                                   tabPanel(title = "Codling Moth Life Cycle and Management",
+                                            br(),
+                                            bootstrapPage(htmlTemplate("Codling_Moth_Template.html", name = "Moth"))
+                                            ),
                                    
                                    tabPanel(title = "climate Data"),
                                    
