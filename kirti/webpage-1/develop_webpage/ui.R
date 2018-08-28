@@ -6,9 +6,9 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
                 # Home Tab starts here
                 tabPanel(title = "Home",
                          fluidRow(
-                           column(5, offset = 0,  
+                           column(6, offset = 0,  
                                  navlistPanel(
-                                   tabPanel(title = "About", br(), textOutput('aboutText')),
+                                   tabPanel(title = "About", br(), bootstrapPage(htmlTemplate("about-html.html", name = "About"))   ),
                                    tabPanel(title = "People", br(), textOutput('PeopleNames')),
                                    tabPanel(title = "Codling Moth Life Cycle and Management"),
                                    tabPanel(title = "climate Data"),
