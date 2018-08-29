@@ -1,6 +1,9 @@
+# pull up the packages
 library(ggplot2)
 library(shiny)
 library(leaflet)
+
+
 ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                 
                 # Home Tab starts here
@@ -71,6 +74,9 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                 tabPanel(title = "Regional Plots"),
                 
                 tabPanel(title = "Test",
+                         # CSS options so far:
+                         # bootstrap.css, paper.css, slate.css, superhero.css
+                         #
                          fluidPage(theme = "paper.css",
                            titlePanel("Tabs!"),
                            sidebarLayout(
