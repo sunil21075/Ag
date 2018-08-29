@@ -1,7 +1,7 @@
 library(ggplot2)
 library(shiny)
-
-ui = navbarPage("Hydro Lab", inverse=TRUE, collapsable=TRUE,
+library(leaflet)
+ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                 
                 # Home Tab starts here
                 tabPanel(title = "Home",
