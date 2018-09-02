@@ -77,7 +77,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                          # CSS options so far:
                          # bootstrap.css, paper.css, slate.css, superhero.css
                          #
-                         fluidPage(theme = "paper.css",
+                         fluidPage(theme = "slate.css",
                            titlePanel("Tabs!"),
                            sidebarLayout(
                              sidebarPanel(
