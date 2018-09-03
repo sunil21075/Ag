@@ -98,7 +98,48 @@ fill_in_the_table = function(given_table, const){
 }
 
 
-c
+dynamic_model = function(path_to_data, col_names, init_temp_c, const){
+  "
+  input: path_to_data: path to data to be modeled
+         col_names: These are names of columns from excel file
+                     by which the model in built. They are supposed
+                     to be exactly like that.
+        init_temp_c: These are cells c11 and c12 of the excel file.
+        const: an object containing all the constant parameters in the cells
+                c1 through c8 of the excel file.
+       
+  output: a data frame called output which contains all the dara build by the
+          dynamic model of the excel file.
+  "
+  
+  # initialize data frame with 2 rows.
+  all_data = initiate_data_frame(col_names, init_temp_c, const)
+  
+  # read the binary RDA data off the disk
+  raw_data = read.csv(path_to_data)
+  
+  # number of rows in the raw_data data frame,
+  # or equivalently length(raw_data[,1])
+  no_rows = dim(raw_data)[1]
+  x = data.frame(matrix(nrow = dim(raw_data)[1], ncol = dim(all_data)[2]))
+  
+  # rename columns of data frame x, so we can
+  # concatenate it to all_data
+  colnames(x) = colnames(all_data)
+  
+  # concatenate x and all_data
+  all_data = rbind(all_data, x)
+  rm(x)
+  
+  ## Assuming raw_data has three columns in them
+  all_data[-c(1, 2), c(1)] = as.character(raw_data[, c(1)])
+  all_data[-c(1, 2), c(2)] = raw_data[, c(2)]
+  all_data[-c(1, 2), c(3)] = raw_data[, c(3)]
+  rm(raw_data)
+  
+  output = fill_in_the_table(all_data, const)
+  return(output)
+}
 #########################################################
 #######   End of Functions
 #########################################################
