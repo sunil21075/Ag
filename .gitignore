@@ -281,3 +281,8 @@ ENV/
 
 # Simulink Code Generation
 slprj/
+
+# R files
+*.RDS
+*.rds
+.Rapp.history
