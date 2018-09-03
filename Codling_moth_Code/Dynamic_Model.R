@@ -17,7 +17,6 @@ and hourly data.
 • Online Data sources
      – UC Pestcast weather stations and CIMIS weather stations
        both found at http://www.ipm.ucdavis.edu/WEATHER/wxretrieve.html
-
 "
 
 
