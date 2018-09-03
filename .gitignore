@@ -286,3 +286,8 @@ slprj/
 *.RDS
 *.rds
 .Rapp.history
+
+# Microsoft office files
+*.csv
+*.xls
+*xlsx
