@@ -99,11 +99,24 @@ fill_in_the_table = function(given_table, const){
 
 
 dynamic_model = function(path_to_data, col_names, init_temp_c, const){
+  "
+  input: path_to_data: path to data to be modeled
+         col_names: These are names of columns from excel file
+                     by which the model in built. They are supposed
+                     to be exactly like that.
+        init_temp_c: These are cells c11 and c12 of the excel file.
+        const: an object containing all the constant parameters in the cells
+                c1 through c8 of the excel file.
+       
+  output: a data frame called output which contains all the dara build by the
+          dynamic model of the excel file.
+  "
+  
   # initialize data frame with 2 rows.
   all_data = initiate_data_frame(col_names, init_temp_c, const)
   
   # read the binary RDA data off the disk
-  raw_data = readRDS(path_to_data)
+  raw_data = read.csv(path_to_data)
   
   # number of rows in the raw_data data frame,
   # or equivalently length(raw_data[,1])
@@ -133,8 +146,11 @@ dynamic_model = function(path_to_data, col_names, init_temp_c, const){
 
 
 #########################################################
-# Define constants
+#######   Define parameters of the model
 #########################################################
+
+# Define constants
+########################################
 e0 = 4.1535E+03
 e1 = 1.28888E+04
 
@@ -146,9 +162,8 @@ tetmlt = 277
 aa = a0 / a1
 ee = e1 - e0
 
-#########################################################
 # Define constant object
-#########################################################
+########################################
 setClass("constants", slots = list(e0 = "numeric", 
                                    e1 = "numeric", 
                                    a0 = "numeric",
@@ -170,9 +185,8 @@ const = new("constants",
             ee = e1 - e0
             )
 
-#########################################################
 # Define column names 
-#########################################################
+########################################
 col_names = c("date", 
               "time", 
               "temp_c", 
@@ -192,3 +206,11 @@ col_names = c("date",
 init_temp_c = c(15, 12)
 
 
+#############################################
+## driver and comparison
+#############################################
+
+original_data = read.csv("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/model_with_data.csv")
+
+path_to_data = "/Users/hn/Desktop/Ki readRDS(path_to_data) rti/Dynamic\ Model/test_data/raw_data.csv"
+R_model_output = dynamic_model(path_to_data, col_names, init_temp_c, const)
