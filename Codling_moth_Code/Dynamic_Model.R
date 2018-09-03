@@ -171,7 +171,7 @@ init_temp_c = c(15, 12)
 
 original_data = read.csv("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/model_with_data.csv")
 
-path_to_data = "/Users/hn/Desktop/Ki readRDS(path_to_data) rti/Dynamic\ Model/test_data/raw_data.csv"
+path_to_data = "/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/raw_data.csv"
 R_model_output = dynamic_model(path_to_data, col_names, init_temp_c, const)
 head(original_data) - R_model_output[3:8,]
 
