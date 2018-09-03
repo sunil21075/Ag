@@ -13,7 +13,14 @@ You must have hourly data in metric (Centigrade, Celsius) units
 The date and time column in there, does not matter. They do not play any
 role in computing stuff, however, as mentioned above, they have to be consecutive
 and hourly data.
+
+• Online Data sources
+     – UC Pestcast weather stations and CIMIS weather stations
+       both found at http://www.ipm.ucdavis.edu/WEATHER/wxretrieve.html
+
 "
+
+
 
 "
 rm(list=lsf.str())
