@@ -1,13 +1,37 @@
+"
+This is the dynamic model developed by Kitren Glozer (?)
+This is written based on the excel file provided by Kitren Glozer
+on http://ucanr.edu/sites/fruittree/How-to_Guides/Dynamic_Model_-_Chill_Accumulation/
+
+How to use the excel file is explained here: http://ucanr.edu/sites/fruittree/files/49320.pdf
+
+You must have hourly data in metric (Centigrade, Celsius) units
+
+          • You must have hourly data in metric (Centigrade, Celsius) units
+          • You need consecutive dates and times
+
+The date and time column in there, does not matter. They do not play any
+role in computing stuff, however, as mentioned above, they have to be consecutive
+and hourly data.
+"
+
+"
+rm(list=lsf.str())
+ls()
+"
 #########################################################
 # convert the Dynamic Model of the excel file to R.
 #########################################################
-
-
-
 #########################################################
 #######   Functions
 #########################################################
-# create initial data frame.
+
+Fahrenheit_to_Celsius = function(temp_cel){
+  temp_f = (temp_cel- 32) * 5 / 9
+  return (temp_f)
+}
+
+# create initial dataframe.
 initiate_data_frame = function(col_names, init_temp_c, const)
 {
   # Number of columns
