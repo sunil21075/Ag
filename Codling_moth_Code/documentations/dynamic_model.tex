@@ -1,4 +1,4 @@
-	\section{Dynamic Model}
+\section{Dynamic Model}
 
 The Dynamic Model excel file is provided 
 \href{http://ucanr.edu/sites/fruittree/How-to_Guides/Dynamic_Model_-_Chill_Accumulation/}{here} and its use is explained 
@@ -87,8 +87,8 @@ file.
 \begin{center}
     \begin{tabular}{| l | l | l | l | l | l| l| l| l | l | l | p{1cm} |}
      \hline
-    \scriptsize{\vari{e0}} & \scriptsize{\vari{e1}} & \scriptsize{\vari{a0}} & \scriptsize{\vari{a1}} & \scriptsize{\vari{slp}} & \scriptsize{\vari{tetmlt}} & \scriptsize{\vari{aa}} & \scriptsize{\vari{ee}} \\ \hline
-             \scriptsize{\vari{4.15E+03}} & \scriptsize{\vari{1.29E+04}} & \scriptsize{\vari{1.40E+05}} & \scriptsize{\vari{2.57E+18}} & \scriptsize{\vari{1.6}} & \scriptsize{\vari{277}} & \scriptsize{\vari{a0 / a1}} & \scriptsize{\vari{e1 - e0}}  \\ \hline
+    \scriptsize{\texttt{e0}} & \scriptsize{\texttt{e1}} & \scriptsize{\texttt{a0}} & \scriptsize{\texttt{a1}} & \scriptsize{\texttt{slp}} & \scriptsize{\texttt{tetmlt}} & \scriptsize{\texttt{aa}} & \scriptsize{\texttt{ee}} \\ \hline
+             \scriptsize{\texttt{4.15E+03}} & \scriptsize{\texttt{1.29E+04}} & \scriptsize{\texttt{1.40E+05}} & \scriptsize{v{2.57E+18}} & \scriptsize{\texttt{1.6}} & \scriptsize{\texttt{277}} & \scriptsize{\texttt{a0 / a1}} & \scriptsize{\texttt{e1 - e0}}  \\ \hline
     \end{tabular}
 \end{center}
  \label{table:None}
@@ -105,8 +105,8 @@ file.
     \begin{tabular}{| l | l | l| l | l | l | l | l | l| l| l| l | p{1cm} |}
     \hline
     \scriptsize{date}  & \scriptsize{time} & \scriptsize{temp\_c} & \scriptsize{temp\_k}  &  \scriptsize{ftmprt} & \scriptsize{sr} & \scriptsize{xi} & \scriptsize{xs} & \scriptsize{ak1} & \scriptsize{Inter-S} & \scriptsize{Inter-E} & \scriptsize{delt} & \scriptsize{Portions} \\ \hline
-     \scriptsize{\vari{None}} & \scriptsize{\vari{None}} & \scriptsize{\vari{15} }& \scriptsize{\vari{288}} & \scriptsize{\vari{16.93}} & \scriptsize{\vari{--}} & \scriptsize{\vari{1}} & \scriptsize{\vari{.81}} & \scriptsize{\vari{.09}} & \scriptsize{\vari{0.00}} & \scriptsize{\vari{.07}} & \scriptsize{\vari{0.00}} & \scriptsize{0}\\ \hline
-     \scriptsize{\vari{None}}  & \scriptsize{\vari{None}} & \scriptsize{\vari{12}} & \scriptsize{\vari{285}} & \scriptsize{\vari{12.44}} & \scriptsize{\vari{-}} & \scriptsize{\vari{1}} & \scriptsize{\vari{1.11}} & \scriptsize{\vari{.06}} & \scriptsize{\vari{.07}} & \scriptsize{\vari{.13}} & \scriptsize{\vari{0.00}} & \scriptsize{{0}}  \\ \hline
+     \scriptsize{\texttt{None}} & \scriptsize{\texttt{None}} & \scriptsize{\texttt{15} }& \scriptsize{\texttt{288}} & \scriptsize{\texttt{16.93}} & \scriptsize{\texttt{--}} & \scriptsize{\texttt{1}} & \scriptsize{v{.81}} & \scriptsize{\texttt{.09}} & \scriptsize{\texttt{0.00}} & \scriptsize{\texttt{.07}} & \scriptsize{\texttt{0.00}} & \scriptsize{0}\\ \hline
+     \scriptsize{\texttt{None}}  & \scriptsize{\texttt{None}} & \scriptsize{\texttt{12}} & \scriptsize{\texttt{285}} & \scriptsize{\texttt{12.44}} & \scriptsize{\texttt{-}} & \scriptsize{\texttt{1}} & \scriptsize{\texttt{1.11}} & \scriptsize{\texttt{.06}} & \scriptsize{\texttt{.07}} & \scriptsize{\texttt{.13}} & \scriptsize{\texttt{0.00}} & \scriptsize{{0}}  \\ \hline
     \end{tabular}
 \end{center}
  \label{table:None1}
@@ -123,7 +123,7 @@ file.
  \begin{itemize}
  \item \vari{given\_table} Is the data frame that contains 
  the first two rows, like the one given by 
- \ref{table:None1} and the first three 
+Table \ref{table:None1} and the first three 
  columns, from row 3 to the end, are provided by 
  datalogger and are read off the disk. Anything from the column
  \code{temp\_k}  onward is computed and filled by this function.
@@ -150,14 +150,17 @@ of the data frame, like mentioned before. These
 names has to be exact, because they are used for
 computations in the model.\\
 
-{\color{red}{\textsc{NOTE}}}: These data should have temp. in Celsius. And it is assumed the first thee columns are \code{date}, \code{time} and \code{temp} respectively.\\
+{\color{red}{\textsc{NOTE}}}: These data should have temp. in 
+Celsius. And it is assumed the first three columns 
+are \code{date}, \code{time} and \code{temp} respectively.\\
 
 \item \vari{init\_temp\_c} Initial temp. as mentioned before.
 
 \item \vari{const}: An object containing the constants of the model.
 \end{itemize}
 
-\code{output:} A data frame containing all information we need. (Shall I change this so that it just gives the \vari{Portions}?)
+\code{output:} A data frame containing all information we need. 
+(Shall I change this so that it just gives the \vari{Portions}?)
 
 \end{enumerate}
 
