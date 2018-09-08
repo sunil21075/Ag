@@ -23,7 +23,7 @@ CodlingMothPercentPopulation = function(CodMothParams, metdata_data.table) {
     head(masterdata)
   }
   head(masterdata)
-  # head(allrelnum)
+  
   allrelnum = masterdata
   allrelnum$PercEgg = 0
   allrelnum$PercLarva = 0
@@ -31,22 +31,22 @@ CodlingMothPercentPopulation = function(CodMothParams, metdata_data.table) {
   allrelnum$PercAdult = 0
   i = 1
   for (i in 1:4) {
-    columnname = paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnname = paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
     columnnumber = which( colnames(allrelnum)==columnname )
     allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]]  = 
-            allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+            allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], columnnumber]
   }
   for (i in 5:8) {
-    columnname = paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnname = paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2],sep="")
     columnnumber = which( colnames(allrelnum)==columnname )
     allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] = 
-             allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+             allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], columnnumber]
   }  
   for (i in 9:12) {
     columnname = paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
     columnnumber = which( colnames(allrelnum)==columnname )
     allrelnum$PercPupa[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] = 
-               allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+               allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], columnnumber]
   } 
   for (i in 13:16) {
     columnname = paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
@@ -220,34 +220,37 @@ calcPopulation  =  function(filename, input_folder, output_folder)
   data_end_year = 2015 # end time in the data
   
   #  get number of records and number years, indices of variables 
-  # #  indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear  = leap.year(seq(data_start_year,data_end_year))
-  countLeapYears  =  length( isLeapYear[isLeapYear== T])
-  nYears = length(seq(data_start_year,data_end_year))
-  Nrecords = 366 * countLeapYears +365 * (nYears - countLeapYears ) # 33603
-  Nofvariables  =  4 # number of varaibles or column in the forcing data file
-  Years = seq(data_start_year,data_end_year)
-  ind = seq(1,Nrecords*Nofvariables, Nofvariables)
+  ## indices just denote the fact that, given n variables, a new day's data starts every nth read (what does this mean?)
+  isLeapYear = leap.year(seq(data_start_year, data_end_year))
+  countLeapYears = length( isLeapYear[isLeapYear== T])
   
-  # #  create year, month, day values based on start year, number of years and leap year info
+  # nYears = length(seq(data_start_year, data_end_year))
+  nYears = data_end_year - data_start_year + 1
+  
+  Nrecords = 366 * countLeapYears + 365 * (nYears - countLeapYears ) # 33603
+  Nofvariables = 4 # number of varaibles or column in the forcing data file (why hard code?)
+  Years = seq(data_start_year, data_end_year)
+  ind = seq(1, Nrecords*Nofvariables, Nofvariables)
+  
+  ## create year, month, day values based on start year, number of years and leap year info
   ymd = create_ymdvalues (nYears, Years, leap.year)
   
-  # #  read met data and add year month day variables
+  ## read meta data and add year month day variables
   inputfilenameandpath = paste(input_folder, filename, sep="")
   metdata = readbinarydata_addmdy(inputfilenameandpath, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table  =  data.table(metdata)
-  # #  set upper and lower temperature bounds
-  lower  = 10 #  50 F
-  upper = 31.11  #  88F
-  # #  calculate daily and cumulative gdd to met data
+  ## set upper and lower temperature bounds
+  lower  = 10   # 50F
+  upper = 31.11 # 88F
+  ## calculate daily and cumulative gdd to met data
   metdata_data.table = add_dd_cumudd(metdata_data.table, lower, upper)
   head(metdata_data.table)
-  #  convert celcius to farenheit
+  # convert celcius to farenheit
   metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8
   head(metdata_data.table$Cum_dd_F)
   
-  #  add day of year from 1 to 365/366 depending on year
+  # add day of year from 1 to 365/366 depending on year
   metdata_data.table$dum = 1 #  dummy
   head(metdata_data.table)
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
@@ -270,7 +273,7 @@ calcPopulation  =  function(filename, input_folder, output_folder)
   head(toprint)
   
   ## GET PERCENT population distributions
-  percpopulation =  CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
+  percpopulation = CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
   head(percpopulation)
 
   toprint  =  cbind(percpopulation[,1:12], toprint)

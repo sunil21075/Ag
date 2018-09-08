@@ -86,7 +86,19 @@ larva, pupa and adults, concatenates the new data to the loaded data
 and spits it out.
 %%%%%%%%%%%%%%%
 
+\item \func{CodlingMothPercentPopulation( CodMothParams, metdata\_data.table )}
 
+\code{input:}
+\begin{itemize}
+\item \vari{CodMothParams} The parameters of the model.
+\item \vari{metdata\_data.table} The collected data
+\end{itemize}
+
+\code{output:} This reads the data off the disk, and adds some
+new columns to it, containing percentages of stuff, it seems. (I have to find the source
+that this code is based on. Where did he learn the model from?)
+
+\subsection{Script}
+This goes from line 210 to 1400 (in the clean version).
 \end{enumerate}
 
-read.xlsx("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/Dynamic_Model_xl.xlsx", sheet = 1, startRow = 13, colNames = TRUE)
