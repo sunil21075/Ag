@@ -20,7 +20,6 @@ and hourly data.
 "
 
 
-
 "
 rm(list=lsf.str())
 ls()
@@ -184,8 +183,8 @@ dynamic_model = function(path_to_data, col_names, init_temp_c, const){
 e0 = 4.1535E+03
 e1 = 1.28888E+04
 
-a0 = 1.40E+05
-a1 = 2.57E+18
+a0 = 1.395E+05
+a1 = 2.567E+18
 
 slp = 1.6
 tetmlt = 277
@@ -240,9 +239,11 @@ init_temp_c = c(15, 12)
 ## driver and comparison
 #############################################
 
-original_data = read.csv("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/model_with_data.csv")
+original_data = read.xlsx("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/Dynamic_Model_xl.xlsx", 
+                          sheetIndex = 1, 
+                          startRow = 10)
 
 path_to_data = "/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/raw_data.csv"
 R_model_output = dynamic_model(path_to_data, col_names, init_temp_c, const)
-head(original_data) - R_model_output[3:8,]
+original_data[3:8, 3:13] - R_model_output[3:8, 3:13]
 
