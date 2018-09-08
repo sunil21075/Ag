@@ -78,7 +78,15 @@ Computes the degree days (\code{dd}), cumulative degree days (\code{Cum\_dd}) an
 \end{itemize}
 
 \code{output:}
+It takes a data table, and parameters of the model such as cumulative 
+degree days, and then
+based on them produces some random numbers from Weibull
+distribution and then generates (predicts/models) number of eggs,
+larva, pupa and adults, concatenates the new data to the loaded data
+and spits it out.
 %%%%%%%%%%%%%%%
 
 
 \end{enumerate}
+
+read.xlsx("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/Dynamic_Model_xl.xlsx", sheet = 1, startRow = 13, colNames = TRUE)

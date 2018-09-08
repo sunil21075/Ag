@@ -72,13 +72,12 @@ CodlingMothRelPopulation = function(CodMothParams, metdata_data.table) {
   masterdata = data.frame(metdata_data.table$dayofyear, metdata_data.table$year, metdata_data.table$month, metdata_data.table$Cum_dd_F)
   colnames(masterdata) = c("dayofyear","year","month","CumddF")
   for (i in 1:stage_gen_toiterate) {
-    relnum = dweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4]) * 10000
+    relnum = dweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i, 4]) * 10000
     relnum = data.frame(relnum)
-    colnames(relnum) = paste(CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    colnames(relnum) = paste(CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
     masterdata = cbind(masterdata,relnum)
     head(masterdata)
   }
-  head(masterdata)
   allrelnum = masterdata
   allrelnum$SumEgg = allrelnum$EggGen1 + allrelnum$EggGen2 + allrelnum$EggGen3 + allrelnum$EggGen4
   allrelnum$SumLarva = allrelnum$LarvaGen1 + allrelnum$LarvaGen2 + allrelnum$LarvaGen3 + allrelnum$LarvaGen4
