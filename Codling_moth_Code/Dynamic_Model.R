@@ -1,3 +1,6 @@
+#########################################################
+# conversion of the Dynamic Model of the excel file to R.
+#########################################################
 "
 This is the dynamic model developed by Kitren Glozer (?)
 This is written based on the excel file provided by Kitren Glozer
@@ -24,9 +27,67 @@ and hourly data.
 rm(list=lsf.str())
 ls()
 "
+
 #########################################################
-# convert the Dynamic Model of the excel file to R.
+#######   Define parameters of the model
 #########################################################
+
+# Define constants
+########################################
+e0 = 4.1535E+03
+e1 = 1.28888E+04
+
+a0 = 1.395E+05
+a1 = 2.567E+18
+
+slp = 1.6
+tetmlt = 277
+aa = a0 / a1
+ee = e1 - e0
+
+# Define constant object
+########################################
+setClass("constants", slots = list(e0 = "numeric", 
+                                   e1 = "numeric", 
+                                   a0 = "numeric",
+                                   a1 = "numeric",
+                                   slp = "numeric",
+                                   tetmlt = "numeric",
+                                   aa = "numeric",
+                                   ee = "numeric")
+)
+
+const = new("constants", 
+            e0 = e0,
+            e1 = e1,
+            a0 = a0,
+            a1 = a1,
+            slp = slp,
+            tetmlt = tetmlt,
+            aa = a0 / a1,
+            ee = e1 - e0
+)
+# Define column names 
+########################################
+col_names = c("date", 
+              "time", 
+              "temp_c", 
+              "temp_k", 
+              "ftmprt", 
+              "sr", 
+              "xi", 
+              "xs", 
+              "ak1", 
+              "Inter-S", 
+              "Inter-E", 
+              "delt", 
+              "Portions")
+
+# these are the rows 11 and 12 of the
+# excel file in the temp(C) column. i.e. C11 and C12 cells.
+init_temp_c = c(15, 12)
+
+
 #########################################################
 #######   Functions
 #########################################################
@@ -175,69 +236,8 @@ dynamic_model = function(path_to_data, col_names, init_temp_c, const){
 
 
 #########################################################
-#######   Define parameters of the model
-#########################################################
-
-# Define constants
-########################################
-e0 = 4.1535E+03
-e1 = 1.28888E+04
-
-a0 = 1.395E+05
-a1 = 2.567E+18
-
-slp = 1.6
-tetmlt = 277
-aa = a0 / a1
-ee = e1 - e0
-
-# Define constant object
-########################################
-setClass("constants", slots = list(e0 = "numeric", 
-                                   e1 = "numeric", 
-                                   a0 = "numeric",
-                                   a1 = "numeric",
-                                   slp = "numeric",
-                                   tetmlt = "numeric",
-                                   aa = "numeric",
-                                   ee = "numeric")
-         )
-
-const = new("constants", 
-            e0 = e0,
-            e1 = e1,
-            a0 = a0,
-            a1 = a1,
-            slp = slp,
-            tetmlt = tetmlt,
-            aa = a0 / a1,
-            ee = e1 - e0
-            )
-
-# Define column names 
-########################################
-col_names = c("date", 
-              "time", 
-              "temp_c", 
-              "temp_k", 
-              "ftmprt", 
-              "sr", 
-              "xi", 
-              "xs", 
-              "ak1", 
-              "Inter-S", 
-              "Inter-E", 
-              "delt", 
-              "Portions")
-
-# these are the rows 11 and 12 of the
-# excel file in the temp(C) column. i.e. C11 and C12 cells.
-init_temp_c = c(15, 12)
-
-
-#############################################
 ## driver and comparison
-#############################################
+#########################################################
 
 original_data = read.xlsx("/Users/hn/Desktop/Kirti/Dynamic\ Model/test_data/Dynamic_Model_xl.xlsx", 
                           sheetIndex = 1, 

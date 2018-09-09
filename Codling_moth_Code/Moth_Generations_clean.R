@@ -276,7 +276,7 @@ calcPopulation  =  function(filename, input_folder, output_folder)
   percpopulation = CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
   head(percpopulation)
 
-  toprint  =  cbind(percpopulation[,1:12], toprint)
+  toprint = cbind(percpopulation[,1:12], toprint)
   colnames(toprint) = c(colnames(percpopulation)[1:8], 
                         "PercEgg", "PercLarva", "PercPupa",
                         "PercAdult", "tmax", "tmin", "DailyDD", 
@@ -614,7 +614,7 @@ calcPopulation  =  function(filename, input_folder, output_folder)
       }
       
       
-      # # # # # # # # # #  Emergence # # # # # # # # # #  
+      ########## Emergence ##########
       
       if (row$CumDDinC > 100 & em == 0)
       {
@@ -622,7 +622,7 @@ calcPopulation  =  function(filename, input_folder, output_folder)
         generations[generations$year == i,]["Emergence"]  =  row$dayofyear
       }
       
-      # # # # # # # # # #  generations for adults # # # # # # # # # # # # 
+      ########## generations for adults ##########
       
       # continue to increase the percentage
       if (aperc >= acurr) { acurr = aperc }
@@ -663,7 +663,7 @@ calcPopulation  =  function(filename, input_folder, output_folder)
         generations[generations$year == i,][col]  =  row$dayofyear
       }
       
-      ###########  generations for larva ###########
+      ##########  generations for larva ##########
       
       # continue to increase the percentages
       if (lperc >= lcurr) { lcurr = lperc }
