@@ -718,7 +718,7 @@ calcPopulation <- function(filename,input_folder,  output_folder)
   }
   #tempfilename<-paste(outfile,"_alldata",sep="");
   #write.table(toprint,file=tempfilename,sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)  
-  write.table(generations, file=outfile, sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)
+  write.table(generations, file=outfile, sep=",", quote=FALSE, col.names=TRUE, row.names=FALSE)
 }
 
 mothPopulation <- function(input_folder = "/Users/trevormozingo/Desktop/files", list_file = "list.txt", output_folder = "/Users/trevormozingo/Desktop/out/" )

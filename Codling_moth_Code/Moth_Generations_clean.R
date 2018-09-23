@@ -712,7 +712,6 @@ mothPopulation  =  function(input_folder = "/Users/trevormozingo/Desktop/files",
                             output_folder = "/Users/trevormozingo/Desktop/out/" )
 {
   # setwd(input_folder)
-  
   list_file = file(list_file, open="r")
   files = readLines(list_file) 
   num_files = length(files)
@@ -922,8 +921,8 @@ prepareData_1  =  function(filename, input_folder, start_year, end_year) {
   ymd = create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath = paste(input_folder,filename,sep="")
-  metdata = readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  inputfilenameandpath = paste(input_folder, filename, sep="")
+  metdata = readbinarydata_addmdy(inputfilenameandpath, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table  =  data.table(metdata)
   # #  set upper and lower temperature bounds
