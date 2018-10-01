@@ -12,7 +12,16 @@ filename <- paste0(data_dir, "/allData_grouped_counties_rcp45.rds")
 
 data <- data.table(readRDS(filename))
 
-#data = data[, .(PercAdultGen1 = median(PercAdultGen1), PercAdultGen2 = median(PercAdultGen2), PercAdultGen3 = median(PercAdultGen3), PercAdultGen4 = median(PercAdultGen4), PercLarvaGen1 = median(PercLarvaGen1), PercLarvaGen2 = median(PercLarvaGen2), PercLarvaGen3 = median(PercLarvaGen3), PercLarvaGen4 = median(PercLarvaGen4), CumDDinC = median(CumDDinC), CumDDinF = median(CumDDinF)), by = c("ClimateGroup", "year", "month", "day", "dayofyear")]
+# data = data[, .(PercAdultGen1 = median(PercAdultGen1), 
+#              PercAdultGen2 = median(PercAdultGen2), 
+#              PercAdultGen3 = median(PercAdultGen3), 
+#              PercAdultGen4 = median(PercAdultGen4), 
+#              PercLarvaGen1 = median(PercLarvaGen1), 
+#              PercLarvaGen2 = median(PercLarvaGen2), 
+#              PercLarvaGen3 = median(PercLarvaGen3), 
+#              PercLarvaGen4 = median(PercLarvaGen4), 
+#              CumDDinC = median(CumDDinC), CumDDinF = median(CumDDinF)), 
+#              by = c("ClimateGroup", "year", "month", "day", "dayofyear")]
 #data <- subset(data, select = c("ClimateGroup", "month", 
 #		"PercAdultGen1", "PercAdultGen2", "PercAdultGen3", "PercAdultGen4", 
 #		"PercLarvaGen1", "PercLarvaGen2", "PercLarvaGen3", "PercLarvaGen4"))
@@ -44,8 +53,10 @@ data <- data.table(readRDS(filename))
 #data[month == 4 | month == 5 | month == 6, MonthGroup := 6]
 #data[month == 7 | month == 8 | month == 9, MonthGroup := 9]
 #data[month == 10 | month == 11 | month == 12, MonthGroup := 12]
-#data = data[, .(monthlyDD = sum(DailyDD)), by = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "MonthGroup")]
-#data = data[, .(monthlyDD = sum(DailyDD)), by = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "month")]
+#data = data[, .(monthlyDD = sum(DailyDD)), 
+#             by = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "MonthGroup")]
+#data = data[, .(monthlyDD = sum(DailyDD)), 
+#             by = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "month")]
 #saveRDS(data, paste0(data_dir, "/", "subDDData_rcp45.rds"))
 #saveRDS(data, paste0(data_dir, "/", "subDDData_month_groups.rds"))
 #saveRDS(data, paste0(data_dir, "/", "subDDData_month_groups_rcp45.rds"))
