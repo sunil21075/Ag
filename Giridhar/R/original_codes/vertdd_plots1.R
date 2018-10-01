@@ -22,14 +22,12 @@ d1 = subset(data, select = c("latitude", "longitude",
                              "month", "day", 
                              "dayofyear", 
                              "vert_Cum_dd_F", 
-                             "cripps_pink", 
-                             "gala", "red_deli"))
+                             "cripps_pink", "gala", "red_deli"))
 
 d1 = melt(d1, id = c("latitude", "longitude", 
                      "CountyGroup", "ClimateGroup", 
                      "ClimateScenario", "year", "month", 
                      "day", "dayofyear", "vert_Cum_dd_F"))
-
 #d1[variable == "red_deli"]$variable = "red_delicious"
 d1[variable == "red_deli"]$variable = "Red Delicious"
 d1[variable == "gala"]$variable = "Gala"
@@ -56,9 +54,10 @@ p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
     #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
     strip.text = element_text(size = 18, face = "bold"))
 
+#ggsave("bloom2.png", p1, width = 45, height = 22, units = "cm")
 ggsave("bloom2_rcp45.png", p1, width = 45, height = 22, units = "cm")
 
-# plot2 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
+#plot2 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
 #  #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.4) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
