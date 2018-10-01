@@ -16,8 +16,20 @@ data$CountyGroup = as.character(data$CountyGroup)
 data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
 data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
 
-d1 = subset(data, select = c("latitude", "longitude", "CountyGroup", "ClimateGroup", "ClimateScenario", "year", "month", "day", "dayofyear", "vert_Cum_dd_F", "cripps_pink", "gala", "red_deli"))
-d1 = melt(d1, id = c("latitude", "longitude", "CountyGroup", "ClimateGroup", "ClimateScenario", "year", "month", "day", "dayofyear", "vert_Cum_dd_F"))
+d1 = subset(data, select = c("latitude", "longitude", 
+                             "CountyGroup", "ClimateGroup", 
+                             "ClimateScenario", "year", 
+                             "month", "day", 
+                             "dayofyear", 
+                             "vert_Cum_dd_F", 
+                             "cripps_pink", 
+                             "gala", "red_deli"))
+
+d1 = melt(d1, id = c("latitude", "longitude", 
+                     "CountyGroup", "ClimateGroup", 
+                     "ClimateScenario", "year", "month", 
+                     "day", "dayofyear", "vert_Cum_dd_F"))
+
 #d1[variable == "red_deli"]$variable = "red_delicious"
 d1[variable == "red_deli"]$variable = "Red Delicious"
 d1[variable == "gala"]$variable = "Gala"

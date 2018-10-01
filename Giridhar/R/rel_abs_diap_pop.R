@@ -1,7 +1,6 @@
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
 #library(chron)
 library(data.table)
-library(ggplot2)
 
 #list.of.packages <- c("MESS")
 #new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -36,38 +35,60 @@ data$escapeDiap = data$SumLarva - data$enterDiap
 sub = data
 startingpopulationfortheyear<-1000
 #generation1
-sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
+sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
+     by =list(year,ClimateScenario, 
+     latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this, anything else to group by?
 sub$AbsPopLarvaGen1<-sub$LarvaGen1RelFraction*startingpopulationfortheyear
 sub$AbsPopLarvaGen1Diap<-sub$AbsPopLarvaGen1*sub$diapause1/100
 sub$AbsPopLarvaGen1NonDiap<-sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
 
 #generation2
-sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
-sub[,AbsPopLarvaGen2 := LarvaGen2RelFraction*sum(AbsPopLarvaGen1NonDiap)*3.9, by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
+sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this, anything else to group by?
+sub[,AbsPopLarvaGen2 := LarvaGen2RelFraction*sum(AbsPopLarvaGen1NonDiap)*3.9, 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this, anything else to group by?
 sub$AbsPopLarvaGen2Diap<-sub$AbsPopLarvaGen2*sub$diapause1/100
 sub$AbsPopLarvaGen2NonDiap<-sub$AbsPopLarvaGen2- sub$AbsPopLarvaGen2Diap
 
 #generation3
-sub[,LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
-sub[,AbsPopLarvaGen3 := LarvaGen3RelFraction*sum(AbsPopLarvaGen2NonDiap)*3.9, by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
+sub[,LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this, anything else to group by?
+
+sub[,AbsPopLarvaGen3 := LarvaGen3RelFraction*sum(AbsPopLarvaGen2NonDiap)*3.9, 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this,,anything else to group by?
 sub$AbsPopLarvaGen3Diap<-sub$AbsPopLarvaGen3*sub$diapause1/100
 sub$AbsPopLarvaGen3NonDiap<-sub$AbsPopLarvaGen3- sub$AbsPopLarvaGen3Diap
 
 #generation4
-sub[,LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
-sub[,AbsPopLarvaGen4 := LarvaGen4RelFraction*sum(AbsPopLarvaGen3NonDiap)*3.9, by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this,,anything else to group by?
+sub[,LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this, anything else to group by?
+
+sub[,AbsPopLarvaGen4 := LarvaGen4RelFraction*sum(AbsPopLarvaGen3NonDiap)*3.9, 
+     by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ] # Giridhar check this,,anything else to group by?
+
 sub$AbsPopLarvaGen4Diap<-sub$AbsPopLarvaGen4*sub$diapause1/100
 sub$AbsPopLarvaGen4NonDiap<-sub$AbsPopLarvaGen4- sub$AbsPopLarvaGen4Diap
 
 ### get totals similar to Sum Larva column , but abs numbers
-sub$AbsPopTotal<-sub$AbsPopLarvaGen1+sub$AbsPopLarvaGen2+sub$AbsPopLarvaGen3+sub$AbsPopLarvaGen4
-sub$AbsPopDiap<-sub$AbsPopLarvaGen1Diap+sub$AbsPopLarvaGen2Diap+sub$AbsPopLarvaGen3Diap+sub$AbsPopLarvaGen4Diap
-sub$AbsPopNonDiap<-sub$AbsPopLarvaGen1NonDiap+sub$AbsPopLarvaGen2NonDiap+sub$AbsPopLarvaGen3NonDiap+sub$AbsPopLarvaGen4NonDiap
+sub$AbsPopTotal<- sub$AbsPopLarvaGen1 + sub$AbsPopLarvaGen2 + sub$AbsPopLarvaGen3 + sub$AbsPopLarvaGen4
+sub$AbsPopDiap<- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
+sub$AbsPopNonDiap<- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
 
-sub1 = subset(sub, select = c("latitude", "longitude", "County", "CountyGroup", "ClimateScenario", "ClimateGroup", "year", "dayofyear", "CumDDinF", "SumLarva", "enterDiap", "escapeDiap", "AbsPopTotal","AbsPopNonDiap","AbsPopDiap"))
+sub1 = subset(sub, 
+	          select = c("latitude", "longitude", 
+	          	         "County", "CountyGroup", 
+	          	         "ClimateScenario", "ClimateGroup", 
+	          	         "year", "dayofyear", "CumDDinF", 
+	          	         "SumLarva", "enterDiap", 
+	          	         "escapeDiap", "AbsPopTotal",
+	          	         "AbsPopNonDiap","AbsPopDiap"))
 #sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), CumulativeDDF = mean(CumDDinF)), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "dayofyear")]  ## Check with Kirti regarding CumDDinF
 
-sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), CumulativeDDF = mean(CumDDinF)), by = c("ClimateGroup", "CountyGroup", "dayofyear")]  ## Check with Kirti regarding CumDDinF
+sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
+              RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), 
+              AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
+              CumulativeDDF = mean(CumDDinF)), 
+              by = c("ClimateGroup", "CountyGroup", "dayofyear")] # Check with Kirti regarding CumDDinF
 
 #saveRDS(sub1, paste0(data_dir, "/", "diapause_plot_data.rds"))
 
