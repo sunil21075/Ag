@@ -770,7 +770,10 @@ shinyServer(function(input, output, session) {
                       `2060` = subset(sub_Emerg, timeFrame == layerlist[3]),
                       `2080` = subset(sub_Emerg, timeFrame == layerlist[4]))
     
-    EmergMap <- constructMap(medianEmerg, layerlist, palColumn = "medianDoY", legendVals = seq(65,145), "Median Day of Year")
+    EmergMap <- constructMap(medianEmerg, layerlist, 
+                             palColumn = "medianDoY", 
+                             legendVals = seq(65,145), 
+                             "Median Day of Year")
     EmergMap
   })
   
@@ -944,9 +947,9 @@ shinyServer(function(input, output, session) {
     sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
     
     medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
     
     BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", legendVals = seq(85,165), "Median Day of Year")
     BloomMap
@@ -973,9 +976,9 @@ shinyServer(function(input, output, session) {
     sub_Bloom = subset(data, !is.na(ClimateGroup) & apple_type == input$apple_type_diff, select = c(ClimateGroup, location, medDoY))
     
     cgBloom = list(subset(sub_Bloom, ClimateGroup == layerlist[1]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[2]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[3]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[4]))
+                   subset(sub_Bloom, ClimateGroup == layerlist[2]),
+                   subset(sub_Bloom, ClimateGroup == layerlist[3]),
+                   subset(sub_Bloom, ClimateGroup == layerlist[4]))
     
     #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
     #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
