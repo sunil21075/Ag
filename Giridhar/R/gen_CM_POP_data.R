@@ -1,5 +1,4 @@
 library(data.table)
-library(ggplot2)
 
 data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
 #categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")

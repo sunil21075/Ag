@@ -10,8 +10,18 @@ data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop/"
 filename <- paste0(data_dir, "/allData_grouped_counties_rcp45.rds")
 data <- data.table(readRDS(filename))
 
-data <- subset(data, select = c("CountyGroup","latitude","longitude","ClimateScenario","ClimateGroup","year","dayofyear","PercLarvaGen1","PercLarvaGen2","PercLarvaGen3","PercLarvaGen4"))
-data <- data[, .(LarvaGen1 = mean(PercLarvaGen1), LarvaGen2 = mean(PercLarvaGen2), LarvaGen3 = mean(PercLarvaGen3), LarvaGen4 = mean(PercLarvaGen4)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "year", "dayofyear")]
+data <- subset(data, 
+               select = c("CountyGroup","latitude","longitude",
+                          "ClimateScenario","ClimateGroup","year",
+                          "dayofyear","PercLarvaGen1","PercLarvaGen2",
+                          "PercLarvaGen3","PercLarvaGen4"))
+data <- data[, .(LarvaGen1 = mean(PercLarvaGen1), 
+                LarvaGen2 = mean(PercLarvaGen2), 
+                LarvaGen3 = mean(PercLarvaGen3), 
+                LarvaGen4 = mean(PercLarvaGen4)), 
+                by = c("CountyGroup", "latitude", "longitude", 
+                       "ClimateScenario", "ClimateGroup", 
+                       "year", "dayofyear")]
 #
 #saveRDS(data, "cumdd_data.rds")
 
@@ -24,12 +34,27 @@ data = melt(data, id = c("ClimateGroup", "CountyGroup", "latitude", "longitude",
 
 plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <300], aes(x=dayofyear, y=value, fill=factor(variable))) +
   #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
-  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
-  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
-  stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) + 
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.1) }, 
+               fun.ymax=function(z) { quantile(z,0.9) }, 
+               alpha=0.3) +
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.25) }, 
+               fun.ymax=function(z) { quantile(z,0.75) }, 
+               alpha=0.8) + 
+  stat_summary(geom="line", 
+               fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) + 
   
-  scale_color_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-  scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+  scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
+                     rgb(92, 160, 201, max=255), 
+                     rgb(211, 91, 76, max=255), 
+                     rgb(125, 7, 37, max=255))) + #c("black", "red","darkgreen","blue")) +
+  scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
+                    rgb(92, 160, 201, max=255), 
+                    rgb(211, 91, 76, max=255), 
+                    rgb(125, 7, 37, max=255))) + #c("black", "red","darkgreen","blue")) +
   
   facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
   scale_x_continuous(breaks=seq(0,300,50)) +
@@ -64,7 +89,7 @@ ggsave("cumdd_plot_rcp45.png", plot, width = 45, height = 22, units = "cm")
 #data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
 ##data <- data[, .(CumDD = mean(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
 #
-#plot1 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
+#  plot1 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
 #  #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.4) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
@@ -97,7 +122,7 @@ ggsave("cumdd_plot_rcp45.png", plot, width = 45, height = 22, units = "cm")
 #ggsave("cumdd_plot2_rcp45.png", plot1, width = 45, height = 22, units = "cm")
 
 
-#plot2 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
+#  plot2 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
 #  #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.4) +
 #  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
