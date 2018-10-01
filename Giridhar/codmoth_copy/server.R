@@ -479,8 +479,14 @@ shinyServer(function(input, output, session) {
     diffGen[[1]]$diff = diffGen[[1]]$value.y - diffGen[[1]]$value.x
     diffDomain = diffGen[[1]]$diff
     
-    #GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
-    GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = seq(0,115), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
+    # GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", 
+    #                            legendVals = diffDomain, 
+    #                           "Median calendar day difference from historical", RdBu_reverse)
+    GenDiffMap <- constructMap(diffGen, layerdiff, 
+                               palColumn = "diff", 
+                               legendVals = seq(0,115), 
+                               HTML("Median calendar day<br />difference from historical"), 
+                               RdBu_reverse)
     GenDiffMap
   })
 
@@ -533,8 +539,14 @@ shinyServer(function(input, output, session) {
     diffGen[[1]]$diff = diffGen[[1]]$value.y - diffGen[[1]]$value.x
     diffDomain = diffGen[[1]]$diff
     
-    #GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
-    GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = seq(0,70), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
+    # GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", 
+    #                            legendVals = diffDomain, 
+    #                             "Median calendar day difference from historical", 
+    #                             RdBu_reverse)
+    GenDiffMap <- constructMap(diffGen, layerdiff, 
+                               palColumn = "diff", legendVals = seq(0,70), 
+                               HTML("Median calendar day<br />difference from historical"), 
+                               RdBu_reverse)
     GenDiffMap
   })
   
@@ -569,7 +581,9 @@ shinyServer(function(input, output, session) {
 
     layerlist = levels(data$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
     
-    sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, select = c(ClimateGroup, month, year, location, latitude, longitude, get(typeGen)))
+    sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, 
+                     select = c(ClimateGroup, month, year, location, latitude, longitude, 
+                      get(typeGen)))
     sub_Pop[, (typeGen) := get(typeGen) * 100]
     sub_Pop = sub_Pop[, .(medianPop = median( get(typeGen) )), by = c("ClimateGroup", "latitude", "longitude", "location")]
     #sub_Pop$location = paste0(sub_Pop$latitude, "_", sub_Pop$longitude)
@@ -599,9 +613,12 @@ shinyServer(function(input, output, session) {
     layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
     layerlist = levels(data$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
     
-    sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, select = c(ClimateGroup, month, year, location, latitude, longitude, get(typeGen)))
+    sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, 
+                     select = c(ClimateGroup, month, year, location, latitude, longitude, get(typeGen)))
     sub_Pop[, (typeGen) := get(typeGen) * 100]
-    sub_Pop = sub_Pop[, .(value = quantile( get(typeGen), names = FALSE )[diffType]), by = c("ClimateGroup", "latitude", "longitude", "location")]
+    sub_Pop = sub_Pop[, .(value = quantile( get(typeGen), 
+                         names = FALSE )[diffType]), 
+                         by = c("ClimateGroup", "latitude", "longitude", "location")]
     #sub_Pop$location = paste0(sub_Pop$latitude, "_", sub_Pop$longitude)
 
     tfPop = list(subset(sub_Pop, ClimateGroup == layerlist[1]),
@@ -618,7 +635,11 @@ shinyServer(function(input, output, session) {
     }
     diffDomain = c(diffPop[[1]]$diff, diffPop[[2]]$diff, diffPop[[3]]$diff)
     
-    PopDiffMap <- constructMap(diffPop, layerdiff, palColumn = "diff", legendVals = diffDomain, "Population(%) Difference from Historical", RdBu_reverse)
+    PopDiffMap <- constructMap(diffPop, layerdiff, 
+                               palColumn = "diff", 
+                               legendVals = diffDomain, 
+                               "Population(%) Difference from Historical", 
+                               RdBu_reverse)
     PopDiffMap
   })
   
@@ -651,7 +672,9 @@ shinyServer(function(input, output, session) {
     freq_data = subset(data, !is.na(timeFrame) & timeFrame == climate_group, select = c(timeFrame, year, location, get(genPct)))
     freq_data_melted = melt(freq_data, id.vars = c("timeFrame", "location", "year"), na.rm = FALSE)
     f1 = freq_data_melted[, .(years_range = (max(year) - min(year) + 1)), by = list(timeFrame, location)][order(timeFrame, location)]
-    f2 = freq_data_melted[complete.cases(freq_data_melted$value), .(years_freq = uniqueN(year)), by = list(timeFrame, location)][order(timeFrame, location)]
+    f2 = freq_data_melted[complete.cases(freq_data_melted$value), 
+                          .(years_freq = uniqueN(year)), 
+                          by = list(timeFrame, location)][order(timeFrame, location)]
     # left join - merge both tables
     f = merge(f1, f2, by = c("timeFrame", "location"), all.x = TRUE)
     # replace na values by 0
@@ -664,7 +687,11 @@ shinyServer(function(input, output, session) {
                       `2060` = subset(f, timeFrame == layerlist[3]),
                       `2080` = subset(f, timeFrame == layerlist[4]))
     
-    GenMap <- constructMap(riskGen, layerlist, palColumn = "percentage", legendVals = seq(0, 100), HTML("Percentage(%) of<br />Years Occurred"), RdBu_reverse)
+    GenMap <- constructMap(riskGen, layerlist, 
+                           palColumn = "percentage", 
+                          legendVals = seq(0, 100), 
+                          HTML("Percentage(%) of<br />Years Occurred"), 
+                          RdBu_reverse)
     GenMap
   })
   
@@ -679,12 +706,18 @@ shinyServer(function(input, output, session) {
     }
      
     climate_scenario = input$clim_scen
-    freq_data = subset(data, !is.na(ClimateGroup) & ClimateScenario == climate_scenario, select = c(ClimateGroup, ClimateScenario, latitude, longitude, County, year, month, get(typeGen)))
+    freq_data = subset(data, !is.na(ClimateGroup) & ClimateScenario == climate_scenario, 
+                       select = c(ClimateGroup, ClimateScenario, latitude, longitude, County, year, month, get(typeGen)))
     layerlist = unique(as.character(freq_data$ClimateGroup)) #c("Historical", "2040's", "2060's", "2080's")
     
-    freq_data_melted = melt(freq_data, id.vars = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "month"), na.rm = FALSE)
-    f1 = freq_data_melted[, .(years_range = (max(year) - min(year) + 1)), by = list(ClimateGroup, ClimateScenario, latitude, longitude)][order(ClimateGroup, ClimateScenario, latitude, longitude)]
-    f2 = freq_data_melted[ freq_data_melted$month == 'October' & freq_data_melted$value >= input$percent_risk1, .(years_freq = uniqueN(year)), by = list(ClimateGroup, ClimateScenario, latitude, longitude)][order(ClimateGroup, ClimateScenario, latitude, longitude)]
+    freq_data_melted = melt(freq_data, 
+                            id.vars = c("ClimateGroup", "ClimateScenario", "latitude", "longitude", "County", "year", "month"), 
+                            na.rm = FALSE)
+    f1 = freq_data_melted[, .(years_range = (max(year) - min(year) + 1)), 
+                            by = list(ClimateGroup, ClimateScenario, latitude, longitude)][order(ClimateGroup, ClimateScenario, latitude, longitude)]
+    f2 = freq_data_melted[ freq_data_melted$month == 'October' & freq_data_melted$value >= input$percent_risk1, 
+                           .(years_freq = uniqueN(year)), 
+                           by = list(ClimateGroup, ClimateScenario, latitude, longitude)][order(ClimateGroup, ClimateScenario, latitude, longitude)]
     # left join - merge both tables
     f = merge(f1, f2, by = c("ClimateGroup", "ClimateScenario", "latitude", "longitude"), all.x = TRUE)
     # replace na values by 0
@@ -699,7 +732,11 @@ shinyServer(function(input, output, session) {
                     `2060` = subset(f, ClimateGroup == layerlist[3]),
                     `2080` = subset(f, ClimateGroup == layerlist[4]))
     
-    GenMap1 <- constructMap(riskGen, layerlist, palColumn = "percentage", legendVals = seq(0,100), "Percentage(%) of Years Occurred", RdBu_reverse)
+    GenMap1 <- constructMap(riskGen, layerlist, 
+                            palColumn = "percentage", 
+                            legendVals = seq(0,100), 
+                            "Percentage(%) of Years Occurred", 
+                            RdBu_reverse)
     GenMap1
   })
 
@@ -785,8 +822,15 @@ shinyServer(function(input, output, session) {
     diffEmerg[[1]]$diff = diffEmerg[[1]]$value.y - diffEmerg[[1]]$value.x
     diffDomain = diffEmerg[[1]]$diff
 
-    EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", legendVals = seq(0,45), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
-    #EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
+    EmergDiffMap <- constructMap(diffEmerg, layerdiff, 
+                                 palColumn = "diff", 
+                                 legendVals = seq(0,45), 
+                                 HTML("Median calendar day<br />difference from historical"), 
+                                 RdBu_reverse)
+    # EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", 
+    #                              legendVals = diffDomain, 
+    #                              "Median calendar day difference from historical", 
+    #                              RdBu_reverse)
     EmergDiffMap
   })
   
@@ -868,7 +912,11 @@ shinyServer(function(input, output, session) {
     }
     diffDomain = c(diffDiap[[1]]$diff, diffDiap[[2]]$diff, diffDiap[[3]]$diff)
     
-    DiapDiffMap <- constructMap(diffDiap, layerdiff, palColumn = "diff", legendVals = diffDomain, "Population(%) Difference from Historical", RdBu_reverse)
+    DiapDiffMap <- constructMap(diffDiap, layerdiff, 
+                                palColumn = "diff", 
+                                legendVals = diffDomain, 
+                                "Population(%) Difference from Historical", 
+                                RdBu_reverse)
     DiapDiffMap
   })
 
@@ -886,19 +934,19 @@ shinyServer(function(input, output, session) {
     }
 
     if(future_version == "rcp45") {
-	bloom_d = bloom_rcp45
-    }
+	         bloom_d = bloom_rcp45
+                                   }
     else {
-	bloom_d = bloom
-    }
+	        bloom_d = bloom
+          }
 
     sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
     sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
     
     medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                        `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                        `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                        `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
     
     BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", legendVals = seq(85,165), "Median Day of Year")
     BloomMap
@@ -950,8 +998,17 @@ shinyServer(function(input, output, session) {
     diffBloom[[1]]$diff = diffBloom[[1]]$medDoY.y - diffBloom[[1]]$medDoY.x
     diffDomain = diffBloom[[1]]$diff
 
-    BloomDiffMap <- constructMap(diffBloom, layerdiff, palColumn = "diff", legendVals = seq(5,45), HTML("Median calendar day <br />difference from historical"), RdBu_reverse)
-    #BloomDiffMap <- constructMap(diffBloom, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
+    BloomDiffMap <- constructMap(diffBloom, 
+                                 layerdiff, 
+                                 palColumn = "diff", 
+                                 legendVals = seq(5,45), 
+                                 HTML("Median calendar day <br />difference from historical"), 
+                                 RdBu_reverse)
+    # BloomDiffMap <- constructMap(diffBloom, 
+    #                               layerdiff, palColumn = "diff", 
+    #                               legendVals = diffDomain, 
+    #                               "Median calendar day difference from historical", 
+    #                               RdBu_reverse)
     BloomDiffMap
   })
   
@@ -994,7 +1051,9 @@ shinyServer(function(input, output, session) {
                                  radius = 7,
                                  fillOpacity = 0.9,
                                  color = ~pal(mapLayerData[[i]][, get(palColumn)]),
-                                 popup=paste0("<b>", title, ": </b>", round(mapLayerData[[i]][, get(palColumn)], 1),"<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, "<br/><b>Longitude: </b> ", mapLayerData[[i]]$longitude))#,
+                                 popup=paste0("<b>", title, ": </b>", round(mapLayerData[[i]][, get(palColumn)], 1),
+                                              "<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, "<br/><b>Longitude: </b> ", 
+                                               mapLayerData[[i]]$longitude))#,
                                  #group = layerlist[i])
       
     }
