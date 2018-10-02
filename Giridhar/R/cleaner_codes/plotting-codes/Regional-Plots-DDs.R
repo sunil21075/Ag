@@ -72,5 +72,5 @@ if (model=='rcp45'){
 }else{
     plot_name = "cumdd_plot2_rcp45.png"
 }
-ggsave("fuck_plot.ong", plot1, width = 45, height = 22, units = "cm")
+ggsave(plot_name, plot1, width = 45, height = 22, units = "cm")
 
