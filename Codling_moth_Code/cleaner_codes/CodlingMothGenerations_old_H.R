@@ -6,9 +6,9 @@ library(dplyr)
 library(foreach)
 library(iterators)
 
-############################################################################################################################################
-#FUNCTIONS
-############################################################################################################################################
+################################
+## FUNCTIONS
+################################
 
 CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
@@ -144,7 +144,7 @@ create_ymdvalues <- function(nYears, Years, leap.year) {
   moncount_in_year<-0
   yearrep_in_year<-0
   for(i in 1:nYears){
-    ly<-leap.year(Years[i])
+    ly <- leap.year(Years[i])
     
     if(ly == TRUE){
       days_in_mon<-c(31,29,31,30,31,30,31,31,30,31,30,31)
@@ -188,11 +188,11 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   return(AllData)
 }
 
-############################################################################################################################################
-#Script
-############################################################################################################################################
+##########################################
+## Script
+##########################################
 
-calcPopulation <- function(filename,input_folder,  output_folder)
+calcPopulation <- function(filename, input_folder, output_folder)
 {
   outfile <- paste0(output_folder, paste0("CM", strsplit(filename, "data")[[1]][2]))
   print(outfile)  
