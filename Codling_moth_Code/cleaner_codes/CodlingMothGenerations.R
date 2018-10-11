@@ -6,9 +6,9 @@ library(dplyr)
 library(foreach)
 library(iterators)
 
-############################################################################################################################################
-#FUNCTIONS
-############################################################################################################################################
+#################################################
+## FUNCTIONS
+#################################################
 
 CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
@@ -38,13 +38,13 @@ CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   #   allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], columnnumber] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
   # }
   for (i in 1:4) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
-    columnnumber<-which( colnames(allrelnum)==columnname )
+    columnname <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    columnnumber <- which( colnames(allrelnum)==columnname )
     allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
   }
   for (i in 5:8) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
-    columnnumber<-which( colnames(allrelnum)==columnname )
+    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2], sep="")
+    columnnumber <- which( colnames(allrelnum)==columnname )
     allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
     #check 0 or NA
     #allrelnum[!(allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]), columnnumber] <- NA
@@ -177,34 +177,34 @@ add_dd_cumudd <- function(metdata_data.table, lower, upper) {
   return(metdata_data.table)
 }
 
-# function to create year month day dataframe to append to metdata dataframe
+# function to create year month day dataframe to append to metadata dataframe
 create_ymdvalues <- function(nYears, Years, leap.year) {
-  daycount_in_year<-0
-  moncount_in_year<-0
-  yearrep_in_year<-0
+  daycount_in_year <- 0
+  moncount_in_year <- 0
+  yearrep_in_year <- 0
   for(i in 1:nYears){
-    ly<-leap.year(Years[i])
+    ly <- leap.year(Years[i])
     
     if(ly == TRUE){
-      days_in_mon<-c(31,29,31,30,31,30,31,31,30,31,30,31)
+      days_in_mon <- c(31,29,31,30,31,30,31,31,30,31,30,31)
     }
     
     else{
-      days_in_mon<-c(31,28,31,30,31,30,31,31,30,31,30,31)
+      days_in_mon <- c(31,28,31,30,31,30,31,31,30,31,30,31)
     }
     for( j in 1:12){
-      daycount_in_year<-c(daycount_in_year,seq(1,days_in_mon[j]))
-      moncount_in_year<-c(moncount_in_year,rep(j,days_in_mon[j]))
-      yearrep_in_year<-c(yearrep_in_year,rep(Years[i],days_in_mon[j]))
+      daycount_in_year <- c(daycount_in_year,seq(1,days_in_mon[j]))
+      moncount_in_year <- c(moncount_in_year,rep(j,days_in_mon[j]))
+      yearrep_in_year. <- c(yearrep_in_year,rep(Years[i],days_in_mon[j]))
     }
   }
   head(daycount_in_year)
-  daycount_in_year<-daycount_in_year[-1] #delete the leading 0
-  moncount_in_year<-moncount_in_year[-1]
-  yearrep_in_year<-yearrep_in_year[-1]
-  ymd<-cbind(yearrep_in_year,moncount_in_year,daycount_in_year)
+  daycount_in_year <- daycount_in_year[-1] #delete the leading 0
+  moncount_in_year <- moncount_in_year[-1]
+  yearrep_in_year  <- yearrep_in_year[-1]
+  ymd <- cbind(yearrep_in_year,moncount_in_year,daycount_in_year)
   head(ymd)
-  colnames(ymd)<-c("year","month","day")
+  colnames(ymd) <- c("year","month","day")
   return(ymd)
 }
 
@@ -227,36 +227,36 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   return(AllData)
 }
 
-############################################################################################################################################
-#Script
-############################################################################################################################################
+###################################
+## Script
+###################################
 
-calcPopulation <- function(filename,input_folder,  output_folder)
+calcPopulation <- function(filename, input_folder, output_folder)
 {
   outfile <- paste0(output_folder, paste0("CM", strsplit(filename, "data")[[1]][2]))
   print(outfile)  
   #start time in the met data
-  data_start_year<-1979  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-2015 #end time in the data
+  data_start_year <- 1979
+  data_start_month <- 1
+  data_start_day <- 1
+  data_end_year <- 2015 #end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear <-leap.year(seq(data_start_year,data_end_year))
-  countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
+  isLeapYear <-leap.year(seq(data_start_year, data_end_year))
+  countLeapYears <- length( isLeapYear[isLeapYear == TRUE])
   nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  Nrecords<-366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
   Years<-seq(data_start_year,data_end_year)
   ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
-  ymd<-create_ymdvalues (nYears, Years, leap.year)
+  ymd <- create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  input_file_name_and_path <- paste(input_folder, filename, sep="")
+  metdata <- readbinarydata_addmdy(input_file_name_and_path, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
@@ -720,7 +720,9 @@ calcPopulation <- function(filename,input_folder,  output_folder)
   write.table(generations, file=outfile, sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)
 }
 
-mothPopulation <- function(input_folder = "/Users/trevormozingo/Desktop/files", list_file = "list.txt", output_folder = "/Users/trevormozingo/Desktop/out/" )
+mothPopulation <- function(input_folder = "/Users/trevormozingo/Desktop/files", 
+                           list_file = "list.txt", 
+                           output_folder = "/Users/trevormozingo/Desktop/out/" )
 {
   #setwd(input_folder)
   
@@ -730,8 +732,8 @@ mothPopulation <- function(input_folder = "/Users/trevormozingo/Desktop/files", 
   
   for (i in 1:num_files) 
   {
-    #inputfilenameandpath<- paste(input_folder,files[i], sep="")
-    calcPopulation(files[i],input_folder, output_folder) 
+    #input_file_name_and_path<- paste(input_folder,files[i], sep="")
+    calcPopulation(files[i], input_folder, output_folder) 
   }
   
   close(list_file)
@@ -749,27 +751,27 @@ mothPopulation <- function(input_folder = "/Users/trevormozingo/Desktop/files", 
 getPercPopulation <- function(filename, input_folder, start_year, end_year)
 {
   #start time in the met data
-  data_start_year<-start_year  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-end_year #end time in the data
+  data_start_year <- start_year  
+  data_start_month <- 1
+  data_start_day <- 1
+  data_end_year <- end_year #end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear <-leap.year(seq(data_start_year,data_end_year))
+  isLeapYear <- leap.year(seq(data_start_year, data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
-  nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  nYears <- length(seq(data_start_year, data_end_year))
+  Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year,data_end_year)
-  ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
+  Years <- seq(data_start_year,data_end_year)
+  ind <- seq(1, Nrecords*Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
-  ymd<-create_ymdvalues (nYears, Years, leap.year)
+  ymd <- create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  input_file_name_and_path <- paste(input_folder, filename,sep="")
+  metdata <- readbinarydata_addmdy(input_file_name_and_path, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
@@ -779,45 +781,45 @@ getPercPopulation <- function(filename, input_folder, start_year, end_year)
   metdata_data.table<-add_dd_cumudd(metdata_data.table, lower, upper)
   head(metdata_data.table)
   # convert celcius to farenheit
-  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8
+  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd * 1.8
   head(metdata_data.table$Cum_dd_F)
   
   # add day of year from 1 to 365/366 depending on year
-  metdata_data.table$dum<-1 # dummy
+  metdata_data.table$dum <- 1 # dummy
   head(metdata_data.table)
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   head(metdata_data.table)
   
-  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+  CodMothParams <- read.table(paste0(input_folder, "CodlingMothparameters.txt"), header=TRUE, sep=",")
   ## GET PERCENT population distributions
-  percpopulation <- CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
+  percpopulation <- CodlingMothPercentPopulation(CodMothParams, metdata_data.table)
   return(percpopulation)
 }
 
 getRelPopulation <- function(filename, input_folder, start_year, end_year)
 {
   #start time in the met data
-  data_start_year<-start_year  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-end_year #end time in the data
+  data_start_year <- start_year  
+  data_start_month <- 1
+  data_start_day <- 1
+  data_end_year <- end_year #end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear <-leap.year(seq(data_start_year,data_end_year))
+  isLeapYear <- leap.year(seq(data_start_year,data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
-  nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  nYears <- length(seq(data_start_year,data_end_year))
+  Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year,data_end_year)
-  ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
+  Years <- seq(data_start_year,data_end_year)
+  ind <- seq(1, Nrecords*Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
-  ymd<-create_ymdvalues (nYears, Years, leap.year)
+  ymd <- create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  input_file_name_and_path <- paste(input_folder, filename, sep="")
+  metdata <- readbinarydata_addmdy(input_file_name_and_path, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
@@ -836,9 +838,9 @@ getRelPopulation <- function(filename, input_folder, start_year, end_year)
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   head(metdata_data.table)
   
-  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"), header=TRUE, sep=",")
   ## GET PERCENT population distributions
-  relpopulation <- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
+  relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata_data.table)
   return(relpopulation)
 }
 
@@ -851,7 +853,7 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear <-leap.year(seq(data_start_year,data_end_year))
+  isLeapYear <-leap.year(seq(data_start_year, data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
   nYears<-length(seq(data_start_year,data_end_year))
   Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
@@ -863,8 +865,8 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   ymd<-create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  input_file_name_and_path<-paste(input_folder, filename, sep="")
+  metdata <- readbinarydata_addmdy(input_file_name_and_path, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
@@ -874,7 +876,7 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   metdata_data.table<-add_dd_cumudd(metdata_data.table, lower, upper)
   head(metdata_data.table)
   # convert celcius to farenheit
-  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8
+  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd * 1.8
   head(metdata_data.table$Cum_dd_F)
   
   # add day of year from 1 to 365/366 depending on year
@@ -883,19 +885,33 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   head(metdata_data.table)
   
-  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+  CodMothParams <- read.table(paste0(input_folder, "CodlingMothparameters.txt"), header=TRUE, sep=",")
   
   #Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
   
   data <- cbind(metdata_data.table$tmax,metdata_data.table$tmin, metdata_data.table$dd, metdata_data.table$Cum_dd, metdata_data.table$Cum_dd_F, relpopulation, metdata_data.table$day )
-  colnames(data)<-c("tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  colnames(data) <- c("tmax", "tmin", "DailyDD",
+                      "CumDDinC", "CumDDinF",
+                      colnames(relpopulation)[1:8],
+                      "SumEgg", "SumLarva",
+                      "SumPupa", "SumAdult",
+                      "dayofyear", "year",
+                      "month", "day")
     
   #Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
   
   data <- cbind(percpopulation[,1:12], data)
-  colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg","PercLarva","PercPupa","PercAdult", "tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  colnames(data) <- c(colnames(percpopulation)[1:8], 
+                      "PercEgg", "PercLarva",
+                      "PercPupa", "PercAdult", 
+                      "tmax", "tmin", "DailyDD",
+                      "CumDDinC", "CumDDinF",
+                      colnames(relpopulation)[1:8],
+                      "SumEgg", "SumLarva", "SumPupa", 
+                      "SumAdult", "dayofyear", "year", "month", "day")
+
   #toprint_reorder<-toprint[,c(15:17,14,5:9,10:13,1:4)]
   data <- data[,c(31:33,30,13:17,18:29,1:12)]
   head(data)
@@ -905,27 +921,27 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
 
 prepareData_1 <- function(filename, input_folder, start_year, end_year) {
   #start time in the met data
-  data_start_year<-start_year  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-end_year #end time in the data
+  data_start_year <- start_year  
+  data_start_month <- 1
+  data_start_day <-1
+  data_end_year <- end_year #end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
-  isLeapYear <-leap.year(seq(data_start_year,data_end_year))
+  isLeapYear <- leap.year(seq(data_start_year, data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
-  nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  nYears <- length(seq(data_start_year,data_end_year))
+  Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year,data_end_year)
+  Years<-seq(data_start_year, data_end_year)
   ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
   ymd<-create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  input_file_name_and_path <- paste(input_folder, filename, sep="")
+  metdata <- readbinarydata_addmdy(input_file_name_and_path, Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
@@ -944,7 +960,7 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   head(metdata_data.table)
   
-  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+  CodMothParams <- read.table(paste0(input_folder, "CodlingMothparameters.txt"), header=TRUE, sep=",")
   
   #Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
@@ -961,12 +977,12 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
   data <- data[,c(31:33,30,13:17,18:29,1:12)]
   head(data)
   #return(data)
-  setofrownumbersLarva25<-1
-  setofrownumbersLarva50<-1
-  setofrownumbersLarva75<-1
-  setofrownumbersAdult25<-1
-  setofrownumbersAdult50<-1
-  setofrownumbersAdult75<-1
+  setofrownumbersLarva25 <- 1
+  setofrownumbersLarva50 <- 1
+  setofrownumbersLarva75 <- 1
+  setofrownumbersAdult25 <- 1
+  setofrownumbersAdult50 <- 1
+  setofrownumbersAdult75 <- 1
   numberofrecords=length(data[,1])
   for ( i in 2:numberofrecords ) {
     
@@ -1385,13 +1401,12 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
     }
   }
   #tempfilename<-paste(outfile,"_alldata",sep="");
-  #write.table(data,file=tempfilename,sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)  
-  #write.table(generations, file=outfile, sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)
+  #write.table(data, file=tempfilename, sep=",", quote=FALSE, col.names=TRUE, row.names=FALSE)  
+  #write.table(generations, file=outfile, sep=",", quote=FALSE, col.names=TRUE, row.names=FALSE)
   return(generations)
 }
 
-#data_dir = "/home/kiran/giridhar/codmoth_pop/"
-data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop/alldata_us_locations/"
+data_dir = "/data/hydro/users/Hossein/codling_moth/"
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "historical", "BNU-ESM")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "BNU-ESM")
