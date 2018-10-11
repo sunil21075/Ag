@@ -13,7 +13,6 @@ library(RColorBrewer)
 #library(plotly)
 #library(Hmisc)
 
-#data_dir = "/home/giridhar/ShinyApps/codmoth"
 data_dir = "/data/codmoth_data"
 d = data.table(readRDS(paste0(data_dir,"/combinedData.rds")))
 # ordering time frame levels 
