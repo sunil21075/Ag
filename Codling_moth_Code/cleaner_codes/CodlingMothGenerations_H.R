@@ -5,24 +5,15 @@ library(reshape2)
 library(dplyr)
 library(foreach)
 library(iterators)
-source(source_path)
-
-
 
 source_path = "/Users/hn/Documents/GitHub/Kirti/Codling_moth_Code/cleaner_codes/core_cod_moth.R"
-binary_data_path = ""
-codling_moth_path = ""
-crop_param_CRB_path = ""
-
+source(source_path)
 
 ###################################
 ## Functions of Script!!!!
 ###################################
 
-mothPopulation <- function(input_folder = "/data/hydro/users/giridhar/giridhar/codmoth_pop/alldata_us_locations/data/", 
-                           list_file = "all_us_locations_list.txt", 
-                           output_folder = "/home/hnoorazar/data/historical_data_RDS/" )
-{
+mothPopulation <- function(input_folder, list_file, output_folder){
   #setwd(input_folder)
   
   list_file = file(list_file, open="r")
@@ -727,7 +718,12 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year){
 ####################################################
 ## Script
 ####################################################
-data_dir = "/data/hydro/users/Hossein/codling_moth/"
+
+raw_binary_data_path = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
+moth_param_path = "/home/hnoorazar/clean_codes/parameters"
+crop_param_CRB_path = "/home/hnoorazar/clean_codes/parameters"
+
+data_dir = raw_binary_data_path
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "historical", "BNU-ESM")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "BNU-ESM")
