@@ -31,34 +31,55 @@ CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   allrelnum$PercPupa = 0
   allrelnum$PercAdult = 0
   i = 1
-  #allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], 5] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")]
+  # allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= 
+  #                                 CodMothParams [i,6], 5] <- allrelnum[allrelnum$Cum_dd_F > 
+  #                                 CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], 
+  #                                 paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")]
   # for (i in 1:4) {
-  #   columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+  #   columnname<-paste("Perc", 
+  #                      CodMothParams[i,1], 
+  #                      "Gen",CodMothParams[i,2],sep="")
   #   columnnumber<-which( colnames(allrelnum)==columnname )
-  #   #allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
-  #   allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6], columnnumber] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+  #   # allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+  #                                               allrelnum$Cum_dd_F <= 
+  #                                               CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
+  #                                               CodMothParams [i,5] & allrelnum$Cum_dd_F <= 
+  #                                               CodMothParams [i,6],columnnumber]
+  #   allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= 
+  #                                            CodMothParams [i,6], columnnumber] <- allrelnum[allrelnum$Cum_dd_F > 
+  #                                            CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
   # }
   for (i in 1:4) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
-    columnnumber<-which( colnames(allrelnum)==columnname )
-    allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnnumber <- which( colnames(allrelnum)==columnname )
+    allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+                      allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
+                                                                     CodMothParams [i,5] & allrelnum$Cum_dd_F <= 
+                                                                     CodMothParams [i,6],columnnumber]
   }
   for (i in 5:8) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
-    columnnumber<-which( colnames(allrelnum)==columnname )
-    allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnnumber <- which( colnames(allrelnum)==columnname )
+    allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+                                                allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
+                                                CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
     #check 0 or NA
-    #allrelnum[!(allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]), columnnumber] <- NA
+    # allrelnum[!(allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+    # allrelnum$Cum_dd_F <= CodMothParams [i,6]), columnnumber] <- NA
   }  
   for (i in 9:12) {
     columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
     columnnumber<-which( colnames(allrelnum)==columnname )
-    allrelnum$PercPupa[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+    allrelnum$PercPupa[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= 
+                                         CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
+                                        CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
   } 
   for (i in 13:16) {
     columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
     columnnumber<-which( colnames(allrelnum)==columnname )
-    allrelnum$PercAdult[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]] <-allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
+    allrelnum$PercAdult[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+                             allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
+                             CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6],columnnumber]
     #allrelnum[!(allrelnum$Cum_dd_F > CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams [i,6]), columnnumber] <- NA
   } 
   head(allrelnum)
@@ -74,7 +95,8 @@ CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
 
 CodlingMothRelPopulation<-function(CodMothParams,metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
-  masterdata<-data.frame(metdata_data.table$dayofyear,metdata_data.table$year, metdata_data.table$month, metdata_data.table$Cum_dd_F)
+  masterdata<-data.frame(metdata_data.table$dayofyear,metdata_data.table$year, 
+                         metdata_data.table$month, metdata_data.table$Cum_dd_F)
   colnames(masterdata)<-c("dayofyear","year","month","CumddF")
   for (i in 1:stage_gen_toiterate) {
     relnum<-dweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4]) * 10000
@@ -86,9 +108,20 @@ CodlingMothRelPopulation<-function(CodMothParams,metdata_data.table) {
   head(masterdata)
   allrelnum<-masterdata
   allrelnum$SumEgg = allrelnum$EggGen1 + allrelnum$EggGen2 + allrelnum$EggGen3 + allrelnum$EggGen4
-  allrelnum$SumLarva = allrelnum$LarvaGen1 + allrelnum$LarvaGen2 + allrelnum$LarvaGen3 + allrelnum$LarvaGen4
-  allrelnum$SumPupa = allrelnum$PupaGen1 + allrelnum$PupaGen2 + allrelnum$PupaGen3 + allrelnum$PupaGen4
-  allrelnum$SumAdult = allrelnum$AdultGen1 + allrelnum$AdultGen2 + allrelnum$AdultGen3 + allrelnum$AdultGen4
+  allrelnum$SumLarva = allrelnum$LarvaGen1 + 
+                       allrelnum$LarvaGen2 + 
+                       allrelnum$LarvaGen3 + 
+                       allrelnum$LarvaGen4
+
+  allrelnum$SumPupa = allrelnum$PupaGen1 + 
+                      allrelnum$PupaGen2 + 
+                      allrelnum$PupaGen3 + 
+                      allrelnum$PupaGen4
+
+  allrelnum$SumAdult = allrelnum$AdultGen1 + 
+                       allrelnum$AdultGen2 + 
+                       allrelnum$AdultGen3 + 
+                       allrelnum$AdultGen4
   head(allrelnum)
   #allrelnum<-allrelnum[, c("SumEgg", "SumLarva","SumPupa","SumAdult","dayofyear","year","month")]
   allrelnum<-allrelnum[, c(#"EggGen1", "EggGen2", "EggGen3", "EggGen4", 
@@ -117,13 +150,22 @@ CodlingMothRelPopulation<-function(CodMothParams,metdata_data.table) {
 #   tmax<-metdata_data.table$tmax
 #   tempdata<-data.frame(tmin, tmax, diffmaxmin,summaxmin, twice_lower_minus_summaxmin, theta, twice_upper_minus_summaxmin, theta2)
 #   tempdata[is.na(tempdata)]<--9999  
-#   tempdata$theta[tempdata$theta> 0 & tempdata$twice_lower_minus_summaxmin < 0] <- tempdata$theta[tempdata$theta> 0 & tempdata$twice_lower_minus_summaxmin < 0] - 2*half_pi
-#   tempdata$theta2[tempdata$theta2> 0 & tempdata$twice_upper_minus_summaxmin < 0] <- tempdata$theta2[tempdata$theta2> 0 & tempdata$twice_upper_minus_summaxmin < 0]- 2*half_pi
+#   tempdata$theta[tempdata$theta> 0 & 
+#                          tempdata$twice_lower_minus_summaxmin < 0] <- tempdata$theta[tempdata$theta> 0 & 
+#                                                                       tempdata$twice_lower_minus_summaxmin < 0] - 
+#                                                                       2 * half_pi
+#   tempdata$theta2[tempdata$theta2> 0 & tempdata$twice_upper_minus_summaxmin < 0] <- tempdata$theta2[tempdata$theta2> 0 & 
+#                                                                              tempdata$twice_upper_minus_summaxmin < 0] - 
+#                                                                              2*half_pi
 #   tempdata$heat<-0
-#   tempdata$heat<-(tempdata$diffmaxmin*cos(tempdata$theta)- tempdata$twice_lower_minus_summaxmin*(half_pi -tempdata$theta ))/ twice_pi
+#   tempdata$heat<-(tempdata$diffmaxmin*cos(tempdata$theta) - 
+#                                       tempdata$twice_lower_minus_summaxmin * 
+#                                                  (half_pi -tempdata$theta ))/ twice_pi
 #   tempdata$heat[tempdata$tmin >= lower] <-(tempdata$summaxmin[tempdata$tmin >= lower] - twice_lower)/2
 #   tempdata$heat2 <- tempdata$heat
-#   tempdata$heat2<-(tempdata$diffmaxmin*cos(tempdata$theta2)- tempdata$twice_upper_minus_summaxmin*(half_pi -tempdata$theta2 ))/ twice_pi
+#   tempdata$heat2<-(tempdata$diffmaxmin*cos(tempdata$theta2) - 
+#                                         tempdata$twice_upper_minus_summaxmin*(half_pi - 
+#                                         tempdata$theta2 ))/ twice_pi
 #   tempdata$heat2 = tempdata$heat - tempdata$heat2
 #   tempdata$dd <- -9999
 #   tempdata$dd[tempdata$tmin > tempdata$tmax ] <- 0
@@ -164,13 +206,50 @@ add_dd_cumudd <- function(metdata_data.table, lower, upper) {
   tempdata$heat[tempdata$tmin >= lower & tempdata$tmax <= upper] = tempdata$aveminlt[tempdata$tmin >= lower & tempdata$tmax <= upper]
   
   #case 4 tmin<lower threshold and tmax>lower and tmax<=upper threshold
-  tempdata$heat[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper] = (((tempdata$aveminlt[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper] * (pihalf - tempdata$theta1[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper])) + (tempdata$alpha1[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper] * cos(tempdata$theta1[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper]))) / pi)#[tempdata$tmin < lower & tempdata$tmax > lower & tempdata$tmax <= upper]
+  tempdata$heat[tempdata$tmin < lower & 
+                tempdata$tmax > lower & tempdata$tmax <= upper] = (((tempdata$aveminlt[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > lower & 
+                                                                    tempdata$tmax <= upper] * 
+                                                                    (pihalf - 
+                                                                    tempdata$theta1[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > lower & 
+                                                                    tempdata$tmax <= upper])) + 
+                                                                    (tempdata$alpha1[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > lower & 
+                                                                    tempdata$tmax <= upper] 
+                                                                    * cos(tempdata$theta1[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > lower & tempdata$tmax <= upper]))) / pi)
   
   #case 5 tmin>=lower threshold & tmin<upper & tmax>upper threshold
-  tempdata$heat[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper] = (((tempdata$aveminlt[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper] * (tempdata$theta2[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper] + pihalf)) + ((upper - lower) * (pihalf - tempdata$theta2[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper])) - (tempdata$alpha1[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper] * cos(tempdata$theta2[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper]))) / pi) #[tempdata$tmin >= lower & tempdata$tmin < upper & tempdata$tmax > upper]
+  tempdata$heat[tempdata$tmin >= lower & tempdata$tmin < upper & 
+                tempdata$tmax > upper] = (((tempdata$aveminlt[tempdata$tmin >= lower & 
+                                            tempdata$tmin < upper & tempdata$tmax > upper] * 
+                                            (tempdata$theta2[tempdata$tmin >= lower & 
+                                            tempdata$tmin < upper & tempdata$tmax > upper] + 
+                                            pihalf)) + ((upper - lower) * 
+                                            (pihalf - tempdata$theta2[tempdata$tmin >= lower & 
+                                            tempdata$tmin < upper & tempdata$tmax > upper])) - 
+                                            (tempdata$alpha1[tempdata$tmin >= lower & 
+                                            tempdata$tmin < upper & tempdata$tmax > upper] * 
+                                            cos(tempdata$theta2[tempdata$tmin >= lower & 
+                                              tempdata$tmin < upper & tempdata$tmax > upper]))) / pi)
  
   #case 6 tmin<lower threshold & tmax>upper threshold
-  tempdata$heat[tempdata$tmin < lower & tempdata$tmax > upper] = (((tempdata$aveminlt[tempdata$tmin < lower & tempdata$tmax > upper] * (tempdata$theta2[tempdata$tmin < lower & tempdata$tmax > upper] - tempdata$theta1[tempdata$tmin < lower & tempdata$tmax > upper])) + (tempdata$alpha1[tempdata$tmin < lower & tempdata$tmax > upper] * (cos(tempdata$theta1[tempdata$tmin < lower & tempdata$tmax > upper]) - cos(tempdata$theta2[tempdata$tmin < lower & tempdata$tmax > upper]))) + ((upper - lower) * (pihalf - tempdata$theta2[tempdata$tmin < lower & tempdata$tmax > upper]))) / pi) #[tempdata$tmin < lower & tempdata$tmax > upper]
+  tempdata$heat[tempdata$tmin < lower & tempdata$tmax > upper] = (((tempdata$aveminlt[tempdata$tmin < 
+                                                                    lower & tempdata$tmax > upper] * 
+                                                                    (tempdata$theta2[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > upper] - 
+                                                                    tempdata$theta1[tempdata$tmin < 
+                                                                    lower & tempdata$tmax > upper])) + 
+                                                                    (tempdata$alpha1[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > upper] * 
+                                                                    (cos(tempdata$theta1[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > upper]) - 
+                                                                    cos(tempdata$theta2[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > upper]))) + 
+                                                                    ((upper - lower) * (pihalf - 
+                                                                    tempdata$theta2[tempdata$tmin < lower & 
+                                                                    tempdata$tmax > upper]))) / pi)
   
   metdata_data.table$dd <-tempdata$heat
   metdata_data.table[, Cum_dd := cumsum(dd), by=list(year)]
@@ -279,8 +358,18 @@ calcPopulation <- function(filename, input_folder, output_folder)
   ### GET RELATIVE POPULATION DISTRIBUTIONS
   CodMothParams<-read.table("CodlingMothparameters.txt",header=TRUE,sep=",")
   relpopulation<- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
-  toprint<-cbind(metdata_data.table$tmax,metdata_data.table$tmin, metdata_data.table$dd, metdata_data.table$Cum_dd, metdata_data.table$Cum_dd_F,relpopulation, metdata_data.table$day )
-  colnames(toprint)<-c("tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  toprint<-cbind(metdata_data.table$tmax, 
+                metdata_data.table$tmin, 
+                metdata_data.table$dd, 
+                metdata_data.table$Cum_dd, 
+                metdata_data.table$Cum_dd_F, 
+                relpopulation, 
+                metdata_data.table$day )
+  colnames(toprint)<-c("tmax", "tmin", "DailyDD", 
+                       "CumDDinC","CumDDinF", colnames(relpopulation)[1:8],
+                        "SumEgg", "SumLarva", "SumPupa", 
+                        "SumAdult", "dayofyear", 
+                        "year", "month", "day")
   head(toprint)
   
   ## GET PERCENT population distributions
@@ -288,8 +377,18 @@ calcPopulation <- function(filename, input_folder, output_folder)
   head(percpopulation)
   #toprint<-cbind(percpopulation$PercEgg, percpopulation$PercLarva,percpopulation$PercPupa,percpopulation$PercAdult,toprint)
   toprint <- cbind(percpopulation[,1:12], toprint)
-  #colnames(toprint)<-c("PercEgg","PercLarva","PercPupa","PercAdult","tmax","tmin","DailyDD","CumDDinC","CumDDinF","SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
-  colnames(toprint)<-c(colnames(percpopulation)[1:8], "PercEgg","PercLarva","PercPupa","PercAdult", "tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  # colnames(toprint)<-c("PercEgg","PercLarva","PercPupa", 
+  #                      "PercAdult", "tmax", "tmin", "DailyDD", "CumDDinC",
+  #                      "CumDDinF","SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  colnames(toprint)<-c(colnames(percpopulation)[1:8], 
+                       "PercEgg", "PercLarva", "PercPupa", 
+                       "PercAdult", 
+                       "tmax", "tmin", "DailyDD", 
+                       "CumDDinC", "CumDDinF", 
+                       colnames(relpopulation)[1:8], 
+                       "SumEgg", "SumLarva", "SumPupa", 
+                       "SumAdult", "dayofyear", 
+                       "year", "month", "day")
   #toprint_reorder<-toprint[,c(15:17,14,5:9,10:13,1:4)]
   toprint_reorder<-toprint[,c(31:33,30,13:17,18:29,1:12)]
   head(toprint_reorder)
@@ -721,7 +820,9 @@ calcPopulation <- function(filename, input_folder, output_folder)
   write.table(generations, file=outfile, sep=",",quote=FALSE,col.names=TRUE,row.names=FALSE)
 }
 
-mothPopulation <- function(input_folder, list_file = "list.txt", output_folder )
+mothPopulation <- function(input_folder, 
+                           list_file = "list.txt", 
+                           output_folder)
 {
   #setwd(input_folder)
   
@@ -740,7 +841,8 @@ mothPopulation <- function(input_folder, list_file = "list.txt", output_folder )
 
 #args = commandArgs(trailingOnly=TRUE)
 ##mothPopulation("/home/kiran/qsubs/R/","/home/kiran/qsubs/R/list.txt", "/home/kiran/qsubs/R/")
-##mothPopulation("/home/kiran/histmetdata/vic_inputdata0625_pnw_combined_05142008/","/home/kiran/qsubs/R/list.txt", "/home/kiran/qsubs/R/output/hist/")
+##mothPopulation("/home/kiran/histmetdata/vic_inputdata0625_pnw_combined_05142008/",
+#                           "/home/kiran/qsubs/R/list.txt", "/home/kiran/qsubs/R/output/hist/")
 #if(length(args) == 2){
 #  mothPopulation(args[1],"/home/kiran/qsubs/R/list.txt", args[2])
 #} else {
@@ -889,14 +991,27 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   #Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
   
-  data <- cbind(metdata_data.table$tmax,metdata_data.table$tmin, metdata_data.table$dd, metdata_data.table$Cum_dd, metdata_data.table$Cum_dd_F, relpopulation, metdata_data.table$day )
-  colnames(data)<-c("tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  data <- cbind(metdata_data.table$tmax,metdata_data.table$tmin, 
+                metdata_data.table$dd, metdata_data.table$Cum_dd, 
+                metdata_data.table$Cum_dd_F, relpopulation, 
+                metdata_data.table$day )
+  colnames(data)<-c("tmax", "tmin", "DailyDD", "CumDDinC", "CumDDinF", 
+                    colnames(relpopulation)[1:8], 
+                    "SumEgg", "SumLarva", "SumPupa",
+                    "SumAdult", "dayofyear", 
+                    "year", "month", "day")
     
   #Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
   
   data <- cbind(percpopulation[,1:12], data)
-  colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg","PercLarva","PercPupa","PercAdult", "tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg", 
+                      "PercLarva", "PercPupa", "PercAdult", 
+                      "tmax", "tmin", "DailyDD", "CumDDinC", 
+                      "CumDDinF", colnames(relpopulation)[1:8], 
+                      "SumEgg", "SumLarva", "SumPupa", 
+                      "SumAdult", "dayofyear", 
+                      "year", "month", "day")
   #toprint_reorder<-toprint[,c(15:17,14,5:9,10:13,1:4)]
   data <- data[,c(31:33,30,13:17,18:29,1:12)]
   head(data)
@@ -916,48 +1031,61 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
   isLeapYear <-leap.year(seq(data_start_year,data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
   nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  Nrecords<-366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year,data_end_year)
-  ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
+  Years<-seq(data_start_year, data_end_year)
+  ind<-seq(1, Nrecords * Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
   ymd<-create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
   inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  metdata <- readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
-  lower <-10 # 50 F
-  upper<-31.11  # 88F
+  lower <- 10 # 50 F
+  upper <- 31.11  # 88F
   ## calculate daily and cumulative gdd to met data
-  metdata_data.table<-add_dd_cumudd(metdata_data.table, lower, upper)
+  metdata_data.table <- add_dd_cumudd(metdata_data.table, lower, upper)
   head(metdata_data.table)
   # convert celcius to farenheit
   metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8
   head(metdata_data.table$Cum_dd_F)
   
   # add day of year from 1 to 365/366 depending on year
-  metdata_data.table$dum<-1 # dummy
+  metdata_data.table$dum <- 1 # dummy
   head(metdata_data.table)
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   head(metdata_data.table)
   
-  CodMothParams<-read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+  CodMothParams <- read.table(paste0(input_folder, "CodlingMothparameters.txt"),header=TRUE,sep=",")
   
   #Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams,metdata_data.table)
   
-  data <- cbind(metdata_data.table$tmax,metdata_data.table$tmin, metdata_data.table$dd, metdata_data.table$Cum_dd, metdata_data.table$Cum_dd_F, relpopulation, metdata_data.table$day )
-  colnames(data)<-c("tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  data <- cbind(metdata_data.table$tmax,metdata_data.table$tmin, metdata_data.table$dd, 
+                metdata_data.table$Cum_dd, metdata_data.table$Cum_dd_F, 
+                relpopulation, metdata_data.table$day )
+  colnames(data) <- c("tmax", "tmin", 
+                      "DailyDD", "CumDDinC", "CumDDinF", 
+                      colnames(relpopulation)[1:8], 
+                      "SumEgg", "SumLarva", "SumPupa", 
+                      "SumAdult", "dayofyear", 
+                      "year", "month", "day")
     
   #Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams,metdata_data.table)
   
   data <- cbind(percpopulation[,1:12], data)
-  colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg","PercLarva","PercPupa","PercAdult", "tmax","tmin","DailyDD","CumDDinC","CumDDinF",colnames(relpopulation)[1:8],"SumEgg","SumLarva","SumPupa","SumAdult","dayofyear","year","month","day")
+  colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg", 
+                      "PercLarva", "PercPupa", "PercAdult", 
+                      "tmax", "tmin", "DailyDD", "CumDDinC", 
+                      "CumDDinF", colnames(relpopulation)[1:8], 
+                      "SumEgg", "SumLarva", "SumPupa", 
+                      "SumAdult", "dayofyear", 
+                      "year", "month", "day")
   #toprint_reorder<-toprint[,c(15:17,14,5:9,10:13,1:4)]
   data <- data[,c(31:33,30,13:17,18:29,1:12)]
   head(data)

@@ -1,3 +1,9 @@
+# This generates the folder data_processed
+#
+#
+#
+
+
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
 library(chron)
 library(data.table)
@@ -35,9 +41,6 @@ category = args[1]
   for(location in locations) {
   #for( file in files) {
     #location = gsub("data_", "", file)
-    #print(location) 
-    #print(category)
-    #print(filename)
     
     if(category == "historical") {
       start_year = 1979

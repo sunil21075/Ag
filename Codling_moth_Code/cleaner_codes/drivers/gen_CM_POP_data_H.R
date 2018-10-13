@@ -1,4 +1,8 @@
 library(data.table)
+source_path = "/home/hnoorazar/cleaner_codes/core.R"
+source(source_path)
+
+write_path = "/home/hnoorazar/data/"
 
 data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
 #categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
@@ -12,11 +16,8 @@ conn = file(paste0(data_dir, file_list), open = "r")
 locations = readLines(conn)
 for( category in categories) {
   for( location in locations) {
-    #print(location) 
-    #print(category)
-    #filename = paste0(category, "/", file_prefix, location)
+    #filename = paste0(category, "/rcp85/", file_prefix, location)
     filename = paste0(category, "/rcp45/", file_prefix, location)
-    #print(filename)
     
     if(category == "historical") {
       start_year = 1979
@@ -45,8 +46,8 @@ for( category in categories) {
     temp_data$latitude <- as.numeric(unlist(loc[1]))
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
-    #write.table(temp_data, file = paste0(data_dir, category, "/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-    write.table(temp_data, file = paste0(data_dir, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
+    #write.table(temp_data, file = paste0(write_path, category, "/rcp85/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
+    write.table(temp_data, file = paste0(write_path, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
     #data <- rbind(data, temp_data)
   }
 }
