@@ -6,17 +6,13 @@ library(dplyr)
 library(foreach)
 library(iterators)
 
-source_path = "/Users/hn/Documents/GitHub/Kirti/Codling_moth_Code/cleaner_codes/core_cod_moth.R"
+source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-raw_binary_data_path = "/data/hydro/users/giridhar/giridhar/codmoth_pop/"
-moth_param_path = "/home/hnoorazar/cleaner_codes/parameters/"
-crop_param_CRB_path = "/home/hnoorazar/cleaner_codes/parameters/"
+write_path = "/home/hnoorazar/data/"
 
-data_dir = raw_binary_data_path
-write_path = "/home/hnoorazar/data"
-
-
+#data_dir = "/home/kiran/giridhar/codmoth_pop/"
+data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop/alldata_us_locations/"
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "historical", "BNU-ESM")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "BNU-ESM")
@@ -24,10 +20,10 @@ file_prefix = "data_"
 #file_list = "list"
 file_list = "all_us_locations_list"
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
-cellByCounty = data.table(read.csv(paste0(moth_param_path, "CropParamCRB.csv")))
+cellByCounty = data.table(read.csv(paste0(data_dir, "CropParamCRB.csv")))
 #data = data.table()
 
-conn = file(paste0(moth_param_path, file_list), open = "r")
+conn = file(paste0(data_dir, file_list), open = "r")
 locations = readLines(conn)
 
 args = commandArgs(trailingOnly=TRUE)
@@ -76,7 +72,7 @@ category = args[1]
     #temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
     if(category != "historical") {
       #write.table(temp_data, file = paste0(data_dir, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-      write_dir = paste0(data_dir, "data_processed/", category, "/", version)
+      write_dir = paste0(write_path, "data_processed/", category, "/", version)
       dir.create(file.path(write_dir), recursive = TRUE)
       write.table(temp_data, file = paste0(write_dir, "/CM_", location), sep = ",", row.names = FALSE, col.names = TRUE)
     }
