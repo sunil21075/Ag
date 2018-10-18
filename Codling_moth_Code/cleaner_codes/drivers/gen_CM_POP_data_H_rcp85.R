@@ -28,8 +28,7 @@ conn = file(paste0(data_dir, file_list), open = "r")
 locations = readLines(conn)
 for( category in categories) {
   for( location in locations) {
-    #filename = paste0(category, "/rcp85/", file_prefix, location)
-    filename = paste0(category, "/rcp45/", file_prefix, location)
+    filename = paste0(category, "/rcp85/", file_prefix, location)
     
     if(category == "historical") {
       start_year = 1979
@@ -58,8 +57,7 @@ for( category in categories) {
     temp_data$latitude <- as.numeric(unlist(loc[1]))
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
-    #write.table(temp_data, file = paste0(write_path, category, "/rcp85/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-    write.table(temp_data, file = paste0(write_path, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
+    write.table(temp_data, file = paste0(write_path, category, "/rcp85/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
     #data <- rbind(data, temp_data)
   }
 }

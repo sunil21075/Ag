@@ -953,28 +953,28 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
   data_end_year<-end_year #end time in the data
   
   # get number of records and number years, indices of variables 
-  ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
+  # indices just denote the fact that, given n variables, a new day's data starts every nth read 
   isLeapYear <-leap.year(seq(data_start_year,data_end_year))
   countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
-  nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
+  nYears <- length(seq(data_start_year,data_end_year))
+  Nrecords <- 366 * countLeapYears +365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year,data_end_year)
-  ind<-seq(1,Nrecords*Nofvariables, Nofvariables)
+  Years <- seq(data_start_year,data_end_year)
+  ind <- seq(1,Nrecords*Nofvariables, Nofvariables)
   
-  ## create year, month, day values based on start year, number of years and leap year info
-  ymd<-create_ymdvalues (nYears, Years, leap.year)
+  # create year, month, day values based on start year, number of years and leap year info
+  ymd <- create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
   inputfilenameandpath<-paste(input_folder,filename,sep="")
-  metdata<-readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
+  metdata <- readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)
   ## set upper and lower temperature bounds
-  lower <-10 # 50 F
-  upper<-31.11  # 88F
+  lower <- 10 # 50 F
+  upper <- 31.11  # 88F
   ## calculate daily and cumulative gdd to met data
-  metdata_data.table<-add_dd_cumudd(metdata_data.table, lower, upper)
+  metdata_data.table <- add_dd_cumudd(metdata_data.table, lower, upper)
   head(metdata_data.table)
   # convert celcius to farenheit
   metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8
@@ -1021,26 +1021,26 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
 
 prepareData_1 <- function(filename, input_folder, start_year, end_year) {
   #start time in the met data
-  data_start_year<-start_year  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-end_year #end time in the data
+  data_start_year <- start_year  
+  data_start_month <- 1
+  data_start_day <- 1
+  data_end_year <- end_year #end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 
   isLeapYear <-leap.year(seq(data_start_year,data_end_year))
-  countLeapYears <- length( isLeapYear[isLeapYear== TRUE])
-  nYears<-length(seq(data_start_year,data_end_year))
-  Nrecords<-366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
+  countLeapYears <- length(isLeapYear[isLeapYear== TRUE])
+  nYears <- length(seq(data_start_year,data_end_year))
+  Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 #number of varaibles or column in the forcing data file
-  Years<-seq(data_start_year, data_end_year)
-  ind<-seq(1, Nrecords * Nofvariables, Nofvariables)
+  Years <- seq(data_start_year, data_end_year)
+  ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
   
   ## create year, month, day values based on start year, number of years and leap year info
-  ymd<-create_ymdvalues (nYears, Years, leap.year)
+  ymd <- create_ymdvalues (nYears, Years, leap.year)
   
   ## read met data and add year month day variables
-  inputfilenameandpath<-paste(input_folder,filename,sep="")
+  inputfilenameandpath <- paste(input_folder,filename,sep="")
   metdata <- readbinarydata_addmdy(inputfilenameandpath,Nrecords, Nofvariables, ymd, ind)
   head(metdata)
   metdata_data.table <- data.table(metdata)

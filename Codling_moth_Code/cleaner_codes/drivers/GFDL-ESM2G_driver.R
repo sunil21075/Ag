@@ -7,7 +7,6 @@ library(foreach)
 library(iterators)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
-
 source(source_path)
 
 write_path = "/data/hydro/users/Hossein/codling_moth/data/"
@@ -32,11 +31,11 @@ args = commandArgs(trailingOnly=TRUE)
 category = args[1]
 #for( category in categories) {
 #version = args[2]
-#for(version in c('rcp45', 'rcp85')) {
-  #files = list.files(paste0(data_dir, "data/", category, "/", version, "/"))
-  for(location in locations) {
-  #for( file in files) {
-    #location = gsub("data_", "", file)
+for(version in c('rcp45', 'rcp85')) {
+  files = list.files(paste0(data_dir, "data/", category, "/", version, "/"))
+  # for(location in locations) {
+  for( file in files) {
+    location = gsub("data_", "", file)
     #print(location) 
     #print(category)
     #print(filename)
@@ -85,7 +84,7 @@ category = args[1]
     }
     #data <- rbind(data, temp_data)
   }
-#}
+}
 close(conn)
 #data$ClimateGroup <- as.factor(data$ClimateGroup)
 #data$County <- as.factor(data$County)
