@@ -1394,7 +1394,6 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
 #data_dir = "/home/kiran/giridhar/codmoth_pop/"
 data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop/alldata_us_locations/"
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
-#categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "historical", "BNU-ESM")
 #categories = c("CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M", "BNU-ESM")
 file_prefix = "data_"
 #file_list = "list"
