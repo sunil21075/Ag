@@ -1,20 +1,4 @@
-#!/share/apps/R-3.2.2_gcc/bin/Rscript
 library(data.table)
-library(chron)
-library(data.table)
-library(reshape2)
-library(dplyr)
-library(foreach)
-library(iterators)
-## 
-## The followins lets this script use the functions
-## we have written in core.R 
-##
-source_path = "/home/hnoorazar/cleaner_codes/core.R"
-source(source_path)
-
-write_path = "/data/hydro/users/Hossein/codling_moth/data/"
-parameters_path = "/home/hnoorazar/cleaner_codes/parameters/"
 
 data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
 #categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
@@ -22,14 +6,17 @@ categories = c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "
 file_prefix = "data_"
 file_list = "list"
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
-cellByCounty = data.table(read.csv(paste0(parameters_path, "CropParamCRB.csv")))
+cellByCounty = data.table(read.csv(paste0(data_dir, "CropParamCRB.csv")))
 #data = data.table()
 conn = file(paste0(data_dir, file_list), open = "r")
 locations = readLines(conn)
 for( category in categories) {
   for( location in locations) {
-    #filename = paste0(category, "/rcp85/", file_prefix, location)
+    #print(location) 
+    #print(category)
+    #filename = paste0(category, "/", file_prefix, location)
     filename = paste0(category, "/rcp45/", file_prefix, location)
+    #print(filename)
     
     if(category == "historical") {
       start_year = 1979
@@ -58,8 +45,8 @@ for( category in categories) {
     temp_data$latitude <- as.numeric(unlist(loc[1]))
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
-    #write.table(temp_data, file = paste0(write_path, category, "/rcp85/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-    write.table(temp_data, file = paste0(write_path, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
+    #write.table(temp_data, file = paste0(data_dir, category, "/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
+    write.table(temp_data, file = paste0(data_dir, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
     #data <- rbind(data, temp_data)
   }
 }
