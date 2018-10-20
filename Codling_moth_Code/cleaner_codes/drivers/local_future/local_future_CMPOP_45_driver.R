@@ -1,23 +1,32 @@
+#!/share/apps/R-3.2.2_gcc/bin/Rscript
 library(data.table)
+library(reshape2)
+library(dplyr)
+library(foreach)
+library(iterators)
+library(chron)
 
-data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
-#categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
+source_path = "/home/hnoorazar/cleaner_codes/core.R"
+source(source_path)
+
+write_path = "/data/hydro/users/Hossein/codling_moth/processed_data/local_future_CMPOP/"
+param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
+raw_data_dir = "/data/hydro/users/Hossein/codling_moth/raw_data/local_data/"
+
+
 categories = c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
+
 file_prefix = "data_"
-file_list = "list"
+file_list = "local_list"
+
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
-cellByCounty = data.table(read.csv(paste0(data_dir, "CropParamCRB.csv")))
-#data = data.table()
-conn = file(paste0(data_dir, file_list), open = "r")
+cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
+
+conn = file(paste0(param_dir, file_list), open = "r")
 locations = readLines(conn)
 for( category in categories) {
   for( location in locations) {
-    #print(location) 
-    #print(category)
-    #filename = paste0(category, "/", file_prefix, location)
     filename = paste0(category, "/rcp45/", file_prefix, location)
-    #print(filename)
-    
     if(category == "historical") {
       start_year = 1979
       end_year = 2015
@@ -27,7 +36,7 @@ for( category in categories) {
       end_year = 2099
     }
     
-    temp <- prepareData(filename, data_dir, start_year, end_year)
+    temp <- prepareData(filename, raw_data_dir, start_year, end_year)
     temp_data <- data.table()
     if(category == "historical") {
       temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2006] <- "Historical"
@@ -45,12 +54,13 @@ for( category in categories) {
     temp_data$latitude <- as.numeric(unlist(loc[1]))
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
-    #write.table(temp_data, file = paste0(data_dir, category, "/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-    write.table(temp_data, file = paste0(data_dir, category, "/rcp45/CMPOP_", location), sep = ",", row.names = FALSE, col.names = TRUE)
-    #data <- rbind(data, temp_data)
+    write_dir = paste0(write_path, category, "/rcp45")
+    dir.create(file.path(write_dir), recursive = TRUE)
+    write.table(temp_data, file = paste0(write_dir, "/CMPOP_", location), 
+    	                     sep = ",", 
+    	                     row.names = FALSE, 
+    	                     col.names = TRUE)
   }
 }
 close(conn)
-#data$ClimateGroup <- as.factor(data$ClimateGroup)
-#data$County <- as.factor(data$County)
 
