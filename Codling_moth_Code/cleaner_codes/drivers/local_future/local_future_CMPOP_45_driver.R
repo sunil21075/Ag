@@ -14,7 +14,7 @@ param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth/raw_data/local_data/"
 
 
-categories = c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
+categories = c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
 
 file_prefix = "data_"
 file_list = "local_list"
