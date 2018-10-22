@@ -7,31 +7,34 @@ library(foreach)
 library(doParallel)
 #library(iterators)
 
-#print(getwd())
-#data_dir = getwd()
-data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
+read_data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
+write_path = "/data/hydro/users/Hossein/codling_moth/processed_data/local_future/"
+param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
+
+
+
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 #file_prefix = "CMPOP_"
 file_prefix = "CM_"
-locations_list = "list"
+locations_list = "local_list"
 data = data.table()
-conn = file(paste0(data_dir, "/", locations_list), open = "r")
+conn = file(paste0(read_data_dir, "/", locations_list), open = "r")
 locations = readLines(conn)
 close(conn)
 
 #args = commandArgs(trailingOnly=TRUE)
 #category = args[1]
 for( category in categories) {
-for( location in locations) {
-	if(category != "historical") {
-		filename <- paste0(data_dir, "/", category, "/rcp45/", file_prefix, location)
-	}
-	else {
-		filename <- paste0(data_dir, "/", category, "/", file_prefix, location)
-	}
+    for( location in locations) {
+	    if(category != "historical") {
+		    filename <- paste0(read_data_dir, "/", category, "/rcp45/", file_prefix, location)
+	    }
+	    else {
+		    filename <- paste0(read_data_dir, "/", category, "/", file_prefix, location)
+	        }
 	#print(filename)
 	data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
-}
+    }
 }
 ##print(data)
 

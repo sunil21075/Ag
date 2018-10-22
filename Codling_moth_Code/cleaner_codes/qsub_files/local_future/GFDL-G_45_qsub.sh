@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N GFDL-G-45
-#PBS -l nodes=1:ppn=1,walltime=30:00:00
+#PBS -l nodes=1:ppn=1,walltime=40:00:00
 #PBS -l mem=10gb
 #PBS -q hydro
 #PBS -e GFDL-G-45-error.txt
