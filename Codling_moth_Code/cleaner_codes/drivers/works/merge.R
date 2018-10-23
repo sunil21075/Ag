@@ -1,3 +1,8 @@
+
+"""
+This is the one that worked before 
+putting merge into the core.R
+"""
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
 #library(chron)
 library(data.table)
