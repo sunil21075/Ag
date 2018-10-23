@@ -9,9 +9,9 @@ library(iterators)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-write_path = "/data/hydro/users/Hossein/codling_moth/processed_data/local_future/"
+raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
+write_path = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 parameters_path = "/home/hnoorazar/cleaner_codes/parameters/"
-raw_data_dir = "/data/hydro/users/Hossein/codling_moth/raw_data/local_data/"
 
 file_prefix = "data_"
 
