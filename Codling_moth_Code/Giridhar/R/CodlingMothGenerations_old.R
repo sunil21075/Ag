@@ -193,7 +193,7 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
 #Script
 ############################################################################################################################################
 
-calcPopulation <- function(filename,input_folder,  output_folder)
+calcPopulation <- function(filename, input_folder,  output_folder)
 {
   outfile <- paste0(output_folder, paste0("CM", strsplit(filename, "data")[[1]][2]))
   print(outfile)  

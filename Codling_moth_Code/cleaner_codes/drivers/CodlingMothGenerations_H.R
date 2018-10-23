@@ -7,7 +7,6 @@ library(foreach)
 library(iterators)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
-
 source(source_path)
 
 write_path = "/data/hydro/users/Hossein/codling_moth/data/"
