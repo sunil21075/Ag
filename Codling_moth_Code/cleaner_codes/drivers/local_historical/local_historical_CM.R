@@ -9,7 +9,7 @@ library(iterators)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/historical/"
+raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
 write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/historical_CM/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
@@ -23,7 +23,7 @@ cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
 args = commandArgs(trailingOnly=TRUE)
 category = args[1]
-categories = c("historical")
+
 for(location in locations) {   
   if(category == "historical") {
     start_year = 1979

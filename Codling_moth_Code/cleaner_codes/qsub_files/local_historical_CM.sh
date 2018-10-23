@@ -19,6 +19,6 @@ module purge
 module load R/R-3.2.2_gcc
 
 
-/home/hnoorazar/cleaner_codes/drivers/local_historical/CodlingMothGenerations_CM.R historical
+/home/hnoorazar/cleaner_codes/drivers/local_historical/local_historical_CM.R historical
 
 exit 0

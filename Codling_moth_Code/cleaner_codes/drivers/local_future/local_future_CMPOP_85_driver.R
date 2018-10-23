@@ -9,10 +9,9 @@ library(chron)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-write_path = "/data/hydro/users/Hossein/codling_moth/processed_data/local_future_CMPOP/"
+raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
+write_path = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
-raw_data_dir = "/data/hydro/users/Hossein/codling_moth/raw_data/local_data/"
-
 
 categories = c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 

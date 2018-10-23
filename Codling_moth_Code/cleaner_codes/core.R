@@ -1520,7 +1520,6 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
 }
 
 
-
 #####
 merge_data <- function(input_dir, param_dir, locations_file_name, file_prefix="CMPOP", version="rcp45"){
   data = data.table()
@@ -1536,7 +1535,6 @@ merge_data <- function(input_dir, param_dir, locations_file_name, file_prefix="C
         else {
           filename <- paste0(read_data_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
             }
-    #print(filename)
     data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
       }
   }

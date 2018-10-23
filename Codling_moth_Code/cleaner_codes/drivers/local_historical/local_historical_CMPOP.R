@@ -9,8 +9,8 @@ library(chron)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-raw_data_dir = "/data/hydro/users/Hossein/codling_moth/raw_data/local_data/"
-write_dir = "/data/hydro/users/Hossein/codling_moth/processed_data/local/historical_CMPOP/"
+raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/historical_CM/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
