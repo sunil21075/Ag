@@ -7,36 +7,35 @@ library(foreach)
 library(doParallel)
 #library(iterators)
 
-read_data_dir = "/data/hydro/users/giridhar/giridhar/codmoth_pop"
-write_path = "/data/hydro/users/Hossein/codling_moth/processed_data/local_future/"
-param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
-
+read_data_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_path    = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+param_dir     = "/home/hnoorazar/cleaner_codes/parameters/"
 
 
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
-#file_prefix = "CMPOP_"
-file_prefix = "CM_"
+file_prefix = "CMPOP_"
+# file_prefix = "CM_"
 locations_list = "local_list"
 data = data.table()
-conn = file(paste0(read_data_dir, "/", locations_list), open = "r")
+conn = file(paste0(param_dir, locations_list), open = "r")
 locations = readLines(conn)
 close(conn)
 
 #args = commandArgs(trailingOnly=TRUE)
 #category = args[1]
+
 for( category in categories) {
     for( location in locations) {
 	    if(category != "historical") {
-		    filename <- paste0(read_data_dir, "/", category, "/rcp45/", file_prefix, location)
+		    filename <- paste0(read_data_dir, "future_CMPOP/", category, "/rcp45/", file_prefix, location)
 	    }
 	    else {
-		    filename <- paste0(read_data_dir, "/", category, "/", file_prefix, location)
+		    filename <- paste0(read_data_dir, "historical_CMPOP/", file_prefix, location)
 	        }
 	#print(filename)
 	data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
     }
 }
-##print(data)
 
 #cl <- makeCluster(6)
 #registerDoParallel(cl)
@@ -48,4 +47,4 @@ for( category in categories) {
 #  }
 #stopCluster(cl)
 #saveRDS(data, paste0(data_dir, "/", category, "Data_rcp45.rds"))
-saveRDS(data, paste0(data_dir, "/combinedData_rcp45.rds"))
+saveRDS(data, paste0(write_path, "/combined_CMPOP_rcp45.rds"))
