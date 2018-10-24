@@ -35,7 +35,7 @@ for( category in categories) {
       end_year = 2099
     }
     
-    temp <- prepareData(filename, raw_data_dir, start_year, end_year)
+    temp <- prepareData_CMPOP(filename, raw_data_dir, start_year, end_year)
     temp_data <- data.table()
     if(category == "historical") {
       temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2006] <- "Historical"

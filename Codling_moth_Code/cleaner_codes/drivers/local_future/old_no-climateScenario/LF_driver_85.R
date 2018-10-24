@@ -37,7 +37,7 @@ for(version in c('rcp85')) {
       filename = paste0(category, "/", version, "/", file_prefix, location)
     }
     
-    temp <- prepareData_1(filename, raw_data_dir, start_year, end_year)
+    temp <- prepareData_CM(filename, raw_data_dir, start_year, end_year)
     temp_data <- data.table()
     if(category == "historical") {
       temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2006] <- "Historical"
