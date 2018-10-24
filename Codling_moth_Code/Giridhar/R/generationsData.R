@@ -83,7 +83,7 @@ saveRDS(data, paste0(data_dir, "/", "generations1_rcp45.rds"))
 
 #for(i in 1:nrow(loc_grp)) {
 #	data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
-#	data1[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
+#       data1[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
 #}
 
 #saveRDS(data, paste0(data_dir, "/", "combinedData.rds"))

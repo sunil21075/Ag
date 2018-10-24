@@ -17,6 +17,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/local_future/local_future_CMPOP_45_driver.R
+/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CMPOP_45_driver.R
 
 exit 0

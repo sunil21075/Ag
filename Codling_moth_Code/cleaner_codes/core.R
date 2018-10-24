@@ -945,7 +945,7 @@ getRelPopulation <- function(filename, input_folder, start_year, end_year)
   return(relpopulation)
 }
 
-prepareData <- function(filename, input_folder, start_year, end_year) {
+prepareData_CMPOP <- function(filename, input_folder, start_year, end_year) {
   #start time in the met data
   data_start_year<-start_year  
   data_start_month<-1
@@ -1019,7 +1019,7 @@ prepareData <- function(filename, input_folder, start_year, end_year) {
 }
 
 
-prepareData_1 <- function(filename, input_folder, start_year, end_year) {
+prepareData_CM <- function(filename, input_folder, start_year, end_year) {
   #start time in the met data
   data_start_year <- start_year  
   data_start_month <- 1
@@ -1521,7 +1521,18 @@ prepareData_1 <- function(filename, input_folder, start_year, end_year) {
 
 
 #####
-merge_data <- function(input_dir, param_dir, locations_file_name, file_prefix="CMPOP", version="rcp45"){
+merge_add_countyGroup <- function(input_dir, 
+                                  param_dir, 
+                                  locations_file_name, 
+                                  file_pref, 
+                                  version, 
+                                  locationGroup_fileName="LocationGroups.csv"){
+  merged_data <- merge_data(input_dir, param_dir, locations_file_name, file_prefix, version)
+  merged_data <- add_countyGroup(merged_data, loc_group_file_name= locationGroup_fileName)
+  return(data)
+}
+
+merge_data <- function(input_dir, param_dir, categories, version, locations_file_name, file_prefix){
   data = data.table()
   conn = file(paste0(param_dir, locations_file_name), open = "r")
   locations = readLines(conn)
@@ -1541,4 +1552,15 @@ merge_data <- function(input_dir, param_dir, locations_file_name, file_prefix="C
   return(data)
 }
 
+add_countyGroup <- function(data, loc_group_file_name="LocationGroups.csv"){
+  loc_grp = data.table(read.csv(paste0(param_dir, location_group_file_name)))
+  loc_grp$latitude = as.numeric(loc_grp$latitude)
+  loc_grp$longitude = as.numeric(loc_grp$longitude)
 
+  data$CountyGroup = 0L
+
+  for(i in 1:nrow(loc_grp)) {
+    data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
+  }
+  return (data) 
+}

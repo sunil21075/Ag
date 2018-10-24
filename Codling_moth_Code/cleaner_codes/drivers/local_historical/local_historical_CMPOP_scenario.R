@@ -10,22 +10,21 @@ source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
-write_path = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/historical_CMPOP_Climate_scenario/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
-
-categories = c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 
 file_prefix = "data_"
 file_list = "local_list"
+conn = file(paste0(param_dir, file_list), open = "r")
+locations = readLines(conn)
 
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
 cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
-conn = file(paste0(param_dir, file_list), open = "r")
-locations = readLines(conn)
+categories = c("historical")
 for( category in categories) {
   for( location in locations) {
-    filename = paste0(category, "/rcp85/", file_prefix, location)
+    filename = paste0(category, "/", file_prefix, location)
     if(category == "historical") {
       start_year = 1979
       end_year = 2015
@@ -53,8 +52,8 @@ for( category in categories) {
     temp_data$latitude <- as.numeric(unlist(loc[1]))
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
-    write_dir = paste0(write_path, category, "/rcp85")
-    dir.create(file.path(write_dir), recursive = TRUE)
+    temp_data$ClimateScenario <- category
+    # dir.create(file.path(write_dir), recursive = TRUE)
     write.table(temp_data, file = paste0(write_dir, "/CMPOP_", location), 
     	                     sep = ",", 
     	                     row.names = FALSE, 

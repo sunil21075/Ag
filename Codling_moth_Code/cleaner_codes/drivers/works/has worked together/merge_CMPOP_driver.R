@@ -9,9 +9,9 @@ library(doParallel)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-read_data_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
-write_path    = "/data/hydro/users/Hossein/codling_moth/local/processed/"
-param_path     = "/home/hnoorazar/cleaner_codes/parameters/"
+read_data_dir= "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_path   = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+param_path   = "/home/hnoorazar/cleaner_codes/parameters/"
 
 
 categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
