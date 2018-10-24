@@ -6,6 +6,10 @@ library(foreach)
 library(iterators)
 library(chron)
 
+add_countyGroup <- function(data, ){
+	
+}
+
 input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
 
