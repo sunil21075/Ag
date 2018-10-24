@@ -3,7 +3,7 @@
 
 #PBS -N GFDL_M_85
 #PBS -l nodes=1:ppn=1,walltime=40:00:00
-#PBS -l mem=10gb
+#PBS -l mem=20gb
 #PBS -q hydro
 #PBS -e GFDL_M_85_error.txt
 #PBS -o GFDL_M_85_output.txt

@@ -3,7 +3,7 @@
 
 #PBS -N CMPOP_45
 #PBS -l nodes=1:ppn=1,walltime=40:00:00
-#PBS -l mem=10gb
+#PBS -l mem=20gb
 #PBS -q hydro
 #PBS -e CMPOP_45_error.txt
 #PBS -o CMPOP_45_output.txt
@@ -17,6 +17,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CMPOP_45_driver.R
+/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CMPOP_85_driver.R
 
 exit 0
