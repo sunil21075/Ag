@@ -1,4 +1,5 @@
 
+# This file is not tested. However, working function of this is in core.R and elsewhere.
 add_countyGroup <- function(input_dir, rds_file_name, param_dir, group_locations_name="LocationGroups.csv" ){
 	filename <- paste0(input_dir, file_name)
 	data = data.table(readRDS(filename))

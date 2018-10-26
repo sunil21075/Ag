@@ -6,10 +6,11 @@ library(foreach)
 library(iterators)
 library(chron)
 
-input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/Girids/"
-write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/samples/"
+input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 
-files = list.files(input_dir)
+files = list.files(input_dir, "*.rds")
+#files = c("combined_CMPOP_rcp45.rds", "combined_CMPOP_rcp85.rds")
 meta_data = data.table(name=character(), n_rows=numeric(), n_cols=numeric())
 for (file in files){
 	file_name = paste0(input_dir, file)
