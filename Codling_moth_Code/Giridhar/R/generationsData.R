@@ -54,15 +54,6 @@ saveRDS(data, paste0(data_dir, "/", "generations1_rcp45.rds"))
 #saveRDS(p, paste0(data_dir, "/", "popplot.rds"))
 
 
-#Chelan, Douglas, Okanogan
-#Grant, Adams
-#Umatilla, Walla Walla
-#data[County == "Grant" | County == "Adams", County := "Grant, Adams"]
-#data[County == "Chelan" | County == "Douglas" | County == "Okanogan", County := "Chelan, Douglas, Okanogan"]
-#data[County == "Umatilla" | County == "Walla Walla", County := "Umatilla, WallaWalla"]
-#data$County = factor(data$County)
-#print(levels(data$County))
-
 #loc_grp = data.table(read.csv("LocationGroups2.csv"))
 #loc_grp$latitude = as.numeric(loc_grp$latitude)
 #loc_grp$longitude = as.numeric(loc_grp$longitude)

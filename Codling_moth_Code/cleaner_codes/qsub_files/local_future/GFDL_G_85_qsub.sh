@@ -1,12 +1,12 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
 
-#PBS -N GFDL_G_85
+#PBS -N GG_85
 #PBS -l nodes=1:ppn=1,walltime=40:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e GFDL_G_85_error.txt
-#PBS -o GFDL_G_85_output.txt
+#PBS -e GG_85_error.txt
+#PBS -o GG_85_output.txt
 #PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR

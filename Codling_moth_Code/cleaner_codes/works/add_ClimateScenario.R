@@ -23,4 +23,3 @@ for(category in categories) {
 
 saveRDS(data, paste0(data_dir, "/", "allData_rcp45.rds"))
 
-#filename = paste0(data_dir, "/", "allData_revised.rds")
