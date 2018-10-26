@@ -18,8 +18,10 @@ categories = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m",
 file_pref = "CMPOP"
 locations_list = "local_list"
 
-data <- merge_data(input_dir=read_data_dir, param_dir=param_path, 
-	               locations_file_name=locations_list, file_prefix=file_pref, 
+data <- merge_data(input_dir=read_data_dir, 
+	               param_dir=param_path, 
+	               locations_file_name=locations_list, 
+	               file_prefix=file_pref, 
 	               version="rcp45")
 
 saveRDS(data, paste0(write_path, "/combined_CMPOP_rcp45.rds"))

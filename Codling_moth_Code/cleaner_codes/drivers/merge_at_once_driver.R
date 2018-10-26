@@ -1,11 +1,11 @@
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
 #library(chron)
 library(data.table)
-#library(reshape2)
 library(dplyr)
 library(foreach)
 library(doParallel)
-#library(iterators)
+
+
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
@@ -21,11 +21,12 @@ args = commandArgs(trailingOnly=TRUE)
 ver = args[1]
 file_pref = args[2]
 
-data <- merge_data(input_dir=read_data_dir, 
-	               param_dir=param_path,
-	               categories=cats,
-	               version=ver,
-	               locations_file_name=locations_list, 
-	               file_prefix=file_pref)
-
+data = merge_at_once(input_dir=read_data_dir, 
+	                 write_dir=write_path, 
+	                 param_dir=param_path, 
+	                 location_fname=locations_list, 
+	                 locationGroup_fname="LocationGroups.csv", 
+	                 categories=cats, 
+	                 file_prefix=file_pref, 
+	                 version=ver)
 saveRDS(data, paste0(write_path, "combined", "_", file_pref, "_", ver, ".rds"))

@@ -10,11 +10,11 @@ input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/Gi
 write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/samples/"
 
 files = list.files(input_dir)
-
+meta_data = data.table(name=character(), n_rows=numeric(), n_cols=numeric())
 for (file in files){
 	file_name = paste0(input_dir, file)
 	data <- data.table(readRDS(file_name))
 	dimension = dim(data)
-	column_names = colnames(data)
-	write.table(data.frame(dimension, column_names), paste0(write_dir, file, "metadata" , ".txt"), sep="\t")
+	meta_data = rbind(meta_data, list(file, dimension[1], dimension[2]))
+	write.table(data.frame(meta_data), paste0(write_dir, "metadata" , ".txt"), sep="\t")
 }
