@@ -6,6 +6,12 @@ library(foreach)
 library(iterators)
 library(chron)
 
+input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/small_samples/"
+files = list.files(input_dir)
+files = c("combined_CMPOP_rcp85.rds", "combined_CMPOP_rcp45.rds")
+
+
 input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/Girids/"
 write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/samples/"
 
@@ -14,6 +20,6 @@ files = list.files(input_dir)
 for (file in files){
 	file_name = paste0(input_dir, file)
 	data <- data.table(readRDS(file_name))
-	data <- data[1:5]
+	data <- data[1:200]
 	saveRDS(data, paste0(write_dir, file))
 }

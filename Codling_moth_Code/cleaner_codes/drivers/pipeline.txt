@@ -1,0 +1,3 @@
+steps:
+Generate CM and CMPOP files
+Combine them by merge.R
