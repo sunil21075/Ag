@@ -7,7 +7,6 @@
 #PBS -q hydro
 #PBS -e diapause_45_error.txt
 #PBS -o diapause_45_output.txt
-#PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

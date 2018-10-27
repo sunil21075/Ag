@@ -117,6 +117,7 @@ AbsData = rbind(temp1, temp2)
 
 #saveRDS(AbsData, paste0(data_dir, "/", "diapause_abs_data.rds"))
 saveRDS(AbsData, paste0(data_dir, "/", "diapause_abs_data_rcp45.rds"))
+# saveRDS(sub1, paste0(data_dir, "/", "diapause_map_data_rcp45.rds"))
 #####################################################################################################################
 #####################################################################################################################
 
@@ -124,7 +125,6 @@ saveRDS(AbsData, paste0(data_dir, "/", "diapause_abs_data_rcp45.rds"))
 
 #####################################################################################################################
 #####################################################################################################################
-#saveRDS(sub1, paste0(data_dir, "/", "diapause_map_data_rcp45.rds"))
 
 #sub2 = sub1[, .(RelPctDiap = (auc(RelDiap)/auc(RelLarvaPop))*100, RelPctNonDiap = (auc(RelNonDiap)/auc(RelLarvaPop))*100, AbsPctDiap = (auc(AbsDiap)/auc(AbsLarvaPop))*100, AbsPctNonDiap = (auc(AbsNonDiap)/auc(AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]
 #

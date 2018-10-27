@@ -1779,8 +1779,73 @@ diapause_abs_rel <- function(input_dir, file_name,
     temp1$Group = "Absolute Larva Pop Vs Diapaused"
     temp2$Group = "Absolute Larva Pop Vs NonDiapaused"
     AbsData = rbind(temp1, temp2)
-    
-    return (list(RelData, AbsData))
+
+    sub2 = sub1[, .(RelPctDiap = (auc(RelDiap)/auc(RelLarvaPop))*100, RelPctNonDiap = (auc(RelNonDiap)/auc(RelLarvaPop))*100, AbsPctDiap = (auc(AbsDiap)/auc(AbsLarvaPop))*100, AbsPctNonDiap = (auc(AbsNonDiap)/auc(AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]
+
+    CodMothParams <- read.table(paste0(data_dir, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+
+    sub2$RelPctDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(RelDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(RelDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(RelDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(RelDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2$RelPctNonDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(RelNonDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(RelNonDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(RelNonDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(RelNonDiap)/auc(RelLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2$AbsPctDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(AbsDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(AbsDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(AbsDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(AbsDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2$AbsPctNonDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(AbsNonDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(AbsNonDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(AbsNonDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(AbsNonDiap)/auc(AbsLarvaDiap))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+
+    sub2 = sub1[, .(RelPctDiap = (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, RelPctNonDiap = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100, AbsPctDiap = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100, AbsPctNonDiap = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]
+
+    CodMothParams <- read.table(paste0(data_dir, "CodlingMothparameters.txt"),header=TRUE,sep=",")
+
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(RelPctDiapGen1 = (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(RelPctDiapGen2 = (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(RelPctDiapGen3 = (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(RelPctDiapGen4 = (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2$RelPctDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = if(auc(CumulativeDDF,RelLarvaPop) == 0) NA else (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = if(auc(CumulativeDDF,RelLarvaPop) == 0) NA else (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = if(auc(CumulativeDDF,RelLarvaPop) == 0) NA else (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = if(auc(CumulativeDDF,RelLarvaPop) == 0) NA else (auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(RelPctNonDiapGen1 = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(RelPctNonDiapGen2 = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(RelPctNonDiapGen3 = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(RelPctNonDiapGen4 = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2$RelPctNonDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$RelPctNonDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(AbsPctDiapGen1 = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(AbsPctDiapGen2 = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(AbsPctDiapGen3 = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctDiapGen4 = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2$AbsPctDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(AbsPctNonDiapGen1 = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(AbsPctNonDiapGen2 = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(AbsPctNonDiapGen3 = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctNonDiapGen4 = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
+    sub2$AbsPctNonDiapGen1 = sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(pct = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen2 = sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(pct = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen3 = sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(pct = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+    sub2$AbsPctNonDiapGen4 = sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(pct = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")]$pct
+
+    return (list(RelData, AbsData, sub1, sub2))
 }
 
 

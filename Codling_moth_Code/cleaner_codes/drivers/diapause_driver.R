@@ -13,7 +13,7 @@ param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
 
 args = commandArgs(trailingOnly=TRUE)
 version = args[1]
-
+	
 file_name = paste0("combined_CMPOP_", version)
 output = diapause_abs_rel(input_dir, 
 	                      file_name,
@@ -22,6 +22,11 @@ output = diapause_abs_rel(input_dir,
 
 RelData = data.table(output[[1]])
 AbsData = data.table(output[[2]])
+sub1 = data.table(output[[3]])
+sub2 = data.table(output[[4]])
 
-saveRDS(RelData, paste0(data_dir, "/", "diapause_rel_data_", version, ".rds"))
-saveRDS(AbsData, paste0(data_dir, "/", "diapause_abs_data_", version, ".rds"))
+saveRDS(RelData, paste0(write_dir, "/", "diapause_rel_data_", version, ".rds"))
+saveRDS(AbsData, paste0(write_dir, "/", "diapause_abs_data_", version, ".rds"))
+
+saveRDS(sub1, paste0(data_dir, "/", "diapause_map_data_", version, "_sub1.rds"))
+saveRDS(sub2, paste0(data_dir, "/", "diapause_map_data_", version, "_sub2.rds"))

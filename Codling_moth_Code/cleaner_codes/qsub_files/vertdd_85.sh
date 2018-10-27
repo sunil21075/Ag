@@ -7,7 +7,6 @@
 #PBS -q hydro
 #PBS -e vertdd_85_error.txt
 #PBS -o vertdd_85_output.txt
-#PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
