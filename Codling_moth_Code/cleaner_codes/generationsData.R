@@ -50,29 +50,3 @@ saveRDS(data, paste0(data_dir, "/", "generations1_rcp45.rds"))
 
 #saveRDS(p, paste0(data_dir, "/", "popplot.rds"))
 
-
-#loc_grp = data.table(read.csv("LocationGroups2.csv"))
-#loc_grp$latitude = as.numeric(loc_grp$latitude)
-#loc_grp$longitude = as.numeric(loc_grp$longitude)
-
-
-#filename <- paste0(data_dir, "/combinedData.rds")
-#data <- data.table(readRDS(filename))
-#loc = tstrsplit(data$location, "_")
-#data$latitude <- as.numeric(unlist(loc[1]))
-#data$longitude <- as.numeric(unlist(loc[2]))
-
-
-#filename <- paste0(data_dir, "/combinedData_rcp45.rds")
-#data1 <- data.table(readRDS(filename))
-
-#data$CountyGroup = 0L
-#data1$CountyGroup = 0L
-
-#for(i in 1:nrow(loc_grp)) {
-#	data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
-#       data1[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
-#}
-
-#saveRDS(data, paste0(data_dir, "/", "combinedData.rds"))
-#saveRDS(data1, paste0(data_dir, "/", "combinedData_rcp45.rds"))

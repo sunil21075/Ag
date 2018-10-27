@@ -657,8 +657,6 @@ shinyServer(function(input, output, session) {
       climate_group = unlist(temp[1])
       future_version = unlist(temp[2])
     }
-    #print(climate_group)
-    #print(future_version)
 
     if(future_version == "rcp45") {
 	data = d_rcp45

@@ -8,18 +8,26 @@ library(chron)
 
 input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/small_samples/"
-files = list.files(input_dir)
-files = c("combined_CMPOP_rcp85.rds", "combined_CMPOP_rcp45.rds")
+files = list.files(input_dir, "*.rds")
+files = c("vertdd_combined_CMPOP_rcp45.rds", "vertdd_combined_CMPOP_rcp85.rds")
+for (file in files){
+	file_name = paste0(input_dir, file)
+	data <- data.table(readRDS(file_name))
+	data <- data[61098635:61198635, ]
+	saveRDS(data, paste0(write_dir, file))
+}
+
+
 
 
 input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/Girids/"
 write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/discovery/samples/"
 
-files = list.files(input_dir)
-
+files = list.files(input_dir, "*.rds")
+files = c("allData_vertdd_new_rcp45.rds", "allData_vertdd_new.rds", "allData_vertdd.rds")
 for (file in files){
 	file_name = paste0(input_dir, file)
 	data <- data.table(readRDS(file_name))
-	data <- data[1:200]
+	data <- data[61098635:61198635, ]
 	saveRDS(data, paste0(write_dir, file))
 }
