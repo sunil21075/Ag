@@ -8,7 +8,6 @@
 #PBS -q hydro
 #PBS -e historical_error.txt
 #PBS -o historical_output.txt
-#PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

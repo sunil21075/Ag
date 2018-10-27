@@ -6,7 +6,6 @@
 #PBS -q hydro
 #PBS -e take_samples_error.txt
 #PBS -o take_samples_output.txt
-#PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
