@@ -5,9 +5,7 @@ library(ggplot2)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
-
-
-write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/diapause/"
 input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
 
@@ -23,10 +21,7 @@ output = diapause_abs_rel(input_dir,
 RelData = data.table(output[[1]])
 AbsData = data.table(output[[2]])
 sub1 = data.table(output[[3]])
-sub2 = data.table(output[[4]])
 
-saveRDS(RelData, paste0(write_dir, "/", "diapause_rel_data_", version, ".rds"))
-saveRDS(AbsData, paste0(write_dir, "/", "diapause_abs_data_", version, ".rds"))
-
-saveRDS(sub1, paste0(data_dir, "/", "diapause_map_data_", version, "_sub1.rds"))
-saveRDS(sub2, paste0(data_dir, "/", "diapause_map_data_", version, "_sub2.rds"))
+saveRDS(RelData, paste0(write_dir, "diapause_rel_data_", version, ".rds"))
+saveRDS(AbsData, paste0(write_dir, "diapause_abs_data_", version, ".rds"))
+saveRDS(sub1,    paste0(write_dir, "diapause_plot_data_", version, ".rds"))
