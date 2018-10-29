@@ -1,7 +1,8 @@
-diapause_abs_rel <- function(input_data, file_name,
+
+diapause_map_prep <- function(input_dir, file_name,
                              param_dir, location_group_name="LocationGroups.csv"){
-    file_name = paste0(input_data, file_name, ".rds")
-    data <- data.table(readRDS(filename))
+    file_name = paste0(input_dir, file_name, ".rds")
+    data <- data.table(readRDS(file_name))
 
     loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
     #loc_grp = loc_grp[1:15,]
@@ -23,6 +24,7 @@ diapause_abs_rel <- function(input_data, file_name,
     data$escapeDiap = data$SumLarva - data$enterDiap
 
     sub = data
+    rm(data)
     startingpopulationfortheyear<-1000
     #generation1
     sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
@@ -59,63 +61,36 @@ diapause_abs_rel <- function(input_data, file_name,
     sub$AbsPopLarvaGen4Diap <- sub$AbsPopLarvaGen4*sub$diapause1/100
     sub$AbsPopLarvaGen4NonDiap <- sub$AbsPopLarvaGen4- sub$AbsPopLarvaGen4Diap
 
-    ### get totals similar to Sum Larva column , but abs numbers
+    ### get totals similar to Sum Larva column, but abs numbers
     sub$AbsPopTotal <- sub$AbsPopLarvaGen1 + sub$AbsPopLarvaGen2 + sub$AbsPopLarvaGen3 + sub$AbsPopLarvaGen4
     sub$AbsPopDiap <- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
     sub$AbsPopNonDiap <- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + 
                         sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
 
     sub1 = subset(sub, 
-    	          select = c("latitude", "longitude", 
-    	       	             "County", "CountyGroup", 
-      	          	         "ClimateScenario", "ClimateGroup", 
-    	                     "year", "dayofyear", "CumDDinF", 
-    	                     "SumLarva", "enterDiap", 
-    	                     "escapeDiap", "AbsPopTotal",
-    	           	         "AbsPopNonDiap","AbsPopDiap"))
-    #sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
-    #                                               RelNonDiap = mean(escapeDiap), 
-    #                                               AbsLarvaPop = mean(AbsPopTotal), 
-    #                                               AbsDiap = mean(AbsPopDiap), 
-    #                                               AbsNonDiap = mean(AbsPopNonDiap), 
-    #                                              CumulativeDDF = mean(CumDDinF)), 
-    #                                               by = c("ClimateGroup", "CountyGroup", 
-    #                                                      "latitude", "longitude", 
-    #                                                      "dayofyear")]  ## Check with Kirti regarding CumDDinF
+                select = c("latitude", "longitude", 
+                           "County", "CountyGroup", 
+                           "ClimateScenario", "ClimateGroup", 
+                           "year", "dayofyear", "CumDDinF", 
+                           "SumLarva", "enterDiap", 
+                           "escapeDiap", "AbsPopTotal",
+                           "AbsPopNonDiap","AbsPopDiap"))
+    rm (sub)
+    sub2 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
+                                                  RelNonDiap = mean(escapeDiap), 
+                                                  AbsLarvaPop = mean(AbsPopTotal), 
+                                                  AbsDiap = mean(AbsPopDiap), 
+                                                  AbsNonDiap = mean(AbsPopNonDiap), 
+                                                  CumulativeDDF = mean(CumDDinF)), 
+                                                  by = c("ClimateGroup", "CountyGroup", 
+                                                          "latitude", "longitude", 
+                                                          "dayofyear")]
 
-    sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
+    sub3 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
                     RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), 
                     AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
                     CumulativeDDF = mean(CumDDinF)), 
-                    by = c("ClimateGroup", "CountyGroup", "dayofyear")] # Check with Kirti regarding CumDDinF
+                    by = c("ClimateGroup", "CountyGroup", "dayofyear")]
 
-    #saveRDS(sub1, paste0(data_dir, "/", "diapause_plot_data.rds"))
-
-    RelData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
-                                      "dayofyear", "CumulativeDDF", 
-                                      "RelLarvaPop", "RelDiap", "RelNonDiap"))
-
-    RelData = melt(RelData, id = c("ClimateGroup", "CountyGroup", "dayofyear", "CumulativeDDF"))
-    #RelData[, Group := as.character()]
-    RelData$Group = "0"
-    temp1 = RelData[variable %in% c("RelLarvaPop", "RelDiap")]
-    temp2 = RelData[variable %in% c("RelLarvaPop", "RelNonDiap")]
-    temp1$Group = "Relative Larva Pop Vs Diapaused"
-    temp2$Group = "Relative Larva Pop Vs NonDiapaused"
-    RelData = rbind(temp1, temp2)
-
-    AbsData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
-                                      "dayofyear", "CumulativeDDF", 
-                                      "AbsLarvaPop", "AbsDiap", "AbsNonDiap"))
-    
-    AbsData = melt(AbsData, id = c("ClimateGroup", "CountyGroup", "dayofyear", "CumulativeDDF"))
-    #AbsData[, Group := as.character()]
-    AbsData$Group = "0"
-    temp1 = AbsData[variable %in% c("AbsLarvaPop", "AbsDiap")]
-    temp2 = AbsData[variable %in% c("AbsLarvaPop", "AbsNonDiap")]
-    temp1$Group = "Absolute Larva Pop Vs Diapaused"
-    temp2$Group = "Absolute Larva Pop Vs NonDiapaused"
-    AbsData = rbind(temp1, temp2)
-    
-    return (list(RelData, AbsData))
+    return (list(sub1, sub2, sub3))
 }

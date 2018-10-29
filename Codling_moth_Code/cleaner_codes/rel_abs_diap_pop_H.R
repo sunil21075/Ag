@@ -33,14 +33,14 @@ data$enterDiap = (data$diapause1/100) * data$SumLarva
 data$escapeDiap = data$SumLarva - data$enterDiap
 
 sub = data
-startingpopulationfortheyear<-1000
+startingpopulationfortheyear <- 1000
 #generation1
 sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
      by =list(year,ClimateScenario, 
      latitude,longitude,ClimateGroup, CountyGroup) ]  ## Giridhar check this, anything else to group by?
-sub$AbsPopLarvaGen1<-sub$LarvaGen1RelFraction*startingpopulationfortheyear
-sub$AbsPopLarvaGen1Diap<-sub$AbsPopLarvaGen1*sub$diapause1/100
-sub$AbsPopLarvaGen1NonDiap<-sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
+sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
+sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1*sub$diapause1/100
+sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
 
 #generation2
 sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
@@ -193,5 +193,3 @@ saveRDS(AbsData, paste0(data_dir, "/", "diapause_abs_data_rcp45.rds"))
 #
 #saveRDS(sub2, paste0(data_dir, "/", "diapause_map_data_rcp45.rds"))
 #
-##
-###saveRDS(data, paste0(data_dir, "/", "allData_grouped_counties.rds"))
