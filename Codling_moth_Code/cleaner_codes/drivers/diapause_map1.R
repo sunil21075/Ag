@@ -22,4 +22,4 @@ result = generate_diapause_map1(input_dir, file_name, param_dir,
 	                            CodMothParams_name="CodlingMothparameters.txt", 
 	                            location_group_name="LocationGroups.csv")
 
-saveRDS(result, paste0(write_dir, "diapause_map_", version,".rds"))
+saveRDS(result, paste0(write_dir, "diapause_map1_", version,".rds"))
