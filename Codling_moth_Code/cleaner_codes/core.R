@@ -1778,7 +1778,7 @@ diapause_abs_rel <- function(input_dir, file_name,
 #    Generate Map 1
 ################################################################################
 
-generate_map_1 <- function(input_dir, file_name, 
+generate_diapause_map1 <- function(input_dir, file_name, 
                            param_dir, 
                            CodMothParams_name="CodlingMothparameters.txt", 
                            location_group_name="LocationGroups.csv"){
