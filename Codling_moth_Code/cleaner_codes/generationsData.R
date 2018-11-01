@@ -22,7 +22,9 @@ data$NumAdultGens <- data$PercAdultGen1 + data$PercAdultGen2 + data$PercAdultGen
 data$NumLarvaGens <- data$PercLarvaGen1 + data$PercLarvaGen2 + data$PercLarvaGen3 + data$PercLarvaGen4
 #saveRDS(data, paste0(data_dir, "/", "generations_rcp45.rds"))
 saveRDS(data, paste0(data_dir, "/", "generations1_rcp45.rds"))
-
+########################################################################################################################
+# Things above this line are in core.R and is called generations_func
+########################################################################################################################
 #data = data[, .(PercAdultGen1 = median(PercAdultGen1), 
                                         # PercAdultGen2 = median(PercAdultGen2), 
                                         # PercAdultGen3 = median(PercAdultGen3), 
