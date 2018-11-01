@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/plot_cumdd_driver.R rcp45 3
+/home/hnoorazar/cleaner_codes/drivers/plot_cumdd_eggHatch.R rcp45 3
 
 exit 0
