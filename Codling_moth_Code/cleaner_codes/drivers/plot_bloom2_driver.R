@@ -2,8 +2,10 @@
 #library(chron)
 library(data.table)
 library(ggplot2)
-source_path = "/home/hnoorazar/cleaner_codes/core.R"
-source(source_path)
+source_path1 = "/home/hnoorazar/cleaner_codes/core.R"
+source_path2 = "/home/hnoorazar/cleaner_codes/core_plot.R"
+source(source_path1)
+source(source_path2)
 
 
 args = commandArgs(trailingOnly=TRUE)
