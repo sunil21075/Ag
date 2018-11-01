@@ -1900,6 +1900,8 @@ diapause_map1_prep <- function(input_dir, file_name,
 
 
 compute_cumdd <- function(input_dir, file_name="combined_CMPOP_", version){
+  ## This is fir cumdd of egg hatch
+  ##
   filename <- paste0(input_dir, file_name, version, ".rds")
   data <- data.table(readRDS(filename))
   data <- subset(data, select = c("CountyGroup", "latitude", "longitude", 
@@ -2023,14 +2025,12 @@ plot_bloom2 <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
 #######
 #####################
 
-plot_cumdd <- function(input_dir, file_name ="combined_CMPOP_", version, output_dir, output_type=1){
-
-  data = compute_cumdd(input_dir=data_dir, file_name="combined_CMPOP_", version)
-  data$CountyGroup = as.character(data$CountyGroup)
-  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
-  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-
-  if (output_type == 1){
+plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version, output_dir, output_type="cumdd"){
+  if (output_type == "eggHatch"){
+    data = compute_cumdd(input_dir=data_dir, file_name="combined_CMPOP_", version)
+    data$CountyGroup = as.character(data$CountyGroup)
+    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
     data = melt(data, id = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "ClimateScenario", "year", "dayofyear"))
     plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <300], aes(x=dayofyear, y=value, fill=factor(variable))) +
     #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -2078,13 +2078,19 @@ plot_cumdd <- function(input_dir, file_name ="combined_CMPOP_", version, output_
   #saveRDS(plot, "cumdd_plot.rds")
   }
 
-  if (output_type == 2){
+  if (output_type == "cumdd"){
+    filename = paste0(input_dir, file_name, version, ".rds")
+    data <- data.table(readRDS(filename))
+
+    data$CountyGroup = as.character(data$CountyGroup)
+    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
     data = subset(data, select = c("ClimateGroup", "CountyGroup", "latitude", 
                                    "longitude", "ClimateScenario", "year", "dayofyear", "CumDDinF"))
     data$CumDD = data$CumDDinF
 
     data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
-    data <- data[, .(CumDD = mean(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
+    # data <- data[, .(CumDD =   mean(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
 
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
       #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -2119,6 +2125,16 @@ plot_cumdd <- function(input_dir, file_name ="combined_CMPOP_", version, output_
 
   }
   if (output_type==3){
+    filename = paste0(input_dir, file_name, version, ".rds")
+    data <- data.table(readRDS(filename))
+
+    data$CountyGroup = as.character(data$CountyGroup)
+    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+    data = subset(data, select = c("ClimateGroup", "CountyGroup", "latitude", 
+                                   "longitude", "ClimateScenario", "year", "dayofyear", "CumDDinF"))
+    data$CumDD = data$CumDDinF
+
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
     #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
     stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.4) +

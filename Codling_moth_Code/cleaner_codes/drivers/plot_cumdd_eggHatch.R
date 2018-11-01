@@ -14,4 +14,4 @@ output_type = args[2]
 data_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth/local/processed/plots/"
 
-plot_cumdd(input_dir=data_dir, file_name ="combined_CMPOP_", version, output_dir=plot_path, output_type)
+plot_cumdd_eggHatch(input_dir=data_dir, file_name ="combined_CMPOP_", version, output_dir=plot_path, output_type)
