@@ -839,15 +839,6 @@ mothPopulation <- function(input_folder,
   close(list_file)
 }
 
-#args = commandArgs(trailingOnly=TRUE)
-##mothPopulation("/home/kiran/qsubs/R/","/home/kiran/qsubs/R/list.txt", "/home/kiran/qsubs/R/")
-##mothPopulation("/home/kiran/histmetdata/vic_inputdata0625_pnw_combined_05142008/",
-#                           "/home/kiran/qsubs/R/list.txt", "/home/kiran/qsubs/R/output/hist/")
-#if(length(args) == 2){
-#  mothPopulation(args[1],"/home/kiran/qsubs/R/list.txt", args[2])
-#} else {
-#  stop ("Two arguments needs to be specified: input folder and output folder")
-#}
 
 getPercPopulation <- function(filename, input_folder, start_year, end_year)
 {
@@ -1633,7 +1624,7 @@ bloom <- function(data){
   data = data[value >= 1.000000e+00,]
   data = data[, head(.SD, 1), by = c("ClimateGroup","latitude", "longitude","County","ClimateScenario","year", "apple_type")]
   data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup","latitude", "longitude","County", "apple_type")]
-    return (data)
+  return (data)
 }
 
 
@@ -1886,12 +1877,12 @@ diapause_map1_prep <- function(input_dir, file_name,
                                "AbsPopNonDiap","AbsPopDiap"))
 
   sub = sub[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
-                                               RelNonDiap = mean(escapeDiap), 
-                                               AbsLarvaPop = mean(AbsPopTotal), 
-                                               AbsDiap = mean(AbsPopDiap), 
-                                               AbsNonDiap = mean(AbsPopNonDiap), 
-                                               CumulativeDDF = mean(CumDDinF)), 
-                                               by = c("ClimateGroup", "CountyGroup", 
+                                              RelNonDiap = mean(escapeDiap), 
+                                              AbsLarvaPop = mean(AbsPopTotal), 
+                                              AbsDiap = mean(AbsPopDiap), 
+                                              AbsNonDiap = mean(AbsPopNonDiap), 
+                                              CumulativeDDF = mean(CumDDinF)), 
+                                              by = c("ClimateGroup", "CountyGroup", 
                                                       "latitude", "longitude", 
                                                       "dayofyear")]
   return (sub)
