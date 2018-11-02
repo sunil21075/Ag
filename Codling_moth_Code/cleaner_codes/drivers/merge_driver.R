@@ -29,4 +29,4 @@ data <- merge_add_countyGroup(input_dir=read_data_dir,
                               file_prefix=file_pref,
                               version=ver)
 
-saveRDS(data, paste0(write_path, "combined_tests", "_", file_pref, "_", ver, ".rds"))
+saveRDS(data, paste0(write_path, "combined_", file_pref, "_", ver, ".rds"))
