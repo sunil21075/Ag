@@ -10,7 +10,7 @@
 library(shiny)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
    
   output$distPlot <- renderPlot({
     
@@ -33,11 +33,59 @@ shinyServer(function(input, output) {
                                 })
   
   # for the leaflet test
-  points = eventReactive(input$recalc, {cbind(rnorm(40) * 2 + 13, rnorm(40) + 48)}, ignoreNULL = FALSE)
-  output$mymap = renderLeaflet({ leaflet() %>% 
-      # providers$Stamen.TonerLite
-      addProviderTiles(providers$Esri.NatGeoWorldMap, options = providerTileOptions(noWrap = TRUE)) %>%
-      addMarkers(data = points())
-  })
-  
+#  points = eventReactive(input$recalc, {cbind(rnorm(40) * 2 + 13, rnorm(40) + 48)}, ignoreNULL = FALSE)
+#  output$mymap = renderLeaflet({ leaflet() %>% 
+#      # providers$Stamen.TonerLite
+#      addProviderTiles(providers$Esri.NatGeoWorldMap, options = providerTileOptions(noWrap = TRUE)) %>%
+#      addMarkers(data = points())
+#  })
+
+#################################################### location group
+
+  output$location_group <- renderImage({
+    return(list(src = "./plots/location_group.png",
+                contentType = "image/png",
+                width=386.88,
+                height=450,
+                alt = "location_group")
+          )
+      }, deleteFile = FALSE)
+
+#################################################### Bloom Plots
+  output$bloom_45 <- renderImage({
+    return(list(src = "./plots/bloom2_rcp45.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "bloom_45")
+          )
+      }, deleteFile = FALSE)
+
+  output$bloom_85 <- renderImage({
+    return(list(src = "./plots/bloom2_rcp85.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "bloom_85")
+          )
+      }, deleteFile = FALSE)
+#################################################### Degree Day Plots
+output$plot_cumdd_45 <- renderImage({
+    return(list(src = "./plots/plot_cumdd_45.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "plot_cumdd_45")
+          )
+      }, deleteFile = FALSE)
+
+output$plot_cumdd_85 <- renderImage({
+    return(list(src = "./plots/plot_cumdd_85.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "plot_cumdd_85")
+          )
+      }, deleteFile = FALSE)
+
 })
