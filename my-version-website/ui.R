@@ -7,8 +7,8 @@ library(leaflet)
 ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                 
                 # Home Tab starts here
-                tabPanel(title = "Home",
-                         fluidRow(
+                tabPanel(title = "Home", 
+                         fluidRow( theme = "slate.css", 
                            column(6, offset = 0,  
                                  navlistPanel(
                                    
@@ -70,40 +70,85 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                            ),
                 
                 tabPanel(title = "CM Diapause"),
+#                tabPanel(title = "Regional",
+#                  fixedPage(
+#                          fixedRow(
+#                            column(7,
+#                              "sidebar",
+#                              navlistPanel(
+#                                                      tabPanel("Regional Groups"),
+#                                                      "rcp 4.5",
+#                                                      tabPanel("Bloom"),
+#                                                      tabPanel("Degree Days"),
+#                                                      tabPanel("Adult Flight"),
+#                                                      tabPanel("Diapause"),
+#                                                      tabPanel("Egg Hatch into Larva"),
+#                                                      "rcp 8.5",
+#                                                      tabPanel("Bloom"),
+#                                                      tabPanel("Degree Days"),
+#                                                      tabPanel("Adult Flight"),
+#                                                      tabPanel("Diapause"),
+#                                                      tabPanel("Egg Hatch into Larva")
+#                                                    )
+#                            ),column(5,
+#                              "main"
+#                           )
+#                          )
+#                            )),
+                tabPanel(title = "Regional Plots",
+                  fluidPage(theme = "slate.css",
+                    column(6, offset = 0, 
+                            navlistPanel(
+                              tabPanel("Location Groups", imageOutput("location_group")),
+                              "rcp 4.5",
+                              tabPanel("Bloom", imageOutput("bloom_45")),
+                              tabPanel("Degree Days", imageOutput("plot_cumdd_45")),
+                              tabPanel("Adult Flight"),
+                              tabPanel("Diapause"),
+                              tabPanel("Egg Hatch into Larva"),
+                              "rcp 8.5",
+                              tabPanel("Bloom", imageOutput("bloom_85")),
+                              tabPanel("Degree Days", imageOutput("plot_cumdd_85")),
+                              tabPanel("Adult Flight"),
+                              tabPanel("Diapause"),
+                              tabPanel("Egg Hatch into Larva")
+                            ))
+                          )
+                        )
                 
-                tabPanel(title = "Regional Plots"),
-                
-                tabPanel(title = "Test",
-                         # CSS options so far:
-                         # bootstrap.css, paper.css, slate.css, superhero.css
-                         #
-                         fluidPage(theme = "slate.css",
-                           titlePanel("Tabs!"),
-                           sidebarLayout(
-                             sidebarPanel(
-                               textInput(inputId = "box_1", label = "Enter Tab 1 Text:", value="Tab 1!"),
-                               textInput(inputId = "box_2", label = "Enter Tab 2 Text:", value="Tab 2!"),
-                               textInput(inputId = "box_3", label = "Enter Tab 3 Text:", value="Tab 3!")
-                                          ),
-                             
-                             mainPanel(
-                               tabsetPanel(type="tabs",
-                                           tabPanel(title = "Tab 1", br(), textOutput("out_1")),
-                                           tabPanel(title = "Tab 2", br(), textOutput("out_2")),
-                                           tabPanel(title = "Tab 3", br(), textOutput("out_3"))
-                                           )
-                                       )
-                                        )
-                                     ) 
-                         ),
-                
-                ## Leaflet test tab
-                tabPanel(title = "Leaflet",
-                         fluidPage(leafletOutput("mymap"), 
-                                   p(), 
-                                   actionButton("recalc", "New points")
-                                   )
-                         )
+#                tabPanel(title = "Test",
+#                         # CSS options so far:
+#                         # bootstrap.css, paper.css, slate.css, superhero.css
+#                         #
+#                         fluidPage(theme = "slate.css",
+#                           titlePanel("Tabs!"),
+#                           sidebarLayout(
+#                             sidebarPanel(
+#                               textInput(inputId = "box_1", label = "Enter Tab 1 Text:", value="Tab 1!"),
+#                               textInput(inputId = "box_2", label = "Enter Tab 2 Text:", value="Tab 2!"),
+#                               textInput(inputId = "box_3", label = "Enter Tab 3 Text:", value="Tab 3!")
+#                                          ),
+#                             
+#                             mainPanel(
+#                               tabsetPanel(type="tabs",
+#                                           tabPanel(title = "Tab 1", br(), textOutput("out_1")),
+#                                           tabPanel(title = "Tab 2", br(), textOutput("out_2")),
+#                                           tabPanel(title = "Tab 3", br(), textOutput("out_3"))
+#                                           )
+#                                       )
+#                                        )
+#                                     ) 
+#                         ),
+#                
+#                ## Leaflet test tab
+#                tabPanel(title = "Leaflet",
+#                         fluidPage(leafletOutput("mymap"), 
+#                                   p(), 
+#                                   actionButton("recalc", "New points")
+#                                   )
+#                         )
+
+
                 ) # navbarPage Ends here
 
 
