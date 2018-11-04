@@ -14,37 +14,37 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                                    
                                    tabPanel(title = "About", 
                                             br(), 
-                                            bootstrapPage(htmlTemplate("about-template.html", name = "About"))
+                                            bootstrapPage(htmlTemplate("home_page/about-template.html", name = "About"))
                                             ),
                                    
                                    tabPanel(title = "People", 
                                             br(),
-                                            bootstrapPage(htmlTemplate("people-template.html", name = "People"))
+                                            bootstrapPage(htmlTemplate("home_page/people-template.html", name = "People"))
                                             ),
                                    
                                    tabPanel(title = "Codling Moth Life Cycle and Management",
                                             br(),
-                                            bootstrapPage(htmlTemplate("Codling_Moth_Template.html", name = "Moth"))
+                                            bootstrapPage(htmlTemplate("home_page/Codling_Moth_Template.html", name = "Moth"))
                                             ),
                                    
                                    tabPanel(title = "climate Data",
                                             br(),
-                                            bootstrapPage(htmlTemplate("climate-data-template.html", name = "Climate"))
+                                            bootstrapPage(htmlTemplate("home_page/climate-data-template.html", name = "Climate"))
                                             ),
                                    
                                    tabPanel(title = "What's the Story?", 
                                             br(),
-                                            bootstrapPage(htmlTemplate("story-template.html", name = "Story"))
+                                            bootstrapPage(htmlTemplate("home_page/story-template.html", name = "Story"))
                                             ),
                                    
                                    tabPanel(title = "Contact",
                                             br(),
-                                            bootstrapPage(htmlTemplate("contact-template.html", name = "Story"))
+                                            bootstrapPage(htmlTemplate("home_page/contact-template.html", name = "Story"))
                                             ),
                                    
                                    tabPanel(title = "Take a Tour (video)",
                                             br(),
-                                            bootstrapPage(htmlTemplate("video-template.html", name = "Video"))
+                                            bootstrapPage(htmlTemplate("home_page/video-template.html", name = "Video"))
                                             )
                                               ) # navlistPanel ends here
                                  )
@@ -100,18 +100,32 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                     column(6, offset = 0, 
                             navlistPanel(
                               tabPanel("Location Groups", imageOutput("location_group")),
+
                               "rcp 4.5",
                               tabPanel("Bloom", imageOutput("bloom_45")),
                               tabPanel("Degree Days", imageOutput("plot_cumdd_45")),
                               tabPanel("Adult Flight"),
                               tabPanel("Diapause"),
-                              tabPanel("Egg Hatch into Larva"),
+                              tabPanel("Egg Hatch into Larva",
+                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("plot_eggHatch_45")),
+                                            tabPanel("Egg Hatch Day of Year"),
+                                            tabPanel("Number of Generations")
+                                            )
+                                      , style='width: 1000px; height: 1000px' 
+                                      ),
+
                               "rcp 8.5",
                               tabPanel("Bloom", imageOutput("bloom_85")),
                               tabPanel("Degree Days", imageOutput("plot_cumdd_85")),
                               tabPanel("Adult Flight"),
                               tabPanel("Diapause"),
-                              tabPanel("Egg Hatch into Larva")
+                              tabPanel("Egg Hatch into Larva",
+                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("plot_eggHatch_85")),
+                                            tabPanel("Egg Hatch Day of Year"),
+                                            tabPanel("Number of Generations")
+                                           )
+                                      , style='width: 1000px; height: 1000px' 
+                                      )
                             ))
                           )
                         )
