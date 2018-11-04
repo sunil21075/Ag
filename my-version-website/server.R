@@ -87,5 +87,24 @@ output$plot_cumdd_85 <- renderImage({
                 alt = "plot_cumdd_85")
           )
       }, deleteFile = FALSE)
+#################################################### Egg Hatch
+output$plot_eggHatch_45 <- renderImage({
+    return(list(src = "./plots/plot_eggHatch_45.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "plot_eggHatch_45")
+          )
+      }, deleteFile = FALSE)
+
+output$plot_eggHatch_85 <- renderImage({
+    return(list(src = "./plots/plot_eggHatch_85.png",
+                contentType = "image/png",
+                width=638,
+                height=435,
+                alt = "plot_eggHatch_85")
+          )
+      }, deleteFile = FALSE)
+
 
 })
