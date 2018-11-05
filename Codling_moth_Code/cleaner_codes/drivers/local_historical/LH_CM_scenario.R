@@ -56,7 +56,7 @@ for(location in locations) {
   temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
   temp_data$ClimateScenario <- category
   if(category != "historical") {
-    write_dir = paste0(write_path, "data_processed/", category, "/", version)
+    # write_dir = paste0(write_path, "data_processed/", category, "/", version)
     dir.create(file.path(write_dir), recursive = TRUE)
     write.table(temp_data, file = paste0(write_dir, "CM_", location), sep = ",", row.names = FALSE, col.names = TRUE)
   }

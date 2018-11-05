@@ -21,11 +21,12 @@ file_list = "local_list"
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
 cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
+version = "rcp45"
 conn = file(paste0(param_dir, file_list), open = "r")
 locations = readLines(conn)
 for( category in categories) {
   for( location in locations) {
-    filename = paste0(category, "/rcp45/", file_prefix, location)
+    filename = paste0(category, "/", version, "/", file_prefix, location)
     if(category == "historical") {
       start_year = 1979
       end_year = 2015
@@ -54,7 +55,7 @@ for( category in categories) {
     temp_data$longitude <- as.numeric(unlist(loc[2]))
     temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
     temp_data$ClimateScenario <- category
-    write_dir = paste0(write_path, category, "/rcp45")
+    write_dir = paste0(write_path, category, "/", version)
     dir.create(file.path(write_dir), recursive = TRUE)
     write.table(temp_data, file = paste0(write_dir, "/CMPOP_", location), 
     	                     sep = ",", 
