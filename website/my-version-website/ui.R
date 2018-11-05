@@ -103,11 +103,11 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
 
                               "rcp 4.5",
                               tabPanel("Bloom", imageOutput("bloom_45")),
-                              tabPanel("Degree Days", imageOutput("plot_cumdd_45")),
+                              tabPanel("Degree Days", imageOutput("cumdd_45")),
                               tabPanel("Adult Flight"),
                               tabPanel("Diapause"),
                               tabPanel("Egg Hatch into Larva",
-                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("plot_eggHatch_45")),
+                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_45")),
                                             tabPanel("Egg Hatch Day of Year"),
                                             tabPanel("Number of Generations")
                                             )
@@ -116,11 +116,11 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
 
                               "rcp 8.5",
                               tabPanel("Bloom", imageOutput("bloom_85")),
-                              tabPanel("Degree Days", imageOutput("plot_cumdd_85")),
+                              tabPanel("Degree Days", imageOutput("cumdd_85")),
                               tabPanel("Adult Flight"),
                               tabPanel("Diapause"),
                               tabPanel("Egg Hatch into Larva",
-                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("plot_eggHatch_85")),
+                                tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_85")),
                                             tabPanel("Egg Hatch Day of Year"),
                                             tabPanel("Number of Generations")
                                            )

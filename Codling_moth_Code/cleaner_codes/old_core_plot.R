@@ -15,10 +15,10 @@ source(source_path)
 ################################################################################
 
 
-##########################################
+#####################
 ####### Bloom Plots
-##########################################
-plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
+#####################
+plot_bloom1 <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
 
@@ -50,24 +50,24 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", v
     scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
     facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
     #xlim(45, 165) +
-    scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
+    scale_x_continuous(breaks=seq(45, 150, 10), limits = c(45, 150)) +
     theme_bw() +
     labs(x = "Julian Day", y = "Proportion Full Bloom Completed", fill = "Climate Group") +
     theme(
       panel.grid.major = element_line(size = 0.7),
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
       legend.position = "top",
-      strip.text = element_text(size=12, face = "plain"),
-      axis.text = element_text(face="plain", size = 10),
-      axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face="plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
-      )
-  ggsave(output_name, p1, path=plot_path)
+      #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+      strip.text = element_text(size = 18, face = "bold"))
+
+  ggsave(output_name, p1, path=plot_path, width = 45, height = 22, units = "cm")
 }
 
 
-plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
+plot_bloom2 <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
   
@@ -99,34 +99,31 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
     #scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
     facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
     #xlim(45, 165) +
-    scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
+    scale_x_continuous(breaks=seq(45, 150, 10), limits = c(45, 150)) +
     theme_bw() +
     labs(x = "Julian Day", y = "Proportion Completing Full Bloom", color = "Climate Group") +
     theme(
       panel.grid.major = element_line(size = 0.7),
-      # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
       legend.position = "top",
       #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
-      strip.text = element_text(size = 12, face = "plain"),
-      axis.text = element_text(face = "plain", size = 10),
-      axis.title.x = element_text(face = "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face = "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
-      )
+      strip.text = element_text(size = 18, face = "bold"))
 
-  ggsave(output_name, p1, path=plot_path)
+  ggsave(output_name, p1, path=plot_path, width = 45, height = 22, units = "cm")
 }
+
+
 
 #####################
 #######
 #####################
 
 plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version, output_dir, output_type="cumdd"){
-  out_name = paste0("plot_", output_type, "_", version ,".png")
-
   if (output_type == "eggHatch"){
-    data = compute_cumdd_eggHatch(input_dir=data_dir, file_name="combined_CMPOP_", version)
+    data = compute_cumdd(input_dir=data_dir, file_name="combined_CMPOP_", version)
     data$CountyGroup = as.character(data$CountyGroup)
     data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
     data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
@@ -147,36 +144,35 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
                  fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) + 
     
     scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                rgb(92, 160, 201, max=255), 
-                                rgb(211, 91, 76, max=255), 
-                                rgb(125, 7, 37, max=255))) + #c("black", "red","darkgreen","blue")) +
+                       rgb(92, 160, 201, max=255), 
+                       rgb(211, 91, 76, max=255), 
+                       rgb(125, 7, 37, max=255))) + #c("black", "red","darkgreen","blue")) +
     scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
                                rgb(92, 160, 201, max=255), 
                                rgb(211, 91, 76, max=255), 
                                rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
     
     facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
-    scale_x_continuous(breaks=seq(0, 300, 50)) +
+    scale_x_continuous(breaks=seq(0,300,50)) +
     theme_bw() +
-    geom_vline(xintercept=c(100, 150, 200, 250, 300), linetype="solid", color ="grey")+
-    geom_vline(xintercept=c(120, 226), linetype="solid", color ="red")+
-    geom_vline(xintercept=seq(70,   300, 10), linetype="dotdash")+
-    geom_hline(yintercept=c(.25, .5, .75), linetype="dotted", color = "black")+
+    geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
+    geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
+    geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
+    geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
     labs(x = "Julian Day", y = "Cumulative population fraction", fill = "Larva Generation") +
     theme(
       panel.grid.major = element_line(size = 0.7),
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
       legend.position = "top",
-      strip.text = element_text(size=12, face = "plain"),
-      axis.text = element_text(face= "plain", size = 10),
-      axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
-  
-  ggsave(out_name, plot, path=output_dir)
+      #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+      strip.text = element_text(size = 18, face = "bold"))
+  out_name = paste0("plot_", output_type, "_", version ,".png")
+  ggsave(out_name, plot, path=output_dir, width = 45, height = 22, units = "cm")
   #saveRDS(plot, "cumdd_plot.rds")
   }
-
   #############################################
   ### cumdd
   #############################################
@@ -187,17 +183,13 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
     data$CountyGroup = as.character(data$CountyGroup)
     data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
     data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-    data = subset(data, select = c("ClimateGroup", "CountyGroup", 
-                                   "latitude", "longitude", 
-                                   "ClimateScenario", 
-                                   "year", "dayofyear", "CumDDinF"))
+    data = subset(data, select = c("ClimateGroup", "CountyGroup", "latitude", 
+                                   "longitude", "ClimateScenario", "year", "dayofyear", "CumDDinF"))
     data$CumDD = data$CumDDinF
 
     data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
     # data <- data[, .(CumDD =   mean(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
-    ###################
-    ###################   rcp85
-    ###################
+
     if (version == "rcp85"){
       plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
         #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -215,8 +207,8 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
                                    rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
         
         facet_grid(. ~ CountyGroup, scales="free") +
-        scale_x_continuous(breaks=seq(0, 370, 50)) +
-        scale_y_continuous(breaks=seq(0, 5750, 500)) +
+        scale_x_continuous(breaks=seq(0, 370, 25)) +
+        scale_y_continuous(breaks=seq(0, 5750, 250)) +
         #scale_y_continuous(breaks=seq(0,4500,250)) +
         theme_bw() +
         #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
@@ -226,16 +218,13 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
         labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
         theme(
           panel.grid.major = element_line(size = 0.7),
-          legend.title = element_text(face = "plain", size = 16),
-          legend.text = element_text(size = 12),
+          axis.text = element_text(face = "bold", size = 18),
+          axis.title = element_text(face = "bold", size = 20),
+          legend.title = element_text(face = "bold", size = 20),
+          legend.text = element_text(size = 20),
           legend.position = "top",
-          strip.text = element_text(size = 12, face = "plain"),
-          axis.text = element_text(face = "plain", size = 10),
-          axis.title.x = element_text(face = "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-          axis.title.y = element_text(face = "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
-        ###################
-        ###################   rcp45
-        ###################
+          #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+          strip.text = element_text(size = 18, face = "bold"))
         } else if (version == "rcp45"){
           plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
           #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -247,8 +236,9 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
           
           facet_grid(. ~ CountyGroup, scales="free") +
-          scale_x_continuous(breaks=seq(0, 370, 50)) +
-          scale_y_continuous(breaks=seq(0, 4500, 500)) +
+          scale_x_continuous(breaks=seq(0,370,25)) +
+          #scale_y_continuous(breaks=seq(0,5750,250)) +
+          scale_y_continuous(breaks=seq(0,4500,250)) +
           theme_bw() +
           #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
           #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
@@ -257,16 +247,16 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
           labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
           theme(
             panel.grid.major = element_line(size = 0.7),
-            legend.title = element_text(face = "plain", size = 16),
-            legend.text = element_text(size = 12),
+            axis.text = element_text(face = "bold", size = 18),
+            axis.title = element_text(face = "bold", size = 20),
+            legend.title = element_text(face = "bold", size = 20),
+            legend.text = element_text(size = 20),
             legend.position = "top",
-            strip.text = element_text(size=12, face = "plain"),
-            axis.text = element_text(face= "plain", size = 10),
-            axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-            axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
+            #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+            strip.text = element_text(size = 18, face = "bold"))
         }
     out_name = paste0("plot_", output_type, "_", version, ".png")
-    ggsave(out_name, plot, path=output_dir)
+    ggsave(out_name, plot, path=output_dir, width = 45, height = 22, units = "cm")
 
   }
 
@@ -307,16 +297,14 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
     labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
     theme(
       panel.grid.major = element_line(size = 0.7),
-      
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
       legend.position = "top",
-      
-      strip.text = element_text(size= 12, face = "plain"),
-      axis.text = element_text(face="plain", size = 10),
-      axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
+      #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+      strip.text = element_text(size = 18, face = "bold"))
   out_name = paste0("plot_cumdd_" , version, "_type", output_type ,".png")
-  ggsave(out_name, plot, path=output_dir)
+  ggsave(out_name, plot, path=output_dir, width = 45, height = 22, units = "cm")
   }
 }

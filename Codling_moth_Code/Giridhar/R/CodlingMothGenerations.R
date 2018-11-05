@@ -11,7 +11,7 @@ library(iterators)
 # FUNCTIONS
 ###############################
 
-CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
+CodlingMothPercentPopulation<-function(CodMothParams, metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
   # store relative numbers
   masterdata<-data.frame(metdata_data.table$dayofyear,metdata_data.table$year, metdata_data.table$month, metdata_data.table$Cum_dd_F)
@@ -72,7 +72,7 @@ CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   return(allrelnum)
 }
 
-CodlingMothRelPopulation<-function(CodMothParams,metdata_data.table) {
+CodlingMothRelPopulation<-function(CodMothParams, metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
   masterdata<-data.frame(metdata_data.table$dayofyear,metdata_data.table$year, metdata_data.table$month, metdata_data.table$Cum_dd_F)
   colnames(masterdata)<-c("dayofyear","year","month","CumddF")

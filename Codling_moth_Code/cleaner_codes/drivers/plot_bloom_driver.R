@@ -15,5 +15,8 @@ version = args[1]
 data_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth/local/processed/plots/"
 
+if (version == "rcp45"){
+	x_limits = c(70, 135)
+} else {x_limits = c(60, 135)}
 
-plot_bloom1(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name="bloom1")
+plot_bloom(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name="bloom", x_limits)

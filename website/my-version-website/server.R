@@ -53,56 +53,56 @@ shinyServer(function(input, output, session) {
 
 #################################################### Bloom Plots
   output$bloom_45 <- renderImage({
-    return(list(src = "./plots/bloom2_rcp45.png",
+    return(list(src = "./plots/bloom_rcp45_main.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
+                width=525,
+                height=525,
                 alt = "bloom_45")
           )
       }, deleteFile = FALSE)
 
   output$bloom_85 <- renderImage({
-    return(list(src = "./plots/bloom2_rcp85.png",
+    return(list(src = "./plots/bloom_rcp85_main.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
+                width=525,
+                height=525,
                 alt = "bloom_85")
           )
       }, deleteFile = FALSE)
 #################################################### Degree Day Plots
-output$plot_cumdd_45 <- renderImage({
-    return(list(src = "./plots/plot_cumdd_45.png",
+output$cumdd_45 <- renderImage({
+    return(list(src = "./plots/cumdd_45.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
-                alt = "plot_cumdd_45")
+                width=525,
+                height=525,
+                alt = "cumdd_45")
           )
       }, deleteFile = FALSE)
 
-output$plot_cumdd_85 <- renderImage({
-    return(list(src = "./plots/plot_cumdd_85.png",
+output$cumdd_85 <- renderImage({
+    return(list(src = "./plots/cumdd_85.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
-                alt = "plot_cumdd_85")
+                width=525,
+                height=525,
+                alt = "cumdd_85")
           )
       }, deleteFile = FALSE)
 #################################################### Egg Hatch
-output$plot_eggHatch_45 <- renderImage({
-    return(list(src = "./plots/plot_eggHatch_45.png",
+output$eggHatch_45 <- renderImage({
+    return(list(src = "./plots/eggHatch_45.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
-                alt = "plot_eggHatch_45")
+                width=525,
+                height=525,
+                alt = "eggHatch_45")
           )
       }, deleteFile = FALSE)
 
-output$plot_eggHatch_85 <- renderImage({
-    return(list(src = "./plots/plot_eggHatch_85.png",
+output$eggHatch_85 <- renderImage({
+    return(list(src = "./plots/eggHatch_85.png",
                 contentType = "image/png",
-                width=638,
-                height=435,
-                alt = "plot_eggHatch_85")
+                width=525,
+                height=525,
+                alt = "eggHatch_85")
           )
       }, deleteFile = FALSE)
 
