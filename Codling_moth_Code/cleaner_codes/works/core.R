@@ -399,25 +399,30 @@ calcPopulation <- function(filename, input_folder, output_folder)
   #toprint_reorder<-toprint[,c(15:17,14,5:9,10:13,1:4)]
   toprint_reorder<-toprint[,c(31:33,30,13:17,18:29,1:12)]
   head(toprint_reorder)
-  setofrownumbersLarva25<-1
-  setofrownumbersLarva50<-1
-  setofrownumbersLarva75<-1
-  setofrownumbersAdult25<-1
-  setofrownumbersAdult50<-1
-  setofrownumbersAdult75<-1
-  numberofrecords=length(toprint[,1])
-  for ( i in 2:numberofrecords ) {
+  
+  ####### THE Following is not used anywhere. Moreover, it seems the second and third line 
+  ####### is a bug! should not they use setofrownumbersAdult50 and setofrownumbersAdult75?
+  # setofrownumbersLarva25<-1
+  # setofrownumbersLarva50<-1
+  # setofrownumbersLarva75<-1
+  # setofrownumbersAdult25<-1
+  # setofrownumbersAdult50<-1
+  # setofrownumbersAdult75<-1
+
+  # numberofrecords=length(data[,1])
+  # for ( i in 2:numberofrecords ) {
     
-    if (toprint[i, "PercAdult"] >= .25 & toprint[i-1, "PercAdult"] < .25 ) {
-      setofrownumbersAdult25<-c(setofrownumbersAdult25, i)
-    }
-    if (toprint[i, "PercAdult"] >= .5 & toprint[i-1, "PercAdult"] < .50 ) {
-      setofrownumbersAdult50<-c(setofrownumbersAdult25, i)
-    }
-    if (toprint[i, "PercAdult"] >= .75 & toprint[i-1, "PercAdult"] < .75 ) {
-      setofrownumbersAdult75<-c(setofrownumbersAdult25, i)
-    }
-  }
+  #  if (data[i, "PercAdult"] >= .25 & data[i-1, "PercAdult"] < .25 ) {
+  #    setofrownumbersAdult25<-c(setofrownumbersAdult25, i)
+  #  }
+  #  if (data[i, "PercAdult"] >= .5 & data[i-1, "PercAdult"] < .50 ) {
+  #    setofrownumbersAdult50<-c(setofrownumbersAdult25, i)
+  #  }
+  #  if (data[i, "PercAdult"] >= .75 & data[i-1, "PercAdult"] < .75 ) {
+  #    setofrownumbersAdult75<-c(setofrownumbersAdult25, i)
+  #  }
+  #}
+
   #setofrownumbersAdult25
   #toprint[setofrownumbersAdult25, c(1:12,30:33)]
   #toprint[33453:33457, c(1:12,30:33)]
