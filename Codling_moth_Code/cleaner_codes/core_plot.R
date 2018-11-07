@@ -323,8 +323,17 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
 ##################                                                                ##################
 ####################################################################################################
 
-plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path, output_name){
-	output_name = paste0(output_name, "_", version, ".png")
+plot_generations_Aug23 <- function(input_dir, 
+	                               file_name, 
+	                               box_width=.25, 
+	                               plot_path, 
+	                               plot_output_name, 
+	                               color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
+	                               ){
+	#
+	# This function does not run on Aeolus with R.3.2.2. 
+	# I will produce it on my computer.
+	#
 	file_name <- paste0(input_dir, file_name)
 	data <- data.table(readRDS(file_name))
 	data$CountyGroup = as.character(data$CountyGroup)
@@ -342,10 +351,11 @@ plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path
 	df <- data.frame(data)
     df <- (df %>% group_by(CountyGroup, ClimateGroup))
     medians <- (df %>% summarise(med = median(NumAdultGens)))
-    medians_vec <- medians$med
-
+    # medians_vec <- medians$med
 	p = ggplot(data = data, aes(x = ClimateGroup, y = NumAdultGens, fill = ClimateGroup)) + 
-	    geom_boxplot(outlier.shape = NA, notch=TRUE, width=.2) +
+	    geom_boxplot(#outlier.shape = NA, 
+	    	         outlier.size=0,
+	    	         notch=TRUE, width=.2) +
 	    theme_bw() +
 	    scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
 	    # scale_y_discrete(limits=c(1, 2, 3, 4),labels=levels(data_melted$ClimateGroup)) +
@@ -361,7 +371,7 @@ plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path
 	          # panel.grid.minor = element_blank(),
 	          axis.text = element_text(face = "plain", size = 10),
 	          axis.title.x = element_text(face = "plain", size = 12, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-	          axis.title.y = element_text(face = "plain", size = 12, margin = margin(t = 0, r = 10, b = 0, l = 0)),
+	          axis.title.y = element_text(face = "plain", size = 12, margin = margin(t = 0, r = 1, b = 0, l = 0)),
 	          # axis.title.y = element_blank(),
 	          # axis.text.y  = element_blank(),
 	          # axis.ticks.y = element_blank()
@@ -379,5 +389,6 @@ plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path
 	    	      position =  position_dodge(.09),
 	    	      vjust = -1.5) +
 	    coord_flip()
-    ggsave(output_name, p, path=plot_path)
+    ggsave(plot_output_name, p, path=plot_path)
 }
+
