@@ -43,29 +43,27 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", v
   d1[variable == "cripps_pink"]$variable = "Cripps Pink"
 
   p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
-    stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
-    stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
-    stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) }, size = 1)+ #, aes(color=factor(Timeframe))) + , # aes(color=factor(ClimateGroup))
-    scale_color_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-    scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-    facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
-    #xlim(45, 165) +
-    scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
-    theme_bw() +
-    labs(x = "Julian Day", y = "Proportion Full Bloom Completed", fill = "Climate Group") +
-    theme(
-      panel.grid.major = element_line(size = 0.7),
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
-      legend.position = "top",
-      strip.text = element_text(size=12, face = "plain"),
-      axis.text = element_text(face="plain", size = 10),
-      axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face="plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
-      )
+                  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
+                  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
+                  stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) }, size = 1)+ #, aes(color=factor(Timeframe))) + , # aes(color=factor(ClimateGroup))
+                  scale_color_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+                  scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+                  facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
+                  #xlim(45, 165) +
+                  scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
+                  theme_bw() +
+                  labs(x = "Julian Day", y = "Proportion Full Bloom Completed", fill = "Climate Group") +
+                  theme(panel.grid.major = element_line(size = 0.7),
+                        legend.title = element_text(face = "plain", size = 16),
+                        legend.text = element_text(size = 12),
+                        legend.position = "top",
+                        strip.text = element_text(size=12, face = "plain"),
+                        axis.text = element_text(face="plain", size = 10),
+                        axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                        axis.title.y = element_text(face="plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
+                    )
   ggsave(output_name, p1, path=plot_path)
 }
-
 
 plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
@@ -102,18 +100,17 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
     scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
     theme_bw() +
     labs(x = "Julian Day", y = "Proportion Completing Full Bloom", color = "Climate Group") +
-    theme(
-      panel.grid.major = element_line(size = 0.7),
-      # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
-      legend.title = element_text(face = "plain", size = 16),
-      legend.text = element_text(size = 12),
-      legend.position = "top",
-      #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
-      strip.text = element_text(size = 12, face = "plain"),
-      axis.text = element_text(face = "plain", size = 10),
-      axis.title.x = element_text(face = "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face = "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
-      )
+    theme(panel.grid.major = element_line(size = 0.7),
+          # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
+          legend.title = element_text(face = "plain", size = 16),
+          legend.text = element_text(size = 12),
+          legend.position = "top",
+          #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+          strip.text = element_text(size = 12, face = "plain"),
+          axis.text = element_text(face = "plain", size = 10),
+          axis.title.x = element_text(face = "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
+          axis.title.y = element_text(face = "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
+    )
 
   ggsave(output_name, p1, path=plot_path)
 }
