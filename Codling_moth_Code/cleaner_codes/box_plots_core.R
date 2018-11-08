@@ -1,4 +1,3 @@
-#!/share/apps/R-3.2.2_gcc/bin/Rscript
 library(chron)
 library(data.table)
 library(ggplot2)
@@ -133,3 +132,10 @@ plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path
 	    coord_flip()
     ggsave(output_name, p, path=plot_path)
 }
+
+
+
+
+
+
+
