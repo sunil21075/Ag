@@ -106,5 +106,23 @@ output$eggHatch_85 <- renderImage({
           )
       }, deleteFile = FALSE)
 
+output$Adult_Gen_Aug23_rcp45 <- renderImage({
+    return(list(src = "./plots/Adult_Gen_Aug23_rcp45.png",
+                contentType = "image/png",
+                width=525,
+                height=525,
+                alt = "Adult_Gen_Aug23_rcp45")
+          )
+      }, deleteFile = FALSE)
+
+
+output$Adult_Gen_Aug23_rcp85 <- renderImage({
+    return(list(src = "./plots/Adult_Gen_Aug23_rcp85.png",
+                contentType = "image/png",
+                width=525,
+                height=525,
+                alt = "Adult_Gen_Aug23_rcp85")
+          )
+      }, deleteFile = FALSE)
 
 })
