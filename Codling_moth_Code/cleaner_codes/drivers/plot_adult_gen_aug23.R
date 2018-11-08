@@ -24,9 +24,9 @@ plot_generations_Aug23(input_dir=data_dir,
 file_name = "generations_combined_CMPOP_rcp85.rds"
 output_name = "Adult_Gen_Aug23_rcp85.png"
 
-plot_generations_Aug23(input_dir=data_dir, 
-	                   file_name, 
-	                   box_width=.25, 
-	                   plot_path, 
-	                   plot_output_name, 
-	                   color_ord )
+plot_adult_generations_Aug23(input_dir=data_dir, 
+	                         file_name, 
+	                         box_width=.25, 
+	                         plot_path, 
+	                         plot_output_name, 
+	                         color_ord)

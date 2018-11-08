@@ -74,7 +74,7 @@ plot_some_plot <- function(input_dir, file_name, version="rcp45", plot_path, out
 #saveRDS(p, paste0(data_dir, "/", "popplot.rds"))
 # saveRDS(data, paste0(data_dir, "/", "subData.rds"))
 
-plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25,plot_path, output_name){
+plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25, plot_path, output_name){
 	output_name = paste0(output_name, "_", version, ".png")
 	file_name <- paste0(input_dir, file_name)
 	data <- data.table(readRDS(file_name))
