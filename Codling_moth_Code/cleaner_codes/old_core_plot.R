@@ -308,3 +308,73 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
   ggsave(out_name, plot, path=output_dir, width = 45, height = 22, units = "cm")
   }
 }
+
+
+
+
+
+
+
+plot_adult_generations_Aug23 <- function(input_dir, 
+                                 file_name, 
+                                 box_width=.25, 
+                                 plot_path, 
+                                 plot_name, 
+                                 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
+                          ){
+  #
+  # This function does not run on Aeolus with R.3.2.2. 
+  # I will produce it on my computer.
+  #
+  file_name <- paste0(input_dir, file_name)
+  data <- data.table(readRDS(file_name))
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data <- subset(data, select = c("ClimateGroup", "CountyGroup", "NumAdultGens"))
+    
+  ######
+  ###### Compute medians of each group to annotate in the plot, if possible!!!
+  ######
+  df <- data.frame(data)
+  df <- (df %>% group_by(CountyGroup, ClimateGroup))
+  medians <- (df %>% summarise(med = median(NumAdultGens)))
+  # medians_vec <- medians$med
+  
+  box_plot = ggplot(data = data, aes(x = ClimateGroup, y = NumAdultGens, fill = ClimateGroup)) + 
+             geom_boxplot(#outlier.shape = NA, 
+                          outlier.size=0,
+                          notch=TRUE, width=.2) +
+             theme_bw() +
+             # The bigger the nimber in expand below, the smaller the space between y-ticks
+             scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
+             # scale_y_discrete(limits=c(1, 2, 3, 4),labels=levels(data_melted$ClimateGroup)) +
+             # scale_x_discrete(limits=color_ord,labels=c("hESC1","hESC2","hESC3","hESC4")) +
+             labs(x="Time Period", y="Number of Adult Generations by August 23", color = "Climate Group") +
+             facet_wrap(~CountyGroup) +
+             theme(legend.position="bottom", 
+                   legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
+                   # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+                   legend.title = element_blank(),
+                   panel.grid.major = element_line(size = 0.1),
+                   # panel.grid.major = element_blank(),
+                   # panel.grid.minor = element_blank(),
+                   axis.text = element_text(face = "plain", size = 10),
+                   axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 1, r = 0, b = 0, l = 0)),
+                   axis.text.x = element_text(size = 7),
+                   axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
+                   #axis.title.y = element_blank(),
+                   axis.text.y  = element_blank(),
+                   axis.ticks.y = element_blank()
+                  ) +
+             scale_fill_manual(values=color_ord, name="Time\nPeriod") + 
+             scale_color_manual(values=color_ord, name="Time\nPeriod", limits = color_ord) + 
+             geom_text(data = medians, 
+                       aes(label = sprintf("%1.1f", medians$med), y=medians$med), 
+                       size=1.75, 
+                       position =  position_dodge(.09),
+                       vjust = -1) +
+             coord_flip()
+    ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
+
+}
