@@ -105,7 +105,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                               tabPanel("Bloom", imageOutput("bloom_45")),
                               tabPanel("Degree Days", imageOutput("cumdd_45")),
                               tabPanel("Adult Flight",
-                                tabsetPanel(tabPanel("Emergence"),
+                                tabsetPanel(tabPanel("Emergence", imageOutput("emergence_rcp45")),
                                             tabPanel("Adult Flight Day of Year"),
                                             tabPanel("Number of Generations", imageOutput("Adult_Gen_Aug23_rcp45"))
                                             )
@@ -123,7 +123,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                               tabPanel("Bloom", imageOutput("bloom_85")),
                               tabPanel("Degree Days", imageOutput("cumdd_85")),
                               tabPanel("Adult Flight", 
-                                tabsetPanel(tabPanel("Emergence"),
+                                tabsetPanel(tabPanel("Emergence", imageOutput("emergence_rcp85")),
                                             tabPanel("Adult Flight Day of Year"),
                                             tabPanel("Number of Generations", imageOutput("Adult_Gen_Aug23_rcp85"))
                                             )

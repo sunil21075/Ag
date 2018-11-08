@@ -110,7 +110,7 @@ output$Adult_Gen_Aug23_rcp45 <- renderImage({
     return(list(src = "./plots/Adult_Gen_Aug23_rcp45.png",
                 contentType = "image/png",
                 width=525,
-                height=525,
+                height=425,
                 alt = "Adult_Gen_Aug23_rcp45")
           )
       }, deleteFile = FALSE)
@@ -120,9 +120,30 @@ output$Adult_Gen_Aug23_rcp85 <- renderImage({
     return(list(src = "./plots/Adult_Gen_Aug23_rcp85.png",
                 contentType = "image/png",
                 width=525,
-                height=525,
+                height=425,
                 alt = "Adult_Gen_Aug23_rcp85")
           )
       }, deleteFile = FALSE)
 
+output$emergence_rcp45 <- renderImage({
+    return(list(src = "./plots/emergence_rcp45.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "emergence_rcp45")
+          )
+      }, deleteFile = FALSE)
+
+output$emergence_rcp85 <- renderImage({
+    return(list(src = "./plots/emergence_rcp85.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "emergence_rcp85")
+          )
+      }, deleteFile = FALSE)
+
 })
+
+
+

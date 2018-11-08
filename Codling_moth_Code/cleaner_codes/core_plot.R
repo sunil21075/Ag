@@ -322,11 +322,11 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
 ##################                                                                ##################
 ####################################################################################################
 
-plot_generations_Aug23 <- function(input_dir, 
+plot_adult_generations_Aug23 <- function(input_dir, 
 	                               file_name, 
 	                               box_width=.25, 
 	                               plot_path, 
-	                               plot_output_name, 
+	                               plot_name, 
 	                               color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 	                        ){
 	#
@@ -338,10 +338,6 @@ plot_generations_Aug23 <- function(input_dir,
 	data$CountyGroup = as.character(data$CountyGroup)
 	data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
 	data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-	  
-	data = data[, .(NumAdultGens = NumAdultGens),
-	                    by = c("ClimateGroup", "CountyGroup", "year", "month", "day", "dayofyear")]
-
 	data <- subset(data, select = c("ClimateGroup", "CountyGroup", "NumAdultGens"))
     
   ######
@@ -364,14 +360,15 @@ plot_generations_Aug23 <- function(input_dir,
              labs(x="Time Period", y="Number of Adult Generations by August 23", color = "Climate Group") +
              facet_wrap(~CountyGroup) +
              theme(legend.position="bottom", 
-                   legend.margin=margin(t=-.2, r=0, b=0, l=0, unit='cm'),
+                   legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
                    # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
                    legend.title = element_blank(),
                    panel.grid.major = element_line(size = 0.1),
                    # panel.grid.major = element_blank(),
                    # panel.grid.minor = element_blank(),
                    axis.text = element_text(face = "plain", size = 10),
-                   axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                   axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 1, r = 0, b = 0, l = 0)),
+                   axis.text.x = element_text(size = 7),
                    axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
                    #axis.title.y = element_blank(),
                    axis.text.y  = element_blank(),
@@ -385,13 +382,13 @@ plot_generations_Aug23 <- function(input_dir,
                        position =  position_dodge(.09),
                        vjust = -1) +
              coord_flip()
-    ggsave(paste0(plot_output_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
+    ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
 
 }
 
 
 
-plot_emergence <- function(input_dir, file_name, 
+plot_adult_emergence <- function(input_dir, file_name, 
                            box_width=.25, plot_path, output_name, 
                            color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
                           ){
@@ -428,7 +425,7 @@ plot_emergence <- function(input_dir, file_name,
     scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
     #scale_x_discrete(limits=color_ord,limits=c(10, 20, 30)) +
     # scale_y_discrete(limits=c(1, 2, 3, 4),labels=levels(data$ClimateGroup)) +
-    scale_y_continuous(breaks = round(seq(60, 170, by = 10),1)) +
+    scale_y_continuous(breaks = round(seq(40, 170, by = 10),1)) +
     labs(x="Time Period", y="Day of Year", color = "Climate Group") +
     facet_wrap(~CountyGroup) +
     theme(legend.position="bottom", 
@@ -438,7 +435,7 @@ plot_emergence <- function(input_dir, file_name,
           panel.grid.major = element_line(size = 0.1),
           axis.text = element_text(face = "plain", size = 10),
           axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 5, r = 0, b = 0, l = 0)),
-          axis.text.x = element_text(size = 5),
+          axis.text.x = element_text(size = 7),
           axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
           axis.text.y  = element_blank(),
           axis.ticks.y = element_blank()
