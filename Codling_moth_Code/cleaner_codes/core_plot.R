@@ -517,8 +517,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
 }
 
 
-
-plot_rel_diap <- function(input_dir, file_name_extension, version, plot_path){
+plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
   file_name = paste0(input_dir, file_name_extension)
   data <- readRDS(file_name)
 
