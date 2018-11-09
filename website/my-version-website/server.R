@@ -164,10 +164,9 @@ output$emergence_rcp85 <- renderImage({
           )
       }, deleteFile = FALSE)
 
-})
+
 
 #################################################### Diapause Populations
-
 output$diapause_rel_rcp45 <- renderImage({
     return(list(src = "./plots/diapause_rel_rcp45.png",
                 contentType = "image/png",
@@ -209,4 +208,12 @@ output$diapause_abs_rcp85 <- renderImage({
       }, deleteFile = FALSE)
 
 
+
+
+
+
+
+
+
+})
 
