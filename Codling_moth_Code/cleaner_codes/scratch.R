@@ -225,30 +225,36 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
 
 
 
-
-
-data = readRDS("/Users/hn/Desktop/Kirti/check_point/my_aeolus_rds/diapause_abs_data_rcp45.rds")
+rm(list=ls())
+library(chron)
+library(data.table)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(foreach)
+library(iterators)
+data = readRDS("/Users/hn/Desktop/Kirti/check_point/my_aeolus_rds/diapause_rel_data_rcp45.rds")
 
 data$CountyGroup = as.character(data$CountyGroup)
 data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
 data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-data <- data[variable =="AbsLarvaPop" | variable =="AbsNonDiap"]
+data <- data[variable =="RelLarvaPop" | variable =="RelNonDiap"]
 data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
 data$variable <- factor(data$variable)
 
 
-ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-theme_bw() +
-facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-labs(x = "Cumulative Degree (in F)", y = "Absolute Population", color = "Absolute Population") +
-theme(axis.text = element_text(face= "plain", size = 8),
-      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
-      legend.position="bottom"
-      ) + 
-scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
-scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
-stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
-                            fun.ymin=function(z) { 0 }, 
-                            fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
-scale_x_continuous(limits = c(0, 4000)) 
+pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+      theme_bw() +
+      facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+      labs(x = "Cumulative Degree (in F)", y = "Relative Population", color = "Relative Population") +
+      theme(axis.text = element_text(face= "plain", size = 8),
+            axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+            axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+            legend.position="bottom"
+            ) + 
+      scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Relative Population") +
+      scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+      stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                                  fun.ymin=function(z) { 0 }, 
+                                  fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+      scale_x_continuous(limits = c(0, max(data$CumulativeDDF)+10)) 

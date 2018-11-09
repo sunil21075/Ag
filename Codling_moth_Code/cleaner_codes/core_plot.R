@@ -405,7 +405,9 @@ plot_generations_Aug23 <- function(input_dir,
                                    version = "rcp45",
                                    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 ){
-  #
+  # stage: either larva or adult
+  # version either rcp45 or rcp85
+  # 
   # This function does not run on Aeolus with R.3.2.2. 
   # I will produce it on my computer.
   #
@@ -463,4 +465,89 @@ plot_generations_Aug23 <- function(input_dir,
   plot_name = paste0(stage, "_Gen_Aug23_", version)
   ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
 }
+#####################################################################################
+#######################                                   ###########################
+#######################          Diapause Plots           ###########################
+#######################                                   ###########################
+#####################################################################################
+plot_diapause <- function(input_dir, file_name_extension, version, , pop_type, plot_path){
+  # input_dir
+  # file_name_extension: file name including extention .rds
+  # version
+  # pop_type either abs or rel
+  # plot_path
+  if (pop_type == "abs"){plot_abs_diapause(input_dir, file_name_extension, version, plot_path)}
+  else {plot_rel_diapause(input_dir, file_name_extension, version, plot_path)}
+}
+
+plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path){
+  ##
+  ## input_dir 
+  ## file_name_extension, 
+  ## version either rcp45 or rcp85
+  ## plot_path 
+  ## 
+  file_name = paste0(input_dir, file_name_extension)
+  data <- readRDS(file_name)
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data <- data[variable =="AbsLarvaPop" | variable =="AbsNonDiap"]
+  data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+  data$variable <- factor(data$variable)
+  
+  diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+    theme_bw() +
+    facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+    labs(x = "Cumulative Degree (in F)", y = "Absolute Population", color = "Absolute Population") +
+    theme(axis.text = element_text(face= "plain", size = 8),
+          axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+          axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+          legend.position="bottom"
+    ) + 
+    scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
+    scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+    stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                 fun.ymin=function(z) { 0 }, 
+                 fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+    scale_x_continuous(limits = c(0, max(data$CumulativeDDF)+10))
+  
+  plot_name = paste0("diapause_abs_", version, ".png")
+  ggsave(plot_name, diap_plot, device="png", path=plot_path, width=7, height=7, unit="in")
+}
+
+
+
+plot_rel_diap <- function(input_dir, file_name_extension, version, plot_path){
+  file_name = paste0(input_dir, file_name_extension)
+  data <- readRDS(file_name)
+
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data <- data[variable =="RelLarvaPop" | variable =="RelNonDiap"]
+  data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+  data$variable <- factor(data$variable)
+
+
+  pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+        theme_bw() +
+        facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+        labs(x = "Cumulative Degree (in F)", y = "Relative Population", color = "Relative Population") +
+        theme(axis.text = element_text(face= "plain", size = 8),
+              axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+              axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+              legend.position="bottom"
+              ) + 
+        scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Relative Population") +
+        scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                                    fun.ymin=function(z) { 0 }, 
+                                    fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+        scale_x_continuous(limits = c(0, max(data$CumulativeDDF)+10)) 
+  
+  plot_name = paste0("diapause_rel_", version,".png")
+  ggsave(plot_name, pp, device="png", path=plot_path, width=7, height=7, unit="in")
+}
+
 
