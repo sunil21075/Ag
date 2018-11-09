@@ -110,13 +110,18 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                                             tabPanel("Number of Generations", imageOutput("Adult_Gen_Aug23_rcp45"))
                                             )
                                       , style='width: 1350px; height: 930px'),
-                              tabPanel("Diapause"),
+                              tabPanel("Diapause",
+                                tabsetPanel(tabPanel("Relative Population", imageOutput("diapause_abs_rcp45")),
+                                            tabPanel("Absolute Population", imageOutput("diapause_rel_rcp45")),
+                                            )
+                                      , style='width: 1000px; height: 1000px' 
+                                      ),
                               tabPanel("Egg Hatch into Larva",
                                 tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_45")),
                                             tabPanel("Egg Hatch Day of Year"),
                                             tabPanel("Number of Generations", imageOutput("Larva_Gen_Aug23_rcp45"))
                                             )
-                                      , style='width: 1000px; height: 1000px' 
+                                      , style='width: 1000px; height: 1000px'
                                       ),
 
                               "rcp 8.5",
@@ -128,7 +133,12 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                                             tabPanel("Number of Generations", imageOutput("Adult_Gen_Aug23_rcp85"))
                                             )
                                       , style='width: 1350px; height: 930px'),
-                              tabPanel("Diapause"),
+                              tabPanel("Diapause"
+                                tabsetPanel(tabPanel("Relative Population", imageOutput("diapause_abs_rcp85")),
+                                            tabPanel("Absolute Population", imageOutput("diapause_rel_rcp85")),
+                                            )
+                                      , style='width: 1000px; height: 1000px'
+                                ),
                               tabPanel("Egg Hatch into Larva",
                                 tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_85")),
                                             tabPanel("Egg Hatch Day of Year"),
