@@ -166,5 +166,47 @@ output$emergence_rcp85 <- renderImage({
 
 })
 
+#################################################### Diapause Populations
+
+output$diapause_rel_rcp45 <- renderImage({
+    return(list(src = "./plots/diapause_rel_rcp45.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "diapause_rel_rcp45")
+          )
+      }, deleteFile = FALSE)
+
+
+output$diapause_rel_rcp85 <- renderImage({
+    return(list(src = "./plots/diapause_rel_rcp85.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "diapause_rel_rcp85")
+          )
+      }, deleteFile = FALSE)
+
+
+
+output$diapause_abs_rcp45 <- renderImage({
+    return(list(src = "./plots/diapause_abs_rcp45.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "diapause_abs_rcp45")
+          )
+      }, deleteFile = FALSE)
+
+
+output$diapause_abs_rcp85 <- renderImage({
+    return(list(src = "./plots/diapause_abs_rcp85.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "diapause_abs_rcp85")
+          )
+      }, deleteFile = FALSE)
+
 
 
