@@ -983,9 +983,8 @@ diapause_abs_rel <- function(input_dir, file_name,
                            "escapeDiap", "AbsPopTotal",
                            "AbsPopNonDiap","AbsPopDiap"))
 
-    sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
-                    RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), 
-                    AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
+    sub1 = sub1[, .(RelLarvaPop = mean(SumLarva),    RelDiap = mean(enterDiap),  RelNonDiap = mean(escapeDiap), 
+                    AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
                     CumulativeDDF = mean(CumDDinF)), 
                     by = c("ClimateGroup", "CountyGroup", "dayofyear")]
     

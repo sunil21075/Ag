@@ -105,7 +105,7 @@ output$eggHatch_85 <- renderImage({
                 alt = "eggHatch_85")
           )
       }, deleteFile = FALSE)
-
+#################################################### Generations by Aug 23
 output$Adult_Gen_Aug23_rcp45 <- renderImage({
     return(list(src = "./plots/Adult_Gen_Aug23_rcp45.png",
                 contentType = "image/png",
@@ -125,6 +125,27 @@ output$Adult_Gen_Aug23_rcp85 <- renderImage({
           )
       }, deleteFile = FALSE)
 
+
+
+output$Larva_Gen_Aug23_rcp45 <- renderImage({
+    return(list(src = "./plots/Larva_Gen_Aug23_rcp45.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "Larva_Gen_Aug23_rcp45")
+          )
+      }, deleteFile = FALSE)
+
+
+output$Larva_Gen_Aug23_rcp85 <- renderImage({
+    return(list(src = "./plots/Larva_Gen_Aug23_rcp85.png",
+                contentType = "image/png",
+                width=525,
+                height=425,
+                alt = "Larva_Gen_Aug23_rcp85")
+          )
+      }, deleteFile = FALSE)
+#################################################### Adult Emergence
 output$emergence_rcp45 <- renderImage({
     return(list(src = "./plots/emergence_rcp45.png",
                 contentType = "image/png",

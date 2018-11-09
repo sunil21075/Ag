@@ -158,7 +158,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
     geom_vline(xintercept=c(120, 226), linetype="solid", color ="red")+
     geom_vline(xintercept=seq(70,   300, 10), linetype="dotdash")+
     geom_hline(yintercept=c(.25, .5, .75), linetype="dotted", color = "black")+
-    labs(x = "Julian Day", y = "Cumulative population fraction", fill = "Larva Generation") +
+    labs(x = "Julian Day", y = "Cumulative Population Fraction", fill = "Larva Generation") +
     theme(
       panel.grid.major = element_line(size = 0.7),
       legend.title = element_text(face = "plain", size = 16),
@@ -432,7 +432,7 @@ plot_generations_Aug23 <- function(input_dir,
       outlier.size=0,
       notch=TRUE, width=.2) +
     theme_bw() +
-    # The bigger the nimber in expand below, the smaller the space between y-ticks
+    # The bigger the number in expand below, the smaller the space between y-ticks
     scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
     labs(x="Time Period", y=paste0("Number of ", stage, " Generations by August 23"), color = "Climate Group") +
     facet_wrap(~CountyGroup) +

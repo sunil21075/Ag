@@ -101,6 +101,7 @@ plot_generations_Aug23 <- function(input_dir,
                                    stage,
                                    box_width=.25,
                                    plot_path,
+                                   version = "rcp45",
                                    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 ){
   #
@@ -112,7 +113,7 @@ plot_generations_Aug23 <- function(input_dir,
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-
+  
   if (stage=="Larva"){var = "NumLarvaGens"
   } else {var = "NumAdultGens"}
   
@@ -123,16 +124,16 @@ plot_generations_Aug23 <- function(input_dir,
   ######
   df <- data.frame(data)
   df <- (df %>% group_by(CountyGroup, ClimateGroup))
-  medians <- (df %>% summarise(med = median(var)))
+  medians <- (df %>% summarise(med = median(!!sym(var))))
   rm(df)
-  box_plot = ggplot(data = data, aes(x = ClimateGroup, y = var, fill = ClimateGroup)) + 
+  box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
     geom_boxplot(#outlier.shape = NA, 
       outlier.size=0,
       notch=TRUE, width=.2) +
     theme_bw() +
     # The bigger the nimber in expand below, the smaller the space between y-ticks
     scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
-    labs(x="Time Period", y=paste0("Number of", stage, " Generations by August 23"), color = "Climate Group") +
+    labs(x="Time Period", y=paste0("Number of ", stage, " Generations by August 23"), color = "Climate Group") +
     facet_wrap(~CountyGroup) +
     theme(legend.position="bottom", 
           legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
@@ -157,10 +158,9 @@ plot_generations_Aug23 <- function(input_dir,
               position =  position_dodge(.09),
               vjust = -1) +
     coord_flip()
-
-  plot_name = paste0("plot_", stage, "_Generations_by_Aug23")
-  ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
   
+  plot_name = paste0(stage, version, "_Generations_by_Aug23")
+  ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
 }
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 plot_Larva_generations_Aug23(input_dir, 
@@ -169,3 +169,86 @@ plot_Larva_generations_Aug23(input_dir,
                              plot_path, 
                              plot_name, 
                              color_ord)
+
+
+
+
+#####################################################################################
+#######################                                   ###########################
+#######################          Diapause Plots           ###########################
+#######################                                   ###########################
+#####################################################################################
+rm(list=ls())
+library(chron)
+library(data.table)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(foreach)
+library(iterators)
+
+plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path){
+  ##
+  ## input_dir 
+  ## file_name_extension, 
+  ## version either rcp45 or rcp85
+  ## plot_path 
+  ## 
+  file_name = paste0(input_dir, file_name_extension)
+  data <- readRDS(file_name)
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data <- data[variable =="AbsLarvaPop" | variable =="AbsNonDiap"]
+  data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+  data$variable <- factor(data$variable)
+  
+  diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+                theme_bw() +
+                facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+                labs(x = "Cumulative Degree (in F)", y = "Absolute Population", color = "Absolute Population") +
+                theme(axis.text = element_text(face= "plain", size = 8),
+                      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+                      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+                      legend.position="bottom"
+                      ) + 
+                scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
+                scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+                stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                                            fun.ymin=function(z) { 0 }, 
+                                            fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+                scale_x_continuous(limits = c(0, 4000))
+
+  plot_name = paste0("diapause_abs_", version, ".png")
+  ggsave(plot_name, diap_plot, device="png", path=plot_path, width=6.2, height=5.14, unit="in")
+}
+
+
+
+
+
+data = readRDS("/Users/hn/Desktop/Kirti/check_point/my_aeolus_rds/diapause_abs_data_rcp45.rds")
+
+data$CountyGroup = as.character(data$CountyGroup)
+data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+data <- data[variable =="AbsLarvaPop" | variable =="AbsNonDiap"]
+data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+data$variable <- factor(data$variable)
+
+
+ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+theme_bw() +
+facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+labs(x = "Cumulative Degree (in F)", y = "Absolute Population", color = "Absolute Population") +
+theme(axis.text = element_text(face= "plain", size = 8),
+      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+      legend.position="bottom"
+      ) + 
+scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
+scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                            fun.ymin=function(z) { 0 }, 
+                            fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+scale_x_continuous(limits = c(0, 4000)) 
