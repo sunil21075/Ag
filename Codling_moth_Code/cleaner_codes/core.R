@@ -890,15 +890,29 @@ bloom <- function(data){
 generations_func <- function(input_dir, file_name){
   file_name <- paste0(input_dir, file_name)
   data <- data.table(readRDS(file_name))
-  generations  <- data[data[, month==8 & day==23]]
-  generations1 <- data[data[, month==11 & day==5]]
+  generations_aug  <- data[data[, month==8 & day==23]]
+  generations_dec <- data[data[, month==11 & day==5]]
 
-  generations$NumAdultGens <- generations$PercAdultGen1 + generations$PercAdultGen2 + generations$PercAdultGen3 + generations$PercAdultGen4
-  generations$NumLarvaGens <- generations$PercLarvaGen1 + generations$PercLarvaGen2 + generations$PercLarvaGen3 + generations$PercLarvaGen4
+  generations_aug$NumAdultGens <- generations_aug$PercAdultGen1 + 
+                                  generations_aug$PercAdultGen2 + 
+                                  generations_aug$PercAdultGen3 + 
+                                  generations_aug$PercAdultGen4
+  
+  generations_aug$NumLarvaGens <- generations_aug$PercLarvaGen1 + 
+                                  generations_aug$PercLarvaGen2 + 
+                                  generations_aug$PercLarvaGen3 + 
+                                  generations_aug$PercLarvaGen4
 
-  generations1$NumAdultGens <- generations1$PercAdultGen1 + generations1$PercAdultGen2 + generations1$PercAdultGen3 + generations1$PercAdultGen4
-  generations1$NumLarvaGens <- generations1$PercLarvaGen1 + generations1$PercLarvaGen2 + generations1$PercLarvaGen3 + generations1$PercLarvaGen4
-  return (list(generations, generations1))
+  generations_dec$NumAdultGens <- generations_dec$PercAdultGen1 + 
+                                  generations_dec$PercAdultGen2 + 
+                                  generations_dec$PercAdultGen3 + 
+                                  generations_dec$PercAdultGen4
+
+  generations_dec$NumLarvaGens <- generations_dec$PercLarvaGen1 + 
+                                  generations_dec$PercLarvaGen2 + 
+                                  generations_dec$PercLarvaGen3 + 
+                                  generations_dec$PercLarvaGen4
+  return (list(generations_aug, generations_dec))
 }
 
 #####################################################################################

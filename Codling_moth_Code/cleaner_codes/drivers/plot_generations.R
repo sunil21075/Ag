@@ -8,7 +8,7 @@ source(source_path1)
 source(source_path2)
 
 
-data_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth/local/processed/plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 
