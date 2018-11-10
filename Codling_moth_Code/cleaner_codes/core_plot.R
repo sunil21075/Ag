@@ -402,7 +402,7 @@ plot_generations_Aug23 <- function(input_dir,
                                    stage,
                                    box_width=.25,
                                    plot_path,
-                                   version = "rcp45",
+                                   version,
                                    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 ){
   # stage: either larva or adult
@@ -499,7 +499,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
     theme_bw() +
     facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-    labs(x = "Cumulative Degree (in F)", y = "Absolute Population", color = "Absolute Population") +
+    labs(x = "Cumulative Degree Days (in F)", y = "Absolute Population", color = "Absolute Population") +
     theme(axis.text = element_text(face= "plain", size = 8),
           axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
           axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
@@ -532,7 +532,7 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
         theme_bw() +
         facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-        labs(x = "Cumulative Degree (in F)", y = "Relative Population", color = "Relative Population") +
+        labs(x = "Cumulative Degree Days(in F)", y = "Relative Population", color = "Relative Population") +
         theme(axis.text = element_text(face= "plain", size = 8),
               axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
               axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
