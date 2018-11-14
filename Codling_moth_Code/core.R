@@ -624,16 +624,20 @@ add_dd_cumudd <- function(metdata_data.table, lower, upper) {
   pihalf = pi/2
   diff = metdata_data.table$tmax - metdata_data.table$tmin # column diff
   tsum = metdata_data.table$tmax + metdata_data.table$tmin # column tsum
+  
   aveminlt = (tsum/2) - lower
   alpha1 = diff / 2
   avetemp = tsum / 2
+  
   theta1 = asin((lower - avetemp) / alpha1)
   theta2 = asin((upper - avetemp) / alpha1)
+  
   tmin = metdata_data.table$tmin
   tmax = metdata_data.table$tmax
   
   tempdata = data.frame(tmin, tmax, diff, tsum, aveminlt, alpha1, avetemp, theta1, theta2)
   tempdata$heat = 0
+
   #case 1 tmin >= upper threshold
   tempdata$heat[tempdata$tmin >= upper] = upper - lower
   
@@ -688,7 +692,7 @@ add_dd_cumudd <- function(metdata_data.table, lower, upper) {
                                                                     tempdata$theta2[tempdata$tmin < lower & 
                                                                     tempdata$tmax > upper]))) / pi)
   
-  metdata_data.table$dd <-tempdata$heat
+  metdata_data.table$dd <- tempdata$heat
   metdata_data.table[, Cum_dd := cumsum(dd), by=list(year)]
   return(metdata_data.table)
 }
@@ -747,7 +751,7 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   dataM[1:Nrecords, 3] <- temp[ind+2]/100.00 # Min temperature data
   dataM[1:Nrecords, 4] <- temp[ind+3]/100.00 # Wind speed data
   
-  AllData<-cbind( ymd,dataM)
+  AllData<-cbind(ymd, dataM)
   colnames(AllData) <- c("year","month","day","precip","tmax","tmin","winspeed")
   return(AllData)
 }
