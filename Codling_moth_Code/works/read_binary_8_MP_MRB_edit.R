@@ -97,9 +97,9 @@ read_binary_8 <- function(file_name, file_path, hist){
 
 
 hist <- read_binary_8(file_path = file.path("test-data",
-                                    "historical",
-                                    "data_47.15625_-122.53125"),
-              hist = TRUE)
+                                            "historical",
+                                            "data_47.15625_-122.53125"),
+                      hist = TRUE)
 
 future <- read_binary_8(file_path = file.path("test-data",
                                               "future",
