@@ -14,9 +14,10 @@ source(source_path)
 ## *****************               Plotting Codes          *********************
 ################################################################################
 
-
 ##########################################
+#######
 ####### Bloom Plots
+#######
 ##########################################
 plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
@@ -120,7 +121,9 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
 
 plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version, output_dir, output_type="cumdd"){
   out_name = paste0("plot_", output_type, "_", version ,".png")
-
+  #############################################
+  ###    Egg Hatch
+  #############################################
   if (output_type == "eggHatch"){
     data = compute_cumdd_eggHatch(input_dir=data_dir, file_name="combined_CMPOP_", version)
     data$CountyGroup = as.character(data$CountyGroup)
@@ -321,6 +324,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
 ##################                       Box Plots                                ##################
 ##################                                                                ##################
 ####################################################################################################
+
 ##################
 ##################   Adult Emergence
 ##################
@@ -497,23 +501,29 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   data$variable <- factor(data$variable)
   
   diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-    theme_bw() +
-    facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-    labs(x = "Cumulative Degree Days (in F)", y = "Absolute Population", color = "Absolute Population") +
-    theme(axis.text = element_text(face= "plain", size = 8),
-          axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
-          axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
-          legend.position="bottom"
-    ) + 
-    scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
-    scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
-    stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
-                 fun.ymin=function(z) { 0 }, 
-                 fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
-    scale_x_continuous(limits = c(0, max(data$CumulativeDDF)+10))
+               geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="dotdash", color ="red", size=.35) +
+               annotate(geom="text", x=700,  y=85, label="Gen 1", color="black", angle=30) +
+               annotate(geom="text", x=1700, y=80, label="Gen 2", color="black", angle=30) + 
+               annotate(geom="text", x=2900, y=75, label="Gen 3", color="black", angle=30) + 
+               annotate(geom="text", x=3920, y=70, label="Gen 4", color="black", angle=30) +
+               theme_bw() +
+               facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+               labs(x = "Cumulative Degree Days (in F)", y = "Absolute Population", color = "Absolute Population") +
+               theme(axis.text = element_text(face= "plain", size = 8),
+                     axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+                     axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+                     legend.position="bottom"
+               ) + 
+               scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Absolute Population") +
+               scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+               stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                             fun.ymin=function(z) { 0 }, 
+                             fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+               scale_x_continuous(limits = c(0, 5000)) + 
+               scale_y_continuous(limits = c(0, 100)) 
   
   plot_name = paste0("diapause_abs_", version, ".png")
-  ggsave(plot_name, diap_plot, device="png", path=plot_path, width=7, height=7, unit="in")
+  ggsave(plot_name, diap_plot, device="png", path=plot_path, width=10, height=7, unit="in")
 }
 
 
@@ -530,23 +540,29 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
 
 
   pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-        theme_bw() +
-        facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-        labs(x = "Cumulative Degree Days(in F)", y = "Relative Population", color = "Relative Population") +
-        theme(axis.text = element_text(face= "plain", size = 8),
-              axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
-              axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
-              legend.position="bottom"
-              ) + 
-        scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Relative Population") +
-        scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
-        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
-                                    fun.ymin=function(z) { 0 }, 
-                                    fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
-        scale_x_continuous(limits = c(0, max(data$CumulativeDDF)+10)) 
+       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="dotdash", color ="red", size=.35) +
+       annotate(geom="text", x=700,  y=18, label="Gen 1", color="black", angle=30) +
+       annotate(geom="text", x=1700, y=16, label="Gen 2", color="black", angle=30) + 
+       annotate(geom="text", x=2900, y=14, label="Gen 3", color="black", angle=30) + 
+       annotate(geom="text", x=3920, y=12, label="Gen 4", color="black", angle=30) +
+       theme_bw() +
+       facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+       labs(x = "Cumulative Degree Days(in F)", y = "Relative Population", color = "Relative Population") +
+       theme(axis.text = element_text(face= "plain", size = 8),
+             axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
+             axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+             legend.position="bottom"
+       ) + 
+       scale_fill_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), name = "Relative Population") +
+       scale_color_manual(labels = c("Total", "Escape Diapause"), values=c("grey", "orange"), guide = FALSE) +
+       stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                                   fun.ymin=function(z) { 0 }, 
+                                   fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+       scale_x_continuous(limits = c(0, 5000)) + 
+       scale_y_continuous(limits = c(0, 20)) 
   
+  #ann_text <- data.frame(CumulativeDDF=700, value=18, CountyGroup=factor("Cooler Areas", levels = c("Cooler Areas","Warmer Areas")))
+  #pp + geom_text(data = ann_text, label = "Text")
   plot_name = paste0("diapause_rel_", version,".png")
-  ggsave(plot_name, pp, device="png", path=plot_path, width=7, height=7, unit="in")
+  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in")
 }
-
-
