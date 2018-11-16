@@ -7,9 +7,13 @@ library(dplyr)
 library(foreach)
 library(iterators)
 
-
+##########################################################################################################################
+##################################                                                                                   #####
+##################################  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
+##################################                                                                                   #####
+##########################################################################################################################
 prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end_year, lower=10, upper=31.11){
-  time_stuff <- prepare_time_stuff(start_year, end_year)
+  time_stuff <- provide_time_stuff(start_year, end_year)
   nYears <- time_stuff[[1]]
   Nrecords <- time_stuff[[2]]
   Nofvariables <- time_stuff[[3]]
@@ -25,9 +29,8 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
   metdata_data.table <- data.table(metdata)
   rm (metdata)
   
-  ## calculate daily and cumulative gdd to met data. (gdd := growing degree days)
-  metdata_data.table <- add_dd_cumudd(metdata_data.table, lower, upper)
-  
+  # Calculate daily and cumulative gdd to met data. (gdd := growing degree days)
+  metdata_data.table <- add_dd_cumdd(metdata_data.table, lower, upper)
   metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8 # why it is not shifted?
 
   # add day of year from 1 to 365/366 depending on year
@@ -35,7 +38,8 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   
   CodMothParams <- read.table(paste0(param_dir, "CodlingMothparameters.txt"), header=TRUE, sep=",")
-  #Relative Population
+  
+  # Generate Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata_data.table)
   
   data <- cbind(metdata_data.table$tmax, metdata_data.table$tmin, 
@@ -44,13 +48,13 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
                 metdata_data.table$day )
 
   rel_col_names <- colnames(relpopulation)[1:8]
-  colnames(data)<-c("tmax", "tmin", "DailyDD", "CumDDinC", "CumDDinF", 
-                    rel_col_names, 
-                    "SumEgg", "SumLarva", "SumPupa",
-                    "SumAdult", "dayofyear", 
-                    "year", "month", "day")
+  colnames(data) <- c("tmax", "tmin", "DailyDD", "CumDDinC", "CumDDinF", 
+                      rel_col_names, 
+                      "SumEgg", "SumLarva", "SumPupa",
+                      "SumAdult", "dayofyear", 
+                      "year", "month", "day")
   rm (relpopulation)
-  #Percent Population
+  # Generate Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams, metdata_data.table)
   
   data <- cbind(percpopulation[, 1:12], data)
@@ -62,13 +66,18 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
                       "SumAdult", "dayofyear", 
                       "year", "month", "day")
   rm (percpopulation)
+
+  # reorder the data frame. 
+  # (why? probably because the way the rest of 
+  # the code were written, before writing this function)
   data <- data[, c(31:33, 30, 13:17, 18:29, 1:12)]
   return(data)
 }
-###################################################################################################################################
-###################################################################################################################################
+
+##########################################################################################################################
+##########################################################################################################################
 prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_year, lower=10, upper=31.11){
-  time_stuff <- prepare_time_stuff(start_year, end_year)
+  time_stuff <- provide_time_stuff(start_year, end_year)
   nYears <- time_stuff[[1]]
   Nrecords <- time_stuff[[2]]
   Nofvariables <- time_stuff[[3]]
@@ -83,12 +92,11 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   metdata <- readbinarydata_addmdy(input_file, Nrecords, Nofvariables, ymd, ind)
   metdata <- data.table(metdata)
 
-  ## calculate daily and cumulative gdd to met data
-  metdata <- add_dd_cumudd(metdata, lower, upper)
+  # calculate daily and cumulative gdd to met data
+  metdata <- add_dd_cumdd(metdata, lower, upper)
   
   # convert celcius to farenheit
   metdata$Cum_dd_F = metdata$Cum_dd * 1.8
-  
   
   # add day of year from 1 to 365/366 depending on year
   metdata$dum <- 1 # dummy
@@ -96,7 +104,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   
   CodMothParams <- read.table(paste0(param_dir, "CodlingMothparameters.txt"), header=TRUE, sep=",")
   
-  #Relative Population
+  # Generate Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata)
   
   data <- cbind(metdata$tmax, metdata$tmin, metdata$dd, 
@@ -111,7 +119,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
                       "year", "month", "day")
   rm (relpopulation)
 
-  #Percent Population
+  # Generate Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams, metdata)
   rm(metdata)
   data <- cbind(percpopulation[,1:12], data)
@@ -127,7 +135,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   rm (percpopulation)
   data <- data[, c(31:33, 30, 13:17, 18:29, 1:12)]
   
-  #for each year
+  # for each year
   generations <- data.frame("year" = integer(), 
                             
                             AGen1_0.25 = integer(), AGen2_0.25 = integer(), AGen3_0.25 = integer(), AGen4_0.25 = integer(),
@@ -193,18 +201,18 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
     lff = 0 # 50 occured larva
     lsf = 0 # 75 occured larva
     lcurr = 0 # current % population per generation Larva
-    agen = 1 # generation of the year adults
-    lgen = 1 # generation of the year for larva
+    agen = 1  # generation of the year adults
+    lgen = 1  # generation of the year for larva
     
     em = 0 # emergence occured
     
     #add each year to dataframe
     generations[nrow(generations) + 1, 1] <- i
     
-    #for each day of the year
+    # for each day of the year
     for (j in 1:nrow(subset(data, year == i)))
     {
-      #get the data for each day
+      # get the data for each day
       row <- subset(data, year == i)[j, ]
       aperc <- row$PercAdult         # current % adults
       aGen1perc <- row$PercAdultGen1
@@ -229,7 +237,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
       }
       #####################################################################################
       #######################                                            ##################
-      ####################### Percentages at the start of each month     ##################
+      #######################   Percentages at the start of each month   ##################
       #######################                                            ##################
       #####################################################################################
       if (row$month == 2 & row$day == 1)
@@ -433,44 +441,50 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
         generations[generations$year == i,]["AdultGen4Dec1"] <- aGen4perc
         generations[generations$year == i,]["LarvaGen4Dec1"] <- lGen4perc
       }
-      ################*************************************################ 
-      ################*********     Emergence     *********################ 
-      ################*************************************################ 
+      #####################################################################################
+      #######################                                            ##################
+      #######################                 Emergence                  ##################
+      #######################                                            ##################
+      #####################################################################################
+    
       if (row$CumDDinC > 100 & em == 0){
         em = 1
         generations[generations$year == i,]["Emergence"] <- row$dayofyear
       }
-      ################**********************************************################ 
-      ################*********     GENERATIONS FOR ADULTS     *********############
-      ################**********************************************################ 
-      #continue to increase the percentage
+      #####################################################################################
+      #######################                                            ##################
+      #######################          GENERATIONS of ADULTS             ##################
+      #######################                                            ##################
+      #####################################################################################
+
+      # continue to increase the percentage
       if (aperc >= acurr) { acurr = aperc }
-      #if there is a reset (start of a new generation)
+      # if there is a reset (start of a new generation)
       else{
         agen = agen + 1 #increase generation count
         
-        #now reset boolean for occuring percentages (for new generation)
+        # now reset boolean for occuring percentages (for new generation)
         atf = 0
         aff = 0
         asf = 0
         acurr = 0
       }
       
-      #if new gen reached 25
+      # if new gen reached 25
       if (aperc > .25 & atf == 0){
         atf = 1 # check off that this occured
         col <- paste0(Agen, agen, "_", "0.25")
         generations[generations$year == i,][col] <- row$dayofyear
       }
       
-      #if new gen reached 50
+      # if new gen reached 50
       if (aperc > .50 & aff == 0){
         aff = 1 #check off that this occured
         col <- paste0(Agen, agen, "_", "0.5")
         generations[generations$year == i,][col] <- row$dayofyear
       }
       
-      #if new gen reached 75
+      # if new gen reached 75
       if (aperc > .75 & asf == 0){
         asf = 1 #check off that this occured
         col <- paste0(Agen, agen, "_", "0.75")
@@ -492,20 +506,20 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
         lcurr = 0
       }
       
-      #if 25% reached
+      # if 25% reached
       if (lperc > .25 & ltf == 0)
       {ltf = 1 # check off that this occured
         col <- paste0(Lgen, lgen, "_", "0.25")
         generations[generations$year == i,][col] <- row$dayofyear
       }
-      #if 50 reached
+      # if 50 reached
       if (lperc > .50 & lff == 0){
         lff = 1 #check off that this occured
         col <- paste0(Lgen, lgen, "_", "0.5")
         generations[generations$year == i,][col] <- row$dayofyear
       }
       
-      #if 75 reached
+      # if 75 reached
       if (lperc > .75 & lsf == 0){
         lsf = 1 #check off that this occured
         col <- paste0(Lgen, lgen, "_", "0.75")
@@ -515,21 +529,27 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   }
   return(generations)
 }
-###################################################################################################################################
-###################################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
+  # Number of stages which is 16: egg_1   thorugh egg_4,
+  #                               Larva_1 thorugh Larva_4
+  #                               Pupa_1  thorugh Pupa_4
+  #                               Adult_1 thorugh Adult_4
   stage_gen_toiterate <- length(CodMothParams[, 1])
+  
   # store relative numbers
   masterdata <- data.frame(metdata_data.table$dayofyear, 
                            metdata_data.table$year, 
                            metdata_data.table$month, 
                            metdata_data.table$Cum_dd_F)
-  colnames(masterdata) <- c("dayofyear","year","month","Cum_dd_F")
+  
+  colnames(masterdata) <- c("dayofyear", "year", "month", "Cum_dd_F")
   
   for (i in 1:stage_gen_toiterate) {
     relnum <- pweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4]) 
     relnum <- data.frame(relnum)
-    colnames(relnum) <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    colnames(relnum) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, relnum)
   }
   
@@ -550,7 +570,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
                                                                               columnnumber]
   }
   for (i in 5:8) {
-    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2], sep="")
     columnnumber <- which( colnames(allrelnum)==columnname )
     allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
                         allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
@@ -560,12 +580,13 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
   for (i in 9:12) {
     columnname <- paste("Perc",CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
     columnnumber <- which( colnames(allrelnum)==columnname )
-    allrelnum$PercPupa[allrelnum$Cum_dd_F>CodMothParams [i,5] & allrelnum$Cum_dd_F<=CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
-                                                                                                                      allrelnum$Cum_dd_F <= CodMothParams [i,6], 
-                                                                                                                      columnnumber]
+    allrelnum$PercPupa[allrelnum$Cum_dd_F>CodMothParams [i,5] & 
+                       allrelnum$Cum_dd_F<=CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
+                                                                            allrelnum$Cum_dd_F <= CodMothParams [i,6], 
+                                                                            columnnumber]
   } 
   for (i in 13:16) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2],sep="")
+    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2], sep="")
     columnnumber<-which( colnames(allrelnum)==columnname )
     allrelnum$PercAdult[allrelnum$Cum_dd_F > CodMothParams [i,5] & 
                              allrelnum$Cum_dd_F <= CodMothParams [i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
@@ -579,22 +600,39 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
                              "dayofyear","year","month")]
   return(allrelnum)
 }
-###################################################################################################################################
-###################################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table){
+  # Number of stages which is 16: egg_1   thorugh egg_4,
+  #                               Larva_1 thorugh Larva_4
+  #                               Pupa_1  thorugh Pupa_4
+  #                               Adult_1 thorugh Adult_4
   stage_gen_toiterate <- length(CodMothParams[, 1])
-  masterdata <- data.frame(metdata_data.table$dayofyear,metdata_data.table$year, 
+
+  # subset the data
+  masterdata <- data.frame(metdata_data.table$dayofyear, metdata_data.table$year, 
                            metdata_data.table$month, metdata_data.table$Cum_dd_F)
   colnames(masterdata) <- c("dayofyear", "year", "month", "CumddF")
+
+  # for combination of each stage and generation
+  # produce relative population data
   for (i in 1:stage_gen_toiterate) {
     relnum <- dweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i, 3], scale=CodMothParams[i,4]) * 10000
     relnum <- data.frame(relnum)
     colnames(relnum) <- paste(CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, relnum)
   }
+
   allrelnum <- masterdata
   rm(masterdata)
-  allrelnum$SumEgg = allrelnum$EggGen1 + allrelnum$EggGen2 + allrelnum$EggGen3 + allrelnum$EggGen4
+
+  # generate new columns, the total population of each stage 
+  # across all generations
+  allrelnum$SumEgg = allrelnum$EggGen1 + 
+                     allrelnum$EggGen2 + 
+                     allrelnum$EggGen3 + 
+                     allrelnum$EggGen4
+  
   allrelnum$SumLarva = allrelnum$LarvaGen1 + 
                        allrelnum$LarvaGen2 + 
                        allrelnum$LarvaGen3 + 
@@ -616,10 +654,10 @@ CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table){
                              "dayofyear", "year", "month")]
   return(allrelnum)
 }
-###################################################################################################################################
-###################################################################################################################################
-#  function to append gdd and cumulative gdd columns to met data
-add_dd_cumudd <- function(metdata_data.table, lower, upper) {
+##########################################################################################################################
+##########################################################################################################################
+# Function to compute and append gdd and cumulative gdd columns to met data
+add_dd_cumdd <- function(metdata_data.table, lower, upper) {
   twopi  = 2*pi
   pihalf = pi/2
   diff = metdata_data.table$tmax - metdata_data.table$tmin # column diff
@@ -696,9 +734,9 @@ add_dd_cumudd <- function(metdata_data.table, lower, upper) {
   metdata_data.table[, Cum_dd := cumsum(dd), by=list(year)]
   return(metdata_data.table)
 }
-###################################################################################################################################
-###################################################################################################################################
-prepare_time_stuff <- function(start_year, end_year){
+##########################################################################################################################
+##########################################################################################################################
+provide_time_stuff <- function(start_year, end_year){
   isLeapYear <- leap.year(seq(start_year, end_year))
   countLeapYears <- length(isLeapYear[isLeapYear== TRUE])
   nYears <- length(seq(start_year, end_year))
@@ -708,7 +746,8 @@ prepare_time_stuff <- function(start_year, end_year){
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
   return (list(nYears, Nrecords, Nofvariables, Years, ind))
   }
-############################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 # function to create year month day dataframe to append to metdata dataframe
 create_ymdvalues <- function(nYears, Years, leap.year) {
   daycount_in_year <- 0
@@ -737,8 +776,8 @@ create_ymdvalues <- function(nYears, Years, leap.year) {
   colnames(ymd) <- c("year","month","day")
   return(ymd)
 }
-#################################################################################################################################
-
+##########################################################################################################################
+##########################################################################################################################
 readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   fileCon = file(filename, "rb")
   temp <- readBin(fileCon, integer(), size =2, n = Nrecords * Nofvariables, endian="little")
@@ -755,15 +794,11 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   colnames(AllData) <- c("year","month","day","precip","tmax","tmin","winspeed")
   return(AllData)
 }
-###################################################################################################################################
-##################################                                                                                     ############
-##################################
-##################################  Phase 2: combining produced CM and CMPOP files and adding some more stuff to them.
-##################################
-##################################                                                                                     ############
-###################################################################################################################################
-###################################################################################################################################
-
+##########################################################################################################################
+##################################                                                                                     ######
+##################################  Phase 2: combining produced CM and CMPOP files and adding some more stuff to them. ######
+##################################                                                                                     ######
+##########################################################################################################################
 merge_add_countyGroup <- function(input_dir, param_dir, 
                                   locations_file_name,
                                   locationGroup_fileName,
@@ -793,7 +828,8 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
   }
   return(data)
 }
-############################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 add_countyGroup <- function(data, param_dir, loc_group_file_name){
   loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
   loc_grp$latitude = as.numeric(loc_grp$latitude)
@@ -806,22 +842,20 @@ add_countyGroup <- function(data, param_dir, loc_group_file_name){
   }
   return (data) 
 }
-###################################################################################################################################
-###################################################################################################################################
-##################################
-##################################  Phase 2: Using combined CM and CMPOP files to produce stuff, like vertdd, bloom, etc.
-##################################
-###################################################################################################################################
-###################################################################################################################################
-
+##########################################################################################################################
+##################################                                                                                        
+##################################  Phase 3: Using combined CM and CMPOP files to produce stuff, like vertdd, bloom, etc. 
+##################################                                                                                        
+##########################################################################################################################
 #####################################################################################
 #######################                                            ##################
 #######################                vertdd function             ##################
 #######################                                            ##################
 #####################################################################################
-generate_vertdd <- function(input_dir, file_name, 
+generate_vertdd <- function(input_dir, 
+                            file_name, 
                             lower_temp = 4.5, 
-                            upper_temp=24.28){
+                            upper_temp = 24.28){
   file_name <- paste0(input_dir, file_name, ".rds")
   data <- data.table(readRDS(file_name))
   lower = lower_temp
@@ -842,13 +876,9 @@ generate_vertdd <- function(input_dir, file_name,
   data$th2 = atan(data$b / sqrt(data$diffsq - data$bsq))
 
   data[tmin >= lower & tmax > upper, vertdd := ((-diff * cos(th2) - a * (th2 + pihlf))/twopi)]
-
   data[tmin >= lower & tmax <= upper, vertdd := summ/2 - lower]
-
   data[tmin < lower & tmax <= upper, vertdd := (diff * cos(th1) - (a * (pihlf - th1)))/twopi]
-
   data[tmin < lower & tmax > upper, vertdd := (-diff * (cos(th2) - cos(th1))-(a * (th2 - th1)))/twopi]
-
   data[tmin > tmax | tmax <= lower | tmin >= upper, vertdd := 0]
 
   data$summ = NULL
@@ -869,8 +899,8 @@ generate_vertdd <- function(input_dir, file_name,
   data$red_deli = pnorm(data$vert_Cum_dd_F, mean = 522.74, sd = 42.79, lower.tail = TRUE)
   return(data)
 }
-
-#########################################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 bloom <- function(data){
   data = subset(data, select = c("ClimateGroup", 
                                "latitude", "longitude", 
@@ -887,8 +917,8 @@ bloom <- function(data){
   data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup","latitude", "longitude","County", "apple_type")]
   return (data)
 }
-
-###############################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 # Generation Generator
 ##################################
 generations_func <- function(input_dir, file_name){
@@ -950,14 +980,14 @@ diapause_abs_rel <- function(input_dir, file_name,
 
     sub = data
     rm (data)
-    startingpopulationfortheyear<-1000
+    startingpopulationfortheyear <- 1000
     #generation1
     sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-         by =list(year,ClimateScenario, 
+         by=list(year,ClimateScenario, 
          latitude,longitude,ClimateGroup, CountyGroup) ]
-    sub$AbsPopLarvaGen1<-sub$LarvaGen1RelFraction*startingpopulationfortheyear
-    sub$AbsPopLarvaGen1Diap<-sub$AbsPopLarvaGen1*sub$diapause1/100
-    sub$AbsPopLarvaGen1NonDiap<-sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
+    sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
+    sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1*sub$diapause1/100
+    sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
 
     #generation2
     sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
@@ -1070,7 +1100,8 @@ generate_diapause_map1 <- function(input_dir, file_name,
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctNonDiapGen4 = (auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude")], by = c("ClimateGroup", "CountyGroup", "latitude", "longitude"), all.x = TRUE)
   return (sub2)
 }
-############################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 diapause_map1_prep <- function(input_dir, file_name,
                                param_dir, location_group_name="LocationGroups.csv"){
   file_name = paste0(input_dir, file_name, ".rds")
@@ -1158,7 +1189,8 @@ diapause_map1_prep <- function(input_dir, file_name,
                                                      "dayofyear")]
   return (sub)
 }
-############################################################################################################################
+##########################################################################################################################
+##########################################################################################################################
 compute_cumdd_eggHatch <- function(input_dir, file_name="combined_CMPOP_", version){
   ## This is for cumdd of egg hatch
   ##

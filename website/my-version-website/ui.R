@@ -114,7 +114,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                                 tabsetPanel(tabPanel("Absolute Population", imageOutput("diapause_abs_rcp45")),
                                             tabPanel("Relative Population", imageOutput("diapause_rel_rcp45"))
                                             )
-                                      , style='width: 1350px; height: 930px'),
+                                      , style='width: 1500px; height: 1500px'),
                               tabPanel("Egg Hatch into Larva",
                                 tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_45")),
                                             tabPanel("Egg Hatch Day of Year"),
@@ -136,7 +136,7 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                                 tabsetPanel(tabPanel("Absolute Population", imageOutput("diapause_abs_rcp85")),
                                             tabPanel("Relative Population", imageOutput("diapause_rel_rcp85"))
                                             )
-                                      , style='width: 1350px; height: 930px'),
+                                      , style='width: 1500px; height: 1500px'),
                               tabPanel("Egg Hatch into Larva",
                                 tabsetPanel(tabPanel("Cumulative Larva Population Fraction", imageOutput("eggHatch_85")),
                                             tabPanel("Egg Hatch Day of Year"),
