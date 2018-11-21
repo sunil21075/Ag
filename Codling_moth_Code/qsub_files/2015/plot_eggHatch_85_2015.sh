@@ -1,12 +1,12 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
 
-#PBS -N diap_abs_rel_45
-#PBS -l nodes=1:ppn=1,walltime=70:00:00
+#PBS -N plot_eggHatch_85
+#PBS -l nodes=1:ppn=1,walltime=10:00:00
 #PBS -l mem=40gb
 #PBS -q hydro
-#PBS -e diap_abs_rel_45_error.txt
-#PBS -o diap_abs_rel_45_output.txt
+#PBS -e plot_eggHatch_85_E.txt
+#PBS -o plot_eggHatch_85_O.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/diapause_abs_rel_driver.R rcp45
+/home/hnoorazar/cleaner_codes/drivers/plot_cumdd_eggHatch_2015.R rcp85 eggHatch
 
 exit 0

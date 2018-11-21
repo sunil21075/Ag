@@ -1,12 +1,12 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
 
-#PBS -N diap_abs_rel_45
+#PBS -N vertdd_45_2015
 #PBS -l nodes=1:ppn=1,walltime=70:00:00
-#PBS -l mem=40gb
+#PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e diap_abs_rel_45_error.txt
-#PBS -o diap_abs_rel_45_output.txt
+#PBS -e vertdd_45_2015_e.txt
+#PBS -o vertdd_45_2015_o.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/diapause_abs_rel_driver.R rcp45
+/home/hnoorazar/cleaner_codes/drivers/vertdd_driver_2015.R combined_CMPOP_rcp45
 
 exit 0
