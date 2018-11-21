@@ -10,7 +10,7 @@ source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
-write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/historical_CM_scenario/"
+write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/historical_CM/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
@@ -36,11 +36,16 @@ for(location in locations) {
     filename = paste0(category, "/", version, "/", file_prefix, location)
   }
   
-  temp <- prepareData_CM(filename, raw_data_dir, start_year, end_year)
+  temp <- prepareData_CM(filename = filename, 
+                         input_folder = raw_data_dir, 
+                         param_dir = param_dir, 
+                         cod_moth_param_name ="CodlingMothparameters.txt",
+                         start_year = start_year, end_year = end_year, 
+                         lower=10, upper=31.11)
   temp_data <- data.table()
   if(category == "historical") {
-    temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2006] <- "Historical"
-    temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2006, ])
+    temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2015] <- "Historical"
+    temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2015, ])
   }
   else {
     temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"

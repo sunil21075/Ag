@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N diap_abs_rel_85
-#PBS -l nodes=1:ppn=1,walltime=99:00:00
+#PBS -l nodes=1:ppn=1,walltime=70:00:00
 #PBS -l mem=12gb
 #PBS -q hydro
 #PBS -e diap_abs_rel_85_error.txt
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/diapause_Abs_Rel_driver.R rcp85
+/home/hnoorazar/cleaner_codes/drivers/diapause_abs_rel_driver.R rcp85
 
 exit 0

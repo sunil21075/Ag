@@ -9,8 +9,8 @@ source(source_path)
 args = commandArgs(trailingOnly=TRUE)
 version = args[1]
 
-write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
-input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
+write_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
+input_dir = "/data/hydro/users/Hossein/codling_moth/local/processed/"
 file_name = paste0("combined_CMPOP_", version, ".rds")
 
 

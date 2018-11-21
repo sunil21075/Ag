@@ -139,3 +139,103 @@ plot_generations_Aug23 <- function(input_dir, file_name, box_width=.25, plot_pat
 
 
 
+
+###################  Aug. 23   ###################
+
+##################         
+################## No. of Larva Generations 
+##################
+stage = "Larva"
+file_name = "generations_combined_CMPOP_rcp85.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Aug23",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp85",
+                    color_ord)
+
+file_name = "generations_combined_CMPOP_rcp45.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Aug23",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp45",
+                    color_ord)
+##################
+################## No. of Adult Generations
+##################
+stage = "Adult"
+file_name = "generations_combined_CMPOP_rcp85.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Aug23",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp85",
+                    color_ord)
+
+file_name = "generations_combined_CMPOP_rcp45.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Aug23",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp45",
+                    color_ord)
+
+###################  Nov. 5   ###################
+
+##################
+################## No. of Larva Generations
+##################
+stage = "Larva"
+file_name = "generations1_combined_CMPOP_rcp85.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Nov5",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp85",
+                    color_ord)
+
+file_name = "generations1_combined_CMPOP_rcp45.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Nov5",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp45",
+                    color_ord)
+
+##################
+################## No. of Adult Generations
+##################
+stage = "Adult"
+file_name = "generations1_combined_CMPOP_rcp85.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Nov5",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp85",
+                    color_ord)
+
+file_name = "generations1_combined_CMPOP_rcp45.rds"
+plot_No_generations(input_dir,
+                    file_name,
+                    stage,
+                    end_line = "Nov5",
+                    box_width=.25,
+                    plot_path,
+                    version="rcp45",
+                    color_ord)
+

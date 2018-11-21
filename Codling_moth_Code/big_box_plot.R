@@ -24,6 +24,7 @@ data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
 data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
 
 data_melted = melt(data, id = c("ClimateGroup", "CountyGroup"))
+
 L = c('AGen1_0.25','AGen2_0.25', 'AGen3_0.25','AGen4_0.25',
       'AGen1_0.5','AGen2_0.5', 'AGen3_0.5','AGen4_0.5',
       'AGen1_0.75','AGen2_0.75', 'AGen3_0.75','AGen4_0.75')
@@ -55,7 +56,7 @@ bplot <- ggplot(data = data_melted, aes(x=variable, y=value)) +
         axis.title.y = element_text(face = "plain", size = 37, margin = margin(t = 0, r = 15, b = 0, l = 0)),
         axis.text.y  = element_blank(),
         axis.ticks.y = element_blank()
-  ) +
+        ) +
   scale_fill_manual(values=color_ord,
                     name="Time\nPeriod", 
                     labels=c("Historical","2040","2060","2080")) + 
@@ -64,5 +65,5 @@ bplot <- ggplot(data = data_melted, aes(x=variable, y=value)) +
                      limits = color_ord,
                      labels=c("Historical","2040","2060","2080")) +
   coord_flip() 
-
-ggsave(output_name, bplot, path=plot_path, width=27, height=20, unit="in")
+output_name = "test1.png"
+ggsave(output_name, bplot, device="png", path=plot_path, width=17, height=14, unit="in")

@@ -12,7 +12,85 @@ library(iterators)
 ##################################  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
 ##################################                                                                                   #####
 ##########################################################################################################################
-prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end_year, lower=10, upper=31.11){
+produce_CMPOP <- function (input_folder, filename, 
+                           param_dir, cod_moth_param_name, 
+                           start_year, end_year,
+                           lower=10, upper=31.11,
+                           location, category){
+  temp <- prepareData_CMPOP(filename, 
+                            input_folder, 
+                            param_dir, 
+                            cod_moth_param_name,
+                            start_year, end_year, 
+                            lower, upper)
+  temp_data <- data.table()
+
+  if (category== "historical"){
+    temp$ClimateGroup[temp$year >= start_year & temp$year <= end_year] <- "Historical"
+    temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
+  } 
+  else {
+    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
+    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
+    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
+  }
+  rm (temp)
+
+  loc = tstrsplit(location, "_")
+  temp_data$latitude <- as.numeric(unlist(loc[1]))
+  temp_data$longitude <- as.numeric(unlist(loc[2]))
+  temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
+                                                     long == temp_data$longitude[1], 
+                                                     countyname]))
+  temp_data$ClimateScenario <- category
+  return (temp_data)
+}
+
+produce_CM <- function(input_folder, filename,
+                       param_dir, cod_moth_param_name,
+                       start_year, end_year, 
+                       lower=10, upper=31.11,
+                       location, category){
+
+  loc = tstrsplit(location, "_")
+  temp <- prepareData_CM(filename, 
+                         input_folder, 
+                         param_dir, 
+                         cod_moth_param_name,
+                         start_year, end_year, 
+                         lower, upper)
+  temp_data <- data.table()
+
+  if (category == "historical"){
+    temp$ClimateGroup[temp$year >= start_year & temp$year <= end_year] <- "Historical"
+    temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
+    } 
+  else{             
+    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
+    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
+    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
+  }
+  temp_data$latitude <- as.numeric(unlist(loc[1]))
+  temp_data$longitude <- as.numeric(unlist(loc[2]))
+  temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
+                                                       long == temp_data$longitude[1], 
+                                                       countyname]))
+  temp_data$ClimateScenario <- category
+  return (temp_data)
+}
+############################################
+############### prepareData_CMPOP     ######
+############################################
+prepareData_CMPOP <- function(filename, input_folder,
+                              param_dir, cod_moth_param_name,
+                              start_year, end_year, 
+                              lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
   nYears <- time_stuff[[1]]
   Nrecords <- time_stuff[[2]]
@@ -37,7 +115,7 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
   metdata_data.table$dum <- 1 # dummy
   metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   
-  CodMothParams <- read.table(paste0(param_dir, "CodlingMothparameters.txt"), header=TRUE, sep=",")
+  CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=TRUE, sep=",")
   
   # Generate Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata_data.table)
@@ -76,7 +154,10 @@ prepareData_CMPOP <- function(filename, input_folder, param_dir, start_year, end
 
 ##########################################################################################################################
 ##########################################################################################################################
-prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_year, lower=10, upper=31.11){
+prepareData_CM <- function(filename, input_folder, 
+                           param_dir, cod_moth_param_name,
+                           start_year, end_year, 
+                           lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
   nYears <- time_stuff[[1]]
   Nrecords <- time_stuff[[2]]
@@ -102,7 +183,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   metdata$dum <- 1 # dummy
   metdata[, dayofyear := cumsum(dum), by=list(year)]
   
-  CodMothParams <- read.table(paste0(param_dir, "CodlingMothparameters.txt"), header=TRUE, sep=",")
+  CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=TRUE, sep=",")
   
   # Generate Relative Population
   relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata)
@@ -128,7 +209,7 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
   colnames(data) <- c(prec_col_names, "PercEgg", 
                       "PercLarva", "PercPupa", "PercAdult", 
                       "tmax", "tmin", "DailyDD", "CumDDinC", 
-                      "CumDDinF", colnames(relpopulation)[1:8], 
+                      "CumDDinF", rel_col_names, 
                       "SumEgg", "SumLarva", "SumPupa", 
                       "SumAdult", "dayofyear", 
                       "year", "month", "day")
@@ -224,7 +305,6 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
       lGen2perc <- row$PercLarvaGen2
       lGen3perc <- row$PercLarvaGen3
       lGen4perc <- row$PercLarvaGen4
-
 
       #####################################################################################
       #######################                                            ##################
@@ -469,21 +549,18 @@ prepareData_CM <- function(filename, input_folder, param_dir, start_year, end_ye
         asf = 0
         acurr = 0
       }
-      
       # if new gen reached 25
       if (aperc > .25 & atf == 0){
         atf = 1 # check off that this occured
         col <- paste0(Agen, agen, "_", "0.25")
         generations[generations$year == i,][col] <- row$dayofyear
       }
-      
       # if new gen reached 50
       if (aperc > .50 & aff == 0){
         aff = 1 #check off that this occured
         col <- paste0(Agen, agen, "_", "0.5")
         generations[generations$year == i,][col] <- row$dayofyear
       }
-      
       # if new gen reached 75
       if (aperc > .75 & asf == 0){
         asf = 1 #check off that this occured
@@ -741,7 +818,7 @@ provide_time_stuff <- function(start_year, end_year){
   countLeapYears <- length(isLeapYear[isLeapYear== TRUE])
   nYears <- length(seq(start_year, end_year))
   Nrecords <- 366*countLeapYears + 365 * (nYears - countLeapYears ) #33603
-  Nofvariables <- 4 #number of varaibles or column in the forcing data file
+  Nofvariables <- 4 # number of varaibles or column in the forcing data file
   Years <- seq(start_year, end_year)
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
   return (list(nYears, Nrecords, Nofvariables, Years, ind))
@@ -925,7 +1002,7 @@ generations_func <- function(input_dir, file_name){
   file_name <- paste0(input_dir, file_name)
   data <- data.table(readRDS(file_name))
   generations_aug  <- data[data[, month==8 & day==23]]
-  generations_dec <- data[data[, month==11 & day==5]]
+  generations_nov <- data[data[, month==11 & day==5]]
 
   generations_aug$NumAdultGens <- generations_aug$PercAdultGen1 + 
                                   generations_aug$PercAdultGen2 + 
@@ -937,16 +1014,16 @@ generations_func <- function(input_dir, file_name){
                                   generations_aug$PercLarvaGen3 + 
                                   generations_aug$PercLarvaGen4
 
-  generations_dec$NumAdultGens <- generations_dec$PercAdultGen1 + 
-                                  generations_dec$PercAdultGen2 + 
-                                  generations_dec$PercAdultGen3 + 
-                                  generations_dec$PercAdultGen4
+  generations_nov$NumAdultGens <- generations_nov$PercAdultGen1 + 
+                                  generations_nov$PercAdultGen2 + 
+                                  generations_nov$PercAdultGen3 + 
+                                  generations_nov$PercAdultGen4
 
-  generations_dec$NumLarvaGens <- generations_dec$PercLarvaGen1 + 
-                                  generations_dec$PercLarvaGen2 + 
-                                  generations_dec$PercLarvaGen3 + 
-                                  generations_dec$PercLarvaGen4
-  return (list(generations_aug, generations_dec))
+  generations_nov$NumLarvaGens <- generations_nov$PercLarvaGen1 + 
+                                  generations_nov$PercLarvaGen2 + 
+                                  generations_nov$PercLarvaGen3 + 
+                                  generations_nov$PercLarvaGen4
+  return (list(generations_aug, generations_nov))
 }
 
 #####################################################################################
@@ -1072,7 +1149,7 @@ diapause_abs_rel <- function(input_dir, file_name,
 
 generate_diapause_map1 <- function(input_dir, file_name, 
                                    param_dir, 
-                                   CodMothParams_name="CodlingMothparameters.txt", 
+                                   CodMothParams_name, 
                                    location_group_name="LocationGroups.csv"){
   CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",")
   sub1 = diapause_map1_prep(input_dir, file_name, param_dir, location_group_name)

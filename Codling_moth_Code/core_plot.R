@@ -19,7 +19,9 @@ source(source_path)
 ####### Bloom Plots
 #######
 ##########################################
-plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
+plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", 
+                               version, plot_path, output_name, 
+                               x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
 
@@ -65,7 +67,8 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_", v
   ggsave(output_name, p1, path=plot_path)
 }
 
-plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, plot_path, output_name, x_limits = c(45, 150)){
+plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
+                       plot_path, output_name, x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
   
@@ -119,7 +122,8 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
 #######
 #####################
 
-plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version, output_dir, output_type="cumdd"){
+plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", 
+                                version, output_dir, output_type="cumdd"){
   out_name = paste0("plot_", output_type, "_", version ,".png")
   #############################################
   ###    Egg Hatch
@@ -129,7 +133,10 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
     data$CountyGroup = as.character(data$CountyGroup)
     data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
     data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-    data = melt(data, id = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "ClimateScenario", "year", "dayofyear"))
+    data = melt(data, id = c("ClimateGroup", "CountyGroup", 
+                            "latitude", "longitude", 
+                            "ClimateScenario", "year", "dayofyear"))
+
     plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <300], aes(x=dayofyear, y=value, fill=factor(variable))) +
     #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
     stat_summary(geom="ribbon", 
@@ -192,8 +199,8 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
                                    "year", "dayofyear", "CumDDinF"))
     data$CumDD = data$CumDDinF
 
-    data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
-    # data <- data[, .(CumDD =   mean(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "dayofyear")]
+    data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", 
+                                                       "ClimateScenario", "ClimateGroup", "dayofyear")]
     ###################
     ###################   rcp85
     ###################
@@ -216,12 +223,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
         facet_grid(. ~ CountyGroup, scales="free") +
         scale_x_continuous(breaks=seq(0, 370, 50)) +
         scale_y_continuous(breaks=seq(0, 5750, 500)) +
-        #scale_y_continuous(breaks=seq(0,4500,250)) +
         theme_bw() +
-        #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
-        #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
-        #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
-        #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
         labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
         theme(
           panel.grid.major = element_line(size = 0.7),
@@ -249,10 +251,6 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
           scale_x_continuous(breaks=seq(0, 370, 50)) +
           scale_y_continuous(breaks=seq(0, 4500, 500)) +
           theme_bw() +
-          #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
-          #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
-          #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
-          #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
           labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
           theme(
             panel.grid.major = element_line(size = 0.7),
@@ -299,10 +297,6 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
     scale_x_continuous(breaks=seq(0, 370, 50)) +
     scale_y_continuous(breaks=seq(0, 5000, 1000)) +
     theme_bw() +
-    #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
-    #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
-    #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
-    #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
     labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
     theme(
       panel.grid.major = element_line(size = 0.7),
@@ -329,16 +323,17 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", version
 ##################   Adult Emergence
 ##################
 plot_adult_emergence <- function(input_dir, file_name, 
-                           box_width=.25, plot_path, output_name, 
-                           color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
-                          ){
+                                 box_width=.25, plot_path, output_name, 
+                                 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
+                                ){
   #
   # These plots are produced by combined_CM files.
   #
   output_name = paste0(output_name, ".png")
   file_name <- paste0(input_dir, file_name)
   data <- data.table(readRDS(file_name))
-  data <- subset(data, select = c("Emergence", "ClimateGroup", "ClimateScenario", 
+  data <- subset(data, select = c("Emergence", "ClimateGroup", 
+                                  "ClimateScenario", 
                                   "CountyGroup"))
   
   data$CountyGroup = as.character(data$CountyGroup)
@@ -349,7 +344,6 @@ plot_adult_emergence <- function(input_dir, file_name,
               by = c("ClimateGroup", "CountyGroup")]
   
   data <- subset(data, select = c("ClimateGroup", "CountyGroup", "Emergence"))
-  
   ######
   ###### Compute medians of each group to annotate in the plot, if possible!!!
   ######
@@ -359,55 +353,54 @@ plot_adult_emergence <- function(input_dir, file_name,
   medians_vec <- medians$med
   
   p = ggplot(data = data, aes(x=ClimateGroup, y=Emergence, fill=ClimateGroup))+
-    geom_boxplot(# outlier.shape = NA, 
-      outlier.size=0, notch=TRUE, width=.2) +
-    theme_bw() +
-    scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
-    #scale_x_discrete(limits=color_ord,limits=c(10, 20, 30)) +
-    # scale_y_discrete(limits=c(1, 2, 3, 4),labels=levels(data$ClimateGroup)) +
-    scale_y_continuous(breaks = round(seq(40, 170, by = 10),1)) +
-    labs(x="Time Period", y="Day of Year", color = "Climate Group") +
-    facet_wrap(~CountyGroup) +
-    theme(legend.position="bottom", 
-          legend.margin=margin(t = -.1, r = 0, b = 0, l = 0, unit = 'cm'),
-          # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-          legend.title = element_blank(),
-          panel.grid.major = element_line(size = 0.1),
-          axis.text = element_text(face = "plain", size = 10),
-          axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 5, r = 0, b = 0, l = 0)),
-          axis.text.x = element_text(size = 7),
-          axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
-          axis.text.y  = element_blank(),
-          axis.ticks.y = element_blank()
-    ) +
-    scale_fill_manual(values=color_ord,
-                      name="Time\nPeriod", 
-                      labels=c("Historical","2040","2060","2080")) + 
-    scale_color_manual(values=color_ord,
-                       name="Time\nPeriod", 
-                       limits = color_ord,
-                       labels=c("Historical","2040","2060","2080")) + 
-    geom_text(data = medians, 
-              aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-              size=1.5, 
-              position =  position_dodge(.09),
-              vjust = -1.5) +
-    #stat_summary(geom="text", fun.y=quantile,
-    #             aes(label=sprintf("%1.1f", ..x..), color=factor(ClimateGroup)),
-    #             position=position_nudge(x=0.33), size=.5) +
-    coord_flip()
-  ggsave(output_name, p, path=plot_path, width=4.5, height=3.1, unit="in")
+      geom_boxplot(outlier.size=0, notch=TRUE, width=.2) +
+      theme_bw() +
+      scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
+      scale_y_continuous(breaks = round(seq(40, 170, by = 10), 1)) +
+      labs(x="Time Period", y="Day of Year", color = "Climate Group") +
+      facet_wrap(~CountyGroup) +
+      theme(legend.position="bottom", 
+            panel.spacing=unit(.5,"cm"),
+            legend.margin=margin(t = -.1, r = 0, b = 0, l = 0, unit = 'cm'),
+            # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+            legend.title = element_blank(),
+            panel.grid.major = element_line(size = 0.1),
+            axis.text = element_text(face = "plain", size = 10),
+            axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 5, r = 0, b = 0, l = 0)),
+            axis.text.x = element_text(size = 7),
+            axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
+            axis.text.y  = element_blank(),
+            axis.ticks.y = element_blank()
+      ) +
+      scale_fill_manual(values=color_ord,
+                        name="Time\nPeriod", 
+                        labels=c("Historical","2040","2060","2080")) + 
+      scale_color_manual(values=color_ord,
+                         name="Time\nPeriod", 
+                         limits = color_ord,
+                         labels=c("Historical","2040","2060","2080")) + 
+      geom_text(data = medians, 
+                aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                size=1.5, 
+                position =  position_dodge(.09),
+                vjust = -1.5) +
+      #stat_summary(geom="text", fun.y=quantile,
+      #             aes(label=sprintf("%1.1f", ..x..), color=factor(ClimateGroup)),
+      #             position=position_nudge(x=0.33), size=.5) +
+      coord_flip()
+  ggsave(output_name, p, path=plot_path, width=5.5, height=3.1, unit="in")
 }
 ##################
 ##################   Generations of Adults or Larva by Aug 23
 ##################
-plot_generations_Aug23 <- function(input_dir,
-                                   file_name,
-                                   stage,
-                                   box_width=.25,
-                                   plot_path,
-                                   version,
-                                   color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
+plot_No_generations <- function(input_dir,
+                                file_name,
+                                stage,
+                                dead_line,
+                                box_width=.25,
+                                plot_path,
+                                version,
+                                color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 ){
   # stage: either larva or adult
   # version either rcp45 or rcp85
@@ -425,7 +418,6 @@ plot_generations_Aug23 <- function(input_dir,
   } else {var = "NumAdultGens"}
   
   data <- subset(data, select = c("ClimateGroup", "CountyGroup", var))
-  
   ######
   ###### Compute medians of each group to annotate in the plot, if possible!!!
   ######
@@ -433,27 +425,39 @@ plot_generations_Aug23 <- function(input_dir,
   df <- (df %>% group_by(CountyGroup, ClimateGroup))
   medians <- (df %>% summarise(med = median(!!sym(var))))
   rm(df)
+  if (dead_line=="Aug"){
+    y_lab = paste0("Number of ", stage, " Generations by August 23")
+  }
+  else{
+    y_lab = paste0("Number of ", stage, " Generations by November 5")
+  }
+  
   box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
-    geom_boxplot(#outlier.shape = NA, 
-      outlier.size=0,
-      notch=TRUE, width=.2) +
+    geom_boxplot( outlier.size=0, notch=TRUE, width=.2) +
+    scale_y_continuous(limits = c(0, 5), breaks=seq(1, 5, by=1)) + 
     theme_bw() +
     # The bigger the number in expand below, the smaller the space between y-ticks
     scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
-    labs(x="Time Period", y=paste0("Number of ", stage, " Generations by August 23"), color = "Climate Group") +
+    labs(x="Time Period", 
+         y=y_lab, 
+         color = "Climate Group") +
     facet_wrap(~CountyGroup) +
     theme(legend.position="bottom", 
           legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
           # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
           legend.title = element_blank(),
-          panel.grid.major = element_line(size = 0.1),
-          # panel.grid.major = element_blank(),
-          # panel.grid.minor = element_blank(),
+          #panel.grid.major = element_line(size = 0.1),
+          #panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
           axis.text = element_text(face = "plain", size = 10),
-          axis.title.x = element_text(face = "plain", size = 10, margin = margin(t = 1, r = 0, b = 0, l = 0)),
           axis.text.x = element_text(size = 7),
-          axis.title.y = element_text(face = "plain", size = 10, margin = margin(t = 0, r = 1, b = 0, l = 0)),
-          #axis.title.y = element_blank(),
+          axis.title.x = element_text(face = "plain", 
+                                      size=10, 
+                                      margin = margin(t=1, r=0, b=0, l=0)),
+          
+          axis.title.y = element_text(face = "plain", 
+                                      size=10, 
+                                      margin=margin(t=0, r=1, b=0, l=0)),
           axis.text.y  = element_blank(),
           axis.ticks.y = element_blank()
     ) +
@@ -466,15 +470,19 @@ plot_generations_Aug23 <- function(input_dir,
               vjust = -1) +
     coord_flip()
   
-  plot_name = paste0(stage, "_Gen_Aug23_", version)
-  ggsave(paste0(plot_name, ".png"), box_plot, path=plot_path, device="png", width=4.5, height=3.1, units = "in")
+  plot_name = paste0(stage, "_Gen_", dead_line, "_", version)
+  ggsave(paste0(plot_name, ".png"), 
+         box_plot, 
+         path=plot_path, 
+         device="png", 
+         width=4.5, height=2.5, units = "in")
 }
 #####################################################################################
 #######################                                   ###########################
 #######################          Diapause Plots           ###########################
 #######################                                   ###########################
 #####################################################################################
-plot_diapause <- function(input_dir, file_name_extension, version, , pop_type, plot_path){
+plot_diapause <- function(input_dir, file_name_extension, version, pop_type, plot_path){
   # input_dir
   # file_name_extension: file name including extention .rds
   # version
@@ -501,7 +509,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   data$variable <- factor(data$variable)
   
   diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-               geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="dotdash", color ="red", size=.35) +
+               geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
                annotate(geom="text", x=700,  y=85, label="Gen 1", color="black", angle=30) +
                annotate(geom="text", x=1700, y=80, label="Gen 2", color="black", angle=30) + 
                annotate(geom="text", x=2900, y=75, label="Gen 3", color="black", angle=30) + 
@@ -510,6 +518,8 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
                labs(x = "Cumulative Degree Days (in F)", y = "Absolute Population", color = "Absolute Population") +
                theme(axis.text = element_text(face= "plain", size = 8),
+                     panel.grid.major = element_blank(),
+                     panel.grid.minor = element_blank(),
                      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
                      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
                      legend.position="bottom"
@@ -520,12 +530,11 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                              fun.ymin=function(z) { 0 }, 
                              fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
                scale_x_continuous(limits = c(0, 5000)) + 
-               scale_y_continuous(limits = c(0, 100)) 
+               scale_y_continuous(limits = c(0, 100))
   
   plot_name = paste0("diapause_abs_", version, ".png")
   ggsave(plot_name, diap_plot, device="png", path=plot_path, width=10, height=7, unit="in")
 }
-
 
 plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
   file_name = paste0(input_dir, file_name_extension)
@@ -538,9 +547,8 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
   data$variable <- factor(data$variable)
 
-
   pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="dotdash", color ="red", size=.35) +
+       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.35) +
        annotate(geom="text", x=700,  y=18, label="Gen 1", color="black", angle=30) +
        annotate(geom="text", x=1700, y=16, label="Gen 2", color="black", angle=30) + 
        annotate(geom="text", x=2900, y=14, label="Gen 3", color="black", angle=30) + 
@@ -549,6 +557,8 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
        facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
        labs(x = "Cumulative Degree Days(in F)", y = "Relative Population", color = "Relative Population") +
        theme(axis.text = element_text(face= "plain", size = 8),
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(),
              axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
              axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
              legend.position="bottom"
