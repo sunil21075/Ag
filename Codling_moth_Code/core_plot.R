@@ -55,14 +55,14 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
                   scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
                   theme_bw() +
                   labs(x = "Julian Day", y = "Proportion Full Bloom Completed", fill = "Climate Group") +
-                  theme(panel.grid.major = element_line(size = 0.7),
-                        legend.title = element_text(face = "plain", size = 16),
-                        legend.text = element_text(size = 12),
+                  theme(panel.grid.major = element_line(size=0.2),
+                        legend.title = element_text(face="plain", size=12),
+                        legend.text = element_text(size=10),
                         legend.position = "bottom",
-                        strip.text = element_text(size=12, face = "plain"),
-                        axis.text = element_text(face="plain", size = 10),
-                        axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-                        axis.title.y = element_text(face="plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
+                        strip.text = element_text(size=12, face="plain"),
+                        axis.text = element_text(face="plain", size=10),
+                        axis.title.x = element_text(face= "plain", size=16, margin = margin(t=10, r=0, b=0, l=0)),
+                        axis.title.y = element_text(face="plain", size=16, margin = margin(t=0, r=10, b=0, l=0))
                     )
   ggsave(output_name, p1, path=plot_path)
 }
@@ -103,23 +103,23 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
     scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
     theme_bw() +
     labs(x = "Julian Day", y = "Proportion Completing Full Bloom", color = "Climate Group") +
-    theme(panel.grid.major = element_line(size = 0.7),
+    theme(panel.grid.major = element_line(size=0.2),
           # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
-          legend.title = element_text(face = "plain", size = 16),
-          legend.text = element_text(size = 12),
+          legend.title = element_text(face="plain", size=12),
+          legend.text = element_text(size=10),
           legend.position = "bottom",
           #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
-          strip.text = element_text(size = 12, face = "plain"),
-          axis.text = element_text(face = "plain", size = 10),
-          axis.title.x = element_text(face = "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-          axis.title.y = element_text(face = "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0))
+          strip.text = element_text(size=12, face="plain"),
+          axis.text = element_text(face="plain", size=10),
+          axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+          axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
     )
   ggsave(output_name, p1, path=plot_path)
 }
 
-#####################
+###############################################################
 #######
-#####################
+###############################################################
 
 plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_", 
                                 version, output_dir, output_type="cumdd"){
@@ -174,13 +174,13 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
       #panel.grid.major = element_line(size = 0.2),
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
-      legend.title = element_text(face = "plain", size = 12),
-      legend.text = element_text(size = 10),
+      legend.title = element_text(face="plain", size=12),
+      legend.text = element_text(size=10),
       legend.position = "bottom",
-      strip.text = element_text(size=12, face = "plain"),
-      axis.text = element_text(face= "plain", size = 10),
-      axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
-      axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
+      strip.text = element_text(size=12, face="plain"),
+      axis.text = element_text(face="plain", size=10),
+      axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+      axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
   
   ggsave(out_name, plot, path=output_dir)
   }
