@@ -16,8 +16,8 @@ data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/plots/"
 
 if (version == "rcp45"){
-	x_limits = c(70, 135)
-} else {x_limits = c(60, 135)}
+	x_limits = c(45, 135)
+} else {x_limits = c(45, 135)}
 
 plot_bloom_filling(data_dir, 
 	               file_name = "vertdd_combined_CMPOP_", 
