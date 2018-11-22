@@ -47,15 +47,17 @@ plot_No_generations <- function(input_dir,
   
   box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
     geom_boxplot( outlier.size=0, notch=TRUE, width=.2) +
-    scale_y_continuous(limits = c(0, 5), breaks=seq(1, 5, by=1)) + 
-    theme_bw() +
     # The bigger the number in expand below, the smaller the space between y-ticks
     scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
+    scale_y_continuous(limits = c(.5, 4), breaks=seq(1, 5, by=1)) + 
+    theme_bw() +
     labs(x="Time Period", 
          y=y_lab, 
          color = "Climate Group") +
     facet_wrap(~CountyGroup) +
     theme(legend.position="bottom", 
+          legend.key.size = unit(.75,"line"),
+          legend.text=element_text(size=5),
           legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
           # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
           legend.title = element_blank(),
@@ -65,12 +67,12 @@ plot_No_generations <- function(input_dir,
           axis.text = element_text(face = "plain", size = 10),
           axis.text.x = element_text(size = 7),
           axis.title.x = element_text(face = "plain", 
-                                      size=10, 
-                                      margin = margin(t=1, r=0, b=0, l=0)),
+                                      size=8, 
+                                      margin = margin(t=2, r=0, b=0, l=0)),
           
           axis.title.y = element_text(face = "plain", 
-                                      size=10, 
-                                      margin=margin(t=0, r=1, b=0, l=0)),
+                                      size=8, 
+                                      margin=margin(t=0, r=1.5, b=0, l=0)),
           axis.text.y  = element_blank(),
           axis.ticks.y = element_blank()
     ) +
@@ -88,8 +90,9 @@ plot_No_generations <- function(input_dir,
          box_plot, 
          path=plot_path, 
          device="png", 
-         width=4.5, height=2.5, units = "in")
+         width=6.5, height=2.5, units = "in")
 }
+########################################################################################
 
 input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/"
 plot_path = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/"
