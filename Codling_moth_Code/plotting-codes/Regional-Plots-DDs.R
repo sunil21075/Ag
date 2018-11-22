@@ -7,7 +7,6 @@ library(ggplot2)
 ##
 ## This file plots the plots in the "Regional Plots" of the website
 ## associated with Degree Days
-## 
 ##
 #############################################################################################
 model = "rcp45"

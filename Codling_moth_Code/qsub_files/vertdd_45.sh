@@ -1,12 +1,12 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
 
-#PBS -N vertdd_45
-#PBS -l nodes=1:ppn=1,walltime=99:00:00
+#PBS -N vertdd_45_2015
+#PBS -l nodes=1:ppn=1,walltime=70:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e vertdd_45_error.txt
-#PBS -o vertdd_45_output.txt
+#PBS -e vertdd_45_2015_e.txt
+#PBS -o vertdd_45_2015_o.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
