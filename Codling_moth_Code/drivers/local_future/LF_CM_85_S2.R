@@ -23,6 +23,7 @@ category = args[1]
 
 for(version in c('rcp85')) {
   files = list.files(paste0(raw_data_dir, category, "/", version, "/"))
+  files = files[30:60]
   for( file in files) {
     location = gsub("data_", "", file)
     
@@ -38,11 +39,12 @@ for(version in c('rcp85')) {
     }
     
     temp <- prepareData_CM(filename = filename, 
-                         input_folder = raw_data_dir, 
-                         param_dir = param_dir, 
-                         cod_moth_param_name ="CodlingMothparameters.txt",
-                         start_year = start_year, end_year = end_year, 
-                         lower=10, upper=31.11)
+                           input_folder = raw_data_dir, 
+                           param_dir = param_dir, 
+                           cod_moth_param_name ="CodlingMothparameters.txt",
+                           start_year = start_year, end_year = end_year, 
+                           lower=10, upper=31.11)
+
     temp_data <- data.table()
     if(category == "historical") {
       temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2015] <- "Historical"

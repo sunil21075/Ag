@@ -23,7 +23,7 @@ category = args[1]
 
 for(version in c('rcp45')) {
   files = list.files(paste0(raw_data_dir, category, "/", version, "/"))
-  files = files[235:295]
+  files = files[181:210]
   for( file in files) {
     location = gsub("data_", "", file)
     
