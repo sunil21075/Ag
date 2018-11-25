@@ -47,8 +47,8 @@ for(version in c('rcp85')) {
 
     temp_data <- data.table()
     if(category == "historical") {
-      temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2006] <- "Historical"
-      temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2006, ])
+      temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2015] <- "Historical"
+      temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2015, ])
     }
     else {
       temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"

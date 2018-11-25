@@ -150,7 +150,7 @@ prepareData_CMPOP <- function(filename, input_folder,
   # reorder the data frame. 
   # (why? probably because the way the rest of 
   # the code were written, before writing this function)
-  data <- data[, c(31:33, 30, 13:17, 18:29, 1:12)]
+  data <- data[, c(31:33, 30, 13:17, 18:29, 1:12)]  
   return(data)
 }
 

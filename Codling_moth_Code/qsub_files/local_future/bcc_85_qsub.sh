@@ -17,6 +17,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_85_scenario_driver.R bcc-csm1-1-m
+/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_85.R bcc-csm1-1-m
 
 exit 0
