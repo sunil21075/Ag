@@ -17,6 +17,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_45_scenario_driver.R BNU-ESM
+/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_45.R BNU-ESM
 
 exit 0

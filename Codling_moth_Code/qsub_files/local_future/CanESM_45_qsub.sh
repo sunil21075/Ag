@@ -17,6 +17,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_45_scenario_driver.R CanESM2
+/home/hnoorazar/cleaner_codes/drivers/local_future/LF_CM_45.R CanESM2
 
 exit 0
