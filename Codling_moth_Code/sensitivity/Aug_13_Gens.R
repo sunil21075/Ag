@@ -39,6 +39,9 @@ medians <- (df %>% summarise(med = median(!!sym(var))))
 data <- readRDS("/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/sensitivity_1/10/generations_Aug_combined_CMPOP_rcp85.rds")
 var = "NumAdultGens"
 data <- subset(data, select = c("ClimateGroup", "CountyGroup", var))
+df <- data.frame(data)
+df <- (df %>% group_by(CountyGroup, ClimateGroup))
+medians <- (df %>% summarise(med = median(!!sym(var))))
 
 ####### Larva
 data <- readRDS("/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/sensitivity_1/10/generations_Aug_combined_CMPOP_rcp85.rds")

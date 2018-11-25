@@ -21,9 +21,9 @@ cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 args = commandArgs(trailingOnly=TRUE)
 category = args[1]
 
-for(version in c('rcp45')) {
+for(version in c('rcp85')) {
   files = list.files(paste0(raw_data_dir, category, "/", version, "/"))
-  files = files[176:235]
+  files = files[1:29]
   for( file in files) {
     location = gsub("data_", "", file)
     
@@ -44,7 +44,7 @@ for(version in c('rcp45')) {
                            cod_moth_param_name ="CodlingMothparameters.txt",
                            start_year = start_year, end_year = end_year, 
                            lower=10, upper=31.11)
-    
+
     temp_data <- data.table()
     if(category == "historical") {
       temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2015] <- "Historical"
