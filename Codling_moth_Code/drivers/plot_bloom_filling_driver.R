@@ -7,17 +7,19 @@ source_path2 = "/home/hnoorazar/cleaner_codes/core_plot.R"
 source(source_path1)
 source(source_path2)
 
-
+#########
+######### Running this is gonna take at least 40 minutes, 
+######### IF it is successful! R memory allocation problem!
+#########
 args = commandArgs(trailingOnly=TRUE)
 version = args[1]
-
 
 data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/plots/"
 
 if (version == "rcp45"){
-	x_limits = c(45, 135)
-} else {x_limits = c(45, 135)}
+	x_limits = c(45, 140)
+} else {x_limits = c(45, 140)}
 
 plot_bloom_filling(data_dir, 
 	               file_name = "vertdd_combined_CMPOP_", 
