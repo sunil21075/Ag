@@ -40,6 +40,7 @@ produce_CMPOP <- function (input_folder, filename,
   rm (temp)
 
   loc = tstrsplit(location, "_")
+  options(digits=9)
   temp_data$latitude <- as.numeric(unlist(loc[1]))
   temp_data$longitude <- as.numeric(unlist(loc[2]))
   temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
@@ -76,6 +77,7 @@ produce_CM <- function(input_folder, filename,
     temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
     temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
   }
+  options(digits=9)
   temp_data$latitude <- as.numeric(unlist(loc[1]))
   temp_data$longitude <- as.numeric(unlist(loc[2]))
   temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
@@ -892,13 +894,13 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
   locations = readLines(conn)
   close(conn)
 
-  for( category in categories) {
-    for( location in locations) {
+  for(category in categories){
+    for(location in locations){
       if(category != "historical") {
-        filename <- paste0(read_data_dir, "future_", file_prefix, "/", category, "/", version, "/", file_prefix, "_", location)
+        filename <- paste0(input_dir, "future_", file_prefix, "/", category, "/", version, "/", file_prefix, "_", location)
       }
       else {
-        filename <- paste0(read_data_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
+        filename <- paste0(input_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
       }
     data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
     }
@@ -909,6 +911,7 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
 ##########################################################################################################################
 add_countyGroup <- function(data, param_dir, loc_group_file_name){
   loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
+  options(digits=9)
   loc_grp$latitude = as.numeric(loc_grp$latitude)
   loc_grp$longitude = as.numeric(loc_grp$longitude)
 
@@ -1037,7 +1040,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     data <- data.table(readRDS(file_name))
 
     loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
-    #loc_grp = loc_grp[1:15,]
+    options(digits=9)
     loc_grp$latitude = as.numeric(loc_grp$latitude)
     loc_grp$longitude = as.numeric(loc_grp$longitude)
 
@@ -1185,6 +1188,7 @@ diapause_map1_prep <- function(input_dir, file_name,
   data <- data.table(readRDS(file_name))
 
   loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
+  options(digits=9)
   loc_grp$latitude = as.numeric(loc_grp$latitude)
   loc_grp$longitude = as.numeric(loc_grp$longitude)
 
@@ -1284,3 +1288,9 @@ compute_cumdd_eggHatch <- function(input_dir, file_name="combined_CMPOP_", versi
                    by = c("CountyGroup", "latitude", "longitude", "ClimateScenario", "ClimateGroup", "year", "dayofyear")]
     return (data)
 }
+
+
+
+######################
+###################### Written for Sensitivity Analysis
+######################

@@ -49,6 +49,7 @@ for (shift in params_shift){
 			    temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
 
 			    loc = tstrsplit(location, "_")
+			    options(digits=9)
 			    temp_data$latitude <- as.numeric(unlist(loc[1]))
 			    temp_data$longitude <- as.numeric(unlist(loc[2]))
 			    temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
@@ -85,6 +86,7 @@ for (shift in params_shift){
 				    temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
 				    
 				    loc = tstrsplit(location, "_")
+				    options(digits=9)
 				    temp_data$latitude <- as.numeric(unlist(loc[1]))
 				    temp_data$longitude <- as.numeric(unlist(loc[2]))
 				    temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
@@ -121,6 +123,7 @@ for (shift in params_shift){
 	            temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2015, ])
 
 	            loc = tstrsplit(location, "_")
+	            options(digits=9)
 	            temp_data$latitude <- as.numeric(unlist(loc[1]))
 	            temp_data$longitude <- as.numeric(unlist(loc[2]))
 	            temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 
@@ -158,6 +161,7 @@ for (shift in params_shift){
 		            temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
 		            
 		            loc = tstrsplit(location, "_")
+		            options(digits=9)
 		            temp_data$latitude <- as.numeric(unlist(loc[1]))
 		            temp_data$longitude <- as.numeric(unlist(loc[2]))
 		            temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & 

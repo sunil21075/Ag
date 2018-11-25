@@ -21,9 +21,9 @@ cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 args = commandArgs(trailingOnly=TRUE)
 category = args[1]
 
-for(version in c('rcp85')) {
+for(version in c('rcp45')) {
   files = list.files(paste0(raw_data_dir, category, "/", version, "/"))
-  files = files[290:295]
+  files = files[285:295]
   for( file in files) {
     location = gsub("data_", "", file)
     
