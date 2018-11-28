@@ -205,7 +205,7 @@ prepareData_CM <- function(filename, input_folder,
   # Generate Percent Population
   percpopulation <- CodlingMothPercentPopulation(CodMothParams, metdata)
   rm(metdata)
-  data <- cbind(percpopulation[,1:12], data)
+  data <- cbind(percpopulation[, 1:12], data)
 
   prec_col_names = colnames(percpopulation)[1:8]
   colnames(data) <- c(prec_col_names, "PercEgg", 
@@ -642,23 +642,23 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
   for (i in 1:4) {
     columnname <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i,2], sep="")
     columnnumber <- which( colnames(allrelnum)==columnname )
-    write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_1", ".txt"))
+    # write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_1", ".txt"))
     allrelnum$PercEgg[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
                       allrelnum$Cum_dd_F <= CodMothParams[i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
-                                                                              allrelnum$Cum_dd_F <= CodMothParams[i,6], 
-                                                                              columnnumber]
+                                                                             allrelnum$Cum_dd_F <= CodMothParams[i,6], 
+                                                                             columnnumber]
   }
   for (i in 5:8) {
-    columnname <- paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2], sep="")
+    columnname <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
     columnnumber <- which( colnames(allrelnum)==columnname )
-    write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_5", ".txt"))
+    # write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_5", ".txt"))
     allrelnum$PercLarva[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
                         allrelnum$Cum_dd_F <= CodMothParams[i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
                                                                                allrelnum$Cum_dd_F <= CodMothParams[i,6], 
                                                                                columnnumber]
   }  
   for (i in 9:12) {
-    columnname <- paste("Perc",CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    columnname <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
     columnnumber <- which( colnames(allrelnum)==columnname )
     allrelnum$PercPupa[allrelnum$Cum_dd_F>CodMothParams[i,5] & 
                        allrelnum$Cum_dd_F<=CodMothParams[i,6]] <- allrelnum[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
@@ -666,15 +666,13 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
                                                                             columnnumber]
   } 
   for (i in 13:16) {
-    columnname<-paste("Perc",CodMothParams[i,1], "Gen",CodMothParams[i,2], sep="")
-    write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_13", ".txt"))
+    columnname<-paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", ".txt"))
     columnnumber<-which( colnames(allrelnum)==columnname )
     allrelnum$PercAdult[allrelnum$Cum_dd_F > CodMothParams[i,5] & 
                         allrelnum$Cum_dd_F <= CodMothParams[i,6]] <- allrelnum[allrelnum$Cum_dd_F > 
                         CodMothParams [i,5] & allrelnum$Cum_dd_F <= CodMothParams[i,6], columnnumber]
   } 
-
-  # allrelnum[, "PercAdult"] # what the hell is this doing?
   allrelnum <- allrelnum[, c("PercLarvaGen1", "PercLarvaGen2", "PercLarvaGen3", "PercLarvaGen4",
                              "PercAdultGen1", "PercAdultGen2", "PercAdultGen3", "PercAdultGen4",
                              "PercEgg", "PercLarva","PercPupa","PercAdult",
