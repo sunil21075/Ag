@@ -399,8 +399,12 @@ plot_No_generations <- function(input_dir,
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
   
-  if (stage=="Larva"){var = "NumLarvaGens"
-  } else {var = "NumAdultGens"}
+  if (stage=="Larva"){
+    var = "NumLarvaGens"
+  } 
+  else {
+    var = "NumAdultGens"
+  }
   
   data <- subset(data, select = c("ClimateGroup", "CountyGroup", var))
   ######
@@ -418,7 +422,7 @@ plot_No_generations <- function(input_dir,
   }
   
   box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
-    geom_boxplot( outlier.size=-.15, lwd=0.25, notch=TRUE, width=box_width) +
+    geom_boxplot(outlier.size=-.15, lwd=0.25, notch=TRUE, width=box_width) +
     # The bigger the number in expand below, the smaller the space between y-ticks
     scale_x_discrete(expand=c(0, 3), limits = levels(data$ClimateGroup[1])) +
     scale_y_continuous(limits = c(.5, 4), breaks=seq(1, 5, by=1)) + 
@@ -564,8 +568,12 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in")
 }
 
-############
-plot_flight_DoY_half <- function(input_dir, input_name, stage, output_dir, output_name){
+#################################################################
+#################################################################
+#################################################################
+plot_flight_DoY_half <- function(input_dir, input_name, stage, 
+                                 output_dir, output_name, 
+                                 plot_with=7, plot_height=3){
   color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   data <- readRDS(paste0(input_dir, input_name))
   if (stage == "adult"){
@@ -576,55 +584,55 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage, output_dir, outpu
   else{
     data <- subset(data, select = c("LGen1_0.5", "LGen2_0.5", "LGen3_0.5", "LGen4_0.5",
                                     "ClimateGroup", "CountyGroup"))
-
+    
     L = c('LGen1_0.5', 'LGen2_0.5',  'LGen3_0.5', 'LGen4_0.5')
   }
   
-
+  
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-
+  
   data_melted = melt(data, id = c("ClimateGroup", "CountyGroup"))
   data_melted$variable <- factor(data_melted$variable, levels = L, ordered = TRUE)
-
+  
   bplot <- ggplot(data = data_melted, aes(x=variable, y=value), group = variable) + 
-           geom_boxplot(outlier.size=-.15, notch=FALSE, width=.2, lwd=.25, aes(fill=ClimateGroup), 
-                        position=position_dodge(width=0.5)) + 
-           scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
-           #geom_vline(xintercept=4.5, linetype="solid", color = "grey", size=1)+
-           #geom_vline(xintercept=8.5, linetype="solid", color = "grey", size=1)+
-           # annotate("text", x=2.5, y=369, angle=270, label= "boat", size=8, fontface="plain") + 
-           
-           facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
-           labs(x="Time Period", y="Day of Year", color = "Climate Group", title=factor(data_melted$CountyGroup)) + 
-           theme_bw() +
-           theme(legend.position="bottom", 
-                 legend.margin=margin(t=-.1, r=0, b=5, l=0, unit = 'cm'),
-                 legend.title = element_blank(),
-                 legend.text = element_text(size=7, face="plain"),
-                 legend.key.size = unit(.5, "cm"), 
-                 panel.grid.major = element_line(size = 0.1),
-                 panel.grid.minor = element_line(size = 0.1),
-                 strip.text = element_text(size= 6, face = "plain"),
-                 axis.text = element_text(face = "plain", size = 4),
-                 axis.title.x = element_text(face = "plain", size = 10, 
-                                             margin = margin(t=10, r=0, b=0, l=0)),
-                 axis.text.x = element_text(size = 6),
-                 axis.title.y = element_text(face = "plain", size = 10, 
-                                             margin = margin(t=0, r=7, b=0, l=0)),
-                 axis.text.y  = element_blank(),
-                 axis.ticks.y = element_blank(),
-                 plot.margin = unit(c(t=-0.35, r=.7, b=-4.7, l=0.3), "cm")
-            ) +
-            scale_color_manual(values=color_ord,
-                               name="Time\nPeriod", 
-                               limits = color_ord,
-                               labels=c("Historical","2040","2060","2080")) +
-            scale_fill_manual(values=color_ord,
-                              name="Time\nPeriod", 
-                              labels=c("Historical","2040","2060","2080")) + 
-            coord_flip()
+    geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
+                 position=position_dodge(width=0.5)) + 
+    scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
+    #geom_vline(xintercept=4.5, linetype="solid", color = "grey", size=1)+
+    #geom_vline(xintercept=8.5, linetype="solid", color = "grey", size=1)+
+    # annotate("text", x=2.5, y=369, angle=270, label= "boat", size=8, fontface="plain") + 
+    
+    facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+    labs(x="Time Period", y="Day of Year", color = "Climate Group", title=factor(data_melted$CountyGroup)) + 
+    theme_bw() +
+    theme(legend.position="bottom", 
+          legend.margin=margin(t=-.1, r=0, b=5, l=0, unit = 'cm'),
+          legend.title = element_blank(),
+          legend.text = element_text(size=7, face="plain"),
+          legend.key.size = unit(.5, "cm"), 
+          panel.grid.major = element_line(size = 0.1),
+          panel.grid.minor = element_line(size = 0.1),
+          strip.text = element_text(size= 6, face = "plain"),
+          axis.text = element_text(face = "plain", size = 4),
+          axis.title.x = element_text(face = "plain", size = 10, 
+                                      margin = margin(t=10, r=0, b=0, l=0)),
+          axis.text.x = element_text(size = 6),
+          axis.title.y = element_text(face = "plain", size = 10, 
+                                      margin = margin(t=0, r=7, b=0, l=0)),
+          axis.text.y  = element_blank(),
+          axis.ticks.y = element_blank(),
+          plot.margin = unit(c(t=-0.35, r=.7, b=-4.7, l=0.3), "cm")
+    ) +
+    scale_color_manual(values=color_ord,
+                       name="Time\nPeriod", 
+                       limits = color_ord,
+                       labels=c("Historical","2040","2060","2080")) +
+    scale_fill_manual(values=color_ord,
+                      name="Time\nPeriod", 
+                      labels=c("Historical","2040","2060","2080")) + 
+    coord_flip()
   #bplot <- add_sub(bplot, label="Gen. 1", x=1.02, y=8, angle=270, size=6, fontface="plain")
-  ggsave(output_name, bplot, device="png", path=plot_path, width=7, height=5, unit="in")
+  ggsave(output_name, bplot, device="png", path=plot_path, width=plot_with, height=plot_height, unit="in")
 }
