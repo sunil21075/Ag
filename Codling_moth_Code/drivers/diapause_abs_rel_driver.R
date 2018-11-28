@@ -21,7 +21,9 @@ output = diapause_abs_rel(input_dir,
 RelData = data.table(output[[1]])
 AbsData = data.table(output[[2]])
 sub1 = data.table(output[[3]])
+# pre_diap_plot = data.table(output[[4]])
 
 saveRDS(RelData, paste0(write_dir, "diapause_rel_data_", version, ".rds"))
 saveRDS(AbsData, paste0(write_dir, "diapause_abs_data_", version, ".rds"))
 saveRDS(sub1,    paste0(write_dir, "diapause_plot_data_", version, ".rds"))
+# saveRDS(pre_diap_plot, paste0(write_dir, "pre_diap_plot_", version, ".rds"))

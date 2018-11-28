@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N plot_bloom_85
-#PBS -l nodes=1:ppn=1,walltime=10:00:00
+#PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=40gb
 #PBS -q hydro
 #PBS -e plot_bloom_85_e.txt

@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N plot_eggHatch_45
-#PBS -l nodes=1:ppn=1,walltime=1:00:00
+#PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
 #PBS -e plot_eggHatch_45_E.txt

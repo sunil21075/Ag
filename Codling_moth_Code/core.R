@@ -1111,14 +1111,19 @@ diapause_abs_rel <- function(input_dir, file_name,
                              "year", "dayofyear", "CumDDinF", 
                              "SumLarva", "enterDiap", 
                              "escapeDiap", "AbsPopTotal",
-                             "AbsPopNonDiap","AbsPopDiap"))
-
+                             "AbsPopNonDiap","AbsPopDiap", "daylength"))
+    # pre_diap_plot <- sub1
+    write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
+    saveRDS(sub1, paste0(write_dir, "pre_diap_plot_", version, ".rds"))
     sub1 = sub1[, .(RelLarvaPop = mean(SumLarva),    RelDiap = mean(enterDiap),  RelNonDiap = mean(escapeDiap), 
                     AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
                     CumulativeDDF = mean(CumDDinF)), 
                     by = c("ClimateGroup", "CountyGroup", "dayofyear")]
     
-    #sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), CumulativeDDF = mean(CumDDinF)), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "dayofyear")]
+    #sub1 = sub1[, .(RelLarvaPop = mean(SumLarva),   RelDiap = mean(enterDiap), RelNonDiap = mean(escapeDiap), 
+    #                AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
+    #                 CumulativeDDF = mean(CumDDinF)), by = c("ClimateGroup", "CountyGroup", 
+    #                                                         "latitude", "longitude", "dayofyear")]
 
     RelData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
                                       "dayofyear", "CumulativeDDF", 
@@ -1146,6 +1151,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     temp2$Group = "Absolute Larva Pop Vs NonDiapaused"
     AbsData = rbind(temp1, temp2)
 
+    # return (list(RelData, AbsData, sub1, pre_diap_plot))
     return (list(RelData, AbsData, sub1))
 }
 ################################################################################

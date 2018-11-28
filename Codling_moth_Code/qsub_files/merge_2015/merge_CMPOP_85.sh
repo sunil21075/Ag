@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/merge_driver_2015.R rcp85 CMPOP
+/home/hnoorazar/cleaner_codes/drivers/merge_driver.R rcp85 CMPOP
 
 exit 0
