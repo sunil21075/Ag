@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N diap_abs_rel_45
-#PBS -l nodes=1:ppn=1,walltime=70:00:00
+#PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=30gb
 #PBS -q hydro
 #PBS -e diap_abs_rel_45_e.txt

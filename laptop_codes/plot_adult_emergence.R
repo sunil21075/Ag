@@ -81,8 +81,8 @@ plot_adult_emergence <- function(input_dir, file_name,
 
 ################################################################################################
 
-input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/"
-plot_path = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/"
+input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
+plot_path = "/Users/hn/Desktop/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 box_width = 0.25 
 

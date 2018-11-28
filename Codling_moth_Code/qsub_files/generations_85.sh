@@ -2,7 +2,7 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N generations_85
-#PBS -l nodes=1:ppn=1,walltime=12:00:00
+#PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=15gb
 #PBS -q hydro
 #PBS -e generations_85_e.txt

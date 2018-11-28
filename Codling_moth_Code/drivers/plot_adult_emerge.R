@@ -7,8 +7,6 @@ source_path2 = "/home/hnoorazar/cleaner_codes/core_plot.R"
 source(source_path1)
 source(source_path2)
 
-
-
 data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/plots/"
 
@@ -17,11 +15,8 @@ color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 
 file_name = "combined_CM_rcp45.rds"
 plot_output_name = "adult_emergence_rcp45"
-plot_adult_emergence(input_dir=data_dir, file_name, box_width=.25, plot_path, plot_output_name)
+plot_adult_emergence(input_dir=data_dir, file_name, box_width=.09, plot_path, plot_output_name)
 
 file_name = "combined_CM_rcp85.rds"
 plot_output_name = "adult_emergence_rcp85"
-plot_adult_emergence(input_dir=data_dir, file_name, box_width=.25, plot_path, plot_output_name)
-
-
-
+plot_adult_emergence(input_dir=data_dir, file_name, box_width=.09, plot_path, plot_output_name)

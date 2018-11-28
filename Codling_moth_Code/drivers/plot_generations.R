@@ -35,7 +35,7 @@ for (dead_line in dead_lines){
                                    file_name,
                                    stage,
                                    dead_line = dead_line,
-                                   box_width=.25,
+                                   box_width=.09,
                                    plot_path,
                                    version=version,
                                    color_ord)
