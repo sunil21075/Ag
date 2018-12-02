@@ -1,3 +1,4 @@
+
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
 library(chron)
 library(data.table)
@@ -6,7 +7,7 @@ library(reshape2)
 library(dplyr)
 library(foreach)
 library(iterators)
-
+####### This is the core that works best, yet, as Nov. 29th, right before changing the scale_shift
 ##########################################################################################################################
 ##################################                                                                                   #####
 ##################################  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
@@ -609,7 +610,7 @@ prepareData_CM <- function(filename, input_folder,
 }
 ##########################################################################################################################
 ##########################################################################################################################
-CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
+CodlingMothPercentPopulation_working <- function(CodMothParams, metdata_data.table) {
   # Number of stages which is 16: egg_1   thorugh egg_4,
   #                               Larva_1 thorugh Larva_4
   #                               Pupa_1  thorugh Pupa_4
@@ -625,19 +626,18 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
   colnames(masterdata) <- c("dayofyear", "year", "month", "Cum_dd_F")
   
   for (i in 1:stage_gen_toiterate) {
-    relnum <- pweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4]) 
+    relnum <- pweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4])
     relnum <- data.frame(relnum)
     colnames(relnum) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, relnum)
   }
-  
+  rm(metdata_data.table)
   allrelnum <- masterdata
   rm (masterdata)
   allrelnum$PercEgg = 0
   allrelnum$PercLarva = 0
   allrelnum$PercPupa = 0
   allrelnum$PercAdult = 0
-  i = 1
 
   for (i in 1:4) {
     columnname <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i,2], sep="")
@@ -678,6 +678,77 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
                              "PercEgg", "PercLarva","PercPupa","PercAdult",
                              "dayofyear","year","month")]
   return(allrelnum)
+}
+###################
+################### The following is a copy of above function with allrelnum back to masterdata
+###################
+CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table) {
+  # Number of stages which is 16: egg_1   thorugh egg_4,
+  #                               Larva_1 thorugh Larva_4
+  #                               Pupa_1  thorugh Pupa_4
+  #                               Adult_1 thorugh Adult_4
+  stage_gen_toiterate <- length(CodMothParams[, 1])
+  
+  # store relative numbers
+  masterdata <- data.frame(metdata_data.table$dayofyear, 
+                           metdata_data.table$year, 
+                           metdata_data.table$month, 
+                           metdata_data.table$Cum_dd_F)
+  
+  colnames(masterdata) <- c("dayofyear", "year", "month", "Cum_dd_F")
+  
+  for (i in 1:stage_gen_toiterate) {
+    perc_num <- pweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4])
+    perc_num <- data.frame(perc_num)
+    colnames(perc_num) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
+    masterdata <- cbind(masterdata, perc_num)
+  }
+  rm(metdata_data.table)
+  
+  masterdata$PercEgg = 0
+  masterdata$PercLarva = 0
+  masterdata$PercPupa = 0
+  masterdata$PercAdult = 0
+  i = 1
+
+  for (i in 1:4) {
+    column_name <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i,2], sep="")
+    column_no <- which( colnames(masterdata)==column_name )
+    # write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_1", ".txt"))
+    masterdata$PercEgg[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                      masterdata$Cum_dd_F <= CodMothParams[i,6]] <- masterdata[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                                                                             masterdata$Cum_dd_F <= CodMothParams[i,6], 
+                                                                             column_no]
+  }
+  for (i in 5:8) {
+    column_name <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    column_no <- which( colnames(masterdata)==column_name )
+    # write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_5", ".txt"))
+    masterdata$PercLarva[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                        masterdata$Cum_dd_F <= CodMothParams[i,6]] <- masterdata[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                                                                               masterdata$Cum_dd_F <= CodMothParams[i,6], 
+                                                                               column_no]
+  }  
+  for (i in 9:12) {
+    column_name <- paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    column_no <- which( colnames(masterdata)==column_name )
+    masterdata$PercPupa[masterdata$Cum_dd_F>CodMothParams[i,5] & 
+                       masterdata$Cum_dd_F<=CodMothParams[i,6]] <- masterdata[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                                                                            masterdata$Cum_dd_F <= CodMothParams[i,6], 
+                                                                            column_no]
+  } 
+  for (i in 13:16) {
+    column_name<-paste("Perc", CodMothParams[i,1], "Gen", CodMothParams[i,2], sep="")
+    column_no<-which( colnames(masterdata)==column_name )
+    masterdata$PercAdult[masterdata$Cum_dd_F > CodMothParams[i,5] & 
+                        masterdata$Cum_dd_F <= CodMothParams[i,6]] <- masterdata[masterdata$Cum_dd_F > 
+                        CodMothParams [i,5] & masterdata$Cum_dd_F <= CodMothParams[i,6], column_no]
+  } 
+  masterdata <- masterdata[, c("PercLarvaGen1", "PercLarvaGen2", "PercLarvaGen3", "PercLarvaGen4",
+                               "PercAdultGen1", "PercAdultGen2", "PercAdultGen3", "PercAdultGen4",
+                               "PercEgg", "PercLarva","PercPupa","PercAdult",
+                               "dayofyear","year","month")]
+  return(masterdata)
 }
 ##########################################################################################################################
 ##########################################################################################################################
