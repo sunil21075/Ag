@@ -6,7 +6,7 @@ library(ggplot2)
 #############################################################################################
 ##
 ## This file plots the plots 
-## that are not on the websie. However, something similar 
+## that are not on the website. However, something similar 
 ## to the left of the image cumdd_plot3_rcp45.png is produced.
 ## With a little bit of change, perhaps, we can produce something
 ## similar to Regional Plots, Degree Days.
@@ -52,27 +52,19 @@ plot2 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
 	facet_grid(CountyGroup ~ ClimateGroup ~ ., scales = "fixed") +
 	scale_x_continuous(breaks=seq(0,370,50)) +
 	scale_y_continuous(breaks=seq(0,5000,1000)) +
-	  theme_bw() +
-	  #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
-	  #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
-	  #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
-	  #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
-	  labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
-	  theme(
-	    panel.grid.major = element_line(size = 0.7),
-	    axis.text = element_text(face = "bold", size = 18),
-	    axis.title = element_text(face = "bold", size = 20),
-	    legend.title = element_text(face = "bold", size = 20),
-	    legend.text = element_text(size = 20),
-	    legend.position = "top",
-	    #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
-	    strip.text = element_text(size = 18, face = "bold"))
+	theme_bw() +
+    labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
+    theme(
+      panel.grid.major = element_line(size = 0.7),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
+      legend.position = "top",
+      strip.text = element_text(size = 18, face = "bold"))
 
 if (model=='rcp45'){
 	plot_name = "cumdd_plot2.png"
-}else if (model=='rcp85'){
+}else{
     plot_name = "cumdd_plot2_rcp45.png"}
 ggsave(plot_name, plot2, width = 45, height = 22, units = "cm")
-
-
-

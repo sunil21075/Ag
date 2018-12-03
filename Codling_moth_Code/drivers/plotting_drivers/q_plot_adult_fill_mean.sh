@@ -1,17 +1,21 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
-#PBS -N merge_sens_CMPOP_45
+
+#PBS -N adult_fill_mean_45
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
-#PBS -l mem=2gb
+#PBS -l mem=30gb
 #PBS -q hydro
-#PBS -e merge_sens_CMPOP_45_e.txt
-#PBS -o merge_sens_CMPOP_45_o.txt
-#PBS -M h.noorazar@yahoo.com
+#PBS -e adult_mean_45_E.txt
+#PBS -o adult_mean_45_o.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
+
 # Ensure a clean running environment:
 module purge
+
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
-./merge_sensitivity.R rcp45 CMPOP
+
+./d_plot_adult_DoY_fill_mean.R rcp45
+
 exit 0

@@ -10,13 +10,13 @@ args = commandArgs(trailingOnly=TRUE)
 version = args[1]
 
 file_name = paste0("combined_CMPOP_", version, ".rds")
-shifts = c("0", "5", "10", "15", "20")
+shifts = c("1", "2", "3", "4")
 
 for (shift in shifts){
-	input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/sensitivity_wider/one_loc/"
+	input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/"
 	input_dir = paste0(input_dir, shift, "/")
 	
-	write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/sensitivity_wider/one_loc/"
+	write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/"
 	write_dir = paste0(write_dir, shift, "/")
 	output = generations_func(input_dir, file_name)
 	generations_Aug = data.table(output[[1]])

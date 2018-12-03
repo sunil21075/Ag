@@ -15,6 +15,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes//drivers/take_samples.R
+./take_samples.R
 
 exit 0

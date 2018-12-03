@@ -11,7 +11,8 @@ source(source_path)
 
 param_path   = "/home/hnoorazar/cleaner_codes/parameters/"
 shifts = c("0", "5", "10", "15", "20")
-master_path = "/data/hydro/users/Hossein/codling_moth_new/local/sensitivity_wider/one_loc/"
+shifts = c("1", "2", "3", "4")
+master_path = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/"
 
 cats = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
 locations_list = "local_list_1"
