@@ -48,28 +48,24 @@ plot1 = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
 	 
 	facet_grid(. ~ CountyGroup, scales="free") +
 	scale_x_continuous(breaks=seq(0,370,25)) +
-	# scale_y_continuous(breaks=seq(0,5750,250)) +
 	scale_y_continuous(breaks=seq(0,4500,250)) +
 	theme_bw() +
-	  #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
-	  #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
-	  #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
-	  #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
-	  labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
-	  theme(
-	    panel.grid.major = element_line(size = 0.7),
-	    axis.text = element_text(face = "bold", size = 18),
-	    axis.title = element_text(face = "bold", size = 20),
-	    legend.title = element_text(face = "bold", size = 20),
-	    legend.text = element_text(size = 20),
-	    legend.position = "top",
-	    #plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
-	    strip.text = element_text(size = 18, face = "bold"))
+    #geom_vline(xintercept=c(100,150,200,250,300), linetype="solid", color ="grey")+
+    #geom_vline(xintercept=c(120,226), linetype="solid", color ="red")+
+    #geom_vline(xintercept=seq(70,300,10), linetype="dotdash")+
+    #geom_hline(yintercept=c(.25,.5,.75), linetype="dotted", color = "black")+
+    labs(x = "Julian Day", y = "Cumulative Degree Days (in F)", fill = "Climate Group") +
+    theme(
+      panel.grid.major = element_line(size = 0.7),
+      axis.text = element_text(face = "bold", size = 18),
+      axis.title = element_text(face = "bold", size = 20),
+      legend.title = element_text(face = "bold", size = 20),
+      legend.text = element_text(size = 20),
+      legend.position = "top",
+      strip.text = element_text(size = 18, face = "bold"))
 
 if (model=='rcp45'){
 	plot_name = "cumdd_plot2.png"
 }else{
-    plot_name = "cumdd_plot2_rcp45.png"
-}
+    plot_name = "cumdd_plot2_rcp45.png"}
 ggsave(plot_name, plot1, width = 45, height = 22, units = "cm")
-

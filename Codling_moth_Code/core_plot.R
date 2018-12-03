@@ -560,7 +560,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   ## plot_path 
   ## 
   file_name = paste0(input_dir, file_name_extension)
-  data <- readRDS(file_name)
+  data <- data.table(readRDS(file_name))
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
@@ -570,6 +570,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   
   diap_plot <- ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
                geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
+               geom_hline(yintercept=c(25, 50, 75, 100), linetype="solid", color ="grey", size=.25) +
                annotate(geom="text", x=700,  y=85, label="Gen 1", color="black", angle=30) +
                annotate(geom="text", x=1700, y=80, label="Gen 2", color="black", angle=30) + 
                annotate(geom="text", x=2900, y=75, label="Gen 3", color="black", angle=30) + 
@@ -598,8 +599,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
 
 plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
   file_name = paste0(input_dir, file_name_extension)
-  data <- readRDS(file_name)
-
+  data <- data.table(readRDS(file_name))
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
@@ -608,7 +608,8 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   data$variable <- factor(data$variable)
 
   pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.35) +
+       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
+       geom_hline(yintercept=c(5, 10, 15, 20), linetype="solid", color ="grey", size=.25) +
        annotate(geom="text", x=700,  y=18, label="Gen 1", color="black", angle=30) +
        annotate(geom="text", x=1700, y=16, label="Gen 2", color="black", angle=30) + 
        annotate(geom="text", x=2900, y=14, label="Gen 3", color="black", angle=30) + 
@@ -636,4 +637,135 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   plot_name = paste0("diapause_rel_", version,".png")
   ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in")
 }
+
+plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_", 
+                                   version, output_dir){
+  out_name = paste0("plot_Adult_Emerg_median_", version ,".png")
+  #############################################
+  ###    Adult Emergence
+  #############################################
+  data = compute_cumdd_adult_emergence_median(input_dir=data_dir, 
+                                              file_name="combined_CMPOP_", 
+                                               version = version)
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data = melt(data, id = c("ClimateGroup", "CountyGroup", 
+                           "latitude", "longitude", 
+                           "ClimateScenario", "year", "dayofyear"))
+
+  plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
+                aes(x=dayofyear, y=value, fill=factor(variable))) +
+  #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.1) }, 
+               fun.ymax=function(z) { quantile(z,0.9) }, 
+               alpha=0.3) +
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.25) }, 
+               fun.ymax=function(z) { quantile(z,0.75) }, 
+               alpha=0.8) + 
+  stat_summary(geom="line", 
+               fun.y=function(z) { quantile(z,0.5) })+
+  
+  scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
+                              rgb(92, 160, 201, max=255), 
+                              rgb(211, 91, 76, max=255), 
+                              rgb(125, 7, 37, max=255)),
+                    labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
+  scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
+                             rgb(92, 160, 201, max=255), 
+                             rgb(211, 91, 76, max=255), 
+                             rgb(125, 7, 37, max=255)),
+                    labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4"))+
+  
+  facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
+  scale_x_continuous(breaks=seq(0, 300, 50)) +
+  theme_bw() +
+  geom_vline(xintercept=c(100, 150, 200, 250, 300), linetype="solid", color ="grey", size=0.2) +
+  geom_hline(yintercept=c(.25, .5, .75), linetype="solid", color ="grey", size=0.2) +
+  # geom_vline(xintercept=c(120, 226), linetype="solid", color ="red") +
+  labs(x = "Day of Year", y = paste0("Cumulative Adult Emergence"), fill = "Adult Generation") +
+  theme(
+    #panel.grid.major = element_line(size = 0.2),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.title = element_text(face="plain", size=12),
+    legend.text = element_text(size=10),
+    legend.position = "bottom",
+    strip.text = element_text(size=12, face="plain"),
+    axis.text = element_text(face="plain", size=10),
+    axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+    axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
+
+  ggsave(out_name, plot, path=output_dir)
+  }
+
+plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_", 
+                                   version, output_dir){
+  out_name = paste0("plot_Adult_Emerg_mean_", version ,".png")
+  #############################################
+  ###    Adult Emergence
+  #############################################
+  data = compute_cumdd_adult_emergence_mean(input_dir=data_dir, 
+                                              file_name="combined_CMPOP_", 
+                                               version = version)
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data = melt(data, id = c("ClimateGroup", "CountyGroup", 
+                           "latitude", "longitude", 
+                           "ClimateScenario", "year", "dayofyear"))
+
+  plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
+                aes(x=dayofyear, y=value, fill=factor(variable))) +
+  #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.1) }, 
+               fun.ymax=function(z) { quantile(z,0.9) }, 
+               alpha=0.3) +
+  stat_summary(geom="ribbon", 
+               fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.25) }, 
+               fun.ymax=function(z) { quantile(z,0.75) }, 
+               alpha=0.8) + 
+  stat_summary(geom="line", 
+               fun.y=function(z) { quantile(z,0.5) })+
+  
+  scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
+                              rgb(92, 160, 201, max=255), 
+                              rgb(211, 91, 76, max=255), 
+                              rgb(125, 7, 37, max=255)),
+                    labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
+  scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
+                             rgb(92, 160, 201, max=255), 
+                             rgb(211, 91, 76, max=255), 
+                             rgb(125, 7, 37, max=255)),
+                    labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4"))+
+  
+  facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
+  scale_x_continuous(breaks=seq(0, 350, 50)) +
+  theme_bw() +
+  geom_vline(xintercept=c(100, 150, 200, 250, 300, 350), linetype="solid", color ="grey", size=0.2) +
+  geom_hline(yintercept=c(.25, .5, .75), linetype="solid", color ="grey", size=0.2) +
+  # geom_vline(xintercept=c(120, 226), linetype="solid", color ="red") +
+  labs(x = "Day of Year", y = paste0("Cumulative Adult Emergence"), fill = "Adult Generation") +
+  theme(
+    #panel.grid.major = element_line(size = 0.2),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.title = element_text(face="plain", size=12),
+    legend.text = element_text(size=10),
+    legend.position = "bottom",
+    strip.text = element_text(size=12, face="plain"),
+    axis.text = element_text(face="plain", size=10),
+    axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+    axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
+
+  ggsave(out_name, plot, path=output_dir)
+  }
+
 
