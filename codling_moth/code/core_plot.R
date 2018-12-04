@@ -637,16 +637,16 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   plot_name = paste0("diapause_rel_", version,".png")
   ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in")
 }
-
+############################################################################################################
 plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_", 
                                    version, output_dir){
-  out_name = paste0("plot_Adult_Emerg_median_", version ,".png")
+  out_name = paste0("plot_Adult_DoY_median_", version ,".png")
   #############################################
   ###    Adult Emergence
   #############################################
   data = compute_cumdd_adult_emergence_median(input_dir=data_dir, 
                                               file_name="combined_CMPOP_", 
-                                               version = version)
+                                              version = version)
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
@@ -705,7 +705,7 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
 
 plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_", 
                                    version, output_dir){
-  out_name = paste0("plot_Adult_Emerg_mean_", version ,".png")
+  out_name = paste0("plot_Adult_DoY_mean_", version ,".png")
   #############################################
   ###    Adult Emergence
   #############################################
