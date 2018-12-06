@@ -1061,6 +1061,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     data$diapause = 102.6077 * exp(-exp(-(-1.306483) * (data$daylength - 16.95815)))
     data$diapause1 = data$diapause
     data[diapause1 > 100, diapause1 := 100]
+    saveRDS(data, paste0(write_dir, "diapause_1_percent_", version, ".rds"))
     data$enterDiap = (data$diapause1/100) * data$SumLarva
     data$escapeDiap = data$SumLarva - data$enterDiap
 
@@ -1593,3 +1594,25 @@ diapause_abs_rel_daylength <- function(input_dir, file_name,
     # return (list(RelData, AbsData, sub1, pre_diap_plot))
     return (list(RelData, AbsData, sub1))
 }
+######
+generate_new_param_scale <- function(param_dir, param_name, scale_shift_percent){
+  ## This function computes the low_gdd and high_gdd
+  ## for the new modified scale of Weibull function.
+  ## Keep in mind, qweibull is inverse of pweibull. 
+  ## pinvweibull is NOT inverse of pweibull !!!
+  params = read.table(paste0(param_dir, param_name), header=TRUE, sep=",")
+  params_new = params
+  params_new$scale = params$scale * (1 + scale_shift_percent)
+  for (ii in seq(1:16)){
+    x_gddhigh = params$gddhigh[ii]
+    y_gddhigh = pweibull(x_gddhigh, shape=params$shape[ii], scale=params$scale[ii])
+    params_new$gddhigh[ii] = round(qweibull(y_gddhigh, shape = params_new$shape[ii], scale= params_new$scale[ii]))
+
+    x_gddlow = params$gddlow[ii]
+    y_gddlow = pweibull(x_gddlow, shape=params$shape[ii], scale=params$scale[ii])
+    params_new$gddlow[ii] = round(qweibull(y_gddlow, shape = params_new$shape[ii], scale= params_new$scale[ii]))
+  }
+  out_name = paste0(param_dir, "CodlingMothparameters_", scale_shift_percent, ".txt")
+  write.table(params_new, out_name, sep=",", row.names = F, quote = FALSE)
+}
+
