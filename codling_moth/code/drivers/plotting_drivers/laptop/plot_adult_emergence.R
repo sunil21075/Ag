@@ -15,9 +15,9 @@ box_width = 0.25
 
 file_name = "combined_CM_rcp45.rds"
 plot_output_name = "adult_emergence_rcp45"
-plot_adult_emergence(input_dir=input_dir, file_name, box_width=.25, plot_path, plot_output_name)
+plot_adult_emergence(input_dir=input_dir, file_name, box_width=.12, plot_path, plot_output_name)
 
 
 file_name = "combined_CM_rcp85.rds"
 plot_output_name = "adult_emergence_rcp85"
-plot_adult_emergence(input_dir=input_dir, file_name, box_width=.25, plot_path, plot_output_name)
+plot_adult_emergence(input_dir=input_dir, file_name, box_width=.12, plot_path, plot_output_name)
