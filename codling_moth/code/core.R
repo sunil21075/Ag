@@ -1306,131 +1306,7 @@ compute_cumdd_eggHatch <- function(input_dir, file_name="combined_CMPOP_", versi
 ###################### Written for Sensitivity Analysis
 ######################
 
-######
-###### Shift the flat part
-######
-diap_sense_flat <- function(input_dir, file_name,
-                            param_dir, 
-                            location_group_name="LocationGroups.csv",
-                            shift_amount){
-    file_name = paste0(input_dir, file_name, ".rds")
-    data <- data.table(readRDS(file_name))
 
-    loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
-    options(digits=9)
-    loc_grp$latitude = as.numeric(loc_grp$latitude)
-    loc_grp$longitude = as.numeric(loc_grp$longitude)
-
-    data <- data[latitude %in% loc_grp$latitude & longitude %in% loc_grp$longitude]
-
-    theta = 0.2163108 + (2 * atan(0.9671396 * tan(0.00860 * (data$dayofyear - 186))))
-    phi = asin(0.39795 * cos(theta))
-    D = 24 - ((24/pi) * acos((sin(6 * pi / 180) + 
-                        (sin(data$latitude * pi / 180) * sin(phi)))/(cos(data$latitude * pi / 180) * cos(phi))))
-    data$daylength = D
-
-    data$diapause = 102.6077 * exp(-exp(-(-1.306483) * (data$daylength - 16.95815)))
-    data$diapause1 = data$diapause
-    ##
-    ## Here the shift occurs?
-    ##
-    original <- 100
-    original <- original - shift_amount
-    data[diapause1 > original, diapause1 := original]
-
-    data$enterDiap = (data$diapause1/100) * data$SumLarva # what is this division by 100?
-    data$escapeDiap = data$SumLarva - data$enterDiap
-
-    sub = data
-    rm (data)
-    startingpopulationfortheyear <- 1000
-    #generation1
-    sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-          by=list(year, ClimateScenario, 
-                  latitude, longitude, 
-                  ClimateGroup, CountyGroup) ]
-
-    sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction * startingpopulationfortheyear
-    sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1 * sub$diapause1/100
-    sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1 - sub$AbsPopLarvaGen1Diap
-
-    #generation2
-    sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
-         by = list(year, ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
-    sub[,AbsPopLarvaGen2 := LarvaGen2RelFraction * sum(AbsPopLarvaGen1NonDiap)*3.9, 
-         by = list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup)]
-    sub$AbsPopLarvaGen2Diap <- sub$AbsPopLarvaGen2 * sub$diapause1/100
-    sub$AbsPopLarvaGen2NonDiap <- sub$AbsPopLarvaGen2 - sub$AbsPopLarvaGen2Diap
-
-    #generation3
-    sub[,LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), 
-         by =list(year,ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
-
-    sub[,AbsPopLarvaGen3 := LarvaGen3RelFraction*sum(AbsPopLarvaGen2NonDiap) * 3.9, 
-         by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]
-    sub$AbsPopLarvaGen3Diap <- sub$AbsPopLarvaGen3*sub$diapause1/100
-    sub$AbsPopLarvaGen3NonDiap <- sub$AbsPopLarvaGen3- sub$AbsPopLarvaGen3Diap
-
-    #generation4
-    sub[,LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), 
-         by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup)]
-
-    sub[ , AbsPopLarvaGen4 := LarvaGen4RelFraction*sum(AbsPopLarvaGen3NonDiap) * 3.9, 
-           by =list(year, ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
-
-    sub$AbsPopLarvaGen4Diap <- sub$AbsPopLarvaGen4*sub$diapause1/100
-    sub$AbsPopLarvaGen4NonDiap <- sub$AbsPopLarvaGen4 - sub$AbsPopLarvaGen4Diap
-
-    ### get totals similar to Sum Larva column , but abs numbers
-    sub$AbsPopTotal <- sub$AbsPopLarvaGen1 + sub$AbsPopLarvaGen2 + sub$AbsPopLarvaGen3 + sub$AbsPopLarvaGen4
-    sub$AbsPopDiap <- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
-    sub$AbsPopNonDiap <- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + 
-                        sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
-
-    sub1 = subset(sub, 
-                select = c("latitude", "longitude", 
-                           "County", "CountyGroup", 
-                           "ClimateScenario", "ClimateGroup", 
-                           "year", "dayofyear", "CumDDinF", 
-                           "SumLarva", "enterDiap", 
-                           "escapeDiap", "AbsPopTotal",
-                           "AbsPopNonDiap","AbsPopDiap"))
-
-    sub1 = sub1[, .(RelLarvaPop=mean(SumLarva),    RelDiap = mean(enterDiap),  RelNonDiap = mean(escapeDiap), 
-                    AbsLarvaPop=mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
-                    CumulativeDDF=mean(CumDDinF)), 
-                    by = c("ClimateGroup", "CountyGroup", "dayofyear")]
-    
-    #sub1 = sub1[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), CumulativeDDF = mean(CumDDinF)), by = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "dayofyear")]
-
-    RelData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
-                                      "dayofyear", "CumulativeDDF", 
-                                      "RelLarvaPop", "RelDiap", "RelNonDiap"))
-
-    RelData = melt(RelData, id = c("ClimateGroup", "CountyGroup", "dayofyear", "CumulativeDDF"))
-    #RelData[, Group := as.character()]
-    RelData$Group = "0"
-    temp1 = RelData[variable %in% c("RelLarvaPop", "RelDiap")]
-    temp2 = RelData[variable %in% c("RelLarvaPop", "RelNonDiap")]
-    temp1$Group = "Relative Larva Pop Vs Diapaused"
-    temp2$Group = "Relative Larva Pop Vs NonDiapaused"
-    RelData = rbind(temp1, temp2)
-
-    AbsData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
-                                      "dayofyear", "CumulativeDDF", 
-                                      "AbsLarvaPop", "AbsDiap", "AbsNonDiap"))
-    
-    AbsData = melt(AbsData, id = c("ClimateGroup", "CountyGroup", "dayofyear", "CumulativeDDF"))
-    #AbsData[, Group := as.character()]
-    AbsData$Group = "0"
-    temp1 = AbsData[variable %in% c("AbsLarvaPop", "AbsDiap")]
-    temp2 = AbsData[variable %in% c("AbsLarvaPop", "AbsNonDiap")]
-    temp1$Group = "Absolute Larva Pop Vs Diapaused"
-    temp2$Group = "Absolute Larva Pop Vs NonDiapaused"
-    AbsData = rbind(temp1, temp2)
-
-    return (list(RelData, AbsData, sub1))
-}
 ##################################################################
 compute_cumdd_adult_emergence_mean <- function(input_dir, 
                                                file_name="combined_CMPOP_", 
@@ -1616,3 +1492,47 @@ generate_new_param_scale <- function(param_dir, param_name, scale_shift_percent)
   write.table(params_new, out_name, sep=",", row.names = F, quote = FALSE)
 }
 
+
+generate_scale_sens_table <- function(master_path, shifts){
+  versions = c("rcp45", "rcp85")
+  stages = c("NumLarvaGens", "NumAdultGens")
+  dead_lines = c("Aug", "Nov")
+  shifts = shifts 
+  for (vers in versions){
+    DT_Historical = data.table(shift = shifts)
+      DT_2040 = data.table(shift = shifts)
+      DT_2060 = data.table(shift = shifts)
+      DT_2080 = data.table(shift = shifts)
+      for (dead_line in dead_lines){
+        for (stag in stages){
+          for (shipht in shifts){
+            data_name = paste0(shipht, "/generations_", dead_line, "_combined_CMPOP_", vers, ".rds")
+                    data = data.table(readRDS(paste0(master_path, data_name)))
+                    data$CountyGroup = as.character(data$CountyGroup)
+          data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+          data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+          data <- subset(data, select = c("ClimateGroup", "CountyGroup", stag))
+          df <- data.frame(data)
+          df <- (df %>% group_by(CountyGroup, ClimateGroup))
+          medians <- (df %>% summarise(med = median(!!sym(stag))))
+
+          DT_Historical[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[1, 3], digits = 2)
+          DT_2040[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[2, 3], digits = 2)
+          DT_2060[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[3, 3], digits = 2)
+          DT_2080[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[4, 3], digits = 2)
+          }   
+        }
+      }
+  file = paste0(master_path, vers, "_historical.csv")
+    write.csv(DT_Historical, file = file)
+
+  file = paste0(master_path, vers, "_2040.csv")
+  write.csv(DT_2040, file = file)
+
+  file = paste0(master_path, vers, "_2060.csv")
+  write.csv(DT_2060, file = file)
+
+  file = paste0(master_path, vers, "_2080.csv")
+  write.csv(DT_2080, file = file)
+    }
+}

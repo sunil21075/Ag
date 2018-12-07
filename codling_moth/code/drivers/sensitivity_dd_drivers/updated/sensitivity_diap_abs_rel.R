@@ -12,12 +12,12 @@ args = commandArgs(trailingOnly=TRUE)
 version = args[1]
 file_name = paste0("combined_CMPOP_", version)
 
-shifts = c("1", "2", "3", "4")
+shifts = c("0", "0.01", "0.02", "0.03", "0.04", "0.05", "0.1", "0.15", "0.2")
 for (shift in shifts){
-	input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/"
+	input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/original_history/"
 	input_dir = paste0(input_dir, shift, "/")
 
-	write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/"
+	write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/original_history/"
 	write_dir = paste0(write_dir, shift, "/")
 	
     output = diapause_abs_rel(input_dir, 
