@@ -302,7 +302,9 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
 
 plot_adult_emergence_4_Latex <- function(input_dir, file_name, 
                                  box_width=.2, plot_path, output_name, 
-                                 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")){
+                                 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red"),
+                                 plot_width=8,
+                                 plot_height=6){
   #
   # These plots are produced by combined_CM files.
   #
@@ -330,48 +332,47 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
   medians_vec <- medians$med
   
   p = ggplot(data = data, aes(x=ClimateGroup, y=Emergence, fill=ClimateGroup))+
-    geom_boxplot(outlier.size=-.25, notch=TRUE, width=box_width, lwd=.1) +
-    theme_bw() +
-    scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
-    scale_y_continuous(breaks = round(seq(40, 170, by = 20))) +
-    labs(x="", y="Julian Day", color = "Climate Group") +
-    facet_wrap(~CountyGroup) +
-    theme(plot.margin = unit(c(t=0.1, r=.2, b=.1, l=0), "cm"),
-          panel.border = element_rect(fill=NA, size=.3),
-          panel.grid.major = element_line(size = 0.05),
-          panel.grid.minor = element_blank(),
-          panel.spacing=unit(.25,"cm"),
-          legend.position="bottom", 
-          legend.key.size = unit(.75,"line"),
-          legend.text=element_text(size=5),
-          legend.margin=margin(t= -.3, r = 0, b = 0, l = 0, unit = 'cm'),
-          legend.title = element_blank(),
-          strip.text.x = element_text(size = 5),
-          axis.ticks = element_line(color = "black", size = .2),
-          axis.text = element_text(face = "plain", size = 2.5),
-          axis.title.x = element_text(face = "plain", size=6, margin = margin(t=2.5, r=0, b=0, l=0)),
-          axis.text.x = element_text(size = 4, face="plain"),
-          axis.title.y = element_text(face = "plain", size=6, margin = margin(t=0, r=0, b=0, l=0)),
-          axis.text.y  = element_blank(),
-          axis.ticks.y = element_blank()
-    ) +
+      geom_boxplot(outlier.size=-.25, notch=TRUE, width=box_width, lwd=.1) +
+      theme_bw() +
+      scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
+      scale_y_continuous(breaks = round(seq(40, 170, by = 20))) +
+      labs(x="", y="Julian Day", color = "Climate Group") +
+      facet_wrap(~CountyGroup) +
+      theme(plot.margin = unit(c(t=0.1, r=.2, b=.1, l=0), "cm"),
+            panel.border = element_rect(fill=NA, size=.3),
+            panel.grid.major = element_line(size = 0.05),
+            panel.grid.minor = element_blank(),
+            panel.spacing=unit(.25,"cm"),
+            legend.position="bottom", 
+            legend.key.size = unit(.75,"line"),
+            legend.text=element_text(size=5),
+            legend.margin=margin(t= -.3, r = 0, b = 0, l = 0, unit = 'cm'),
+            legend.spacing.x = unit(.05, 'cm'),
+            legend.title = element_blank(),
+            strip.text.x = element_text(size = 5),
+            axis.ticks = element_line(color = "black", size = .2),
+            axis.text = element_text(face = "plain", size = 2.5),
+            axis.title.x = element_text(face = "plain", size=6, margin = margin(t=2.5, r=0, b=0, l=0)),
+            axis.text.x = element_text(size = 4, face="plain"),
+            axis.title.y = element_text(face = "plain", size=6, margin = margin(t=0, r=0, b=0, l=0)),
+            axis.text.y  = element_blank(),
+            axis.ticks.y = element_blank()
+        ) +
     scale_fill_manual(values=color_ord,
                       name="Time\nPeriod", 
-                      labels=c("Historical","2040","2060","2080")) + 
+                      labels=c("Historical","2040's","2060's","2080's")) + 
     scale_color_manual(values=color_ord,
                        name="Time\nPeriod", 
                        limits = color_ord,
-                       labels=c("Historical","2040","2060","2080")) + 
+                       labels=c("Historical","2040's","2060's","2080's")) + 
     geom_text(data = medians, 
               aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
               size=1.3, 
               position =  position_dodge(.09),
               vjust = -1.4) +
-    #stat_summary(geom="text", fun.y=quantile,
-    #             aes(label=sprintf("%1.1f", ..x..), color=factor(ClimateGroup)),
-    #             position=position_nudge(x=0.33), size=.5) +
     coord_flip()
-  ggsave(output_name, p, path=plot_path, device="png", width=8, height=6, unit="cm", dpi=2000)
+  ggsave(output_name, p, path=plot_path, device="png", 
+                         width=plot_width, height=plot_height, unit="cm", dpi=1000)
 }
 
 ##################
@@ -414,14 +415,15 @@ plot_adult_emergence <- function(input_dir, file_name,
       scale_y_continuous(breaks = round(seq(40, 170, by = 10), 1)) +
       labs(x="Time Period", y="Julian Day", color = "Climate Group") +
       facet_wrap(~CountyGroup) +
-      theme(legend.position="bottom", 
-            legend.key.size = unit(.75, "line"),
-            panel.grid.minor = element_blank(),
+      theme(panel.grid.minor = element_blank(),
             panel.spacing=unit(.5, "cm"),
             legend.text=element_text(size=5),
             legend.margin=margin(t = -.1, r = 0, b = 0, l = 0, unit = 'cm'),
             # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
             legend.title = element_blank(),
+            legend.position="bottom", 
+            legend.key.size = unit(.75, "line"),
+            legend.spacing.x = unit(.05, 'cm'),
             panel.grid.major = element_line(size = 0.1),
             axis.text = element_text(face = "plain", size = 10),
             axis.title.x = element_text(face = "plain", size=8, margin = margin(t=5, r=0, b=0, l=0)),
@@ -446,11 +448,100 @@ plot_adult_emergence <- function(input_dir, file_name,
       #             aes(label=sprintf("%1.1f", ..x..), color=factor(ClimateGroup)),
       #             position=position_nudge(x=0.33), size=.5) +
       coord_flip()
-  ggsave(output_name, p, path=plot_path, width=5.5, height=3.1, unit="in", dpi=2000)
+  ggsave(output_name, p, path=plot_path, width=5.5, height=3.1, unit="in", dpi=1000)
 }
 ##################
 ##################   Generations of Adults or Larva by Aug 23
 ##################
+plot_No_generations_4_latex <- function(input_dir,
+                                        file_name,
+                                        stage,
+                                        dead_line,
+                                        box_width=.25,
+                                        plot_width = 6.5,
+                                        plot_height = 2.5,
+                                        plot_path,
+                                        version,
+                                        color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")){
+  file_name <- paste0(input_dir, file_name)
+  data <- data.table(readRDS(file_name))
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  
+  if (stage=="larva"){
+    var = "NumLarvaGens"
+  } 
+  else {
+    var = "NumAdultGens"
+  }
+  
+  data <- subset(data, select = c("ClimateGroup", "CountyGroup", var))
+  df <- data.frame(data)
+  df <- (df %>% group_by(CountyGroup, ClimateGroup))
+  medians <- (df %>% summarise(med = median(!!sym(var))))
+  rm(df)
+  if (dead_line=="Aug"){
+    y_lab = paste0("Number of ", stage, " generations by August 23")
+  }
+  else{
+    y_lab = paste0("Number of ", stage, " generations by November 5")
+  }
+  
+  box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
+             geom_boxplot(outlier.size=-.25, lwd=0.1, notch=TRUE, width=box_width) +
+             # The bigger the number in expand below, the smaller the space between y-ticks
+             scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
+             scale_y_continuous(limits = c(.5, 4), breaks=seq(1, 5, by=1)) + 
+             theme_bw() +
+             labs(#x="", 
+                  y=y_lab, 
+                  color = "Climate Group") +
+             facet_wrap(~CountyGroup) +
+             theme(plot.margin = unit(c(t=0.1, r=0.1, b=.1, l=-0.01), "cm"),
+                   panel.border = element_rect(fill=NA, size=.3),
+                   panel.grid.major = element_line(size = 0.05),
+                   panel.grid.minor = element_blank(),
+                   panel.spacing=unit(.25,"cm"),
+                   legend.position="bottom", 
+                   legend.key.size = unit(.75,"line"),
+                   legend.text=element_text(size=5),
+                   legend.margin=margin(t= -.3, r = 0, b = 0, l = 0, unit = 'cm'),
+                   legend.spacing.x = unit(.05, 'cm'),
+                   legend.title = element_blank(),
+                   strip.text.x = element_text(size = 5),
+                   axis.ticks = element_line(color = "black", size = .2),
+                   #axis.text = element_text(face = "plain", size = 2.5),
+                   axis.title.x = element_text(face = "plain", size=6, margin = margin(t=2.5, r=0, b=0, l=0)),
+                   # axis.title.x=element_blank(),
+                   axis.text.x = element_text(size = 4, face="plain"),
+                   # axis.title.y = element_text(face = "plain", size=6, margin = margin(t=0, r=0, b=0, l=0)),
+                   axis.title.y = element_blank(),
+                   axis.text.y  = element_blank(),
+                   axis.ticks.y = element_blank()
+             ) +
+           scale_fill_manual(values=color_ord,
+                              name="Time\nPeriod", 
+                              labels=c("Historical","2040's","2060's","2080's")) + 
+            scale_color_manual(values=color_ord,
+                               name="Time\nPeriod", 
+                               limits = color_ord,
+                               labels=c("Historical","2040's","2060's","2080's")) + 
+            geom_text(data = medians, 
+                      aes(label = sprintf("%1.1f", medians$med), y=medians$med), 
+                      size=1.3, 
+                      position =  position_dodge(.09),
+                      vjust = -1.4) +
+            coord_flip()
+  
+  plot_name = paste0(stage, "_Gen_", dead_line, "_", version)
+  ggsave(paste0(plot_name, ".png"), 
+         box_plot, 
+         path=plot_path, 
+         device="png", 
+         width=plot_width, height=plot_height, units = "cm", dpi=1000)
+}
+
 plot_No_generations <- function(input_dir,
                                 file_name,
                                 stage,
@@ -510,8 +601,9 @@ plot_No_generations <- function(input_dir,
              	     legend.key.size = unit(.75,"line"),
                    legend.text=element_text(size=5),
                    legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
-                   # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+                   legend.spacing.x = unit(.05, 'cm'),
                    legend.title = element_blank(),
+                   # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
                    #panel.grid.major = element_line(size = 0.1),
                    #panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank(),
@@ -540,7 +632,7 @@ plot_No_generations <- function(input_dir,
          path=plot_path, 
          device="png", 
          width=plot_with, height=plot_height, 
-         units = "in", dpi=2000)
+         units = "in", dpi=1000)
 }
 ##################
 ################## Flight vs. DoY
@@ -609,7 +701,7 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
   #bplot <- add_sub(bplot, label="Gen. 1", x=1.02, y=8, angle=270, size=6, fontface="plain")
   ggsave(output_name, bplot, device="png", 
          path=plot_path, width=plot_with, height=plot_height, 
-         unit="in", dpi=2000)
+         unit="in", dpi=1000)
 }
 #####################################################################################
 #######################                                   ###########################
@@ -669,7 +761,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   
   plot_name = paste0("diapause_abs_", version, ".png")
   ggsave(plot_name, diap_plot, device="png", path=plot_path, width=10, height=7, 
-         unit="in", dpi=2000)
+         unit="in", dpi=1000)
 }
 
 plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
@@ -710,7 +802,7 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   #ann_text <- data.frame(CumulativeDDF=700, value=18, CountyGroup=factor("Cooler Areas", levels = c("Cooler Areas","Warmer Areas")))
   #pp + geom_text(data = ann_text, label = "Text")
   plot_name = paste0("diapause_rel_", version,".png")
-  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=2000)
+  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=1000)
 }
 ############################################################################################################
 plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_", 
@@ -763,19 +855,19 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
   geom_hline(yintercept=c(.25, .5, .75), linetype="solid", color ="grey", size=0.2) +
   # geom_vline(xintercept=c(120, 226), linetype="solid", color ="red") +
   labs(x = "Julian Day", y = paste0("Cumulative Adult Emergence"), fill = "Adult Generation") +
-  theme(
-    #panel.grid.major = element_line(size = 0.2),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.title = element_text(face="plain", size=12),
-    legend.text = element_text(size=10),
-    legend.position = "bottom",
-    strip.text = element_text(size=12, face="plain"),
-    axis.text = element_text(face="plain", size=10),
-    axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
-    axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
+  theme(#panel.grid.major = element_line(size = 0.2),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.title = element_text(face="plain", size=12),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(.5, "cm"), 
+        legend.position = "bottom",
+        strip.text = element_text(size=12, face="plain"),
+        axis.text = element_text(face="plain", size=10),
+        axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+        axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
 
-  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=2000)
+  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=1000)
   }
 
 plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_", 
@@ -828,19 +920,19 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
   geom_hline(yintercept=c(.25, .5, .75), linetype="solid", color ="grey", size=0.2) +
   # geom_vline(xintercept=c(120, 226), linetype="solid", color ="red") +
   labs(x = "Julian Day", y = paste0("Cumulative Adult Emergence"), fill = "Adult Generation") +
-  theme(
-    #panel.grid.major = element_line(size = 0.2),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    legend.title = element_text(face="plain", size=12),
-    legend.text = element_text(size=10),
-    legend.position = "bottom",
-    strip.text = element_text(size=12, face="plain"),
-    axis.text = element_text(face="plain", size=10),
-    axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
-    axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
+  theme(#panel.grid.major = element_line(size = 0.2),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.title = element_text(face="plain", size=12),
+        legend.text = element_text(size=10),
+        legend.key.size = unit(.5, "cm"), 
+        legend.position = "bottom",
+        strip.text = element_text(size=12, face="plain"),
+        axis.text = element_text(face="plain", size=10),
+        axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+        axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
 
-  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=2000)
+  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=1000)
   }
 
 
