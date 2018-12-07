@@ -57,17 +57,6 @@ for (i in 5:8){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 ##########################################
 pw <- function(x, shape=2, scale=1000){
     pweibull(x, shape=shape, scale=scale)
