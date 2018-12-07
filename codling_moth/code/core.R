@@ -1061,7 +1061,6 @@ diapause_abs_rel <- function(input_dir, file_name,
     data$diapause = 102.6077 * exp(-exp(-(-1.306483) * (data$daylength - 16.95815)))
     data$diapause1 = data$diapause
     data[diapause1 > 100, diapause1 := 100]
-    saveRDS(data, paste0(write_dir, "diapause_1_percent_", version, ".rds"))
     data$enterDiap = (data$diapause1/100) * data$SumLarva
     data$escapeDiap = data$SumLarva - data$enterDiap
 
@@ -1350,7 +1349,8 @@ compute_cumdd_adult_emergence_median <- function(input_dir,
 }
 ################################
 diapause_abs_rel_daylength <- function(input_dir, file_name,
-                             param_dir, location_group_name="LocationGroups.csv"){
+                                       param_dir, 
+                                       location_group_name="LocationGroups.csv"){
     file_name = paste0(input_dir, file_name, ".rds")
     data <- data.table(readRDS(file_name))
 
@@ -1492,7 +1492,6 @@ generate_new_param_scale <- function(param_dir, param_name, scale_shift_percent)
   write.table(params_new, out_name, sep=",", row.names = F, quote = FALSE)
 }
 
-
 generate_scale_sens_table <- function(master_path, shifts){
   versions = c("rcp45", "rcp85")
   stages = c("NumLarvaGens", "NumAdultGens")
@@ -1500,15 +1499,15 @@ generate_scale_sens_table <- function(master_path, shifts){
   shifts = shifts 
   for (vers in versions){
     DT_Historical = data.table(shift = shifts)
-      DT_2040 = data.table(shift = shifts)
-      DT_2060 = data.table(shift = shifts)
-      DT_2080 = data.table(shift = shifts)
-      for (dead_line in dead_lines){
-        for (stag in stages){
-          for (shipht in shifts){
-            data_name = paste0(shipht, "/generations_", dead_line, "_combined_CMPOP_", vers, ".rds")
-                    data = data.table(readRDS(paste0(master_path, data_name)))
-                    data$CountyGroup = as.character(data$CountyGroup)
+    DT_2040 = data.table(shift = shifts)
+    DT_2060 = data.table(shift = shifts)
+    DT_2080 = data.table(shift = shifts)
+    for (dead_line in dead_lines){
+      for (stag in stages){
+        for (shipht in shifts){
+          data_name = paste0(shipht, "/generations_", dead_line, "_combined_CMPOP_", vers, ".rds")
+          data = data.table(readRDS(paste0(master_path, data_name)))
+          data$CountyGroup = as.character(data$CountyGroup)
           data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
           data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
           data <- subset(data, select = c("ClimateGroup", "CountyGroup", stag))
@@ -1516,23 +1515,23 @@ generate_scale_sens_table <- function(master_path, shifts){
           df <- (df %>% group_by(CountyGroup, ClimateGroup))
           medians <- (df %>% summarise(med = median(!!sym(stag))))
 
-          DT_Historical[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[1, 3], digits = 2)
-          DT_2040[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[2, 3], digits = 2)
-          DT_2060[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[3, 3], digits = 2)
-          DT_2080[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line)] = round(medians[4, 3], digits = 2)
-          }   
-        }
+          DT_historical[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_historical")] = round(medians[1, 3], digits = 2)
+          DT_2040[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2040")] = round(medians[2, 3], digits = 2)
+          DT_2060[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2060")] = round(medians[3, 3], digits = 2)
+          DT_2080[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2080")] = round(medians[4, 3], digits = 2)
+        }   
       }
+    }
   file = paste0(master_path, vers, "_historical.csv")
-    write.csv(DT_Historical, file = file)
+  write.csv(DT_Historical, file = file, row.names=FALSE)
 
   file = paste0(master_path, vers, "_2040.csv")
-  write.csv(DT_2040, file = file)
+  write.csv(DT_2040, file = file, row.names=FALSE)
 
   file = paste0(master_path, vers, "_2060.csv")
-  write.csv(DT_2060, file = file)
+  write.csv(DT_2060, file = file, row.names=FALSE)
 
   file = paste0(master_path, vers, "_2080.csv")
-  write.csv(DT_2080, file = file)
-    }
+  write.csv(DT_2080, file = file, row.names=FALSE)
+  }
 }

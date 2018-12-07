@@ -504,11 +504,11 @@ plot_No_generations_4_latex <- function(input_dir,
                    panel.grid.minor = element_blank(),
                    panel.spacing=unit(.25,"cm"),
                    legend.position="bottom", 
+                   legend.title = element_blank(),
                    legend.key.size = unit(.75,"line"),
                    legend.text=element_text(size=5),
                    legend.margin=margin(t= -.3, r = 0, b = 0, l = 0, unit = 'cm'),
                    legend.spacing.x = unit(.05, 'cm'),
-                   legend.title = element_blank(),
                    strip.text.x = element_text(size = 5),
                    axis.ticks = element_line(color = "black", size = .2),
                    #axis.text = element_text(face = "plain", size = 2.5),
@@ -534,8 +534,8 @@ plot_No_generations_4_latex <- function(input_dir,
                       vjust = -1.4) +
             coord_flip()
   
-  plot_name = paste0(stage, "_Gen_", dead_line, "_", version)
-  ggsave(paste0(plot_name, ".png"), 
+  plot_name = paste0(stage, "_Gen_", dead_line, "_", version, ".png")
+  ggsave(plot_name), 
          box_plot, 
          path=plot_path, 
          device="png", 
@@ -936,3 +936,56 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
   }
 
 
+plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
+  file_pref = "rcp"
+  model_type = c("45", "85")
+  time_period = c ("_historical", "_2040", "_2060", "_2080")
+  file_suffix = ".csv"
+  for (model in model_type){
+    # initialize a data table, so we could use cbind
+    all_info = data.table(numeric_shifts)
+    for (time in time_period){
+      file_name = paste0(file_pref, model, time, file_suffix)
+      file = paste0(master_path, file_name)
+      current_file = data.table(read.csv(file, check.names=FALSE))
+      current_file = within(current_file, remove(shift))
+      all_info <- cbind(all_info, current_file)
+    }
+    all_info = melt(all_info, id=c("numeric_shifts"))
+    colnames(all_info) <- c("shifts", "pop_type", "generation")
+
+    # plot the poulations
+    dead_lines = c("Aug", "Nov")
+    stages = c("_Larva_", "_Adult_")
+
+    for (dead in dead_lines){
+      for (stag in stages){
+        mask_entry = paste0(model, stag, dead, "_")
+        mask = c(paste0(mask_entry, "2080"), paste0(mask_entry, "2060"), 
+                 paste0(mask_entry, "2040"), paste0(mask_entry, "historical"))
+        curr_data = all_info[all_info$pop_type %in% mask]
+
+        legend_labels = c(paste0(dead, ". 2080"), paste0(dead, ". 2060"),
+                          paste0(dead, ". 2040"), paste0(dead, ". Historical"))
+        
+        dot_plot = ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
+                   geom_point() +
+                   geom_smooth() + 
+                   theme_bw() + 
+                   theme(panel.grid.major = element_line(size = 0.3),
+                         panel.grid.minor = element_line(size = 0.2),
+                         legend.position="bottom",
+                         legend.title = element_blank(),
+                         legend.text = element_text(size=7, face="plain"),
+                         legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
+                         axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
+                         axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))) + 
+                   scale_color_discrete(breaks=mask,
+                            labels= legend_labels) +
+                   labs(x="Weibull Scale Parameter Change by %", y="No. of Generations (median)")
+        plot_name = paste0(file_pref, model, stag, dead, "_scale_sens.png")
+        ggsave(plot_name, dot_plot, path=master_path, device="png", dpi=1000, width=5.57, height=5.42, unit="in")
+      }
+    }
+  }
+}
