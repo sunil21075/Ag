@@ -61,11 +61,11 @@ dw_pupa_4_shift <- function(x, shape=params_shift[12, "shape"], scale=params_shi
 ##########################
 the_theme = theme(panel.grid.major = element_blank(), 
                   # panel.grid.minor = element_blank(),
-                  axis.text.x = element_text(size = 9),
+                  axis.text.x = element_text(size = 9, color="black"),
                   axis.title.x = element_text(face = "plain", 
                                               size=12, 
                                               margin = margin(t=10, r=0, b=0, l=0)),
-                  axis.text.y = element_text(size = 9, angle=90),
+                  axis.text.y = element_text(size = 9, angle=0, color="black"),
                   axis.title.y = element_text(face = "plain", 
                                               size=12, 
                                               margin = margin(t=0, r=10, b=0, l=0)),
@@ -78,7 +78,7 @@ y_limits = c(0, 0.004)
 colorss = c("grey70", "dodgerblue", "olivedrab4", "red", "grey70", "dodgerblue", "olivedrab4", "red")
 labelss = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4", "Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")
 
-pupa_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme + 
+pupa_density =ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme + 
 			  geom_path(stat="function", fun=dw_pupa_1, aes(colour="grey70"), linetype=1)+
 			  geom_path(stat="function", fun=dw_pupa_2, aes(colour="dodgerblue"), linetype=1)+
 			  geom_path(stat="function", fun=dw_pupa_3, aes(colour="olivedrab4"), linetype=1)+
@@ -88,12 +88,13 @@ pupa_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme +
 			  geom_path(stat="function", fun=dw_pupa_3_shift, aes(colour="olivedrab4"), linetype=2)+
 			  geom_path(stat="function", fun=dw_pupa_4_shift, aes(colour="red"), linetype=2)+
 			  scale_x_continuous(name="Degree days", limits=x_limits) + 
-			  scale_y_continuous(name="Weibull density", limits=y_limits, labels = function(x) format(x, scientific=TRUE)) +
-			  scale_colour_identity("", guide="legend", 
-			                        labels = labelss, 
-			                        breaks = colorss)
+			  scale_y_continuous(name="Weibull density", limits=y_limits, labels = function(x) format(x*1000, scientific=F)) +
+                scale_colour_identity("", guide="legend", 
+                                          labels = labelss, 
+                                          breaks = colorss) +
+                labs(subtitle = expression(10^-3), parse=T)
 
-master_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/weibull_dist_plot/"
+master_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/laptop_codes/weibull_dist_plot/"
 plot_path = master_path
 ggsave(filename=paste0("dweibull_pupa", ".png"), 
 	   plot=pupa_density, 
