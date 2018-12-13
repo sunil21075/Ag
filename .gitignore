@@ -288,6 +288,6 @@ slprj/
 .Rapp.history
 
 # Microsoft office files
-*.csv
-*.xls
-*xlsx
+#*.csv
+#*.xls
+#*xlsx
