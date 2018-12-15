@@ -1167,7 +1167,8 @@ diapause_abs_rel_shifts <- function(input_dir, file_name,
 }
 
 diapause_abs_rel <- function(input_dir, file_name,
-                             param_dir, location_group_name="LocationGroups.csv"){
+                             param_dir, 
+                             location_group_name="LocationGroups.csv"){
     file_name = paste0(input_dir, file_name, ".rds")
     data <- data.table(readRDS(file_name))
 
@@ -1194,7 +1195,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     rm (data)
     startingpopulationfortheyear <- 1000
     #generation1
-    sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
+    sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
          by=list(year, ClimateScenario, 
                  latitude,longitude, ClimateGroup, CountyGroup) ]
     sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
@@ -1202,7 +1203,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
 
     #generation2
-    sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
+    sub[, LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
          by = list(year, ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
     sub[, AbsPopLarvaGen2 := LarvaGen2RelFraction * sum(AbsPopLarvaGen1NonDiap)*3.9, 
           by = list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup)]
