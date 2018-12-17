@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-./d_plot_adult_DoY_fill_median.R rcp45
+./d_adult_DoY_fill_median.R rcp45
 
 exit 0
