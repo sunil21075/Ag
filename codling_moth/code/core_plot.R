@@ -925,7 +925,7 @@ plot_No_generations <- function(input_dir,
                         size=1.75, 
                         position =  position_dodge(.09),
                         vjust = -1
-                        2) +
+                        ) +
               coord_flip()
 
   plot_name = paste0(stage, "_Gen_", dead_line, "_", version)
@@ -1016,7 +1016,7 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
 ##############################################
 plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_", 
                                 version, output_dir){
-  out_name = paste0("plot_", output_type, "_", version ,".png")
+  out_name = paste0("plot_", "_", version ,".png")
   filename = paste0(input_dir, file_name, version, ".rds")
   data <- data.table(readRDS(filename))
 
