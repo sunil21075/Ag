@@ -9,8 +9,8 @@ library(iterators)
 
 
 #
-# this core worked to produce all the data to the producing the plots point, where all plots but the boxplots were not produced
-#
+# this core worked to produce all the data to the producing 
+# the plots point, where all plots but the boxplots were not produced
 #
 
 
