@@ -12,11 +12,11 @@ source(source_path)
 param_path   = "/home/hnoorazar/cleaner_codes/parameters/"
 shifts = c("0", "5", "10", "15", "20")
 shifts = c("1", "2", "3", "4")
-shifts = c("0", "0.01", "0.02", "0.03", "0.04", "0.05", "0.1", "0.15", "0.2")
+shifts = as.character(seq(0, 20, 1)/100)
 master_path = "/data/hydro/users/Hossein/codling_moth_new/local/scale_sensitivity/original_history/"
 
 cats = c("historical", "BNU-ESM", "CanESM2", "GFDL-ESM2G", "bcc-csm1-1-m", "CNRM-CM5", "GFDL-ESM2M")
-locations_list = "local_list_1"
+locations_list = "local_list_10"
 
 args = commandArgs(trailingOnly=TRUE)
 ver = args[1]
