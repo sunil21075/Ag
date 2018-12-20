@@ -78,7 +78,7 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
              axis.title.x = element_text(face= "plain", size=16, margin = margin(t=10, r=0, b=0, l=0)),
              axis.title.y = element_text(face="plain", size=16, margin = margin(t=0, r=10, b=0, l=0))
              )
-  ggsave(output_name, p1, path=plot_path, width=7, height=7, unit="in", dpi=1000)
+  ggsave(output_name, p1, path=plot_path, width=7, height=7, unit="in", dpi=500)
 }
 
 plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
@@ -129,7 +129,7 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
              axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
             axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
             )
-  ggsave(output_name, p1, path=plot_path, , dpi=1000)
+  ggsave(output_name, p1, path=plot_path, dpi=500)
 }
 ###############################################################
 #######
@@ -193,7 +193,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                  ) 
-  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=1000)
+  ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=500)
   }
   #############################################
   ### cumdd
@@ -220,7 +220,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
       }
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
            labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate Group") +
-           guides(fill=guide_legend(title="Time period")) + 
+           guides(fill=guide_legend(title="")) + 
            facet_grid(. ~ CountyGroup, scales="free") +
            #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
            stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
@@ -254,7 +254,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                 ) 
     out_name = paste0(output_type, "_", version, ".png")
-    ggsave(out_name, plot, path=output_dir, dpi=1000)
+    ggsave(out_name, plot, path=output_dir, dpi=500)
   }
 
   if (output_type==3){
@@ -295,7 +295,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
                  axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
   out_name = paste0("cumdd_" , version, "_type", output_type ,".png")
-  ggsave(out_name, plot, path=output_dir, dpi=1000)
+  ggsave(out_name, plot, path=output_dir, dpi=500)
   }
 }
 #####################################################################################
@@ -356,7 +356,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   
   plot_name = paste0("diapause_abs_", version, ".png")
   ggsave(plot_name, diap_plot, device="png", path=plot_path, width=10, height=7, 
-         unit="in", dpi=1000)
+         unit="in", dpi=500)
 }
 
 plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
@@ -403,7 +403,7 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   #                        levels = c("Cooler Areas","Warmer Areas")))
   #pp + geom_text(data = ann_text, label = "Text")
   plot_name = paste0("diapause_rel_", version,".png")
-  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=1000)
+  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=500)
 }
 ############################################################################################################
 plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_", 
@@ -466,7 +466,7 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
               axis.text = element_text(face="plain", size=10, color="black"),
               axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
               axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
-        ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=1000)
+        ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=500)
         }
 
 plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_", 
@@ -545,56 +545,67 @@ plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
   file_pref = "rcp"
   model_type = c("45", "85")
   time_period = c ("_historical", "_2040", "_2060", "_2080")
+  weather_type = c("_warm", "_cold")
   file_suffix = ".csv"
-  for (model in model_type){
-    # initialize a data table, so we could use cbind
-    all_info = data.table(numeric_shifts)
-    for (time in time_period){
-      file_name = paste0(file_pref, model, time, file_suffix)
-      file = paste0(master_path, file_name)
-      current_file = data.table(read.csv(file, check.names=FALSE))
-      current_file = within(current_file, remove(shift))
-      all_info <- cbind(all_info, current_file)
-    }
-    all_info = melt(all_info, id=c("numeric_shifts"))
-    colnames(all_info) <- c("shifts", "pop_type", "generation")
-    
-    # plot the poulations
-    dead_lines = c("Aug", "Nov")
-    stages = c("_Larva_", "_Adult_")
-    
-    for (dead in dead_lines){
-      for (stag in stages){
-        mask_entry = paste0(model, stag, dead, "_")
-        mask = c(paste0(mask_entry, "historical"), paste0(mask_entry, "2040"), 
-                 paste0(mask_entry, "2060"),       paste0(mask_entry, "2080"))
-        curr_data = all_info[all_info$pop_type %in% mask]
-        
-        legend_labels = c(paste0("Historical"), paste0("2040's"),
-                          paste0("2060's"), paste0("2080's"))
-        
-        dot_plot = ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
-          geom_point() +
-          ylim(1.5, 4) + 
-          geom_smooth() + 
-          theme_bw() + 
-          theme(panel.grid.major = element_line(size = 0.3),
-                panel.grid.minor = element_line(size = 0.2),
-                legend.position="bottom",
-                legend.title = element_blank(),
-                legend.text = element_text(size=10, face="plain"),
-                legend.spacing.x = unit(.05, 'cm'),
-                legend.key.size = unit(.5, "cm"),
-                legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
-                axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
-                axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))
-          ) + 
-          scale_color_discrete(breaks=mask,
-                               labels= legend_labels) +
-          labs(x="Weibull scale parameter change by %", y="Number of generations")
-        plot_name = paste0(file_pref, model, stag, dead, "_scale_sens.png")
-        ggsave(plot_name, dot_plot, path=master_path, device="png", 
-               dpi=1000, width=5.57, height=5.42, unit="in")
+  for (weather in weather_type){
+    for (model in model_type){
+      # initialize a data table, so we could use cbind
+      all_info = data.table(numeric_shifts)
+      for (time in time_period){
+        file_name = paste0(file_pref, model, time, weather, file_suffix)
+        file = paste0(master_path, file_name)
+        current_file = data.table(read.csv(file, check.names=FALSE))
+        current_file = within(current_file, remove(shift))
+        if (time=="_historical"){
+          current_file[, 1] = current_file[1, 1]
+          current_file[, 2] = current_file[1, 2]
+          current_file[, 3] = current_file[1, 3]
+          current_file[, 4] = current_file[1, 4]
+        }
+        all_info <- cbind(all_info, current_file)
+      }
+      all_info = melt(all_info, id=c("numeric_shifts"))
+      colnames(all_info) <- c("shifts", "pop_type", "generation")
+      
+      # plot the poulations
+      dead_lines = c("Aug", "Nov")
+      stages = c("_Larva_", "_Adult_")
+      for (dead in dead_lines){
+        for (stag in stages){
+          mask_entry = paste0(model, stag, dead, "_")
+          mask = c(paste0(mask_entry, "2040"), paste0(mask_entry, "2060"),
+                   paste0(mask_entry, "2080"))
+          
+          curr_data = all_info[all_info$pop_type %in% mask]
+          
+          legend_labels = c(paste0("2040's"), paste0("2060's"), paste0("2080's"))
+          
+          h_line_coord = as.numeric(all_info[all_info$pop_type %in% c(paste0(mask_entry, "historical"))][1, 3])
+          history_line <- data.frame( x = c(-Inf, Inf), y = h_line_coord, history_line = factor(h_line_coord) )
+          dot_plot = ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
+            geom_point() +
+            geom_line() + 
+            geom_line(aes( x, y, linetype = "Historical" ), history_line, inherit.aes = FALSE) +
+            ylim(1.5, 4) + 
+            theme_bw() + 
+            theme(panel.grid.major = element_line(size = 0.3),
+                  panel.grid.minor = element_line(size = 0.2),
+                  legend.position="bottom",
+                  legend.title = element_blank(),
+                  legend.text = element_text(size=10, face="plain"),
+                  legend.spacing.x = unit(.05, 'cm'),
+                  legend.key.size = unit(.5, "cm"),
+                  legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
+                  axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
+                  axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))
+            ) + 
+            scale_color_discrete(breaks=mask,
+                                 labels= legend_labels) +
+            labs(x="Weibull scale parameter change by %", y="Number of generations")
+          plot_name = paste0(file_pref, model, stag, dead, "_scale_sens", weather, ".png")
+          ggsave(plot_name, dot_plot, path=master_path, device="png", 
+                 dpi=500, width=5.57, height=5.42, unit="in")
+        }
       }
     }
   }
@@ -642,7 +653,7 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
       scale_y_continuous(breaks = round(seq(40, 170, by = 20))) +
       labs(x="", y="Julian day", color = "Climate Group") +
       facet_wrap(~CountyGroup) +
-      theme(plot.margin = unit(c(t=0.1, r=.2, b=.1, l=0), "cm"),
+      theme(plot.margin = unit(c(t=0, r=.2, b=.1, l=0), "cm"),
             panel.border = element_rect(fill=NA, size=.3),
             panel.grid.major = element_line(size = 0.05),
             panel.grid.minor = element_blank(),
@@ -676,7 +687,7 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
               vjust = -1.4) +
     coord_flip()
   ggsave(output_name, p, path=plot_path, device="png", 
-                         width=plot_width, height=plot_height, unit="cm", dpi=1000)
+                         width=plot_width, height=plot_height, unit="cm", dpi=500)
 }
 ##################
 ##################   Adult Emergence
@@ -751,7 +762,7 @@ plot_adult_emergence <- function(input_dir, file_name,
       #             aes(label=sprintf("%1.1f", ..x..), color=factor(ClimateGroup)),
       #             position=position_nudge(x=0.33), size=.5) +
       coord_flip()
-  ggsave(output_name, p, path=plot_path, width=5.5, height=3.1, unit="in", dpi=1000)
+  ggsave(output_name, p, path=plot_path, width=5.5, height=3.1, unit="in", dpi=500)
 }
 ##################
 ##################   Generations of Adults or Larva by Aug 23
@@ -840,7 +851,7 @@ plot_No_generations_4_latex <- function(input_dir,
          box_plot, 
          path=plot_path, 
          device="png", 
-         width=plot_width, height=plot_height, units = "cm", dpi=1000)
+         width=plot_width, height=plot_height, units = "cm", dpi=500)
 }
 
 plot_No_generations <- function(input_dir,
@@ -930,7 +941,7 @@ plot_No_generations <- function(input_dir,
          path=plot_path, 
          device="png", 
          width=plot_with, height=plot_height, 
-         units = "in", dpi=1000)
+         units = "in", dpi=500)
 }
 ##################
 ################## Flight vs. DoY
@@ -1002,7 +1013,7 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
   #bplot <- add_sub(bplot, label="Gen. 1", x=1.02, y=8, angle=270, size=6, fontface="plain")
   ggsave(output_name, bplot, device="png", 
          path=plot_path, width=plot_with, height=plot_height, 
-         unit="in", dpi=1000)
+         unit="in", dpi=500)
 }
 
 ##############################################
@@ -1077,7 +1088,7 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
                axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                )       
   out_name = paste0("cumDD_seasonal_", version, ".png")
-  ggsave(out_name, plot, path=output_dir, dpi=1000)
+  ggsave(out_name, plot, path=output_dir, dpi=500)
 }
 
 plot_cumdd_vertical_season <- function(input_dir, file_name ="combined_CMPOP_", 
@@ -1141,12 +1152,12 @@ plot_cumdd_vertical_season <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                 ) 
     out_name = paste0("cumdd_vline", "_", version, ".png")
-    ggsave(out_name, plot, path=output_dir, dpi=1000)
+    ggsave(out_name, plot, path=output_dir, dpi=500)
 }
 
 
 plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_", 
-                                       version, output_dir){
+                                 version, output_dir){
     filename = paste0(input_dir, file_name, version, ".rds")
     data <- data.table(readRDS(filename))
 
@@ -1165,33 +1176,22 @@ plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_",
     } else {
       y_range=seq(0, 4500, 500)
       }
+    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
     plot = ggplot(data, aes(x=dayofyear, fill=ClimateGroup, color=ClimateGroup)) + 
-           geom_histogram(alpha=0.2, position="identity") +
+           geom_histogram(alpha=0.5, position="dodge", bins=4) +
            labs(x = "Julian day", fill="") +
            guides(guide_legend(title=""), color = FALSE, shape = FALSE) + 
            theme_bw() + 
            facet_grid(. ~ CountyGroup, scales="free") +
-           #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
            scale_x_continuous(breaks=seq(0, 370, 50)) +
            #scale_fill_discrete(name = "") +
-           scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                       rgb(92, 160, 201, max=255), 
-                                       rgb(211, 91, 76, max=255), 
-                                       rgb(125, 7, 37, max=255))
-                              ) +
-           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                      rgb(92, 160, 201, max=255), 
-                                      rgb(211, 91, 76, max=255), 
-                                      rgb(125, 7, 37, max=255))
-                             ) + 
-           geom_vline(xintercept=c(90, 181, 273), 
+           scale_color_manual(values=color_ord) +
+           scale_fill_manual(values=color_ord) + 
+           geom_vline(xintercept=c(90, 181, 273, 366), 
                       linetype="dashed", 
                       color ="black", size=0.3) +
            guides(guide_legend(title="")) + 
-           theme(# panel.grid.major = element_line(size = 0.7),
-                 # panel.grid.major = element_blank(),
-                 panel.grid.minor = element_blank(),
-                 #legend.title = element_text(face = "plain", size = 12),
+           theme(panel.grid.minor = element_blank(),
                  legend.text = element_text(size = 8),
                  legend.position = "bottom",
                  legend.margin=margin(t=-.4, r=0, b=.1, l=0, unit = 'cm'),
@@ -1200,6 +1200,6 @@ plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.title.x = element_text(face = "plain", size=12, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_blank()
                  )
-    out_name = paste0("cumdd_historgam", "_", version, ".png")
-    ggsave(out_name, plot, width=7, height=7, unit="in", path=output_dir, dpi=1000)
+    out_name = paste0("cumdd_historgam_seasonally_", version, ".png")
+    ggsave(out_name, plot, width=21, height=7, unit="in", path=output_dir, dpi=500)
 }

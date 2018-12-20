@@ -1629,12 +1629,17 @@ generate_scale_sens_table <- function(master_path, shifts){
   versions = c("rcp45", "rcp85")
   stages = c("NumLarvaGens", "NumAdultGens")
   dead_lines = c("Aug", "Nov")
-  shifts = shifts 
   for (vers in versions){
-    DT_Historical = data.table(shift = shifts)
-    DT_2040 = data.table(shift = shifts)
-    DT_2060 = data.table(shift = shifts)
-    DT_2080 = data.table(shift = shifts)
+    DT_historical_warm = data.table(shift = shifts)
+    DT_2040_warm = data.table(shift = shifts)
+    DT_2060_warm = data.table(shift = shifts)
+    DT_2080_warm = data.table(shift = shifts)
+    
+    DT_historical_cold = data.table(shift = shifts)
+    DT_2040_cold = data.table(shift = shifts)
+    DT_2060_cold = data.table(shift = shifts)
+    DT_2080_cold = data.table(shift = shifts)
+    
     for (dead_line in dead_lines){
       for (stag in stages){
         for (shipht in shifts){
@@ -1643,28 +1648,45 @@ generate_scale_sens_table <- function(master_path, shifts){
           data$CountyGroup = as.character(data$CountyGroup)
           data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
           data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-          data <- subset(data, select = c("ClimateGroup", "CountyGroup", stag))
-          df <- data.frame(data)
-          df <- (df %>% group_by(CountyGroup, ClimateGroup))
-          medians <- (df %>% summarise(med = median(!!sym(stag))))
-
-          DT_historical[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_historical")] = round(medians[1, 3], digits = 2)
-          DT_2040[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2040")] = round(medians[2, 3], digits = 2)
-          DT_2060[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2060")] = round(medians[3, 3], digits = 2)
-          DT_2080[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2080")] = round(medians[4, 3], digits = 2)
+          data <- subset(data, select = c("ClimateGroup", "CountyGroup", stag, "latitude", "longitude"))
+          data <- data.frame(data)
+          data <- (data %>% group_by(CountyGroup, ClimateGroup, latitude, longitude))
+          medians <- (data %>% summarise(med = median(!!sym(stag))))
+          
+          DT_historical_cold[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_historical")] = round(medians[1, 5], digits = 2)
+          DT_2040_cold[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2040")] = round(medians[2, 5], digits = 2)
+          DT_2060_cold[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2060")] = round(medians[3, 5], digits = 2)
+          DT_2080_cold[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2080")] = round(medians[4, 5], digits = 2)
+          
+          DT_historical_warm[match(shipht, shifts), paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_historical")] = round(medians[5, 5], digits = 2)
+          DT_2040_warm[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2040")] = round(medians[6, 5], digits = 2)
+          DT_2060_warm[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2060")] = round(medians[7, 5], digits = 2)
+          DT_2080_warm[match(shipht, shifts),       paste0(substr(vers, 4, 5), "_", substr(stag, 4, 8), "_", dead_line, "_2080")] = round(medians[8, 5], digits = 2)
         }   
       }
     }
-  file = paste0(master_path, vers, "_historical.csv")
-  write.csv(DT_Historical, file = file, row.names=FALSE)
-
-  file = paste0(master_path, vers, "_2040.csv")
-  write.csv(DT_2040, file = file, row.names=FALSE)
-
-  file = paste0(master_path, vers, "_2060.csv")
-  write.csv(DT_2060, file = file, row.names=FALSE)
-
-  file = paste0(master_path, vers, "_2080.csv")
-  write.csv(DT_2080, file = file, row.names=FALSE)
+    file = paste0(master_path, vers, "_historical_warm.csv")
+    write.csv(DT_historical_warm, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2040_warm.csv")
+    write.csv(DT_2040_warm, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2060_warm.csv")
+    write.csv(DT_2060_warm, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2080_warm.csv")
+    write.csv(DT_2080_warm, file = file, row.names=FALSE)
+    ###################################################################
+    file = paste0(master_path, vers, "_historical_cold.csv")
+    write.csv(DT_historical_cold, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2040_cold.csv")
+    write.csv(DT_2040_cold, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2060_cold.csv")
+    write.csv(DT_2060_cold, file = file, row.names=FALSE)
+    
+    file = paste0(master_path, vers, "_2080_cold.csv")
+    write.csv(DT_2080_cold, file = file, row.names=FALSE)
   }
 }

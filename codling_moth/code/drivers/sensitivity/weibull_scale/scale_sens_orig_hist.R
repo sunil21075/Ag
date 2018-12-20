@@ -18,7 +18,7 @@ conn = file(paste0(param_dir, file_list), open = "r")
 locations = readLines(conn)
 close(conn)
 
-locations = locations[1]
+# locations = locations[1]
 file_prefix = "data_"
 
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
@@ -27,8 +27,7 @@ cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 categories = c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M", "historical")
 
 # scale_shift has to be in percent format.
-scale_shift = c(0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.15, 0.2)
-scale_shift = c(0.05, 0.1, 0.15, 0.2)
+scale_shift = seq(0, 20, 1)/100
 
 # args = commandArgs(trailingOnly=TRUE)
 # categories = args[1]
