@@ -1040,11 +1040,11 @@ generations_func <- function(input_dir, file_name){
 #######################       Diapause Function           ###########################
 #######################                                   ###########################
 #####################################################################################
-diapause_abs_rel_shifts <- function(input_dir, file_name,
-                                    param_dir, 
-                                    diap_param=c(102.6077, 1.306483, 16.95815),
-                                    shift=0,
-                                    location_group_name="LocationGroups.csv"){
+diapause_abs_rel <- function(input_dir, file_name,
+                             param_dir, 
+                             diap_param=c(102.6077, 1.306483, 16.95815),
+                             shift=0,
+                             location_group_name="LocationGroups.csv"){
     file_name = paste0(input_dir, file_name, ".rds")
     data <- data.table(readRDS(file_name))
 
@@ -1125,7 +1125,7 @@ diapause_abs_rel_shifts <- function(input_dir, file_name,
                              "AbsPopNonDiap","AbsPopDiap", "daylength"))
     # pre_diap_plot <- sub1
     # write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
-    saveRDS(sub1, paste0(write_dir, "pre_diap_plot_", version, ".rds"))
+    # saveRDS(sub1, paste0(write_dir, "pre_diap_plot_", version, ".rds"))
     sub1 = sub1[, .(RelLarvaPop = mean(SumLarva),    RelDiap = mean(enterDiap),  RelNonDiap = mean(escapeDiap), 
                     AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
                     CumulativeDDF = mean(CumDDinF)), 
@@ -1148,7 +1148,9 @@ diapause_abs_rel_shifts <- function(input_dir, file_name,
     temp1$Group = "Relative Larva Pop Vs Diapaused"
     temp2$Group = "Relative Larva Pop Vs NonDiapaused"
     RelData = rbind(temp1, temp2)
-
+    ###
+    ### Absolute Population
+    ###
     AbsData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
                                       "dayofyear", "CumulativeDDF", 
                                       "AbsLarvaPop", "AbsDiap", "AbsNonDiap"))
@@ -1166,7 +1168,7 @@ diapause_abs_rel_shifts <- function(input_dir, file_name,
     return (list(RelData, AbsData, sub1))
 }
 
-diapause_abs_rel <- function(input_dir, file_name,
+diapause_abs_rel_old <- function(input_dir, file_name,
                              param_dir, 
                              location_group_name="LocationGroups.csv"){
     file_name = paste0(input_dir, file_name, ".rds")
