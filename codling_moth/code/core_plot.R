@@ -469,8 +469,8 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
               axis.text = element_text(face="plain", size=10, color="black"),
               axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
               axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
-        ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=500)
-        }
+  gsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=500)
+}
 
 plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_", 
                                         version, output_dir){
@@ -491,7 +491,7 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
   plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                 aes(x=dayofyear, y=value, fill=factor(variable))
                 ) +
-         labs(x = "Day of Year", y = paste0("Cumulative Adult Emergence"), fill = "Adult generation") +
+         labs(x = "Julian day", y = paste0("Cumulative adult emergence"), fill = "Adult generation") +
          # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
          stat_summary(geom="ribbon", 
                       fun.y=function(z) { quantile(z,0.5) }, 
@@ -804,7 +804,7 @@ plot_No_generations_4_latex <- function(input_dir,
   }
   
   box_plot = ggplot(data = data, aes(x = ClimateGroup, y = !!sym(var), fill = ClimateGroup)) + 
-             geom_boxplot(outlier.size=-.25, lwd=0.1, notch=TRUE, width=box_width) +
+             geom_boxplot(outlier.size=-.35, lwd=0.1, notch=TRUE, width=box_width) +
              # The bigger the number in expand below, the smaller the space between y-ticks
              scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
              scale_y_continuous(limits = c(.5, 4), breaks=seq(1, 5, by=1)) + 
@@ -909,7 +909,7 @@ plot_No_generations <- function(input_dir,
                   color = "Climate Group") +
              facet_wrap(~CountyGroup) +
              theme(legend.position="bottom", 
-             	     legend.key.size = unit(.75,"line"),
+             	     legend.key.size = unit(.75, "line"),
                    legend.text=element_text(size=5),
                    legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
                    legend.spacing.x = unit(.05, 'cm'),

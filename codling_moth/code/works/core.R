@@ -1106,7 +1106,8 @@ generations_func <- function(input_dir, file_name){
 #######################                                   ###########################
 #####################################################################################
 diapause_abs_rel <- function(input_dir, file_name,
-                             param_dir, location_group_name="LocationGroups.csv"){
+                             param_dir, 
+                             location_group_name="LocationGroups.csv"){
     file_name = paste0(input_dir, file_name, ".rds")
     data <- data.table(readRDS(file_name))
 
@@ -1132,23 +1133,24 @@ diapause_abs_rel <- function(input_dir, file_name,
     sub = data
     rm (data)
     startingpopulationfortheyear <- 1000
-    #generation1
-    sub[,LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-         by=list(year, ClimateScenario, 
-                 latitude,longitude, ClimateGroup, CountyGroup) ]
-    sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
-    sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1*sub$diapause1/100
-    sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
-
-    #generation2
-    sub[,LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
+    ##########################################################################################
+    # generation 1
+    sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
+          by=list(year, ClimateScenario, 
+                  latitude, longitude, ClimateGroup, CountyGroup) ]
+    sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction * startingpopulationfortheyear
+    sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1 * sub$diapause1/100
+    sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1 - sub$AbsPopLarvaGen1Diap
+    ##########################################################################################
+    # generation 2
+    sub[, LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
          by = list(year, ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
-    sub[, AbsPopLarvaGen2 := LarvaGen2RelFraction * sum(AbsPopLarvaGen1NonDiap)*3.9, 
+    sub[, AbsPopLarvaGen2 := LarvaGen2RelFraction * sum(AbsPopLarvaGen1NonDiap) * 3.9, 
           by = list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup)]
     sub$AbsPopLarvaGen2Diap <- sub$AbsPopLarvaGen2 * sub$diapause1/100
     sub$AbsPopLarvaGen2NonDiap <- sub$AbsPopLarvaGen2 - sub$AbsPopLarvaGen2Diap
-
-    #generation3
+    ##########################################################################################
+    # generation 3
     sub[, LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), 
           by =list(year,ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
 
@@ -1156,8 +1158,8 @@ diapause_abs_rel <- function(input_dir, file_name,
           by =list(year,ClimateScenario, latitude,longitude,ClimateGroup, CountyGroup) ]
     sub$AbsPopLarvaGen3Diap <- sub$AbsPopLarvaGen3*sub$diapause1/100
     sub$AbsPopLarvaGen3NonDiap <- sub$AbsPopLarvaGen3- sub$AbsPopLarvaGen3Diap
-
-    #generation4
+    ##########################################################################################
+    # generation 4
     sub[, LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), 
           by =list(year, ClimateScenario, latitude, longitude, ClimateGroup, CountyGroup)]
 
@@ -1166,8 +1168,8 @@ diapause_abs_rel <- function(input_dir, file_name,
 
     sub$AbsPopLarvaGen4Diap <- sub$AbsPopLarvaGen4*sub$diapause1/100
     sub$AbsPopLarvaGen4NonDiap <- sub$AbsPopLarvaGen4- sub$AbsPopLarvaGen4Diap
-
-    ### get totals similar to Sum Larva column , but abs numbers
+    ##########################################################################################
+    ### get totals similar to Sum Larva column, but abs numbers
     sub$AbsPopTotal <- sub$AbsPopLarvaGen1 + sub$AbsPopLarvaGen2 + sub$AbsPopLarvaGen3 + sub$AbsPopLarvaGen4
     sub$AbsPopDiap <- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
     sub$AbsPopNonDiap <- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + 
@@ -1182,8 +1184,8 @@ diapause_abs_rel <- function(input_dir, file_name,
                              "escapeDiap", "AbsPopTotal",
                              "AbsPopNonDiap","AbsPopDiap", "daylength"))
     # pre_diap_plot <- sub1
-    write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
-    saveRDS(sub1, paste0(write_dir, "pre_diap_plot_", version, ".rds"))
+    # write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
+    # saveRDS(sub1, paste0(write_dir, "pre_diap_plot_", version, ".rds"))
     sub1 = sub1[, .(RelLarvaPop = mean(SumLarva),    RelDiap = mean(enterDiap),  RelNonDiap = mean(escapeDiap), 
                     AbsLarvaPop = mean(AbsPopTotal), AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
                     CumulativeDDF = mean(CumDDinF)), 
@@ -1197,7 +1199,9 @@ diapause_abs_rel <- function(input_dir, file_name,
     RelData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
                                       "dayofyear", "CumulativeDDF", 
                                       "RelLarvaPop", "RelDiap", "RelNonDiap"))
-
+    ###
+    ### Relative Population
+    ###
     RelData = melt(RelData, id = c("ClimateGroup", "CountyGroup", "dayofyear", "CumulativeDDF"))
     #RelData[, Group := as.character()]
     RelData$Group = "0"
@@ -1207,6 +1211,9 @@ diapause_abs_rel <- function(input_dir, file_name,
     temp2$Group = "Relative Larva Pop Vs NonDiapaused"
     RelData = rbind(temp1, temp2)
 
+    ###
+    ### Absolute Population
+    ###
     AbsData = subset(sub1, select = c("ClimateGroup", "CountyGroup", 
                                       "dayofyear", "CumulativeDDF", 
                                       "AbsLarvaPop", "AbsDiap", "AbsNonDiap"))
