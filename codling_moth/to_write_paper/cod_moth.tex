@@ -178,6 +178,24 @@ risk for the development of resistance.
 Can we add something related to gaps. That is what are we offering beyond rehashing what is out there?
 
 \section{Methods}
+\begin{figure}[h!]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/cumdd_plots/cumdd_qrt_rcp45copy}
+  \label{fig:DDC45}
+\caption{Degree Day Changes (rcp 4.5)}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{figures/cumdd_plots/cumdd_qrt_rcp85copy}
+  \label{fig:DDC85}
+\caption{Degree Day Changes (rcp 8.5)}
+\end{subfigure}
+%%%%%%%
+\caption{Degree Day changes over a year}
+\label{fig:DDC}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Input data  (Sonia)}
@@ -201,7 +219,7 @@ Also discuss distinction between warmer and  colder areas (Giridhar)
 \subsection{Changes in degree day accumulation (Min to help Hossein)}
 Show annual and seasonal changes
 
-
+\iffalse
 \begin{figure}[h!]
 \begin{subfigure}{.46\textwidth}
   \centering
@@ -219,6 +237,7 @@ Show annual and seasonal changes
 \caption{Degree Day changes over a year}
 \label{fig:DDC}
 \end{figure}
+\fi
 \pagebreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -228,14 +247,14 @@ Adult first flight and egg hatch into larvae (Are these the critical times at wh
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{figures/plot_eggHatch_rcp45}
+        \includegraphics[width=\textwidth]{figures/eggHatch_rcp45}
         \caption{Eggs hatching (rcp 4.5)}
         \label{fig:Eggs_Hatch_45)}
     \end{subfigure}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
       %(or a blank line to force the subfigure onto a new line)
     \begin{subfigure}[b]{0.48\textwidth}
-        \includegraphics[width=\textwidth]{figures/plot_eggHatch_rcp85}
+        \includegraphics[width=\textwidth]{figures/eggHatch_rcp85}
         \caption{Eggs hatching (rcp 8.5)}
         \label{fig:Eggs_Hatch_85}
     \end{subfigure}\\
@@ -264,7 +283,7 @@ Adult first flight and egg hatch into larvae (Are these the critical times at wh
 \begin{figure}[h!]
     \hspace{.1in}
     \begin{subfigure}[b]{0.5\textwidth}
-        \includegraphics[width=\textwidth]{figures/rcp45_Adult_Aug_scale_sens}
+        \includegraphics[width=\textwidth]{figures/sensitivity/weibull_scale/sensitivity_figures/rcp45_Adult_Aug_scale_sens_cold}
         \caption{Adult first flight (rcp 4.5)}
         \label{fig:aff_45}
     \end{subfigure}
@@ -272,7 +291,7 @@ Adult first flight and egg hatch into larvae (Are these the critical times at wh
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
     %(or a blank line to force the subfigure onto a new line)
     \begin{subfigure}[b]{0.5\textwidth}
-        \includegraphics[width=\textwidth]{figures/rcp45_Adult_Aug_scale_sens}
+        \includegraphics[width=\textwidth]{figures/sensitivity/weibull_scale/sensitivity_figures/rcp45_Adult_Aug_scale_sens_cold}
         \caption{Adult first flight (rcp 8.5)}
         \label{fig:aff_85}
     \end{subfigure}
@@ -321,14 +340,14 @@ Some text has to go here.
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{figures/diapause_rel_rcp45}
+        \includegraphics[width=\textwidth]{figures/sensitivity/Diapause/diapause_rel_85_6.png}
         \caption{\scriptsize  Relative fraction of escaped larvae (rcp 4.5)}
         \label{fig:RFED_45)}
     \end{subfigure}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
       %(or a blank line to force the subfigure onto a new line)
     \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{figures/diapause_rel_rcp85}
+        \includegraphics[width=\textwidth]{figures/sensitivity/Diapause/diapause_rel_85_6.png}
         \caption{\scriptsize Relative fraction of escaped larvae (rcp 8.5)}
         \label{fig:RFED_85}
     \end{subfigure}
