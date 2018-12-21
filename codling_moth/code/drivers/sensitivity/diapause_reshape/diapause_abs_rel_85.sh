@@ -9,13 +9,11 @@
 #PBS -o diap_abs_rel_85_output.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
-
 # Ensure a clean running environment:
 module purge
 
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
-
 ./diap_new_funcs.R rcp85
 
 exit 0

@@ -8,12 +8,9 @@ source(source_path1)
 source(source_path2)
 
 args = commandArgs(trailingOnly=TRUE)
-vers = args[1]
+version = args[1]
 
 data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/plots/"
 
-plot_cumdd_histogram(input_dir=data_dir, 
-	                 file_name ="combined_CMPOP_", 
-                     version=vers, 
-                     output_dir=plot_path)
+cumulative_qrt_boxplot(input_dir=data_dir, file_name ="combined_CMPOP_", version, output_dir=plot_path)

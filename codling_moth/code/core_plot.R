@@ -152,7 +152,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
     plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <300], 
                   aes(x=dayofyear, y=value, fill=factor(variable))
                   ) +
-           labs(x = "Julian day", y = "Cumulative population fraction", fill = "Larva Generation") +
+           labs(x = "Julian day", y = "Cumulative population fraction", fill = "Larva generation") +
            facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
           # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
            stat_summary(geom="ribbon", 
@@ -201,16 +201,15 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
   if (output_type == "cumdd"){
     filename = paste0(input_dir, file_name, version, ".rds")
     data <- data.table(readRDS(filename))
-
-    data$CountyGroup = as.character(data$CountyGroup)
-    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
-    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
     data = subset(data, select = c("ClimateGroup", "CountyGroup", 
                                    "latitude", "longitude", 
                                    "ClimateScenario", 
                                    "year", "dayofyear", "CumDDinF"))
-    # data$CumDD = data$CumDDinF
 
+    data$CountyGroup = as.character(data$CountyGroup)
+    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+    
     data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", 
                                                        "ClimateScenario", "ClimateGroup", "dayofyear")]
     if (version == "rcp85"){
@@ -219,7 +218,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
       y_range=seq(0, 4500, 500)
       }
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
-           labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate Group") +
+           labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate group") +
            guides(fill=guide_legend(title="")) + 
            facet_grid(. ~ CountyGroup, scales="free") +
            #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -242,6 +241,10 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
            scale_x_continuous(breaks=seq(0, 370, 50)) +
            scale_y_continuous(breaks=y_range) +
            theme_bw() + 
+           # geom_vline(xintercept=c(90, 181, 273), 
+           #           linetype="solid", 
+           #           color ="red", size=0.2
+           #           )+
            theme(# panel.grid.major = element_line(size = 0.7),
                  # panel.grid.major = element_blank(),
                  panel.grid.minor = element_blank(),
@@ -252,7 +255,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                  axis.text = element_text(face = "plain", size = 10, color="black"),
                  axis.title.x = element_text(face = "plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
-                ) 
+                )
     out_name = paste0(output_type, "_", version, ".png")
     ggsave(out_name, plot, path=output_dir, dpi=500)
   }
@@ -346,7 +349,7 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
                      legend.position="bottom"
                     ) + 
-               scale_fill_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), name = "Absolute Population") +
+               scale_fill_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), name = "Absolute population") +
                scale_color_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), guide = FALSE) +
                stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                              fun.ymin=function(z) { 0 }, 
@@ -388,7 +391,7 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
        ) + 
        scale_fill_manual(labels = c("Total", "Escape diapause"), 
                          values=c("grey", "orange"), 
-                         name = "Relative Population") +
+                         name = "Relative population") +
        scale_color_manual(labels = c("Total", "Escape diapause"), 
                           values=c("grey", "orange"), 
                           guide = FALSE) +
@@ -425,7 +428,7 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
   plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                 aes(x=dayofyear, y=value, fill=factor(variable))
                 ) +
-         labs(x = "Julian day", y = paste0("Cumulative population fraction"), fill = "Adult Generation") +
+         labs(x = "Julian day", y = paste0("Cumulative population fraction"), fill = "Adult generation") +
         # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
         stat_summary(geom="ribbon", 
                      fun.y=function(z) { quantile(z,0.5) }, 
@@ -488,7 +491,7 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
   plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                 aes(x=dayofyear, y=value, fill=factor(variable))
                 ) +
-         labs(x = "Day of Year", y = paste0("Cumulative Adult Emergence"), fill = "Adult Generation") +
+         labs(x = "Day of Year", y = paste0("Cumulative Adult Emergence"), fill = "Adult generation") +
          # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
          stat_summary(geom="ribbon", 
                       fun.y=function(z) { quantile(z,0.5) }, 
@@ -651,7 +654,7 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
       theme_bw() +
       scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
       scale_y_continuous(breaks = round(seq(40, 170, by = 20))) +
-      labs(x="", y="Julian day", color = "Climate Group") +
+      labs(x="", y="Julian day", color = "Climate group") +
       facet_wrap(~CountyGroup) +
       theme(plot.margin = unit(c(t=0, r=.2, b=.1, l=0), "cm"),
             panel.border = element_rect(fill=NA, size=.3),
@@ -962,7 +965,6 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
   } else{
     data <- subset(data, select = c("LGen1_0.5", "LGen2_0.5", "LGen3_0.5", "LGen4_0.5",
                                     "ClimateGroup", "CountyGroup"))
-    
     L = c('LGen1_0.5', 'LGen2_0.5',  'LGen3_0.5', 'LGen4_0.5')
   }
   
@@ -972,44 +974,44 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
   
   data_melted = melt(data, id = c("ClimateGroup", "CountyGroup"))
   data_melted$variable <- factor(data_melted$variable, levels = L, ordered = TRUE)
-  
+  rm(data)
   bplot <- ggplot(data = data_melted, aes(x=variable, y=value), group = variable) + 
            geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                         position=position_dodge(width=0.5)) + 
-    scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
-    #geom_vline(xintercept=4.5, linetype="solid", color = "grey", size=1)+
-    #geom_vline(xintercept=8.5, linetype="solid", color = "grey", size=1)+
-    # annotate("text", x=2.5, y=369, angle=270, label= "boat", size=8, fontface="plain") + 
-    
-    facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
-    labs(x="Time period", y="Julian day", color = "Climate Group", title=factor(data_melted$CountyGroup)) + 
-    theme_bw() +
-    theme(legend.position="bottom", 
-          legend.margin=margin(t=-.1, r=0, b=5, l=0, unit = 'cm'),
-          legend.title = element_blank(),
-          legend.text = element_text(size=7, face="plain"),
-          legend.key.size = unit(.5, "cm"), 
-          panel.grid.major = element_line(size = 0.1),
-          panel.grid.minor = element_line(size = 0.1),
-          strip.text = element_text(size= 6, face = "plain"),
-          axis.text = element_text(face = "plain", size = 4, color="black"),
-          axis.title.x = element_text(face = "plain", size = 10, 
-                                      margin = margin(t=10, r=0, b=0, l=0)),
-          axis.text.x = element_text(size = 6, color="black"), # tick text font size
-          axis.title.y = element_text(face = "plain", size = 10, 
-                                      margin = margin(t=0, r=7, b=0, l=0)),
-          axis.text.y  = element_blank(),
-          axis.ticks.y = element_blank(),
-          plot.margin = unit(c(t=-0.35, r=.7, b=-4.7, l=0.3), "cm")
-    ) +
-    scale_color_manual(values=color_ord,
-                       name="Time\nPeriod", 
-                       limits = color_ord,
-                       labels=c("Historical","2040","2060","2080")) +
-    scale_fill_manual(values=color_ord,
-                      name="Time\nPeriod", 
-                      labels=c("Historical","2040","2060","2080")) + 
-    coord_flip()
+           scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
+         # geom_vline(xintercept=4.5, linetype="solid", color = "grey", size=1)+
+         # geom_vline(xintercept=8.5, linetype="solid", color = "grey", size=1)+
+         # annotate("text", x=2.5, y=369, angle=270, label= "boat", size=8, fontface="plain") + 
+          
+           facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+           labs(x="Time period", y="Julian day", color = "Climate Group") + 
+           theme_bw() +
+           theme(legend.position="bottom", 
+                 legend.margin=margin(t=-.1, r=0, b=5, l=0, unit = 'cm'),
+                 legend.title = element_blank(),
+                 legend.text = element_text(size=7, face="plain"),
+                 legend.key.size = unit(.5, "cm"), 
+                 panel.grid.major = element_line(size = 0.1),
+                 panel.grid.minor = element_line(size = 0.1),
+                 strip.text = element_text(size= 6, face = "plain"),
+                 axis.text = element_text(face = "plain", size = 4, color="black"),
+                 axis.title.x = element_text(face = "plain", size = 10, 
+                                             margin = margin(t=10, r=0, b=0, l=0)),
+                 axis.text.x = element_text(size = 6, color="black"), # tick text font size
+                 axis.title.y = element_text(face = "plain", size = 10, 
+                                             margin = margin(t=0, r=7, b=0, l=0)),
+                 axis.text.y  = element_blank(),
+                 axis.ticks.y = element_blank(),
+                 plot.margin = unit(c(t=-0.35, r=.7, b=-4.7, l=0.3), "cm")
+                ) +
+           scale_color_manual(values=color_ord,
+                              name="Time\nPeriod", 
+                              limits = color_ord,
+                              labels=c("Historical", "2040", "2060", "2080")) +
+           scale_fill_manual(values=color_ord,
+                             name="Time\nPeriod", 
+                             labels=c("Historical", "2040", "2060", "2080")) + 
+           coord_flip()
   #bplot <- add_sub(bplot, label="Gen. 1", x=1.02, y=8, angle=270, size=6, fontface="plain")
   ggsave(output_name, bplot, device="png", 
          path=plot_path, width=plot_with, height=plot_height, 
@@ -1057,7 +1059,7 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
 
   plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
          facet_grid(. ~ CountyGroup ~ season, scales = "free") +
-         labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate Group") +
+         labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate group") +
          guides(fill=guide_legend(title="")) + 
          stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                                      fun.ymin=function(z) { quantile(z,0.1) }, 
@@ -1089,70 +1091,6 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
                )       
   out_name = paste0("cumDD_seasonal_", version, ".png")
   ggsave(out_name, plot, path=output_dir, dpi=500)
-}
-
-plot_cumdd_vertical_season <- function(input_dir, file_name ="combined_CMPOP_", 
-                                       version, output_dir){
-
-    filename = paste0(input_dir, file_name, version, ".rds")
-    data <- data.table(readRDS(filename))
-
-    data$CountyGroup = as.character(data$CountyGroup)
-    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
-    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-    data = subset(data, select = c("ClimateGroup", "CountyGroup", 
-                                   "latitude", "longitude", 
-                                   "ClimateScenario", 
-                                   "year", "dayofyear", "CumDDinF"))
-
-    data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", 
-                                                       "ClimateScenario", "ClimateGroup", "dayofyear")]
-    if (version == "rcp85"){
-      y_range = seq(0, 5750, 500)
-    } else {
-      y_range=seq(0, 4500, 500)
-      }
-    plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
-           labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate Group") +
-           guides(fill=guide_legend(title="")) + 
-           facet_grid(. ~ CountyGroup, scales="free") +
-           #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
-           stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
-                                       fun.ymin=function(z) { quantile(z,0.1) }, 
-                                       fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.4) +
-           stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
-                                       fun.ymin=function(z) { quantile(z,0.25) }, 
-                                       fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
-           stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) + 
-        
-           scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                       rgb(92, 160, 201, max=255), 
-                                       rgb(211, 91, 76, max=255), 
-                                       rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                      rgb(92, 160, 201, max=255), 
-                                      rgb(211, 91, 76, max=255), 
-                                      rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-           scale_x_continuous(breaks=seq(0, 370, 50)) +
-           scale_y_continuous(breaks=y_range) +
-           theme_bw() + 
-           geom_vline(xintercept=c(90, 181, 273), 
-                      linetype="solid", 
-                      color ="red", size=0.2
-                      )+
-           theme(# panel.grid.major = element_line(size = 0.7),
-                 # panel.grid.major = element_blank(),
-                 panel.grid.minor = element_blank(),
-                 legend.title = element_text(face = "plain", size = 12),
-                 legend.text = element_text(size = 10),
-                 legend.position = "bottom",
-                 strip.text = element_text(size = 12, face = "plain"),
-                 axis.text = element_text(face = "plain", size = 10, color="black"),
-                 axis.title.x = element_text(face = "plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
-                 axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
-                ) 
-    out_name = paste0("cumdd_vline", "_", version, ".png")
-    ggsave(out_name, plot, path=output_dir, dpi=500)
 }
 
 
@@ -1203,3 +1141,63 @@ plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_",
     out_name = paste0("cumdd_historgam_seasonally_", version, ".png")
     ggsave(out_name, plot, width=21, height=7, unit="in", path=output_dir, dpi=500)
 }
+
+
+cumulative_qrt_boxplot <- function(input_dir, file_name, version, output_dir){
+  # This stupid thing does not plot on Aeolus.
+  # First I did subset the data to pull proper information,
+  # and then I used it on my computer!
+  filename = paste0(input_dir, file_name, version, ".rds")
+  data <- data.table(readRDS(filename))
+  data = subset(data, select = c("ClimateGroup", "CountyGroup",
+                               "dayofyear", "CumDDinF"))
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+
+  # add the new season column
+  data[, season := as.character(0)]
+  data[data[ , data$dayofyear <= 90]]$season = "QTR 1"
+  data[data[ , data$dayofyear >= 91 & data$dayofyear <= 181]]$season = "QTR 2"
+  data[data[ , data$dayofyear >= 182 & data$dayofyear <= 273]]$season = "QTR 3"
+  data[data[ , data$dayofyear >= 274]]$season = "QTR 4"
+  data = within(data, remove(dayofyear))
+  data$season = factor(data$season, levels = c("QTR 1", "QTR 2", "QTR 3", "QTR 4"))
+  
+  # df <- data.frame(data)
+  # df <- (df %>% group_by(CountyGroup, ClimateGroup, season))
+  # medians <- (df %>% summarise(med = median(CumDDinF)))
+  # medians <- medians$med
+  # rm(df)
+  
+  data = melt(data, id = c("ClimateGroup", "CountyGroup", "season"))
+  data = within(data, remove(variable))
+  bplot <- ggplot(data = data, aes(x=season, y=value), group = season) + 
+           geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
+                        position=position_dodge(width=0.5)) + 
+           scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 500)) + 
+           facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+           labs(x="", y="Cumulative degree day", color = "Climate Group") + 
+           theme_bw() +
+           theme(legend.position="bottom", 
+                 legend.margin=margin(t=-.7, r=0, b=5, l=0, unit = 'cm'),
+                 legend.title = element_blank(),
+                 legend.text = element_text(size=10, face="plain"),
+                 legend.key.size = unit(.5, "cm"), 
+                 panel.grid.major = element_line(size = 0.1),
+                 panel.grid.minor = element_line(size = 0.1),
+                 strip.text = element_text(size= 10, face = "plain"),
+                 axis.text = element_text(face = "plain", size = 4, color="black"),
+                 axis.title.x = element_text(face = "plain", size = 10, 
+                                             margin = margin(t=10, r=0, b=0, l=0)),
+                 axis.text.x = element_text(size = 10, color="black"), # tick text font size
+                 axis.text.y = element_text(size = 10, color="black"),
+                 axis.title.y = element_text(face = "plain", size = 12, 
+                                             margin = margin(t=0, r=7, b=0, l=0)),
+                 plot.margin = unit(c(t=0.3, r=.7, b=-4.7, l=0.3), "cm")
+                )
+  out_name = paste0("cumdd_qrt_", version, ".png")
+  ggsave(out_name, bplot, width=15, height=7, unit="in", path=output_dir, dpi=500, device="png")
+}
+
+
