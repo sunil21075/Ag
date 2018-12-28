@@ -6,7 +6,7 @@ library(dplyr)
 library(foreach)
 library(iterators)
 library(ggplot2)
-rm(list=ls())
+
 
 write_path = "/Users/hn/Documents/GitHub/Kirti/Codling_moth_Code/sensitivity/wider_intervals/"
 read_path = "/Users/hn/Documents/GitHub/Kirti/Codling_moth_Code/sensitivity/wider_intervals/"
