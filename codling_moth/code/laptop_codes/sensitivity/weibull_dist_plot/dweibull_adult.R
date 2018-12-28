@@ -101,6 +101,6 @@ ggsave(filename=paste0("dweibull_adult", ".png"),
 	     path=plot_path, 
 	     width=7 ,
 	     height=5 , 
-	     dpi=1000, 
+	     dpi=500, 
 	     device="png")
 

@@ -32,39 +32,35 @@ data = melt(data, id = c("ClimateGroup", "CountyGroup", "season"))
 data = within(data, remove(variable))
 
 bplot <- ggplot(data = data, aes(x=season, y=value), group = season) + 
-  geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
+         geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                position=position_dodge(width=0.5)) + 
-  scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 500)) + 
-  facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
-  labs(x="", y="Cumulative degree day", color = "Climate Group") + 
-  theme_bw() +
-  theme(legend.position="bottom", 
-        legend.margin=margin(t=-.7, r=0, b=5, l=0, unit = 'cm'),
-        legend.title = element_blank(),
-        legend.text = element_text(size=18, face="plain"),
-        legend.key.size = unit(1, "cm"), 
-        legend.spacing.x = unit(0.5, 'cm'),
-        panel.grid.major = element_line(size = 0.1),
-        panel.grid.minor = element_line(size = 0.1),
-        strip.text = element_text(size= 14, face = "plain"),
-        axis.text = element_text(face = "plain", size = 4, color="black"),
-        axis.title.x = element_text(face = "plain", size = 10, 
-                                    margin = margin(t=10, r=0, b=0, l=0)),
-        axis.text.x = element_text(size = 12, color="black"), # tick text font size
-        axis.text.y = element_text(size = 12, color="black"),
-        axis.title.y = element_text(face = "plain", size = 16, 
-                                    margin = margin(t=0, r=7, b=0, l=0)),
-        plot.margin = unit(c(t=0.3, r=.7, b=-4.7, l=0.3), "cm")
-        )
+         scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 500)) + 
+         facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+         labs(x="", y="Cumulative degree day", color = "Climate Group") + 
+         theme_bw() +
+         theme(legend.position="bottom", 
+               legend.margin=margin(t=-.7, r=0, b=5, l=0, unit = 'cm'),
+               legend.title = element_blank(),
+               legend.text = element_text(size=18, face="plain"),
+               legend.key.size = unit(1, "cm"), 
+               legend.spacing.x = unit(0.5, 'cm'),
+               panel.grid.major = element_line(size = 0.1),
+               panel.grid.minor = element_line(size = 0.1),
+               strip.text = element_text(size= 14, face = "plain"),
+               axis.text = element_text(face = "plain", size = 4, color="black"),
+               axis.title.x = element_text(face = "plain", size = 10, 
+                                           margin = margin(t=10, r=0, b=0, l=0)),
+               axis.text.x = element_text(size = 12, color="black"), # tick text font size
+               axis.text.y = element_text(size = 12, color="black"),
+               axis.title.y = element_text(face = "plain", size = 16, 
+                                           margin = margin(t=0, r=7, b=0, l=0)),
+               plot.margin = unit(c(t=0.3, r=.7, b=-4.7, l=0.3), "cm")
+              )
 
 out_name = paste0("cumdd_qrt_", vers, ".png")
 output_dir = input_dir
 ggsave(out_name, bplot, width=7.5, height=3.5, unit="in", path=output_dir, dpi=300, device="png")
 }
-
-
-
-
 
 
 
