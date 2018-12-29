@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=12gb
 #PBS -q hydro
-#PBS -e subset_4_pest_error.txt
-#PBS -o subset_4_pest_output.txt
+#PBS -e E_subset_4_pest.txt
+#PBS -o O_subset_4_pest.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 # Ensure a clean running environment:

@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=30gb
 #PBS -q hydro
-#PBS -e diap_abs_rel_45_e.txt
-#PBS -o diap_abs_rel_45_o.txt
+#PBS -e E_diap_abs_rel_45.txt
+#PBS -o diap_abs_rel_45.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

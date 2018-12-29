@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e ext_quan_sep_e.txt
-#PBS -o ext_quan_sep_o.txt
+#PBS -e E_ext_quan_sep.txt
+#PBS -o O_ext_quan_sep.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 # Ensure a clean running environment:
