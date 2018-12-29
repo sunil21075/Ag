@@ -1,12 +1,12 @@
 #!/bin/bash
 #v#!/usr/bin/env Rscript
 
-#PBS -N generations_45
+#PBS -N gen_45
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=10gb
 #PBS -q hydro
-#PBS -e generations_45_e.txt
-#PBS -o generations_45_o.txt
+#PBS -e E_gen_45.txt
+#PBS -o gen_45.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

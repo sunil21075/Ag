@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=12gb
 #PBS -q hydro
-#PBS -e extract_info_e.txt
-#PBS -o extract_info_o.txt
+#PBS -e E_extract_info.txt
+#PBS -o O_extract_info.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 # Ensure a clean running environment:

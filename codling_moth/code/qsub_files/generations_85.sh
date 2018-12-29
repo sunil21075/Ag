@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=15gb
 #PBS -q hydro
-#PBS -e generations_85_e.txt
-#PBS -o generations_85_o.txt
+#PBS -e E_gen_85.txt
+#PBS -o gen_85.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

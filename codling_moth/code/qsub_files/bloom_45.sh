@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e bloom_45_2015_e.txt
-#PBS -o bloom_45_2015_o.txt
+#PBS -e E_bloom_45_2015.txt
+#PBS -o bloom_45_2015.txt
 #PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
