@@ -212,7 +212,6 @@ write.csv(AllFPU_area_merged, file = paste0("/Users/hn/Documents/GitHub/Kirti/me
 joint_cnt_crd = merge(US_cnt, url_df, by= "FIPS" )
 plot(joint_cnt_crd$geometry)
 
-
 # convert sp to spatial
 # CRD_spatial <- as(joint_cnt_crd, 'Spatial')
 CRD <- unionSpatialPolygons(CRD_spatial, CRD_spatial$CDR_FIPS)
