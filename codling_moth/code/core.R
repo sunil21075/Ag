@@ -57,7 +57,6 @@ produce_CM <- function(input_folder, filename,
                        start_year, end_year, 
                        lower=10, upper=31.11,
                        location, category){
-
   loc = tstrsplit(location, "_")
   temp <- prepareData_CM(filename, 
                          input_folder, 
@@ -1313,12 +1312,9 @@ compute_cumdd_eggHatch <- function(input_dir, file_name="combined_CMPOP_", versi
                           "ClimateScenario", "ClimateGroup", "year", "dayofyear")]
     return (data)
 }
-
 ######################
 ###################### Written for Sensitivity Analysis
 ######################
-
-
 ##################################################################
 compute_cumdd_adult_emergence_mean <- function(input_dir, 
                                                file_name="combined_CMPOP_", 

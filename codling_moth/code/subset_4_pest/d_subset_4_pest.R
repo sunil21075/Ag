@@ -15,8 +15,7 @@ for (model in models){
 		                                     PercLarvaGen3, PercLarvaGen4,
 		                                     PercAdultGen1, PercAdultGen2, 
 		                                     PercAdultGen3, PercAdultGen4
-		                                     )
-	                  )
+		                                     ))
     output_name = paste0("combined_CMPOP_4_pest_rcp", model)
     saveRDS(curr_data, paste0(output_dir, output_name))
 }
