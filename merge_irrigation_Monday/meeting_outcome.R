@@ -22,8 +22,12 @@ library(choroplethrMaps)
 ###################### This is the list of counties in shapefile format I found off the web.
 ######################
 ds = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/UScounties/"
-ly = "UScounties"
-US_cnt <- read_sf(dsn=path.expand(ds), layer = ly, quiet = TRUE)
+US_cnt_ly_name = "UScounties"
+US_cnt <- read_sf(dsn=path.expand(ds), layer = US_cnt_ly_name, quiet = TRUE)
+
+# get rid of Alaska and Hawaii
+US_cnt_main_land = US_cnt[US_cnt$STATE_NAME != "Alaska", ]
+US_cnt_main_land = US_cnt_main_land[US_cnt_main_land$STATE_NAME != "Hawaii", ]
 
 ####### US census shapefile which is the same as the file above.
 # https://www.census.gov/geo/maps-data/data/cbf/cbf_counties.html
@@ -117,7 +121,7 @@ plot(Colum_int_cnt$geometry, add =T, col="olivedrab4", density=c(1), lwd=.1)
 #####################
 
 #####################
-##################### compute Area of each FPU area!
+##################### compute Area of counties within each FPU!
 #####################
 Alask_area <- Alask_int_cnt %>% mutate(area= st_area(.) %>% as.numeric())
 Arkan_area <- Arkan_int_cnt %>% mutate(area= st_area(.) %>% as.numeric())
@@ -138,61 +142,50 @@ South_area <- South_int_cnt %>% mutate(area= st_area(.) %>% as.numeric())
 North_area <- North_int_cnt %>% mutate(area= st_area(.) %>% as.numeric())
 WstGu_area <- WstGu_int_cnt %>% mutate(area= st_area(.) %>% as.numeric())
 
-#####################
-##################### Group by (Do we want to do by Name? or FIPS?)
-#####################
-Alask_area_gN <- Alask_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Arkan_area_gN <- Arkan_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Calif_area_gN <- Calif_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Colum_area_gN <- Colum_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
 
-Color_area_gN <- Color_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-GrtBa_area_gN <- GrtBa_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-GrtLa_area_gN <- GrtLa_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Hawai_area_gN <- Hawai_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-            
-Missi_area_gN <- Missi_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Misso_area_gN <- Misso_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-Ohio_area_gN  <- Ohio_area  %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-RioGr_area_gN <- RioGr_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-
-RedWi_area_gN <- RedWi_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-South_area_gN <- South_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-North_area_gN <- North_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-WstGu_area_gN <- WstGu_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-#####################
-##################### Group by FIPS?
-#####################
-Alask_area_gF <- Alask_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Arkan_area_gF <- Arkan_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Calif_area_gF <- Calif_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Colum_area_gF <- Colum_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-
-Color_area_gF <- Color_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-GrtBa_area_gF <- GrtBa_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-GrtLa_area_gF <- GrtLa_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Hawai_area_gF <- Hawai_area %>% as_tibble() %>% group_by(NAME, USAFPU) %>% summarize(area = sum(area))
-            
-Missi_area_gF <- Missi_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Misso_area_gF <- Misso_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-Ohio_area_gF <- Ohio_area  %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-RioGr_area_gF <- RioGr_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-
-RedWi_area_gF <- RedWi_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-South_area_gF <- South_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-North_area_gF <- North_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
-WstGu_area_gF <- WstGu_area %>% as_tibble() %>% group_by(FIPS, USAFPU) %>% summarize(area = sum(area))
 
 #####################
-##################### Area of counties (To check whether we have done a good job or not)
+##################### Total Area of counties
 ##################### by looling at boundary counties that are in two different FPU areas
 #####################
 
-## e.g.
-nevada_counties <- subset(US_cnt, STATE_NAME=="Nevada")
-nevada_counties_area <- nevada_counties %>% mutate(area = st_area(.)  %>% as.numeric() )
-just_elko = subset(attArea, NAME == "Elko")
+########
 countyTotalArea <- US_cnt %>% mutate(area = st_area(.)  %>% as.numeric() )
+cnt_Total_Area_Cols_To_Merge <- subset(countyTotalArea, select =c("FIPS", "area"))
+cnt_Total_Area_Cols_To_Merge_df = data.frame(cnt_Total_Area_Cols_To_Merge)
+cnt_Total_Area_Cols_To_Merge_df <-subset(cnt_Total_Area_Cols_To_Merge_df, select =c("FIPS", "area"))
+
+Colum_area_merged <-merge(Colum_area, cnt_Total_Area_Cols_To_Merge_df, by ="FIPS")
+colnames(Colum_area_merged)
+c = colnames(Colum_area_merged)
+c[7] <- "Area_in_FPU"
+c[8] <- "total_area"
+colnames(Colum_area_merged) <- c
+Colum_area_merged$Fraction_Area_inFPU <- Colum_area_merged$Area_in_FPU/Colum_area_merged$total_area
+
+###### Done in R not here!
+AllFPU_area_merged <-merge(AllFPU_area, cnt_Total_Area_Cols_To_Merge_df, by ="FIPS")
+colnames(AllFPU_area_merged)
+c = colnames(AllFPU_area_merged)
+c[7] <- "Area_in_FPU"
+c[8] <- "total_area"
+colnames(AllFPU_area_merged) <- c
+AllFPU_area_merged$Fraction_Area_inFPU <- AllFPU_area_merged$Area_in_FPU/AllFPU_area_merged$total_area
+
+
+########################################################
+########################################################
+Calif_area_merged <-merge(Calif_area, countyTotalAreaColumnsToMerge_df, by ="FIPS")
+colnames(Colum_area_merged)
+c = colnames(Colum_area_merged)
+c[7] <- "Area_in_FPU"
+c[8] <- "total_area"
+colnames(Colum_area_merged) <- c
+Colum_area_merged$Fraction_Area_inFPU <- Colum_area_merged$Area_in_FPU/Colum_area_merged$total_area
+########
+
+
+
 
 ################
 url_dir = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/"
@@ -209,6 +202,7 @@ url_info <- data.table(readRDS(paste0(url_dir, "NASS_county.rds")))
 # url_info_historical <- url_info[url_info$history == 2]
 url_df <- url_info[url_info$history == 1]
 
+write.csv(AllFPU_area_merged, file = paste0("/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/", "AllFPU_area_merged.csv" ), row.names=FALSE)
 
 #####################
 ##################### Area of counties (To check whether we have done a good job or not)
