@@ -36,7 +36,7 @@ p_log <- ggplot(data=medians, aes(x=district, y=med)) +
 	           legend.title=element_blank(),
 	           legend.text=element_text(size=10),
 	           legend.key.size = unit(.4, "cm"))+ 
-		     scale_y_log10()
+		 scale_y_log10()
 
 ggsave(filename=paste0("supply_log", ".png"), 
 	   plot=p_log, 
@@ -90,3 +90,4 @@ ggsave(filename=paste0("available_log", ".png"),
 	   height=5, 
 	   dpi=300, 
 	   device="png")
+

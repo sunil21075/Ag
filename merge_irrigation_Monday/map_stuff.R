@@ -6,7 +6,7 @@ library(sf)
 
 
 # read the damn thing.
-FPU <- readOGR(dsn = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/IMPACT_FPU_Map/", 
+FPU <- readOGR(dsn = "./IMPACT_FPU_Map/", 
 	           layer = "fpu2015_polygons_v3_multipart_polygons")
 
 

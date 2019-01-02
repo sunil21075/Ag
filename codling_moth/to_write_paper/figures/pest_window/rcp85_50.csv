@@ -1,0 +1,9 @@
+"ClimateGroup","CountyGroup","gen_1","gen_2","gen_3","gen_4"
+"warmer","Historical",157,212,266,307.5
+"warmer","2040's",144,197,239,279
+"warmer","2060's",138,190,227,266
+"warmer","2080's",129,182,219,257
+"colder","Historical",171,226,274,NA
+"colder","2040's",156,208,252,278
+"colder","2060's",149,200,240,271
+"colder","2080's",142,193,230,265

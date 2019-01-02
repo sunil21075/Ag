@@ -21,7 +21,7 @@ library(choroplethrMaps)
 ######################
 ###################### This is the list of counties in shapefile format I found off the web.
 ######################
-ds = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/UScounties/"
+ds = "./UScounties/"
 US_cnt_ly_name = "UScounties"
 US_cnt <- read_sf(dsn=path.expand(ds), layer = US_cnt_ly_name, quiet = TRUE)
 
