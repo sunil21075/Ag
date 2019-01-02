@@ -4,7 +4,7 @@ library(rgdal)
 library(tmap)
 library(magrittr)
 library(sf)
-ds = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/UScounties"
+ds = "./UScounties"
 ly = "UScounties"
 UScounties <- readOGR(dsn = ds, layer = ly)
 tt_UScounties <- read_sf(dsn=path.expand(ds), layer = ly, quiet = TRUE)
