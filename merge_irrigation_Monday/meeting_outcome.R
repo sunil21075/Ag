@@ -2,7 +2,6 @@
 #### Find Areas within FPU stuff
 ####
 ####
-
 rm(list=ls())
 library(ggmap)
 library(rgdal)
@@ -45,7 +44,6 @@ FPU_data <- read_sf(dsn=path.expand(data_dir), layer = layer_name, quiet = TRUE)
 tofind <- c("_USA")
 FPU_data <- FPU_data[grep(paste(tofind, collapse = "|"), FPU_data$FPU2015), ]
 FPU_data <- within(FPU_data, remove(FPU2015))
-
 
 ######################
 ###################### Vector of the 16 FPU areas

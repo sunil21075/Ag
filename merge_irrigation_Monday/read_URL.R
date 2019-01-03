@@ -23,7 +23,7 @@ url_df$CDR_FIPS <- with(url_df, paste0(state_FIPS, district_FIPS))
 
 url_dir <- "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/"
 saveRDS(url_df, paste0(url_dir, "NASS_county.rds"))
-write.csv(url_df, file = paste0(url_dir, "NASS_county.csv" ), row.names=FALSE)
+write.csv(url_df, file = paste0(url_dir, "NASS_county_CRD.csv" ), row.names=FALSE)
 
 
 
