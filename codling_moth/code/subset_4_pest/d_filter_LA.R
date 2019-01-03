@@ -4,7 +4,7 @@ library(data.table)
 library(dplyr)
 
 data_dir  = "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/"
-output_dir= "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/"
+output_dir= "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/quantiles_data/"
 name_pref = "larva_data"
 
 models <- c("45.rds", "85.rds")
