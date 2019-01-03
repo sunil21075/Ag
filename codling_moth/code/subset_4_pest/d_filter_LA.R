@@ -11,11 +11,14 @@ models <- c("45.rds", "85.rds")
 
 args = commandArgs(trailingOnly=TRUE)
 quan = as.double(args[1])
+quan = 0.5
 
 min_pop_cut_off <- c(0.005, 0.01, 0.02, 0.04, 0.05)
 
 for (model in models){
 	curr_data = data.table(readRDS(paste0(data_dir, name_pref, model)))
+	curr_data$latitude = as.character(curr_data$latitude)
+	curr_data$longitude = as.character(curr_data$longitude)
 
 	gen_1 <- subset(curr_data, select = c(ClimateGroup, CountyGroup, dayofyear, year, PercLarvaGen1, latitude, longitude))
 	gen_2 <- subset(curr_data, select = c(ClimateGroup, CountyGroup, dayofyear, year, PercLarvaGen2, latitude, longitude))

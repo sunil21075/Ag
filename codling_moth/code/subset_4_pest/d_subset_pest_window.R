@@ -13,7 +13,7 @@ for (model in models){
 		                                     PercLarvaGen1, PercLarvaGen2,
 		                                     PercLarvaGen3, PercLarvaGen4,
 		                                     latitude, longitude))
-    output_name = paste0("larva_data", model)
+    output_name = paste0("larva_data_", model)
     saveRDS(curr_data, paste0(output_dir, output_name))
 }
 
@@ -24,6 +24,6 @@ for (model in models){
 		                                     PercAdultGen1, PercAdultGen2, 
 		                                     PercAdultGen3, PercAdultGen4
 		                                     ))
-    output_name = paste0("adult_data", model)
+    output_name = paste0("adult_data_", model)
     saveRDS(curr_data, paste0(output_dir, output_name))
 }
