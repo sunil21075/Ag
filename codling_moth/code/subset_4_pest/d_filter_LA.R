@@ -4,12 +4,14 @@ library(data.table)
 library(dplyr)
 
 data_dir  = "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/"
-output_dir= "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/quantiles_data/"
+output_dir= "/data/hydro/users/Hossein/codling_moth_new/local/processed/section_46_Pest/"
 name_pref = "larva_data"
 
 models <- c("45.rds", "85.rds")
-quantiles <- c(0.25, 0.5, 0.75)
-quan = quantiles[1]
+
+args = commandArgs(trailingOnly=TRUE)
+quan = as.double(args[1])
+
 min_pop_cut_off <- c(0.005, 0.01, 0.02, 0.04, 0.05)
 
 for (model in models){
