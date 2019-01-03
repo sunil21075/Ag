@@ -10,7 +10,6 @@ name_pref = "larva_data"
 models <- c("45.rds", "85.rds")
 quantiles <- c(0.25, 0.5, 0.75)
 min_pop_cut_off <- c(0.005, 0.01, 0.02, 0.04, 0.05)
-quan = 0.5
 
 for (model in models){
 	curr_data = data.table(readRDS(paste0(data_dir, name_pref, model)))
@@ -25,9 +24,9 @@ for (model in models){
 	rm(curr_data) # free up memory
 	for (cut in min_pop_cut_off){
 		gen_1_cut <- gen_1[gen_1$PercLarvaGen1 >= cut, ]
-		gen_2_cut <- gen_2[gen_1$PercLarvaGen2 >= cut, ]
-		gen_3_cut <- gen_3[gen_1$PercLarvaGen3 >= cut, ]
-		gen_4_cut <- gen_4[gen_1$PercLarvaGen4 >= cut, ]
+		gen_2_cut <- gen_2[gen_2$PercLarvaGen2 >= cut, ]
+		gen_3_cut <- gen_3[gen_3$PercLarvaGen3 >= cut, ]
+		gen_4_cut <- gen_4[gen_4$PercLarvaGen4 >= cut, ]
 
 		filtered_gen_1 = gen_1_cut %>% group_by(latitude, longitude, year, ClimateGroup, CountyGroup) %>% arrange(abs(PercLarvaGen1 - quan)) %>% slice(1)
 		filtered_gen_2 = gen_2_cut %>% group_by(latitude, longitude, year, ClimateGroup, CountyGroup) %>% arrange(abs(PercLarvaGen2 - quan)) %>% slice(1)
