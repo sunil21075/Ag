@@ -585,29 +585,29 @@ plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
           
           h_line_coord = as.numeric(all_info[all_info$pop_type %in% c(paste0(mask_entry, "historical"))][1, 3])
           history_line <- data.frame( x = c(-Inf, Inf), y = h_line_coord, history_line = factor(h_line_coord) )
-          dot_plot = ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
-            geom_point() +
-            geom_line() + 
-            geom_line(aes( x, y, linetype = "Historical" ), history_line, inherit.aes = FALSE) +
-            ylim(1.5, 4) + 
-            theme_bw() + 
-            theme(panel.grid.major = element_line(size = 0.3),
-                  panel.grid.minor = element_line(size = 0.2),
-                  legend.position="bottom",
-                  legend.title = element_blank(),
-                  legend.text = element_text(size=10, face="plain"),
-                  legend.spacing.x = unit(.05, 'cm'),
-                  legend.key.size = unit(.5, "cm"),
-                  legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
-                  axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
-                  axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))
-            ) + 
-            scale_color_discrete(breaks=mask,
-                                 labels= legend_labels) +
-            labs(x="Weibull scale parameter change by %", y="Number of generations")
-          plot_name = paste0(file_pref, model, stag, dead, "_scale_sens", weather, ".png")
-          ggsave(plot_name, dot_plot, path=master_path, device="png", 
-                 dpi=500, width=5.57, height=5.42, unit="in")
+          dot_plot =ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
+                    geom_point() +
+                    geom_line() + 
+                    geom_line(aes( x, y, linetype = "Historical" ), history_line, inherit.aes = FALSE) +
+                    ylim(1.5, 4) + 
+                    theme_bw() + 
+                    theme(panel.grid.major = element_line(size = 0.3),
+                          panel.grid.minor = element_line(size = 0.2),
+                          legend.position="bottom",
+                          legend.title = element_blank(),
+                          legend.text = element_text(size=10, face="plain"),
+                          legend.spacing.x = unit(.05, 'cm'),
+                          legend.key.size = unit(.5, "cm"),
+                          legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
+                          axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
+                          axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))
+                    ) + 
+                    scale_color_discrete(breaks=mask,
+                                         labels= legend_labels) +
+                    labs(x="Weibull scale parameter change by %", y="Number of generations")
+                  plot_name = paste0(file_pref, model, stag, dead, "_scale_sens", weather, ".png")
+                  ggsave(plot_name, dot_plot, path=master_path, device="png", 
+                         dpi=500, width=5.57, height=5.42, unit="in")
         }
       }
     }
