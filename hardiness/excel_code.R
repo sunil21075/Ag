@@ -1,12 +1,12 @@
 Sub Model()
-On Error Resume Next         'this will skip any errors !!!!
+On Error Resume Next   'this will skip any errors !!!!
 '
 
 '
 ' Keyboard Shortcut: Ctrl+m
 
  
- Dim T_threshold(2)              'arrays for parameters, 1=endodormancy 2=ecodormancy
+ Dim T_threshold(2)    'arrays for parameters, 1=endodormancy 2=ecodormancy
  Dim acclimation_rate(2)
  Dim deacclimation_rate(2)
  Dim theta(2)
@@ -14,7 +14,7 @@ On Error Resume Next         'this will skip any errors !!!!
  ' clear output from any previous model run
  
  ' delete any existing charts
- Worksheets("model_output").ChartObjects.Delete
+   Worksheets("model_output").ChartObjects.Delete
  
  
      Worksheets("model_output").Activate
@@ -22,8 +22,7 @@ On Error Resume Next         'this will skip any errors !!!!
      Range("a2:l260").Select  ' clear model output sheet
      Selection.ClearContents
      Cells(2, 1).Select
-     
-     
+
      
 ' read in parameters from the "input_parameters" sheet
 
@@ -77,10 +76,7 @@ dormancy_period = 1
         T_min = Sheets("input_temps").Cells(j, 7)
         observed_Hc = Sheets("input_temps").Cells(j, 8)
         
-        If T_mean = "" Then End                         'terminate program at end of data
-        
-        
-        
+        If T_mean = "" Then End                         ' terminate program at end of data
         
         
         ' calculate heating degree days for today used in deacclimation
@@ -90,14 +86,12 @@ dormancy_period = 1
             DD_heating_today = 0
         End If
         
-        
         ' calculate cooling degree days for today used in acclimation
         If T_mean <= T_threshold(dormancy_period) Then
             DD_chilling_today = T_mean - T_threshold(dormancy_period)
         Else
             DD_chilling_today = 0
         End If
-        
         
                ' calculate cooling degree days using base of 10c to be used in dormancy release
         If T_mean <= 10 Then
@@ -106,7 +100,6 @@ dormancy_period = 1
             base10_chilling_today = 0
         End If
   
-        
         ' calculate new model_Hc for today
         
         deacclimation = DD_heating_today * deacclimation_rate(dormancy_period) * (1 - ((model_Hc_yesterday - Hc_max) / Hc_range) ^ theta(dormancy_period))
@@ -151,9 +144,6 @@ dormancy_period = 1
         Cells(j, 8) = T_min
         Cells(j, 9) = model_Hc
         Cells(j, 10) = observed_Hc
-        
-   
-        
         
         ' use Hc_min to determine if vinifera or labrusca
         If Hc_min = -1.2 Then    ' assume vinifera with budbreak at -2.2
