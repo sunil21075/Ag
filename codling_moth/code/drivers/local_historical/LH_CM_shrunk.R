@@ -26,7 +26,7 @@ start_h = 1979
 end_h = 2015
 start_f = 2006
 end_f = 2099
-
+cod_param <- "CodlingMothparameters.txt"
 args = commandArgs(trailingOnly=TRUE)
 category = args[1]
 categories = c("historical")
@@ -34,13 +34,13 @@ for(category in categories) {
   if(category == "historical") { 
     for(location in locations) {
       filename = paste0(category, "/", file_prefix, location)  
-      temp_data <- produce_CM(input_folder= raw_data_dir, 
-                              filename=filename,
-                              param_dir = param_dir, 
-                              cod_moth_param_name = cod_param,
-                              start_year=start_h, end_year=end_h, 
-                              lower=10, upper=31.11,
-                              location = location, category = category)
+      temp_data <- produce_CM_local(input_folder= raw_data_dir, 
+                                    filename=filename,
+                                    param_dir = param_dir, 
+                                    cod_moth_param_name = cod_param,
+                                    start_year=start_h, end_year=end_h, 
+                                    lower=10, upper=31.11,
+                                    location = location, category = category)
       write_dir = paste0(write_path, "historical_CM/")
       dir.create(file.path(write_dir), recursive = TRUE)
       write.table(temp_data, file = paste0(write_dir, "CM_", location), 
@@ -60,6 +60,7 @@ for(category in categories) {
                                 start_year=start_f, end_year=end_f, 
                                 lower=10, upper=31.11,
                                 location=location, category=category)
+        
         write_dir = paste0(write_path, "/", "future_CM/", category, "/", version)
         dir.create(file.path(write_dir), recursive = TRUE)
         write.table(temp_data, file = paste0(write_dir, "/CM_", location), 

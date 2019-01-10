@@ -9,7 +9,7 @@ models = c("45.rds", "85.rds")
 
 for (model in models){
 	curr_data = readRDS(paste0(data_dir, name_pref, model))
-	curr_data = subset(curr_data, select = c(ClimateGroup, CountyGroup, CumDDinF, dayofyear, year,
+	curr_data = subset(curr_data, select = c(ClimateScenario, ClimateGroup, CountyGroup, CumDDinF, dayofyear, year,
 		                                     PercLarvaGen1, PercLarvaGen2,
 		                                     PercLarvaGen3, PercLarvaGen4,
 		                                     latitude, longitude))
@@ -19,7 +19,7 @@ for (model in models){
 
 for (model in models){
 	curr_data = readRDS(paste0(data_dir, name_pref, model))
-	curr_data = subset(curr_data, select = c(ClimateGroup, CountyGroup, CumDDinF, dayofyear, year,
+	curr_data = subset(curr_data, select = c(ClimateScenario, ClimateGroup, CountyGroup, CumDDinF, dayofyear, year,
 		                                     latitude, longitude,
 		                                     PercAdultGen1, PercAdultGen2, 
 		                                     PercAdultGen3, PercAdultGen4

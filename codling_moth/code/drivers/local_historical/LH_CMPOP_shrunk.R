@@ -28,18 +28,18 @@ start_f = 2006
 end_f = 2099
 
 categories = c("historical")
-
+cod_param <- "CodlingMothparameters.txt"
 for(category in categories) {
   if(category == "historical") { 
     for(location in locations) {
       filename = paste0(category, "/", file_prefix, location)  
-      temp_data <- produce_CMPOP(input_folder= raw_data_dir, 
-                              filename=filename,
-                              param_dir = param_dir, 
-                              cod_moth_param_name = cod_param,
-                              start_year=start_h, end_year=end_h, 
-                              lower=10, upper=31.11,
-                              location = location, category = category)
+      temp_data <- produce_CMPOP_local(input_folder= raw_data_dir, 
+                                       filename=filename,
+                                       param_dir = param_dir, 
+                                       cod_moth_param_name = cod_param,
+                                       start_year=start_h, end_year=end_h, 
+                                       lower=10, upper=31.11,
+                                       location = location, category = category)
       write_dir = paste0(write_path, "historical_CMPOP/")
       dir.create(file.path(write_dir), recursive = TRUE)
       write.table(temp_data, file = paste0(write_dir, "CMPOP_", location), 
