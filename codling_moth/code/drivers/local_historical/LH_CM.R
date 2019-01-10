@@ -14,15 +14,15 @@ write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/historic
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
-file_list = "local_list"
-conn = file(paste0(param_dir, file_list), open = "r")
-locations = readLines(conn)
-
 ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
 cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
 args = commandArgs(trailingOnly=TRUE)
 category = args[1]
+
+file_list = "local_list"
+conn = file(paste0(param_dir, file_list), open = "r")
+locations = readLines(conn)
 
 for(location in locations) {   
   if(category == "historical") {
@@ -62,12 +62,10 @@ for(location in locations) {
   temp_data$County <- as.character(unique(cellByCounty[lat == temp_data$latitude[1] & long == temp_data$longitude[1], countyname]))
   temp_data$ClimateScenario <- category
   if(category != "historical") {
-    # write_dir = paste0(write_path, "data_processed/", category, "/", version)
     dir.create(file.path(write_dir), recursive = TRUE)
     write.table(temp_data, file = paste0(write_dir, "CM_", location), sep = ",", row.names = FALSE, col.names = TRUE)
   }
   else {
-    # dir.create(file.path(write_dir), recursive = TRUE)
     write.table(temp_data, file = paste0(write_dir, "CM_", location), sep = ",", row.names = FALSE, col.names = TRUE)
   }
 }

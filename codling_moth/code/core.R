@@ -12,8 +12,9 @@ library(iterators)
 #############  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
 #############                                                                                   #####
 #####################################################################################################
-produce_CMPOP <- function (input_folder, filename, 
-                           param_dir, cod_moth_param_name, scale_shift,
+produce_CMPOP_local <- function (input_folder, filename, 
+                           param_dir, cod_moth_param_name, 
+                           scale_shift=0,
                            start_year, end_year,
                            lower=10, upper=31.11,
                            location, category){
@@ -51,9 +52,9 @@ produce_CMPOP <- function (input_folder, filename,
   return (temp_data)
 }
 
-produce_CM <- function(input_folder, filename,
+produce_CM_local <- function(input_folder, filename,
                        param_dir, cod_moth_param_name,
-                       scale_shift,
+                       scale_shift=0,
                        start_year, end_year, 
                        lower=10, upper=31.11,
                        location, category){
@@ -93,7 +94,7 @@ produce_CM <- function(input_folder, filename,
 ############################################
 prepareData_CMPOP <- function(filename, input_folder,
                               param_dir, cod_moth_param_name,
-                              scale_shift,
+                              scale_shift=0,
                               start_year, end_year, 
                               lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
@@ -118,7 +119,7 @@ prepareData_CMPOP <- function(filename, input_folder,
 
   # add day of year from 1 to 365/366 depending on year
   metdata_data.table$dum <- 1 # dummy
-  metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
+  metdata_data.table[, dayofyear := cumsum(dum), by=list(year)] #?
   
   CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=TRUE, sep=",")
   
@@ -160,7 +161,7 @@ prepareData_CMPOP <- function(filename, input_folder,
 ########################################################################################################
 ########################################################################################################
 prepareData_CM <- function(filename, input_folder, 
-                           param_dir, cod_moth_param_name, scale_shift,
+                           param_dir, cod_moth_param_name, scale_shift=0,
                            start_year, end_year, 
                            lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
@@ -612,7 +613,7 @@ prepareData_CM <- function(filename, input_folder,
 }
 ###############################################################################################################
 ###############################################################################################################
-CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scale_shift) {
+CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scale_shift=0) {
   # Number of stages which is 16: egg_1   thorugh egg_4,
   #                               Larva_1 thorugh Larva_4
   #                               Pupa_1  thorugh Pupa_4
@@ -630,7 +631,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
   for (i in 1:stage_gen_toiterate) {
     perc_num <- pweibull(metdata_data.table$Cum_dd_F, 
                          shape=CodMothParams[i,3], 
-                         scale=CodMothParams[i,4] * (1+scale_shift))
+                         scale=CodMothParams[i,4] * (1 + scale_shift))
     perc_num <- data.frame(perc_num)
     colnames(perc_num) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, perc_num)
@@ -684,7 +685,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
 }
 ##############################################################################################################
 ##############################################################################################################
-CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_shift){
+CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_shift=0){
   # Number of stages which is 16: egg_1   thorugh egg_4,
   #                               Larva_1 thorugh Larva_4
   #                               Pupa_1  thorugh Pupa_4
@@ -907,7 +908,8 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
       else {
         filename <- paste0(input_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
       }
-    data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
+    data_to_add = read.table(filename, header = TRUE, sep = ",")
+    data <- rbind(data, data_to_add)
     }
   }
   return(data)
@@ -1566,3 +1568,89 @@ generate_scale_sens_table <- function(master_path, shifts){
     write.csv(DT_2080_cold, file = file, row.names=FALSE)
   }
 }
+
+
+###########################################################################
+#########################
+######################### LeafLet Maps
+#########################
+###########################################################################
+#library(shiny)
+#library(shinydashboard)
+#library(shinyBS)
+#library(rgdal)    # for readOGR and others
+#library(maps)
+#library(sp)       # for spatial objects
+#library(leaflet)  # for interactive maps (NOT leafletR here)
+#library(dplyr)    # for working with data frames
+#library(ggplot2)  # for plotting
+#library(data.table)
+#library(reshape2)
+#library(RColorBrewer)
+
+
+constructMap <- function(mapLayerData, layerlist, palColumn, legendVals, title, gradient = "RdBu") {
+  pal <- colorNumeric(
+                      # palette = "Blues,Paired,Greens,Purples",
+                      # check - https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
+                      palette = gradient, # Spectral_reverse, #"Spectral",
+                      domain = legendVals
+                      )
+    myLabelFormat = function(..., dates=FALSE){ 
+      if(dates){ function(type = "numeric", cuts){ 
+                          format(as.Date(cuts, origin = "2018-01-01"), "%b %d")
+                        }  
+      } else {
+        labelFormat(...)
+      }
+    } 
+
+    map <- leaflet() %>% 
+           addTiles() %>% 
+           addProviderTiles(providers$CartoDB.Positron) %>% 
+           setView(lat = 47.40, lng = -119.53, zoom = 7)
+    
+    for(i in 1:length(mapLayerData)){
+                loc = tstrsplit(mapLayerData[[i]]$location, "_")
+                mapLayerData[[i]]$latitude = as.numeric(unlist(loc[1]))
+                mapLayerData[[i]]$longitude = as.numeric(unlist(loc[2]))
+                map <- addCircleMarkers(map,
+                                        data = mapLayerData[[i]],
+                                        lat = mapLayerData[[i]]$latitude, lng = mapLayerData[[i]]$longitude,
+                                        stroke = FALSE,
+                                        radius = 7,
+                                        fillOpacity = 0.9,
+                                        color = ~pal(mapLayerData[[i]][, get(palColumn)]) #,
+                                        #popup=paste0("<b>", title, ": </b>", 
+                                        #              round(mapLayerData[[i]][, get(palColumn)], 1),
+                                        #              "<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, 
+                                        #              "<br/><b>Longitude: </b> ", mapLayerData[[i]]$longitude)
+                                        )
+              }
+    
+    if(title == "Median Day of Year") { map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
+                                                        title = title,
+                                                        labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
+                                                        opacity = 0.7) 
+    } else { map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
+                             title = title,
+                             labFormat = myLabelFormat(prefix = " "),
+                             opacity = 0.7)
+          }
+    map
+  }
+
+# addTiles() %>% 
+# addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png", attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
+# addTiles() %>% addProviderTiles(providers$Esri.NatGeoWorldMap, group = "Nat Geo") %>%
+# addTiles() %>% addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite") %>%
+# addProviderTiles(providers$CartoDB.Positron) %>% 
+
+
+
+
+
+
+
+
+

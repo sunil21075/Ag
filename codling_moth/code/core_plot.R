@@ -613,11 +613,11 @@ plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
     }
   }
 }
-####################################################################################################
-##################                                                                ##################
-##################                       Box Plots                                ##################
-##################                                                                ##################
-####################################################################################################
+#################################################################################################
+##################                                                             ##################
+##################                    Box Plots                                ##################
+##################                                                             ##################
+#################################################################################################
 plot_adult_emergence_4_Latex <- function(input_dir, file_name, 
                                          box_width=.2, plot_path, output_name, 
                                          color_ord = c("grey70", "dodgerblue", "olivedrab4", "red"),
@@ -836,17 +836,17 @@ plot_No_generations_4_latex <- function(input_dir,
                    axis.ticks.y = element_blank()
              ) +
            scale_fill_manual(values=color_ord,
-                              name="Time\nPeriod", 
-                              labels=c("Historical","2040's","2060's","2080's")) + 
-            scale_color_manual(values=color_ord,
-                               name="Time\nPeriod", 
-                               limits = color_ord,
-                               labels=c("Historical","2040's","2060's","2080's")) + 
-            geom_text(data = medians, 
-                      aes(label = sprintf("%1.1f", medians$med), y=medians$med), 
-                      size=1.3, 
-                      position =  position_dodge(.09),
-                      vjust = -1.4) +
+                             name="Time\nPeriod", 
+                             labels=c("Historical","2040's","2060's","2080's")) + 
+          scale_color_manual(values=color_ord,
+                             name="Time\nPeriod", 
+                             limits = color_ord,
+                             labels=c("Historical","2040's","2060's","2080's")) + 
+          geom_text(data = medians, 
+                    aes(label = sprintf("%1.1f", medians$med), y=medians$med), 
+                    size=1.3, 
+                    position =  position_dodge(.09),
+                    vjust = -1.4) +
             coord_flip()
   
   plot_name = paste0(stage, "_Gen_", dead_line, "_", version, ".png")
@@ -1199,5 +1199,39 @@ cumulative_qrt_boxplot <- function(input_dir, file_name, version, output_dir){
   out_name = paste0("cumdd_qrt_", version, ".png")
   ggsave(out_name, bplot, width=15, height=7, unit="in", path=output_dir, dpi=500, device="png")
 }
+
+
+#################################################################################################
+##################                                                             ##################
+##################                    LefLEt Maps                              ##################
+##################                                                             ##################
+#################################################################################################
+library(shiny)
+library(shinydashboard)
+library(htmlwidgets)
+library(webshot)
+library(shinyBS)
+library(rgdal)    # for readOGR and others
+library(maps)
+library(sp)       # for spatial objects
+library(leaflet)  # for interactive maps (NOT leafletR here)
+library(dplyr)    # for working with data frames
+library(ggplot2)  # for plotting
+library(data.table)
+library(reshape2)
+library(RColorBrewer)
+##################
+################## 
+##################
+egg_hatch_pest_risk <- fucntion(data_dir, file_name, output_dir){
+  
+}
+
+
+
+
+
+
+
 
 
