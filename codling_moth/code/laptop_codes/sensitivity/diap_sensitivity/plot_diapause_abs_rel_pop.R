@@ -7,7 +7,8 @@ library(foreach)
 library(iterators)
 library(ggplot2)
 
-plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path, ii){
+plot_abs_diapause <- function(input_dir, file_name_extension, 
+                              version, plot_path, ii, max_y){
   ##
   ## input_dir 
   ## file_name_extension, 
@@ -22,7 +23,6 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   data <- data[variable =="AbsLarvaPop" | variable =="AbsNonDiap"]
   data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
   data$variable <- factor(data$variable)
-  max_y = 250
   diap_plot <-  ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
                 labs(x = "Cumulative degree days (in F)", y = "Absolute population", color = "Absolute population") +
                 geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
@@ -36,8 +36,10 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                 theme(axis.text = element_text(face= "plain", size = 8, color="black"),
                       panel.grid.major = element_blank(),
                       panel.grid.minor = element_blank(),
-                      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
-                      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
+                      axis.title.x = element_text(face= "plain", size = 12, 
+                                                  margin = margin(t=10, r = 0, b = 0, l = 0)),
+                      axis.title.y = element_text(face= "plain", size = 12, 
+                                                  margin = margin(t=0, r = 10, b = 0, l = 0)),
                       legend.position="bottom"
                       ) + 
                 scale_fill_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), name = "Absolute population") +
@@ -51,10 +53,11 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
   plot_name = paste0("diapause_abs_", version, "_", ii, ".png")
   ggsave(plot_name, diap_plot, device="png", 
   	     path=plot_path, width=10, height=7, 
-         unit="in", dpi=300)
+         unit="in", dpi=400)
 }
 
-plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path, ii){
+plot_rel_diapause <- function(input_dir, file_name_extension, 
+                              version, plot_path, ii){
   file_name = paste0(input_dir, file_name_extension)
   data <- data.table(readRDS(file_name))
   data$CountyGroup = as.character(data$CountyGroup)
@@ -98,13 +101,11 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   #                        levels = c("Cooler Areas","Warmer Areas")))
   #pp + geom_text(data = ann_text, label = "Text")
   plot_name = paste0("diapause_rel_", version, "_", ii, ".png")
-  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=300)
+  ggsave(plot_name, pp, device="png", path=plot_path, width=10, height=7, unit="in", dpi=400)
 }
-
 
 input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/diapause_sens/"
 plot_path = input_dir
-
 
 #### Relative
 #for (ii in 1:7){
@@ -136,9 +137,11 @@ file_list = list.files(path = data_dir, pattern = "diapause_abs",
 
 for (file in file_list){
   version = unlist(strsplit(file, "_"))[3]
-  ii = substr(unlist(strsplit(file, "_"))[4], 1, 1)
-  plot_abs_diapause(input_dir, file, version, plot_path, ii)
+  if (version=="rcp45"){ max_y=200
 
+    } else {max_y=250}
+  ii = substr(unlist(strsplit(file, "_"))[4], 1, 1)
+  plot_abs_diapause(input_dir, file, version, plot_path, ii, max_y)
 }
 
 ##########################################
@@ -147,13 +150,12 @@ file_list = list.files(path = data_dir, pattern = "diapause_rel",
                        full.names = FALSE, 
                        recursive = FALSE)
 
+plot_path = paste0(data_dir, "rel_pop/")
 for (file in file_list){
   version = unlist(strsplit(file, "_"))[3]
   ii = substr(unlist(strsplit(file, "_"))[4], 1, 1)
   plot_rel_diapause(input_dir, file, version, plot_path, ii)
 
 }
-
-
 
 
