@@ -2,7 +2,7 @@
 library(chron)
 library(EnvStats)
 library(grid)
-# library(data.table)
+library(data.table)
 library(reshape2)
 library(dplyr)
 library(foreach)
@@ -15,43 +15,148 @@ param_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/"
 param_name = "CodlingMothparameters.txt"
 params = read.table(paste0(param_dir, param_name), header=TRUE, sep=",")
 
-param_name_shift = "CodlingMothparameters_0.1.txt"
-params_shift = read.table(paste0(param_dir, param_name_shift), header=TRUE, sep=",")
+param_name_shift_10_percent = "CodlingMothparameters_0.1.txt"
+params_shift_10_percent = read.table(paste0(param_dir, param_name_shift_10_percent), header=TRUE, sep=",")
+
+param_name_shift_20_percent <- "CodlingMothparameters_0.2.txt"
+params_shift_20_percent = read.table(paste0(param_dir, param_name_shift_20_percent), header=TRUE, sep=",")
 
 ########################################################################
 ########################################################################
 ########################## Functions
 ##########################
-dw_larva_1 <- function(x, shape=params[5, "shape"], scale=params[5, "scale"]){
+dw_larva_Gen1 <- function(x, shape=params[5, "shape"], scale=params[5, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_2 <- function(x, shape=params[6, "shape"], scale=params[6, "scale"]){
+dw_larva_Gen2 <- function(x, shape=params[6, "shape"], scale=params[6, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_3 <- function(x, shape=params[7, "shape"], scale=params[7, "scale"]){
+dw_larva_Gen3 <- function(x, shape=params[7, "shape"], scale=params[7, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_4 <- function(x, shape=params[8, "shape"], scale=params[8, "scale"]){
+dw_larva_Gen4 <- function(x, shape=params[8, "shape"], scale=params[8, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
+##################################################
+#########################
 ######################### S H I F T 10 %
-dw_larva_1_shift <- function(x, shape=params_shift[5, "shape"], scale=params_shift[5, "scale"]){
+#########################
+##################################################
+dw_larva_Gen1_shift_10_percent <- function(x, shape=params_shift_10_percent[5, "shape"], 
+                                              scale=params_shift_10_percent[5, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_2_shift <- function(x, shape=params_shift[6, "shape"], scale=params_shift[6, "scale"]){
+dw_larva_Gen2_shift_10_percent <- function(x, shape=params_shift_10_percent[6, "shape"], 
+                                              scale=params_shift_10_percent[6, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_3_shift <- function(x, shape=params_shift[7, "shape"], scale=params_shift[7, "scale"]){
+dw_larva_Gen3_shift_10_percent <- function(x, shape=params_shift_10_percent[7, "shape"], 
+                                              scale=params_shift_10_percent[7, "scale"]){
   dweibull(x, shape=shape, scale=scale)
 }
 
-dw_larva_4_shift <- function(x, shape=params_shift[8, "shape"], scale=params_shift[8, "scale"]){
+dw_larva_Gen4_shift_10_percent <- function(x, shape=params_shift_10_percent[8, "shape"], 
+                                              scale=params_shift_10_percent[8, "scale"]){
   dweibull(x, shape=shape, scale=scale)
+}
+
+##################################################
+#########################
+######################### S H I F T 20 %
+#########################
+##################################################
+dw_larva_Gen1_shift_20_percent <- function(x, shape=params_shift_20_percent[5, "shape"], 
+                                              scale=params_shift_20_percent[5, "scale"]){
+  dweibull(x, shape=shape, scale=scale)
+}
+
+dw_larva_Gen2_shift_20_percent <- function(x, shape=params_shift_20_percent[6, "shape"], 
+                                              scale=params_shift_20_percent[6, "scale"]){
+  dweibull(x, shape=shape, scale=scale)
+}
+
+dw_larva_Gen3_shift_20_percent <- function(x, shape=params_shift_20_percent[7, "shape"], 
+                                              scale=params_shift_20_percent[7, "scale"]){
+  dweibull(x, shape=shape, scale=scale)
+}
+
+dw_larva_Gen4_shift_20_percent <- function(x, shape=params_shift_20_percent[8, "shape"], 
+                                              scale=params_shift_20_percent[8, "scale"]){
+  dweibull(x, shape=shape, scale=scale)
+}
+
+########################################################################
+########################################################################
+########################## Accumulative
+##########################
+pw_larva_1 <- function(x, shape=params[5, "shape"], scale=params[5, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_2 <- function(x, shape=params[6, "shape"], scale=params[6, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_3 <- function(x, shape=params[7, "shape"], scale=params[7, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_4 <- function(x, shape=params[8, "shape"], scale=params[8, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+##################################################
+#########################
+######################### S H I F T 10 %
+#########################
+##################################################
+pw_larva_1_shift_10_percent <- function(x, shape=params_shift_10_percent[5, "shape"], 
+                                         scale=params_shift_10_percent[5, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_2_shift_10_percent <- function(x, shape=params_shift_10_percent[6, "shape"], 
+                                         scale=params_shift_10_percent[6, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_3_shift_10_percent <- function(x, shape=params_shift_10_percent[7, "shape"], 
+                                         scale=params_shift_10_percent[7, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_4_shift_10_percent <- function(x, shape=params_shift_10_percent[8, "shape"], 
+                                         scale=params_shift_10_percent[8, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+##################################################
+#########################
+######################### S H I F T 20 %
+#########################
+##################################################
+pw_larva_1_shift_20_percent <- function(x, shape=params_shift_20_percent[5, "shape"], 
+                                         scale=params_shift_20_percent[5, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_2_shift_20_percent <- function(x, shape=params_shift_20_percent[6, "shape"], 
+                                         scale=params_shift_20_percent[6, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_3_shift_20_percent <- function(x, shape=params_shift_20_percent[7, "shape"], 
+                                         scale=params_shift_20_percent[7, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
+}
+
+pw_larva_4_shift_20_percent <- function(x, shape=params_shift_20_percent[8, "shape"], 
+                                         scale=params_shift_20_percent[8, "scale"]){
+  pweibull(x, shape=shape, scale=scale)
 }
 ########################## 
 ########################## Functions
@@ -79,14 +184,14 @@ colorss = c("grey70", "dodgerblue", "olivedrab4", "red", "grey70", "dodgerblue",
 labelss = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4", "Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")
 
 larva_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme + 
-			  geom_path(stat="function", fun=dw_larva_1, aes(colour="grey70"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_2, aes(colour="dodgerblue"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_3, aes(colour="olivedrab4"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_4, aes(colour="red"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_1_shift, aes(colour="grey70"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_2_shift, aes(colour="dodgerblue"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_3_shift, aes(colour="olivedrab4"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_4_shift, aes(colour="red"), linetype=2)+
+			  geom_path(stat="function", fun=dw_larva_Gen1, aes(colour="grey70"), linetype=1)+
+			  geom_path(stat="function", fun=dw_larva_Gen2, aes(colour="dodgerblue"), linetype=1)+
+			  geom_path(stat="function", fun=dw_larva_Gen3, aes(colour="olivedrab4"), linetype=1)+
+			  geom_path(stat="function", fun=dw_larva_Gen4, aes(colour="red"), linetype=1)+
+			  geom_path(stat="function", fun=dw_larva_Gen1_shift_10_percent, aes(colour="grey70"), linetype=2)+
+			  geom_path(stat="function", fun=dw_larva_Gen2_shift_10_percent, aes(colour="dodgerblue"), linetype=2)+
+			  geom_path(stat="function", fun=dw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=2)+
+			  geom_path(stat="function", fun=dw_larva_Gen4_shift_10_percent, aes(colour="red"), linetype=2)+
 			  scale_x_continuous(name="Degree days", limits=x_limits) + 
 			  scale_y_continuous(name="Weibull density", limits=y_limits, labels = function(x) format(x*1000, scientific=F)) +
                 scale_colour_identity("", guide="legend", 
