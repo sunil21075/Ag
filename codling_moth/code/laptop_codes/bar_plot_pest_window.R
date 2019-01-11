@@ -1,6 +1,7 @@
 rm(list=ls())
 library(data.table)
 library(ggplot2)
+
 data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 

@@ -138,7 +138,8 @@ for (file in file_list){
   }
   df_help <- data.frame(df_help)
   df_help <- within(df_help, remove(help))
-  out_name = paste0(pop_type, "_", model_type, "_", substr(unlist(strsplit(file, "_"))[4], 1, 1), ".csv")
+  out_name = paste0(pop_type, "_", model_type, "_", 
+                    substr(unlist(strsplit(file, "_"))[4], 1, 1), ".csv")
   print(substr(unlist(strsplit(file, "_"))[4], 1, 1))
   write.csv(df_help, paste0(data_dir, out_name), row.names = F)
 }

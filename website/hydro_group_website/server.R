@@ -3,127 +3,63 @@ shinyServer(function(input, output, session) {
 
   output$location_group <- renderImage({
     filename <- normalizePath(file.path('./plots', 'location-group.png'))
-    
     # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 600)
-    
-  }, deleteFile = FALSE)
+    list(src = filename, width = 600, height = 600)}, deleteFile = FALSE)
   
   output$ag_vplot <- renderImage({
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 800)
-    
-  }, deleteFile = FALSE)
+       filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY.png'))
+       # Return a list containing the filename and alt text
+       list(src = filename, width = 1200, height = 800)}, deleteFile = FALSE)
   
   output$lg_vplot <- renderImage({
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenerationVsDoY.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 800)
-    
-  }, deleteFile = FALSE)
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenerationVsDoY.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 1200, height = 800)}, deleteFile = FALSE)
   
   output$ag_bplot <- renderImage({
-    #filename <- normalizePath(file.path('./plots/LarvaAdult', 'genYear_box_plot.png'))
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'adult_generations.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
+        #filename <- normalizePath(file.path('./plots/LarvaAdult', 'genYear_box_plot.png'))
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'adult_generations.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 800, height = 600)}, deleteFile = FALSE)
   
   output$lg_bplot <- renderImage({
-    #filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenYear_box_plot.png'))
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'larva_generations.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
+        #filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenYear_box_plot.png'))
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'larva_generations.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 800, height = 600)}, deleteFile = FALSE)
   
   output$ag_vplot_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY_rcp45.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 800)
-    
-  }, deleteFile = FALSE)
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY_rcp45.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 1200, height = 800)}, deleteFile = FALSE)
   
   output$lg_vplot_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenerationVsDoY_rcp45.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 800)
-    
-  }, deleteFile = FALSE)
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenerationVsDoY_rcp45.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 1200, height = 800)}, deleteFile = FALSE)
   
   output$ag_bplot_rcp45 <- renderImage({
-    #filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenYear_box_plot_rcp45.png'))
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'adult_generations_rcp45.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
-  
-  output$lg_bplot_rcp45 <- renderImage({
-    #filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenYear_box_plot_rcp45.png'))
-    filename <- normalizePath(file.path('./plots/LarvaAdult', 'larva_generations_rcp45.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
+        #filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenYear_box_plot_rcp45.png'))
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'adult_generations_rcp45.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 800, height = 600)}, deleteFile = FALSE)
 
-#  output$ap_vplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'aMonthVsPop.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
-#  
-#  output$lp_vplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lMonthVsPop.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
+  output$lg_bplot_rcp45 <- renderImage({
+        #filename <- normalizePath(file.path('./plots/LarvaAdult', 'lgenYear_box_plot_rcp45.png'))
+        filename <- normalizePath(file.path('./plots/LarvaAdult', 'larva_generations_rcp45.png'))
+        # Return a list containing the filename and alt text
+        list(src = filename, width = 800, height = 600)}, deleteFile = FALSE)
 
   output$gen_pop_plot <- renderImage({
     filename <- normalizePath(file.path('./plots/LarvaAdult', 'gen_pop.png'))
-    
     # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 900)
-    
-  }, deleteFile = FALSE)
+    list(src = filename, width = 1200, height = 900)}, deleteFile = FALSE)
 
   output$gen_pop_plot1 <- renderImage({
     filename <- normalizePath(file.path('./plots/LarvaAdult', 'gen_pop1.png'))
     
     # Return a list containing the filename and alt text
-    list(src = filename, width = 1200, height = 900)
-    
-  }, deleteFile = FALSE)
-  
-#  output$ap_bplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'apop_year.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
-#  
-#  output$lp_bplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lpop_year.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
+    list(src = filename, width = 1200, height = 900)}, deleteFile = FALSE)
   
   output$e_vplot <- renderImage({
     filename <- normalizePath(file.path('./plots/LarvaAdult', 'emergDoY.png'))
@@ -345,50 +281,32 @@ shinyServer(function(input, output, session) {
     
   }, deleteFile = FALSE)
   #############
-
-  #output$county_groups <- renderImage({
-  #  filename <- normalizePath(file.path('./plots', 'county_groups.png'))
-    
-    # Return a list containing the filename and alt text
-  #  list(src = filename, width = 600, height = 400)
-    
-  #}, deleteFile = FALSE)
-
   output$map_adult_med_doy <- renderLeaflet({
-    type = "A"
-    genPct = paste0(type, input$adult_gen, "_", input$adult_percent)
-    #domainVal = ifelse(input$type == "A", seq(105, 180), seq(125,200));
-    #print(genPct)
-    domainVal = seq(85, 365)
-    if(input$cg_adult_med_doy == "Historical") {
-      climate_group = input$cg_adult_med_doy
-      future_version = "rcp85"
-    }
-    else {
-      temp = tstrsplit(input$cg_adult_med_doy, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
-    #print(input$fver_med_doy)
-    if(future_version == "rcp45") {
-      data = d_rcp45
-      #names(data)[names(data) == "ClimateGroup"] = "timeFrame"
-    }
-    else {
-      data = d
-    }
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
+          type = "A"
+          genPct = paste0(type, input$adult_gen, "_", input$adult_percent)
+          domainVal = seq(85, 365)
+          if(input$cg_adult_med_doy == "Historical") {
+            climate_group = input$cg_adult_med_doy
+            future_version = "rcp85"
+          }
+          else {
+            temp = tstrsplit(input$cg_adult_med_doy, "_")
+            climate_group = unlist(temp[1])
+            future_version = unlist(temp[2])
+          }
+          if(future_version == "rcp45") { data = d_rcp45
+          } else {data = d}
+          layerlist = levels(data$timeFrame) # c("Historical", "2040's", "2060's", "2080's")
     
-    sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(genPct)))
-    sub_Gen = sub_Gen[, .(medianDoY = as.integer(median( get(genPct) ))), by = c("timeFrame", "location")]
-    
-    medianGen = list( hist = subset(sub_Gen, timeFrame == layerlist[1]),
-                             `2040` = subset(sub_Gen, timeFrame == layerlist[2]),
-                             `2060` = subset(sub_Gen, timeFrame == layerlist[3]),
-                             `2080` = subset(sub_Gen, timeFrame == layerlist[4]))
-    
-    #GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY", legendVals = sub_Gen$medianDoY, "Median Day of Year")
-    GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY", legendVals = domainVal, "Median Day of Year")
+          sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(genPct)))
+          sub_Gen = sub_Gen[, .(medianDoY = as.integer(median( get(genPct) ))), by = c("timeFrame", "location")]
+          
+          medianGen = list( hist = subset(sub_Gen, timeFrame == layerlist[1]),
+                                   `2040` = subset(sub_Gen, timeFrame == layerlist[2]),
+                                   `2060` = subset(sub_Gen, timeFrame == layerlist[3]),
+                                   `2080` = subset(sub_Gen, timeFrame == layerlist[4]))
+    GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY", 
+                           legendVals = domainVal, "Median Day of Year")
     GenMap
   })
 
@@ -407,15 +325,13 @@ shinyServer(function(input, output, session) {
       climate_group = unlist(temp[1])
       future_version = unlist(temp[2])
     }
-    #print(input$fver_med_doy)
     if(future_version == "rcp45") {
       data = d_rcp45
-      #names(data)[names(data) == "ClimateGroup"] = "timeFrame"
     }
     else {
       data = d
     }
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
+    layerlist = levels(data$timeFrame)
     
     sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(genPct)))
     sub_Gen = sub_Gen[, .(medianDoY = as.integer(median( get(genPct) ))), by = c("timeFrame", "location")]
@@ -425,102 +341,73 @@ shinyServer(function(input, output, session) {
                              `2060` = subset(sub_Gen, timeFrame == layerlist[3]),
                              `2080` = subset(sub_Gen, timeFrame == layerlist[4]))
     
-    #GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY", legendVals = sub_Gen$medianDoY, "Median Day of Year")
-    GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY", legendVals = domainVal, "Median Day of Year")
+    
+    GenMap <- constructMap(medianGen, layerlist, palColumn = "medianDoY",
+                           legendVals = domainVal, "Median Day of Year")
     GenMap
   })
   
   output$map_adult_diff_doy <- renderLeaflet({
-    #diffType = as.integer(input$diff_type)
-    type_diff = "A"
-    diffType = 3
-    genPct = paste0(type_diff, input$adult_gen_diff, "_", input$adult_percent_diff)
-    #print(c(diffType, genPct))
+        # diffType = as.integer(input$diff_type)
+        type_diff = "A"
+        diffType = 3
+        genPct = paste0(type_diff, input$adult_gen_diff, "_", input$adult_percent_diff)
+        temp = tstrsplit(input$cg_adult_doy_diff, "_")
+        climate_group = unlist(temp[1])
+        future_version = unlist(temp[2])
 
-    temp = tstrsplit(input$cg_adult_doy_diff, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
-
-    if(future_version == 'rcp45') {
-      data = d_rcp45
-      #names(data)[names(data) == "ClimateGroup"] = "timeFrame"
-    }
-    else {
-      data = d
-    }
-    layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-    
-    sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)), select = c(timeFrame, year, location, get(genPct)))
-    sub_Gen = sub_Gen[, .(value = as.integer(quantile( get(genPct), names = FALSE )[diffType])), by = c("timeFrame", "location")]
-    
-    tfGen = list(subset(sub_Gen, timeFrame == layerlist[1]),
-                    subset(sub_Gen, timeFrame == layerlist[2]),
-                    subset(sub_Gen, timeFrame == layerlist[3]),
-                    subset(sub_Gen, timeFrame == layerlist[4]))
-    
-    #diffGen = list(merge(tfGen[[2]], tfGen[[1]], by = c("location")),
-    #                merge(tfGen[[3]], tfGen[[1]], by = c("location")),
-    #                merge(tfGen[[4]], tfGen[[1]], by = c("location")))
+        if(future_version == 'rcp45') {
+          data = d_rcp45
+        } else { data = d }
+        layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
+        layerlist = levels(data$timeFrame)
         
-    #for(i in 1:length(diffGen)) {
-    #  diffGen[[i]]$diff = diffGen[[i]]$value.y - diffGen[[i]]$value.x
-    #}
-    #diffDomain = c(diffGen[[1]]$diff, diffGen[[2]]$diff, diffGen[[3]]$diff)
-    if(layerdiff[1] == climate_group) {
-      diffGen = list(merge(tfGen[[2]], tfGen[[1]], by = c("location")))
-    }
-    else if(layerdiff[2] == climate_group) {
-      diffGen = list(merge(tfGen[[3]], tfGen[[1]], by = c("location")))
-    }
-    else if(layerdiff[3] == climate_group) {
-      diffGen = list(merge(tfGen[[4]], tfGen[[1]], by = c("location")))
-    }
-    diffGen[[1]]$diff = diffGen[[1]]$value.y - diffGen[[1]]$value.x
-    diffDomain = diffGen[[1]]$diff
-    
-    #GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
-    GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = seq(0,115), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
-    GenDiffMap
-  })
+        sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)), select = c(timeFrame, year, location, get(genPct)))
+        sub_Gen = sub_Gen[, .(value = as.integer(quantile( get(genPct), names = FALSE )[diffType])), by = c("timeFrame", "location")]
+        
+        tfGen = list(subset(sub_Gen, timeFrame == layerlist[1]),
+                        subset(sub_Gen, timeFrame == layerlist[2]),
+                        subset(sub_Gen, timeFrame == layerlist[3]),
+                        subset(sub_Gen, timeFrame == layerlist[4]))
+
+        if(layerdiff[1] == climate_group) {
+          diffGen = list(merge(tfGen[[2]], tfGen[[1]], by = c("location")))
+        } else if(layerdiff[2] == climate_group) {
+          diffGen = list(merge(tfGen[[3]], tfGen[[1]], by = c("location")))
+        } else if(layerdiff[3] == climate_group) {
+          diffGen = list(merge(tfGen[[4]], tfGen[[1]], by = c("location")))
+        }
+        diffGen[[1]]$diff = diffGen[[1]]$value.y - diffGen[[1]]$value.x
+        diffDomain = diffGen[[1]]$diff
+
+        GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = seq(0,115), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
+        GenDiffMap
+      })
 
   output$map_larvae_diff_doy <- renderLeaflet({
-    #diffType = as.integer(input$diff_type)
-    type_diff = "L"
-    diffType = 3
-    genPct = paste0(type_diff, input$larvae_gen_diff, "_", input$larvae_percent_diff)
-    #print(c(diffType, genPct))
+          type_diff = "L"
+          diffType = 3
+          genPct = paste0(type_diff, input$larvae_gen_diff, "_", input$larvae_percent_diff)
+          temp = tstrsplit(input$cg_larvae_doy_diff, "_")
+          climate_group = unlist(temp[1])
+          future_version = unlist(temp[2])
 
-    temp = tstrsplit(input$cg_larvae_doy_diff, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
-
-    if(future_version == 'rcp45') {
-      data = d_rcp45
-      #names(data)[names(data) == "ClimateGroup"] = "timeFrame"
-    }
-    else {
-      data = d
-    }
-    layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
+          if(future_version == 'rcp45') {
+            data = d_rcp45
+          } else { data = d }
+          layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
+          layerlist = levels(data$timeFrame) # c("Historical", "2040's", "2060's", "2080's")
     
-    sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)), select = c(timeFrame, year, location, get(genPct)))
-    sub_Gen = sub_Gen[, .(value = as.integer(quantile( get(genPct), names = FALSE )[diffType])), by = c("timeFrame", "location")]
+          sub_Gen = subset(data, !is.na(timeFrame) & !is.na(get(genPct)), 
+                           select = c(timeFrame, year, location, get(genPct)))
+          sub_Gen = sub_Gen[, .(value = as.integer(quantile( get(genPct), names = FALSE )[diffType])), 
+                               by = c("timeFrame", "location")]
     
     tfGen = list(subset(sub_Gen, timeFrame == layerlist[1]),
                     subset(sub_Gen, timeFrame == layerlist[2]),
                     subset(sub_Gen, timeFrame == layerlist[3]),
                     subset(sub_Gen, timeFrame == layerlist[4]))
-    
-    #diffGen = list(merge(tfGen[[2]], tfGen[[1]], by = c("location")),
-    #                merge(tfGen[[3]], tfGen[[1]], by = c("location")),
-    #                merge(tfGen[[4]], tfGen[[1]], by = c("location")))
-        
-    #for(i in 1:length(diffGen)) {
-    #  diffGen[[i]]$diff = diffGen[[i]]$value.y - diffGen[[i]]$value.x
-    #}
-    #diffDomain = c(diffGen[[1]]$diff, diffGen[[2]]$diff, diffGen[[3]]$diff)
+
     if(layerdiff[1] == climate_group) {
       diffGen = list(merge(tfGen[[2]], tfGen[[1]], by = c("location")))
     }
@@ -533,47 +420,29 @@ shinyServer(function(input, output, session) {
     diffGen[[1]]$diff = diffGen[[1]]$value.y - diffGen[[1]]$value.x
     diffDomain = diffGen[[1]]$diff
     
-    #GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
-    GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", legendVals = seq(0,70), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
+    
+    GenDiffMap <- constructMap(diffGen, layerdiff, palColumn = "diff", 
+                               legendVals = seq(0,70), 
+                               HTML("Median calendar day<br />difference from historical"), 
+                               RdBu_reverse)
     GenDiffMap
   })
-  
-#  output$map_med_pop <- renderLeaflet({
-#    pop_mon = paste0(input$type_pop, input$pop_month)
-#    #print(pop_mon)
-#    layerlist = levels(d$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-#    
-#    sub_Pop = subset(d, !is.na(timeFrame) & !is.na(get(pop_mon)), select = c(timeFrame, year, location, get(pop_mon)))
-#    sub_Pop[, (pop_mon) := get(pop_mon) * 100]
-#    sub_Pop = sub_Pop[, .(medianPop = median( get(pop_mon) )), by = c("timeFrame", "location")]
-#    
-#    medianPop = list( hist = subset(sub_Pop, timeFrame == layerlist[1]),
-#                      `2040` = subset(sub_Pop, timeFrame == layerlist[2]),
-#                      `2060` = subset(sub_Pop, timeFrame == layerlist[3]),
-#                      `2080` = subset(sub_Pop, timeFrame == layerlist[4]))
-#    
-#    PopMap <- constructMap(medianPop, layerlist, palColumn = "medianPop", legendVals = seq(0, 100), "Population (%)", RdBu_reverse)
-#    PopMap
-#  })
+
   output$map_med_pop <- renderLeaflet({
-    typeGen = paste0("Perc", input$type_pop, input$type_pop_gen)
-    pop_mon = input$pop_month
-    #print(pop_mon)
-    
-    if(input$fver_pop_med == 'rcp45') {
-      data = d1_rcp45
-    }
-    else {
-      data = d1
-    }
+            typeGen = paste0("Perc", input$type_pop, input$type_pop_gen)
+            pop_mon = input$pop_month
+            #print(pop_mon)
+            
+            if(input$fver_pop_med == 'rcp45') {
+              data = d1_rcp45
+            }else { data = d1
+                  }
 
     layerlist = levels(data$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
     
     sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, select = c(ClimateGroup, month, year, location, latitude, longitude, get(typeGen)))
     sub_Pop[, (typeGen) := get(typeGen) * 100]
     sub_Pop = sub_Pop[, .(medianPop = median( get(typeGen) )), by = c("ClimateGroup", "latitude", "longitude", "location")]
-    #sub_Pop$location = paste0(sub_Pop$latitude, "_", sub_Pop$longitude)
-        
     medianPop = list( hist = subset(sub_Pop, ClimateGroup == layerlist[1]),
                       `2040` = subset(sub_Pop, ClimateGroup == layerlist[2]),
                       `2060` = subset(sub_Pop, ClimateGroup == layerlist[3]),
@@ -587,8 +456,6 @@ shinyServer(function(input, output, session) {
     diffType = as.integer(input$pop_diff_type)
     typeGen = paste0("Perc", input$type_pop_diff, input$pop_diff_type_gen)
     pop_mon = input$pop_diff_month
-    #print(c(diffType, pop_mon))
-
     if(input$fver_pop_diff == 'rcp45') {
       data = d1_rcp45
     }
@@ -602,8 +469,6 @@ shinyServer(function(input, output, session) {
     sub_Pop = subset(data, !is.na(ClimateGroup) & month == pop_mon, select = c(ClimateGroup, month, year, location, latitude, longitude, get(typeGen)))
     sub_Pop[, (typeGen) := get(typeGen) * 100]
     sub_Pop = sub_Pop[, .(value = quantile( get(typeGen), names = FALSE )[diffType]), by = c("ClimateGroup", "latitude", "longitude", "location")]
-    #sub_Pop$location = paste0(sub_Pop$latitude, "_", sub_Pop$longitude)
-
     tfPop = list(subset(sub_Pop, ClimateGroup == layerlist[1]),
                  subset(sub_Pop, ClimateGroup == layerlist[2]),
                  subset(sub_Pop, ClimateGroup == layerlist[3]),
@@ -623,10 +488,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$map_risk <- renderLeaflet({
-    #input$type_risk = "L"
     type_risk = "L"
     genPct = paste0(type_risk, input$gen_risk, "_", input$percent_risk)
-    #print(genPct)
     if(input$cg_risk == "Historical") {
       climate_group = input$cg_risk
       future_version = "rcp85"
@@ -636,8 +499,6 @@ shinyServer(function(input, output, session) {
       climate_group = unlist(temp[1])
       future_version = unlist(temp[2])
     }
-    #print(climate_group)
-    #print(future_version)
 
     if(future_version == "rcp45") {
 	data = d_rcp45
@@ -656,13 +517,12 @@ shinyServer(function(input, output, session) {
     f = merge(f1, f2, by = c("timeFrame", "location"), all.x = TRUE)
     # replace na values by 0
     f[is.na(years_freq), years_freq := 0]
-    # not working # set(f, i = which(is.na(f$years_freq)), j = years_freq, value = 0)
     f$percentage = (f$years_freq / f$years_range) * 100
     
-    riskGen = list( hist = subset(f, timeFrame == layerlist[1]),
-                      `2040` = subset(f, timeFrame == layerlist[2]),
-                      `2060` = subset(f, timeFrame == layerlist[3]),
-                      `2080` = subset(f, timeFrame == layerlist[4]))
+    riskGen = list(hist   = subset(f, timeFrame == layerlist[1]),
+                   `2040` = subset(f, timeFrame == layerlist[2]),
+                   `2060` = subset(f, timeFrame == layerlist[3]),
+                   `2080` = subset(f, timeFrame == layerlist[4]))
     
     GenMap <- constructMap(riskGen, layerlist, palColumn = "percentage", legendVals = seq(0, 100), HTML("Percentage(%) of<br />Years Occurred"), RdBu_reverse)
     GenMap
@@ -670,7 +530,6 @@ shinyServer(function(input, output, session) {
   
   output$map_risk1 <- renderLeaflet({
     typeGen = paste0("Perc", input$type_risk1, input$gen_risk1)
-    #print(typeGen)
     if(input$fver_risk == "rcp45") {
 	data = d1_rcp45
     }
@@ -703,110 +562,58 @@ shinyServer(function(input, output, session) {
     GenMap1
   })
 
-  output$map_emerg_doy <- renderLeaflet({
-    col = "Emergence"
-
-    if(input$cg_emerg_doy == "Historical") {
-      climate_group = input$cg_emerg_doy
-      future_version = "rcp85"
-    }
-    else {
-      temp = tstrsplit(input$cg_emerg_doy, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
-
-    if(future_version == "rcp45") {
-	data = d_rcp45
-    }
-    else {
-	data = d
-    }
-
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-    
-    sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(col)))
-    sub_Emerg = sub_Emerg[, .(medianDoY = as.integer(median( get(col) ))), by = c("timeFrame", "location")]
-    
-    medianEmerg = list( hist = subset(sub_Emerg, timeFrame == layerlist[1]),
-                      `2040` = subset(sub_Emerg, timeFrame == layerlist[2]),
-                      `2060` = subset(sub_Emerg, timeFrame == layerlist[3]),
-                      `2080` = subset(sub_Emerg, timeFrame == layerlist[4]))
-    
-    EmergMap <- constructMap(medianEmerg, layerlist, palColumn = "medianDoY", legendVals = seq(65,145), "Median Day of Year")
-    EmergMap
-  })
+  output$map_emerg_doy <- renderLeaflet({col = "Emergence"
+                                         if(input$cg_emerg_doy == "Historical") {climate_group = input$cg_emerg_doy
+                                                                                 future_version = "rcp85"
+                                          } else {
+                                            temp = tstrsplit(input$cg_emerg_doy, "_")
+                                            climate_group = unlist(temp[1])
+                                            future_version = unlist(temp[2])
+                                          }
+                                          if(future_version == "rcp45") {data = d_rcp45
+                                          } else { data = d}
+                                          layerlist = levels(data$timeFrame) # c("Historical", "2040's", "2060's", "2080's")
+                                          sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(col)))
+                                          sub_Emerg = sub_Emerg[, .(medianDoY = as.integer(median( get(col) ))), by = c("timeFrame", "location")]
+                                          medianEmerg = list( hist = subset(sub_Emerg, timeFrame == layerlist[1]),
+                                                              `2040` = subset(sub_Emerg, timeFrame == layerlist[2]),
+                                                              `2060` = subset(sub_Emerg, timeFrame == layerlist[3]),
+                                                              `2080` = subset(sub_Emerg, timeFrame == layerlist[4]))
+                                          EmergMap <- constructMap(medianEmerg, layerlist, palColumn = "medianDoY", legendVals = seq(65,145), "Median Day of Year")
+                                          EmergMap
+                                          })
   
-  output$map_diff_emerg <- renderLeaflet({
-    #diffType = as.integer(input$emerg_diff_type)
-    diffType = 3
-    col = "Emergence"
-    
-    temp = tstrsplit(input$cg_diff_emerg, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
+  output$map_diff_emerg <- renderLeaflet({diffType = 3
+                                          col = "Emergence"
+                                          temp = tstrsplit(input$cg_diff_emerg, "_")
+                                          climate_group = unlist(temp[1])
+                                          future_version = unlist(temp[2])
+                                          if(future_version == "rcp45") { data = d_rcp45
+                                          } else { data = d }
+                                          layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
+                                          layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
+                                          sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)), select = c(timeFrame, year, location, get(col)))
+                                          sub_Emerg = sub_Emerg[, .(value = as.integer(quantile( get(col), names = FALSE )[diffType])), by = c("timeFrame", "location")]
+                                          tfEmerg = list(subset(sub_Emerg, timeFrame == layerlist[1]),
+                                                         subset(sub_Emerg, timeFrame == layerlist[2]),
+                                                         subset(sub_Emerg, timeFrame == layerlist[3]),
+                                                         subset(sub_Emerg, timeFrame == layerlist[4]))
+                                          if(layerdiff[1] == climate_group) {
+                                            diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")))
+                                          }
+                                          else if(layerdiff[2] == climate_group) {
+                                            diffEmerg = list(merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")))
+                                          }
+                                          else if(layerdiff[3] == climate_group) {
+                                            diffEmerg = list(merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
+                                          }
+                                          diffEmerg[[1]]$diff = diffEmerg[[1]]$value.y - diffEmerg[[1]]$value.x
+                                          diffDomain = diffEmerg[[1]]$diff
 
-    if(future_version == "rcp45") {
-	data = d_rcp45
-    }
-    else {
-	data = d
-    }
+                                          EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", legendVals = seq(0,45), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
+                                          EmergDiffMap
+                                          })
 
-    layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
-    layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-    
-    sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)), select = c(timeFrame, year, location, get(col)))
-    sub_Emerg = sub_Emerg[, .(value = as.integer(quantile( get(col), names = FALSE )[diffType])), by = c("timeFrame", "location")]
-    
-    tfEmerg = list(subset(sub_Emerg, timeFrame == layerlist[1]),
-                  subset(sub_Emerg, timeFrame == layerlist[2]),
-                  subset(sub_Emerg, timeFrame == layerlist[3]),
-                  subset(sub_Emerg, timeFrame == layerlist[4]))
-    
-    #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
-    
-    
-    #for(i in 1:length(diffEmerg)) {
-    #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
-    #}
-    #diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
-    if(layerdiff[1] == climate_group) {
-      diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")))
-    }
-    else if(layerdiff[2] == climate_group) {
-      diffEmerg = list(merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")))
-    }
-    else if(layerdiff[3] == climate_group) {
-      diffEmerg = list(merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
-    }
-    diffEmerg[[1]]$diff = diffEmerg[[1]]$value.y - diffEmerg[[1]]$value.x
-    diffDomain = diffEmerg[[1]]$diff
-
-    EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", legendVals = seq(0,45), HTML("Median calendar day<br />difference from historical"), RdBu_reverse)
-    #EmergDiffMap <- constructMap(diffEmerg, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
-    EmergDiffMap
-  })
-  
-#  output$map_diap_pop <- renderLeaflet({
-#    col = "Diapause"
-#    layerlist = levels(d$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-#    
-#    sub_Diap = subset(d, !is.na(timeFrame) & !is.na(get(col)), select = c(timeFrame, year, location, get(col)))
-#    sub_Diap[, (col) := get(col) * 100]
-#    sub_Diap = sub_Diap[, .(medianPop = median( get(col) )), by = c("timeFrame", "location")]
-#    
-#    medianDiap = list( hist = subset(sub_Diap, timeFrame == layerlist[1]),
-#                        `2040` = subset(sub_Diap, timeFrame == layerlist[2]),
-#                        `2060` = subset(sub_Diap, timeFrame == layerlist[3]),
-#                        `2080` = subset(sub_Diap, timeFrame == layerlist[4]))
-#    
-#    DiapMap <- constructMap(medianDiap, layerlist, palColumn = "medianPop", legendVals = seq(0, 100), "Median Population", RdBu_reverse)
-#    DiapMap
-#  })
-  
   output$map_diap_pop <- renderLeaflet({
     #$input$diap_pop = "RelPct"
     col = paste0("RelPct", input$diapaused, if(input$diap_gen == "all") "" else input$diap_gen)
@@ -905,8 +712,6 @@ shinyServer(function(input, output, session) {
   })
 
   output$map_bloom_diff <- renderLeaflet({
-    #diffType = as.integer(input$emerg_diff_type)
-    
     temp = tstrsplit(input$cg_bloom_diff, "_")
     climate_group = unlist(temp[1])
     future_version = unlist(temp[2])
@@ -928,16 +733,6 @@ shinyServer(function(input, output, session) {
                   subset(sub_Bloom, ClimateGroup == layerlist[2]),
                   subset(sub_Bloom, ClimateGroup == layerlist[3]),
                   subset(sub_Bloom, ClimateGroup == layerlist[4]))
-    
-    #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
-    
-    
-    #for(i in 1:length(diffEmerg)) {
-    #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
-    #}
-    #diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
     if(layerdiff[1] == climate_group) {
       diffBloom = list(merge(cgBloom[[2]], cgBloom[[1]], by = c("location")))
     }
@@ -951,21 +746,20 @@ shinyServer(function(input, output, session) {
     diffDomain = diffBloom[[1]]$diff
 
     BloomDiffMap <- constructMap(diffBloom, layerdiff, palColumn = "diff", legendVals = seq(5,45), HTML("Median calendar day <br />difference from historical"), RdBu_reverse)
-    #BloomDiffMap <- constructMap(diffBloom, layerdiff, palColumn = "diff", legendVals = diffDomain, "Median calendar day difference from historical", RdBu_reverse)
     BloomDiffMap
   })
-  
+
+
   constructMap <- function(mapLayerData, layerlist, palColumn, legendVals, title, gradient = "RdBu") {
     pal <- colorNumeric(
       #palette = "Blues,Paired,Greens,Purples",
       #check - https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
-      palette = gradient, #Spectral_reverse, #"Spectral",
+      palette = gradient, # Spectral_reverse, #"Spectral",
       domain = legendVals
     )
-    myLabelFormat = function(...,dates=FALSE){ 
+    myLabelFormat = function(..., dates=FALSE){ 
       if(dates){ 
         function(type = "numeric", cuts){ 
-          #as.Date(cuts, origin="1970-01-01")
           format(as.Date(cuts, origin = "2018-01-01"), "%b %d")
         }  
       }else{
@@ -974,29 +768,23 @@ shinyServer(function(input, output, session) {
     } 
     
     map <- leaflet() %>% 
-      addTiles(
-        urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-      ) %>% 
-      #setView(lat = 46.78, lng = -119.65, zoom = 8)
-      #setView(lat = 46.71, lng = -119.03, zoom = 7)
-      setView(lat = 47.40, lng = -119.53, zoom = 7)
-    
-    for(i in 1:length(mapLayerData)) {
+           addTiles(
+           urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
+           setView(lat = 47.40, lng = -119.53, zoom = 7)
+    for(i in 1:length(mapLayerData)){
       loc = tstrsplit(mapLayerData[[i]]$location, "_")
       mapLayerData[[i]]$latitude = as.numeric(unlist(loc[1]))
       mapLayerData[[i]]$longitude = as.numeric(unlist(loc[2]))
       
       map <- addCircleMarkers(map,
-                                 data = mapLayerData[[i]],
-                                 lat = mapLayerData[[i]]$latitude, lng = mapLayerData[[i]]$longitude,
-                                 stroke = FALSE,
-                                 radius = 7,
-                                 fillOpacity = 0.9,
-                                 color = ~pal(mapLayerData[[i]][, get(palColumn)]),
-                                 popup=paste0("<b>", title, ": </b>", round(mapLayerData[[i]][, get(palColumn)], 1),"<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, "<br/><b>Longitude: </b> ", mapLayerData[[i]]$longitude))#,
-                                 #group = layerlist[i])
-      
+                              data = mapLayerData[[i]],
+                              lat = mapLayerData[[i]]$latitude, lng = mapLayerData[[i]]$longitude,
+                              stroke = FALSE,
+                              radius = 7,
+                              fillOpacity = 0.9,
+                              color = ~pal(mapLayerData[[i]][, get(palColumn)]),
+                              popup=paste0("<b>", title, ": </b>", round(mapLayerData[[i]][, get(palColumn)], 1),"<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, "<br/><b>Longitude: </b> ", mapLayerData[[i]]$longitude))
     }
     
     if(title == "Median Day of Year") {
@@ -1011,35 +799,6 @@ shinyServer(function(input, output, session) {
                        labFormat = myLabelFormat(prefix = " "),
                        opacity = 0.7)
     }
-    #map = addLayersControl(map,#overlayGroups = layerlist,
-    #                          baseGroups = layerlist,
-    #                          position = "topright",
-    #                          options = layersControlOptions(collapsed = FALSE))
-    
     map
   }
-
-#  observeEvent(input$type,{
-#	if(input$type == "A") {
-#		#updateRadioButtons(session, "percent", label = HTML("<h5>Select proportion of pupae emerged as adults</h5>"),
-#                #                                           choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
-#                #                                           selected = "0.25", inline = TRUE)
-#		output$growthPercent = renderText({"Select % Population that has completed the growth stage"})
-#	}
-#	else {
-#		#updateRadioButtons(session, "percent", label = HTML("<h5>Select proportion of eggs hatched</h5>"),
-#                #                                           choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
-#                #                                           selected = "0.25", inline = TRUE)
-#		output$growthPercent = renderText({"Select Proportion of Eggs hatched"})
-#	}
-#  }) 
-# 
-#  observeEvent(input$type_diff,{
-#	if(input$type_diff == "A") {
-#		output$growthPercentDiff = renderText({"Select % Population that has completed the growth stage"})
-#	}
-#	else {
-#		output$growthPercentDiff = renderText({"Select Proportion of Eggs hatched"})
-#	}
-#  })  
 })

@@ -3,26 +3,9 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-param_dir = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/parameters/"
-input_data_dir = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/input_data/"
-
-# read parameters
-input_params  = data.table(read.csv(paste0(param_dir, "input_parameters", ".csv")))
-variety_params= data.table(read.csv(paste0(param_dir,"variety_parameters", ".csv")))
-
-# read input temps
-input_temps = data.table(read.csv(paste0(input_data_dir, "input_temps", ".csv")))
-Prosser_temps= data.table(read.csv(paste0(input_data_dir, "Prosser_temps", ".csv")))
-
-Location = input_temps$Location[1]
-year_1 = input_temps$Season[1]
-temp <- colnames(input_temps)[8]
-
-
 hardiness_model <- function(data, input_params = input_params,
 	                        variety_params = variety_params){
-
-	output = data.table(matrix(-1000, nrow=dim(data)[1], ncol=12))
+	output = data.table(matrix(-100000, nrow=dim(data)[1], ncol=12))
 	colnames(output) <- c("variety", "location", "year",
 		                  "Date", "jday", "t_mean", "t_max", 
 		                  "t_min", "predicted_Hc", "observed_Hc",
@@ -33,24 +16,30 @@ hardiness_model <- function(data, input_params = input_params,
 
 	location = data$Location[1]
     year_1 = data$Season[1]
+    # The following is just name of a given column
+    # to be used to name a column in the output sheet/file.
     temp <- colnames(data)[8]
-
     variety <- input_params$variety[1]
     
     Hc_initial <- input_params$Hc_initial[1]
     Hc_min<- input_params$Hc_min[1]
     Hc_max <- input_params$Hc_max[1]
-    
+    ####################################################################
+    #################
+    ################# In the following vectors of size 2, the first
+    ################# entry is _endo and the second is _eco type.
+    #################
+    ####################################################################
     T_threshold <- c(input_params$t_threshold_endo[1], 
     	             input_params$t_threshold_eco[1])
-    ecodormancy_boundary <- input_params$Ecodormancy_boundary[1]
     
     acclimation_rate <- c(input_params$acclimation_rate_endo[1],
     	                  input_params$acclimation_rate_eco[1])
 
     deacclimation_rate<- c(input_params$deacclimation_rate_endo[1],
-                              input_params$deacclimation_rate_eco[1])
-
+                           input_params$deacclimation_rate_eco[1])
+    ####################################################################
+    ecodormancy_boundary <- input_params$Ecodormancy_boundary[1]
     theta <- c(1, input_params$theta[1])
     
     # calculate range of hardiness values possible, 
@@ -70,16 +59,16 @@ hardiness_model <- function(data, input_params = input_params,
 
     for (row_count in 1:n_rows){
        	jdate <- data[row_count, 1]
-        jday <- data[row_count, 3]  # jday = data$jday[row_count]
-
-        t_mean = data[row_count, 5] # T_mean= data$T_mean[row_count]
+        jday = data$jday[row_count]   # jday <- data[row_count, 3]
+        t_mean= data$T_mean[row_count] # t_mean = data[row_count, 5]
+        
         if (is.na(T_mean)){
-        	message(sprintf("T_mean is empty (NA) at row %s\n", row_count))
+        	message(sprintf("t_mean is empty (NA) at row %s\n", row_count))
         	break
         }
-        t_max = data[row_count, 6]  # t_max = data$T_max[row_count] 
-        t_min = data[row_count, 7]  # t_min = data$T_min[row_count] 
-        observed_Hc = data[row_count, 8] # observed_Hc = data$Observed_Hc[row_count]
+        t_max = data$T_max[row_count]    # t_max = data[row_count, 6]
+        t_min = data$T_min[row_count]    # t_min = data[row_count, 7]
+        observed_Hc = data$Observed_Hc[row_count] # observed_Hc = data[row_count, 8]
 
     	# calculate heating degree days for today used in deacclimation
     	if (data$T_mean[row_count] > T_threshold[dormancy_period]){
@@ -128,7 +117,7 @@ hardiness_model <- function(data, input_params = input_params,
 
         # sum up heating degree days only if chilling requirement has been met
         #  i.e dormancy period 2 has started
-        if (dormancy_perod == 2) {DD_heating_sum = DD_heating_sum + DD_heating_today}
+        if (dormancy_period == 2) {DD_heating_sum = DD_heating_sum + DD_heating_today}
 
         # determine if chilling requirement has been met
         # re-set dormancy period
@@ -136,9 +125,9 @@ hardiness_model <- function(data, input_params = input_params,
         # are consistant with Ferguson et al, or V6.3 of our SAS code
         if (base10_chilling_sum <= ecodormancy_boundary){dormancy_period = 2}
 
-        output$variety[row_count] = variety
-        output$location[row_count] = location
-        output$year[row_count] = year_1
+        output$variety[row_count] = as.character(variety)
+        output$location[row_count] = as.character(location)
+        output$year[row_count] = as.character(year_1)
         output$Date[row_count] = jdate
         output$jday[row_count] = jday
         output$t_mean[row_count] = t_mean

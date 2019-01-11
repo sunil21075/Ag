@@ -42,8 +42,6 @@ deacclimation_rate(2) = Cells(2, 11)
 theta(1) = 1
 theta(2) = Cells(2, 12)
 
-
-
 'read in year, location, and observed lable from input_temps, only need to do this once
 Location = Sheets("input_temps").Cells(2, 4)
 Year1 = Sheets("input_temps").Cells(2, 2)    'use variable name Year1 becouse Year is reserved
@@ -123,7 +121,7 @@ dormancy_period = 1
         
         ' sum up heating degree days only if chilling requirement has been met
         '  i.e dormancy period 2 has started
-        If dormancy_perod = 2 Then DD_heating_sum = DD_heating_sum + DD_heating_today
+        If dormancy_period = 2 Then DD_heating_sum = DD_heating_sum + DD_heating_today
         
         ' determine if chilling requirement has been met
         ' re-set dormancy period
