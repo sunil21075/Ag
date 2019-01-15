@@ -190,12 +190,13 @@ dw_theme = theme(panel.grid.major = element_blank(),
                   legend.title=element_blank()
                   )
 
-dw_gen_1 <- ggplot(data.frame(x=dw_x_limits), aes(x=x)) + 
+dw_gen_1 <- ggplot(data.frame(x=c(150, 1400)), aes(x=x)) + 
             geom_path(stat="function", fun=dw_larva_Gen1, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen1_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen1_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=dw_x_limits) + 
-            scale_y_continuous(name="Weibull density", 
+            scale_x_continuous(name="Degree days", limits=c(150, 1400)) + 
+            scale_y_continuous(#name="Weibull density", 
+                               name = element_blank(),
                                limits=dw_y_limits, 
                                labels = function(x) format(x*1000, scientific=F)) +
             scale_colour_identity("", guide="legend", 
@@ -205,44 +206,47 @@ dw_gen_1 <- ggplot(data.frame(x=dw_x_limits), aes(x=x)) +
             theme_bw() + 
             dw_theme
 
-dw_gen_2 <- ggplot(data.frame(x=dw_x_limits), aes(x=x)) + 
+dw_gen_2 <- ggplot(data.frame(x=c(700, 2900)), aes(x=x)) + 
             geom_path(stat="function", fun=dw_larva_Gen2, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen2_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen2_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=dw_x_limits) + 
-            scale_y_continuous(name="Weibull density", 
-                               limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
+            scale_x_continuous(name="Degree days", limits=c(700, 2900)) + 
+            scale_y_continuous(#name="Weibull density", 
+                name = element_blank(),
+                limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
             scale_colour_identity("", guide="legend", 
-                                      labels = labelss, 
-                                      breaks = colorss) +
+                                  labels = labelss, 
+                                  breaks = colorss) +
             labs(subtitle = expression(10^-3), parse=T) + 
             theme_bw() + 
             dw_theme
 
-dw_gen_3 <- ggplot(data.frame(x=dw_x_limits), aes(x=x)) + 
+dw_gen_3 <- ggplot(data.frame(x=c(1700, 4300)), aes(x=x)) + 
             geom_path(stat="function", fun=dw_larva_Gen3, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen3_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=dw_x_limits) + 
-            scale_y_continuous(name="Weibull density", 
-                               limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
+            scale_x_continuous(name="Degree days", limits=c(1700, 4300)) + 
+            scale_y_continuous(#name="Weibull density", 
+                name = element_blank(),
+                limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
             scale_colour_identity("", guide="legend", 
-                                      labels = labelss, 
-                                      breaks = colorss) +
+                                  labels = labelss, 
+                                  breaks = colorss) +
             labs(subtitle = expression(10^-3), parse=T) + 
             theme_bw() + 
             dw_theme
 
-dw_gen_4 <- ggplot(data.frame(x=dw_x_limits), aes(x=x)) + 
+dw_gen_4 <- ggplot(data.frame(x=c(2700, 5600)), aes(x=x)) + 
             geom_path(stat="function", fun=dw_larva_Gen4, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen4_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=dw_larva_Gen4_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=dw_x_limits) + 
-            scale_y_continuous(name="Weibull density", 
-                               limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
+            scale_x_continuous(name="Degree days", limits=c(2700, 5600)) + 
+            scale_y_continuous(#name="Weibull density", 
+                name = element_blank(),
+                limits=dw_y_limits, labels = function(x) format(x*1000, scientific=F)) +
             scale_colour_identity("", guide="legend", 
-                                      labels = labelss, 
-                                      breaks = colorss) +
+                                  labels = labelss, 
+                                  breaks = colorss) +
             labs(subtitle = expression(10^-3), parse=T) + 
             theme_bw() + 
             dw_theme
@@ -257,7 +261,7 @@ pw_theme = theme(panel.grid.major = element_blank(),
                  axis.title.x = element_text(face = "plain", 
                                              size=12, 
                                              margin = margin(t=10, r=0, b=0, l=0)),
-                 axis.text.y = element_text(size = 9, angle=90, color="black"),
+                 axis.text.y = element_text(size = 9, angle=0, color="black"),
                  axis.title.y = element_text(face = "plain", 
                                              size=12, 
                                              margin = margin(t=0, r=10, b=0, l=0)),
@@ -270,12 +274,13 @@ pw_theme = theme(panel.grid.major = element_blank(),
 pw_x_limits = c(-100, 6000)
 pw_y_limits = c(0, 1)
 
-pw_gen_1 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) + 
+pw_gen_1 <- ggplot(data.frame(x=c(150, 1400)), aes(x=x)) + 
             geom_path(stat="function", fun=pw_larva_Gen1, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen1_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen1_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=pw_x_limits) + 
-            scale_y_continuous(name="Weibull cumulative distribution", 
+            scale_x_continuous(name="Degree days", limits=c(150, 1400)) + 
+            scale_y_continuous(# name="", 
+                               name = element_blank(),
                                limits=pw_y_limits, 
                                labels = function(x) format(x*100, scientific=F)) +
             scale_colour_identity("", guide="legend", 
@@ -285,12 +290,13 @@ pw_gen_1 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) +
             theme_bw() + 
             pw_theme
 
-pw_gen_2 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) + 
+pw_gen_2 <- ggplot(data.frame(x=c(700, 2900)), aes(x=x)) + 
             geom_path(stat="function", fun=pw_larva_Gen2, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen2_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen2_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=pw_x_limits) + 
-            scale_y_continuous(name="Weibull cumulative distribution", 
+            scale_x_continuous(name="Degree days", limits=c(700, 2900)) + 
+            scale_y_continuous(#name="Weibull cumulative distribution", 
+                               name = element_blank(),
                                limits=pw_y_limits, 
                                labels = function(x) format(x*100, scientific=F)) +
             scale_colour_identity("", guide="legend", 
@@ -300,12 +306,13 @@ pw_gen_2 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) +
             theme_bw() + 
             pw_theme
 
-pw_gen_3 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) + 
+pw_gen_3 <- ggplot(data.frame(x=c(1700, 4300)), aes(x=x)) + 
             geom_path(stat="function", fun=pw_larva_Gen3, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen3_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=pw_x_limits) + 
-            scale_y_continuous(name="Weibull cumulative distribution", 
+            scale_x_continuous(name="Degree days", limits=c(1700, 4300)) + 
+            scale_y_continuous(#name="Weibull cumulative distribution", 
+                               name = element_blank(),
                                limits=pw_y_limits, 
                                labels = function(x) format(x*100, scientific=F)) +
             scale_colour_identity("", guide="legend", 
@@ -315,12 +322,13 @@ pw_gen_3 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) +
             theme_bw() + 
             pw_theme
 
-pw_gen_4 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) + 
+pw_gen_4 <- ggplot(data.frame(x=c(2700, 5500)), aes(x=x)) + 
             geom_path(stat="function", fun=pw_larva_Gen4, aes(colour="dodgerblue"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen4_shift_10_percent, aes(colour="olivedrab4"), linetype=1)+
             geom_path(stat="function", fun=pw_larva_Gen4_shift_20_percent, aes(colour="red"), linetype=1)+
-            scale_x_continuous(name="Degree days", limits=pw_x_limits) + 
-            scale_y_continuous(name="Weibull cumulative distribution", 
+            scale_x_continuous(name="Degree days", limits=c(2700, 5500)) + 
+            scale_y_continuous(#name="Weibull cumulative distribution", 
+                               name = element_blank(),
                                limits=pw_y_limits, 
                                labels = function(x) format(x*100, scientific=F)) +
             scale_colour_identity("", guide="legend", 
@@ -335,16 +343,17 @@ pw_gen_4 <- ggplot(data.frame(x=pw_x_limits), aes(x=x)) +
 ################## Put the plots together in a panel
 ##################
 ########################################################
-all_plots <- grid.arrange(dw_gen_1, pw_gen_1,
-                          dw_gen_2, pw_gen_2, 
-                          dw_gen_3, pw_gen_3,
-                          dw_gen_4, pw_gen_4,
-                          nrow = 4)
+# all_plots <- grid.arrange(dw_gen_1, pw_gen_1,
+#                           dw_gen_2, pw_gen_2, 
+#                           dw_gen_3, pw_gen_3,
+#                           dw_gen_4, pw_gen_4,
+#                           nrow = 4)
 
-all_plots <- ggarrange(dw_gen_1, pw_gen_1, 
-                       dw_gen_2, pw_gen_2, 
-                       dw_gen_3, pw_gen_3,
-                       dw_gen_4, pw_gen_4)
+# all_plots <- ggarrange(dw_gen_1, pw_gen_1, 
+#                        dw_gen_2, pw_gen_2, 
+#                        dw_gen_2, pw_gen_2, 
+#                        dw_gen_3, pw_gen_3,
+#                        dw_gen_4, pw_gen_4)
 ########################################################
 grid_arrange_shared_legend <- function(..., ncol = length(list(...)),
                                             nrow = 1,
@@ -380,8 +389,7 @@ grid_arrange_shared_legend <- function(..., ncol = length(list(...)),
     
   }
 
-
-grid_arrange_shared_legend(dw_gen_1, pw_gen_1, 
+all_plots <- grid_arrange_shared_legend(dw_gen_1, pw_gen_1, 
                            dw_gen_2, pw_gen_2, 
                            dw_gen_3, pw_gen_3,
                            dw_gen_4, pw_gen_4, 
@@ -390,12 +398,13 @@ grid_arrange_shared_legend(dw_gen_1, pw_gen_1,
 
 
 master_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/laptop_codes/weibull_dist_plot/"
-plot_path = master_path
-ggsave(filename=paste0("dweibull_larva", ".png"), 
-	   plot=larva_density, 
-	   path=plot_path, 
-	   width=7 ,
-	   height=5 , 
-	   dpi=1000, 
-	   device="png")
+
+plot_path = "/Users/hn/Desktop/"
+ggsave(filename=paste0("larva_weibull", ".png"), 
+	     plot=all_plots, 
+	     path=plot_path, 
+  	   width=15,
+	     height=10, 
+	     dpi=500, 
+	     device="png")
 
