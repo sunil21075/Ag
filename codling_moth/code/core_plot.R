@@ -127,7 +127,7 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
              strip.text = element_text(size=12, face="plain"),
              axis.text = element_text(face="plain", size=10, color="black"),
              axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
-            axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
+             axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
             )
   ggsave(output_name, p1, path=plot_path, dpi=500)
 }
@@ -350,7 +350,8 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                      legend.position="bottom"
                     ) + 
                scale_fill_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), name = "Absolute population") +
-               scale_color_manual(labels = c("Total", "Escape diapause"), values=c("grey", "orange"), guide = FALSE) +
+               scale_color_manual(labels = c("Total", "Escape diapause"), 
+                                  values=c("grey", "orange"), guide = FALSE) +
                stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                              fun.ymin=function(z) { 0 }, 
                              fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
