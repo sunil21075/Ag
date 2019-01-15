@@ -3,13 +3,17 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-hardiness_model <- function(data, input_params = input_params,
+hardiness_model <- function(data, 
+	                        input_params = input_params,
 	                        variety_params = variety_params){
-	output = data.table(matrix(-100000, nrow=dim(data)[1], ncol=12))
+	options(digits=9)
+	output = data.table(matrix(NA, nrow=dim(data)[1], ncol=12))
 	colnames(output) <- c("variety", "location", "year",
 		                  "Date", "jday", "t_mean", "t_max", 
 		                  "t_min", "predicted_Hc", "observed_Hc",
 		                  "budbreak", "predicted_on")
+
+	#output$predicted_on <- as.character(output$predicted_on)
 
     output$variety <- as.character(output$variety)
     output$location <- as.character(output$location)
@@ -58,12 +62,16 @@ hardiness_model <- function(data, input_params = input_params,
     n_rows = dim(data)[1]
 
     for (row_count in 1:n_rows){
-       	jdate <- data[row_count, 1]
+       	# jdate <- data[row_count, 1]
+       	# the following line is done so we can write
+       	# the result in CSV format. 
+       	# (when class of the variable was of format factor, it had problem)
+       	jdate = as.character((data$Date[row_count]))
         jday = data$jday[row_count]   # jday <- data[row_count, 3]
-        t_mean= data$T_mean[row_count] # t_mean = data[row_count, 5]
+        # t_mean= data$T_mean[row_count] # t_mean = data[row_count, 5]
         
-        if (is.na(T_mean)){
-        	message(sprintf("t_mean is empty (NA) at row %s\n", row_count))
+        if (is.na(data$T_mean[row_count])){
+        	message(sprintf("data$T_mean[row_count] is empty (NA) at row %s\n", row_count))
         	break
         }
         t_max = data$T_max[row_count]    # t_max = data[row_count, 6]
@@ -130,7 +138,7 @@ hardiness_model <- function(data, input_params = input_params,
         output$year[row_count] = as.character(year_1)
         output$Date[row_count] = jdate
         output$jday[row_count] = jday
-        output$t_mean[row_count] = t_mean
+        output$t_mean[row_count] = data$T_mean[row_count]
         output$t_max[row_count] = t_max
         output$t_min[row_count] = t_min
         
@@ -141,30 +149,24 @@ hardiness_model <- function(data, input_params = input_params,
         if (Hc_min == -1.2){
         	if(model_Hc_yesterday < -2.2){
         		if(model_Hc >= -2.2){
-        			output$budbreak[row_count] = model_Hc
         			output$predicted_on[1] = jdate
+        			output$budbreak[row_count] = model_Hc
         		}
         	}
         }
 
         if(Hc_min == -2.5){
         	if(model_Hc_yesterday < -6.4){
-        		if(model_Hc >= -6.4){
-        			output$budbreak[row_count] = model_Hc
+        		if(model_Hc >= -6.4){        			
         			output$predicted_on[1] = jdate
+        			output$budbreak[row_count] = model_Hc
         		}
         	}
         }
 
         # remember todays hardiness for tomarrow
         model_Hc_yesterday = model_Hc
-
-        
-
     }
+    return(output)
 }
-
-
-
-
 
