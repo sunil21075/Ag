@@ -3,7 +3,7 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-source_path = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/hardiness_core.R "
+source_path = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/hardiness_core.R"
 source(source_path)
 
 param_dir = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/parameters/"
@@ -30,7 +30,7 @@ write.csv(output,
 ################## Plot
 ##################
 ########################################################################
-source_path = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/plot_core.R "
+source_path = "/Users/hn/Documents/GitHub/Kirti/hardiness/R_code/plot_core.R"
 source(source_path)
 
 plot_dir <- output_dir
