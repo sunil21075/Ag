@@ -53,11 +53,11 @@ produce_CMPOP_local <- function (input_folder, filename,
 }
 
 produce_CM_local <- function(input_folder, filename,
-                       param_dir, cod_moth_param_name,
-                       scale_shift=0,
-                       start_year, end_year, 
-                       lower=10, upper=31.11,
-                       location, category){
+                             param_dir, cod_moth_param_name,
+                             scale_shift=0,
+                             start_year, end_year, 
+                             lower=10, upper=31.11,
+                             location, category){
   loc = tstrsplit(location, "_")
   temp <- prepareData_CM(filename, 
                          input_folder, 
@@ -292,7 +292,7 @@ prepareData_CM <- function(filename, input_folder,
     
     em = 0 # emergence occured
     
-    #add each year to dataframe
+    # add each year to dataframe
     generations[nrow(generations) + 1, 1] <- i
     
     # for each day of the year
