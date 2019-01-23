@@ -18,15 +18,14 @@ for (dir in directories){
                          full.names = FALSE, 
                          recursive = FALSE)
   y_lims <- c(0, 150)
-  
+  box_width = 0.3
   if (last(unlist(strsplit(data_75_dir, "/"))) == "75"){y_lims <- c(0, 160)}
   for (file_name in file_list){
     data = data.table(readRDS(paste0(dir, file_name)))
     data <- data[data$window_length !=0, ] 
     data <- data[data$generations== "window_gen_1" | data$generations== "window_gen_2"]
     data$generations <- factor(data$generations)
-    box_width = 0.3
-
+    
     df <- data.frame(data)
     df <- (df %>% group_by(CountyGroup, ClimateGroup, generations))
     medians <- (df %>% summarise(med = median(window_length)))
@@ -54,7 +53,7 @@ for (dir in directories){
                        # axis.title.y = element_blank()
                        )
 
-    box_plot = ggplot(data = data, aes(x = generations , y = window_length, fill = ClimateGroup)) + 
+    box_plot = ggplot(data = data, aes(x = generations, y = window_length, fill = ClimateGroup)) + 
                geom_boxplot(outlier.size= -.3, lwd=0.1, 
                             notch=TRUE, width=box_width, 
                             position=position_dodge(.8)) +

@@ -1,19 +1,19 @@
 #!/bin/bash
-#v#!/usr/bin/env Rscript
+#!/usr/bin/env Rscript
 
-#PBS -N eigth_of_data
+#PBS -N pest_window_400F
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
-#PBS -l mem=20gb
+#PBS -l mem=5gb
 #PBS -q hydro
-#PBS -e E_eigth_of_data.txt
-#PBS -o O_eigth_of_data.txt
+#PBS -e E_pest_window_400F.txt
+#PBS -o O_pest_window_400F.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 # Ensure a clean running environment:
 module purge
 # Load modules (if needed)
-module load R/R-3.2.2_gcc 0.25
+module load R/R-3.2.2_gcc 
 
-./eigth_of_data.R
+./pest_window_400F.R
 
 exit 0
