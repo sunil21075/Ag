@@ -8,12 +8,11 @@ data_dir <- "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_c
 file_list = c("window_400F_sub_melt_45.rds", "window_400F_sub_melt_85.rds")
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
 y_lims <- c(0, 150)
-  
+box_width = 0.3 
+
 for (file in file_list){
   data <- data.table(readRDS(paste0(data_dir, file)))
   data <- data[data$variable=="temp_delta", ]
-  box_width = 0.3
-
   df <- data.frame(data)
   df <- (df %>% group_by(CountyGroup, ClimateGroup))
   medians <- (df %>% summarise(med = median(value)))

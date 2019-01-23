@@ -16,10 +16,10 @@ for (model in models){
 	curr_data <- within(curr_data, remove(longitude, latitude))
 	
 	start_400 <- curr_data %>% group_by(location, ClimateScenario, 
- 		                            ClimateGroup, CountyGroup, 
- 		                            year) %>% arrange(abs(CumDDinF - 400)) %>% slice(1)
+ 		                                ClimateGroup, CountyGroup, 
+ 		                                year) %>% arrange(abs(CumDDinF - 400)) %>% slice(1)
 	
-	end_400_IDs <- start_400$ID + 14
+	end_400_IDs <- start_400$ID + 13
 	end_400  <- curr_data[end_400_IDs]
     
     # change column names
