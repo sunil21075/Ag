@@ -1,4 +1,6 @@
-data_path = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/"
+
+
+data_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 
 ######
 ###### Larva 50%
@@ -500,3 +502,6 @@ curr_median_df[7, 6] <- medians[medians$Group.1 == "2060's" & medians$Group.2=="
 curr_median_df[8, 6] <- medians[medians$Group.1 == "2080's" & medians$Group.2=="Cooler Areas", ]$dayofyear
 
 write.csv(curr_median_df, paste0(data_path, "rcp85_75.csv"), row.names = F)
+
+
+

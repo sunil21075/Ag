@@ -70,11 +70,13 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme_bw() + 
        theme(panel.grid.major = element_line(size=0.2),
+             panel.spacing=unit(.5, "cm"),
              legend.title = element_text(face="plain", size=12),
              legend.text = element_text(size=10),
              legend.position = "bottom",
              strip.text = element_text(size=12, face="plain"),
              axis.text = element_text(face="plain", size=10, color="black"),
+             axis.ticks = element_line(color = "black", size = .2),
              axis.title.x = element_text(face= "plain", size=16, margin = margin(t=10, r=0, b=0, l=0)),
              axis.title.y = element_text(face="plain", size=16, margin = margin(t=0, r=10, b=0, l=0))
              )
@@ -119,12 +121,14 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme_bw() + 
        theme(panel.grid.major = element_line(size=0.2),
+             panel.spacing=unit(.5, "cm"),
            # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
              legend.title = element_text(face="plain", size=12),
              legend.text = element_text(size=10),
              legend.position = "bottom",
            # plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
              strip.text = element_text(size=12, face="plain"),
+             axis.ticks = element_line(color = "black", size = .2),
              axis.text = element_text(face="plain", size=10, color="black"),
              axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
              axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
@@ -183,6 +187,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
            geom_vline(xintercept=c(120, 226), linetype="solid", color ="red") +
            theme_bw() + 
            theme(# panel.grid.major = element_line(size = 0.2),
+                 panel.spacing=unit(.5, "cm"),
                  panel.grid.major = element_blank(),
                  panel.grid.minor = element_blank(),
                  legend.title = element_text(face="plain", size=12),
@@ -190,6 +195,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                  legend.position = "bottom",
                  strip.text = element_text(size=12, face="plain"),
                  axis.text = element_text(face="plain", size=10, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                  ) 
@@ -247,12 +253,14 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
            #           )+
            theme(# panel.grid.major = element_line(size = 0.7),
                  # panel.grid.major = element_blank(),
+                 panel.spacing=unit(.5, "cm"),
                  panel.grid.minor = element_blank(),
                  legend.title = element_text(face = "plain", size = 12),
                  legend.text = element_text(size = 10),
                  legend.position = "bottom",
                  strip.text = element_text(size = 12, face = "plain"),
                  axis.text = element_text(face = "plain", size = 10, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face = "plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                 )
@@ -290,11 +298,13 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
            theme_bw() +
            labs(x = "Julian day", y = "Cumulative degree days (in F)", fill = "Climate Group") +
            theme(panel.grid.major = element_line(size = 0.7),
+                 panel.spacing=unit(.5, "cm"),
                  legend.title = element_text(face = "plain", size = 16),
                  legend.text = element_text(size = 12),
                  legend.position = "bottom",
                  strip.text = element_text(size= 12, face = "plain"),
                  axis.text = element_text(face="plain", size = 10, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face= "plain", size = 16, margin = margin(t = 10, r = 0, b = 0, l = 0)),
                  axis.title.y = element_text(face= "plain", size = 16, margin = margin(t = 0, r = 10, b = 0, l = 0)))
   out_name = paste0("cumdd_" , version, "_type", output_type ,".png")
@@ -342,9 +352,11 @@ plot_abs_diapause <- function(input_dir, file_name_extension, version, plot_path
                annotate(geom="text", x=3920, y=70, label="Gen. 4", color="black", angle=30) +
                theme_bw() +
                facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-               theme(axis.text = element_text(face= "plain", size = 8, color="black"),
+               theme(panel.spacing=unit(.5, "cm"),
                      panel.grid.major = element_blank(),
                      panel.grid.minor = element_blank(),
+                     axis.text = element_text(face= "plain", size = 8, color="black"),
+                     axis.ticks = element_line(color = "black", size = .2),
                      axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
                      axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
                      legend.position="bottom"
@@ -383,9 +395,11 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
        annotate(geom="text", x=3920, y=12, label="Gen. 4", color="black", angle=30) +
        theme_bw() +
        facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-       theme(axis.text = element_text(face= "plain", size = 8, color="black"),
-             panel.grid.major = element_blank(),
+       theme(panel.grid.major = element_blank(),
              panel.grid.minor = element_blank(),
+             panel.spacing=unit(.5, "cm"),
+             axis.text = element_text(face= "plain", size = 8, color="black"),
+             axis.ticks = element_line(color = "black", size = .2),
              axis.title.x = element_text(face= "plain", size = 12, margin = margin(t=10, r = 0, b = 0, l = 0)),
              axis.title.y = element_text(face= "plain", size = 12, margin = margin(t=0, r = 10, b = 0, l = 0)),
              legend.position="bottom"
@@ -462,11 +476,13 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
         theme(#panel.grid.major = element_line(size = 0.2),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
+              panel.spacing=unit(.5, "cm"),
               legend.title = element_text(face="plain", size=12),
               legend.text = element_text(size=10),
               legend.key.size = unit(.5, "cm"), 
               legend.position = "bottom",
               strip.text = element_text(size=12, face="plain"),
+              axis.ticks = element_line(color = "black", size = .2),
               axis.text = element_text(face="plain", size=10, color="black"),
               axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
               axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
@@ -530,11 +546,13 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
          theme(# panel.grid.major = element_line(size = 0.2),
                panel.grid.major = element_blank(),
                panel.grid.minor = element_blank(),
+               panel.spacing=unit(.5, "cm"),
                legend.title = element_text(face="plain", size=12),
                legend.text = element_text(size=10),
                legend.position = "bottom",
                strip.text = element_text(size=12, face="plain"),
                axis.text = element_text(face="plain", size=10),
+               axis.ticks = element_line(color = "black", size = .2),
                axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0)))
 
@@ -594,12 +612,14 @@ plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
                     theme_bw() + 
                     theme(panel.grid.major = element_line(size = 0.3),
                           panel.grid.minor = element_line(size = 0.2),
+                          panel.spacing=unit(.5, "cm"),
                           legend.position="bottom",
                           legend.title = element_blank(),
                           legend.text = element_text(size=10, face="plain"),
                           legend.spacing.x = unit(.05, 'cm'),
                           legend.key.size = unit(.5, "cm"),
                           legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
+                          axis.ticks = element_line(color = "black", size = .2),
                           axis.title.x = element_text(face = "plain", size=12, margin = margin(t=10, r=0, b=0, l=0)),
                           axis.title.y = element_text(face = "plain", size=12, margin = margin(t=0, r=10, b=0, l=0))
                     ) + 
@@ -661,6 +681,7 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
             panel.border = element_rect(fill=NA, size=.3),
             panel.grid.major = element_line(size = 0.05),
             panel.grid.minor = element_blank(),
+            panel.spacing=unit(.5, "cm"),
             panel.spacing = unit(.25, "cm"),
             legend.position = "bottom", 
             legend.key.size = unit(.75, "line"),
@@ -744,6 +765,7 @@ plot_adult_emergence <- function(input_dir, file_name,
             legend.spacing.x = unit(.05, 'cm'),
             panel.grid.major = element_line(size = 0.1),
             axis.text = element_text(face = "plain", size = 10, color="black"),
+            axis.ticks = element_line(color = "black", size = .2),
             axis.title.x = element_text(face = "plain", size=8, margin = margin(t=5, r=0, b=0, l=0)),
             axis.text.x = element_text(size = 5, color="black"),
             axis.title.y = element_text(face = "plain", size=8, margin = margin(t=0, r=1, b=0, l=0)),
@@ -818,7 +840,7 @@ plot_No_generations_4_latex <- function(input_dir,
                    panel.border = element_rect(fill=NA, size=.3),
                    panel.grid.major = element_line(size = 0.05),
                    panel.grid.minor = element_blank(),
-                   panel.spacing=unit(.25,"cm"),
+                   panel.spacing=unit(.5,"cm"),
                    legend.position="bottom", 
                    legend.title = element_blank(),
                    legend.key.size = unit(.75,"line"),
@@ -919,7 +941,9 @@ plot_No_generations <- function(input_dir,
                    #panel.grid.major = element_line(size = 0.1),
                    #panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank(),
+                   panel.spacing=unit(.5, "cm"),
                    axis.text = element_text(face = "plain", size = 10, color="black"),
+                   axis.ticks = element_line(color = "black", size = .2),
                    axis.text.x = element_text(size = 7, color="black"),
                    axis.title.x = element_text(face = "plain", size=8, 
                                                margin = margin(t=3, r=0, b=0, l=0)),
@@ -994,8 +1018,10 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
                  legend.key.size = unit(.5, "cm"), 
                  panel.grid.major = element_line(size = 0.1),
                  panel.grid.minor = element_line(size = 0.1),
+                 panel.spacing=unit(.5, "cm"),
                  strip.text = element_text(size= 6, face = "plain"),
                  axis.text = element_text(face = "plain", size = 4, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face = "plain", size = 10, 
                                              margin = margin(t=10, r=0, b=0, l=0)),
                  axis.text.x = element_text(size = 6, color="black"), # tick text font size
@@ -1082,11 +1108,13 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
          scale_y_continuous(breaks=y_range) +
          theme_bw() + 
          theme(panel.grid.minor = element_blank(),
+               panel.spacing=unit(.5, "cm"),
                legend.title = element_text(face = "plain", size = 12),
                legend.text = element_text(size = 10),
                legend.position = "bottom",
                strip.text = element_text(size = 12, face = "plain"),
                axis.text = element_text(face = "plain", size = 10, color="black"),
+               axis.ticks = element_line(color = "black", size = .2),
                axis.title.x = element_text(face = "plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
                axis.title.y = element_text(face = "plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
                )       
@@ -1131,11 +1159,13 @@ plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_",
                       color ="black", size=0.3) +
            guides(guide_legend(title="")) + 
            theme(panel.grid.minor = element_blank(),
+                 panel.spacing=unit(.5, "cm"),
                  legend.text = element_text(size = 8),
                  legend.position = "bottom",
                  legend.margin=margin(t=-.4, r=0, b=.1, l=0, unit = 'cm'),
                  strip.text = element_text(size = 10, face = "plain"),
                  axis.text = element_text(face = "plain", size = 10, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face = "plain", size=12, margin=margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_blank()
                  )
@@ -1187,8 +1217,10 @@ cumulative_qrt_boxplot <- function(input_dir, file_name, version, output_dir){
                  legend.key.size = unit(.5, "cm"), 
                  panel.grid.major = element_line(size = 0.1),
                  panel.grid.minor = element_line(size = 0.1),
+                 panel.spacing=unit(.5, "cm"),
                  strip.text = element_text(size= 10, face = "plain"),
                  axis.text = element_text(face = "plain", size = 4, color="black"),
+                 axis.ticks = element_line(color = "black", size = .2),
                  axis.title.x = element_text(face = "plain", size = 10, 
                                              margin = margin(t=10, r=0, b=0, l=0)),
                  axis.text.x = element_text(size = 10, color="black"), # tick text font size
