@@ -2,7 +2,7 @@ rm(list=ls())
 library(data.table)
 library(ggplot2)
 
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp45_50.csv"
@@ -78,7 +78,7 @@ ggsave("rcp45_50.png", br_plt, path=data_dir, dpi=500, device="png", width=5.5, 
 rm(list=ls())
 library(data.table)
 library(ggplot2)
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp85_50.csv"
@@ -159,7 +159,7 @@ ggsave("rcp85_50.png", br_plt, path=data_dir, dpi=500, device="png", width=5.5, 
 rm(list=ls())
 library(data.table)
 library(ggplot2)
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp45_25.csv"
@@ -236,7 +236,7 @@ rm(rcp45_25)
 rm(list=ls())
 library(data.table)
 library(ggplot2)
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp85_25.csv"
@@ -317,7 +317,7 @@ ggsave("rcp85_25.png", br_plt, path=data_dir, dpi=500, device="png", width=5.5, 
 rm(list=ls())
 library(data.table)
 library(ggplot2)
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp45_75.csv"
@@ -326,6 +326,8 @@ rcp45_75[rcp45_75$ClimateGroup == "colder", ]$ClimateGroup = "Cooler Areas"
 rcp45_75[rcp45_75$ClimateGroup == "warmer", ]$ClimateGroup = "Warmer Areas"
 
 rcp45_75 = melt(rcp45_75, id = c("ClimateGroup", "CountyGroup"))
+
+# it seems the following should be ClimateGroup not CountyGroup
 rcp45_75$CountyGroup = factor(rcp45_75$CountyGroup, levels = c("Historical",
                                                                "2040's",
                                                                "2060's",
@@ -394,7 +396,7 @@ rm(rcp45_75)
 rm(list=ls())
 library(data.table)
 library(ggplot2)
-data_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/figures/pest_window/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/for_bar_plots/"
 color_ord = c("grey70", "dodgerblue", "olivedrab4", "darkgoldenrod1")
 
 input_name = "rcp85_75.csv"
@@ -465,3 +467,4 @@ br_plt <- ggplot(data = rcp85_75, aes(x=CountyGroup, y=value)) +
 
 ggsave("rcp85_75.png", br_plt, path=data_dir, dpi=500, device="png", width=5.5, height=3.1, unit="in")
 rm(rcp85_75)
+
