@@ -113,7 +113,7 @@ par(mar=c(1,1,1,1))
 # some colors : "grey70", "dodgerblue", "olivedrab4", "red"
 
 plot(US_cnt$geometry, lwd=.1)
-plot(colombia$geometry, axes=F, add=T, col ="red", lwd=.1)
+plot(Colombia$geometry, axes=F, add=T, col ="red", lwd=.1)
 plot(Colum_int_cnt$geometry, add =T, col="olivedrab4", density=c(1), lwd=.1)
 
 #####################
@@ -162,7 +162,7 @@ colnames(Colum_area_merged) <- c
 Colum_area_merged$Fraction_Area_inFPU <- Colum_area_merged$Area_in_FPU/Colum_area_merged$total_area
 
 ###### Done in R not here!
-AllFPU_area_merged <-merge(AllFPU_area, cnt_Total_Area_Cols_To_Merge_df, by ="FIPS")
+AllFPU_area_merged <- merge(AllFPU_area, cnt_Total_Area_Cols_To_Merge_df, by ="FIPS")
 colnames(AllFPU_area_merged)
 c = colnames(AllFPU_area_merged)
 c[7] <- "Area_in_FPU"

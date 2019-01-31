@@ -20,6 +20,7 @@ for (model in models){
     # pick the months of April, June and August
 	curr_data = curr_data[curr_data$month %in% c(4, 6, 8)]
     saveRDS(curr_data, paste0(output_dir, "months_" ,output_name))
+	
 	# pick the first days of the months
 	curr_data = curr_data[curr_data$day == 1]
 
