@@ -3,7 +3,9 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/pest_control/400_2nd_try/"
+part_1 = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
+part_2 = "pest_control/400_2nd_try_data/"
+data_dir = paste0(part_1, part_2)
 start_end_name = "start_end_"
 full_window_name = "all_14_days_window_"
 models = c("45", "85")

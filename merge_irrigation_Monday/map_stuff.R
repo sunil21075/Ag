@@ -9,12 +9,10 @@ library(sf)
 FPU <- readOGR(dsn = "./IMPACT_FPU_Map/", 
 	           layer = "fpu2015_polygons_v3_multipart_polygons")
 
-
 # subset the USA part
 tofind <- c("_USA")
 USA_FPU <- FPU[grep(paste(tofind, collapse = "|"), FPU$FPU2015), ]
 spplot(USA_FPU, z="USAFPU")
-
 
 tm_shape(USA_FPU, scale=10) + 
 tm_fill("USAFPU", 

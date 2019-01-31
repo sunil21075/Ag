@@ -1,5 +1,3 @@
-
-
 ### Email Map Help
 library(ggmap)
 library(maps)
@@ -51,14 +49,14 @@ View(cnt_level_merge)
 ######################
 ###################### Read the FPU (shapefile) Data off the disk
 ######################
-data_dir = "Data/IMPACT_FPU_Map/"
+data_dir = "./IMPACT_FPU_Map/"
 layer_name = "fpu2015_polygons_v3_multipart_polygons"
 FPU_data <- read_sf(dsn=path.expand(data_dir), layer = layer_name, quiet = TRUE)
 FPU_dataOGR <- readOGR(dsn=data_dir, layer=layer_name)
 summary(FPU_dataOGR)
-FPU_sptosf<-st_as_sf(FPU_dataOGR)
+FPU_sptosf <- st_as_sf(FPU_dataOGR)
 
-FPU_data<-FPU_sptosf
+FPU_data <- FPU_sptosf
 plot(FPU_dataOGR)
 ## extract US part of the data from whole world
 tofind <- c("_USA")
@@ -66,14 +64,17 @@ FPU_data <- FPU_data[grep(paste(tofind, collapse = "|"), FPU_data$FPU2015), ]
 FPU_data <- within(FPU_data, remove(FPU2015))
 
 summary(FPU_data)
-FPU_dataSub<-FPU_data[c(2:7,9:16),]
+FPU_dataSub <- FPU_data[c(2:7,9:16), ]
 
 #######################################################################
-###### make the bbox extent of county data the same as that of the FPU data, so the polygons can overlap
+######
+######   make the bbox extent of county data the same as 
+######   that of the FPU data, so the polygons can overlap
+######
 #######################################################################
 
 county_dataOGR@bbox<-FPU_dataOGR@bbox
-US_cntst<-st_as_sf(county_dataOGR)
+US_cntst <- st_as_sf(county_dataOGR)
 
 # get rid of Alaska and Hawaii from county data
 US_cnt_main_land = US_cnt[US_cnt$STATE_NAME != "Alaska", ]

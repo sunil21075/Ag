@@ -16,7 +16,8 @@ library(choroplethr)
 library(choroplethrMaps)
 
 ### read csv files
-csv_data_dir <- "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/Help_with_plotting_maps/"
+csv_data_dir <- "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/"
+csv_data_dir <- paste0(csv_data_dir, "Help_with_plotting_maps/")
 
 cnt_level <- "USGSDataAtCountyLevel.csv"
 cnt_level <- data.table(read.csv(paste0(csv_data_dir, cnt_level)))
@@ -29,7 +30,7 @@ stat_level <- "USGSDataAtStateLevel.csv"
 stat_level <- data.table(read.csv(paste0(csv_data_dir, stat_level)))
 stat_level = stat_level[-51, ] # remove the last row (it is all NA)
 
-## read us counties map
+## read US counties map
 ds = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/UScounties/"
 US_cnt_ly_name = "UScounties"
 US_cnt <- read_sf(dsn=path.expand(ds), layer = US_cnt_ly_name, quiet = TRUE)
@@ -40,11 +41,11 @@ US_cnt_main_land = US_cnt_main_land[US_cnt_main_land$STATE_NAME != "Hawaii", ]
 
 #### merge county level
 cnt_level_merge <- merge(US_main_land, cnt_level, by="FIPS", all.x=T)
-#######################################################################################################
-##################################                                          ###########################
-##################################      plot county level                   ###########################
-##################################                                          ###########################
-#######################################################################################################
+##########################################################################################
+#####################                                          ###########################
+#####################         plot county level                ###########################
+#####################                                          ###########################
+##########################################################################################
 
 #### http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html
 ####
@@ -117,11 +118,11 @@ valcol <- valcol/max(valcol)
 
 plot(cnt_level_merge$geometry, col=rgb(0, 0, valcol))
 title( main = "County Level (Total Irrigation Water Withdrawal in 2010 in MGD)", cex.main=1)
-#######################################################################################################
-##################################                                          ###########################
-##################################       map the state ID                   ###########################
-##################################                                          ###########################
-#######################################################################################################
+#######################################################################################
+##################                                          ###########################
+##################           map the state ID               ###########################
+##################                                          ###########################
+#######################################################################################
 stat_level[, state := as.character(state)][state == "AK", state := "Alaska"]
 stat_level[, state := as.character(state)][state == "AL", state := "Alabama"]
 stat_level[, state := as.character(state)][state == "AR", state := "Arkansas"]
@@ -235,8 +236,10 @@ v[is.na(v)] <- a
 valcol  <- (v + abs(min(v)))/max(v + abs(min(v)))
 plot(state_level_merge$geometry, col=valcol)
 title( main = "County Level (Total Irrigation Water Withdrawal in 2010 in MGD)", cex.main=1)
-#######################################################################################################
-##################################                                          ###########################
-##################################                                          ###########################
-##################################                                          ###########################
-#######################################################################################################
+####################################################################################
+###############                                              #######################
+###############                                              #######################
+###############                                              #######################
+####################################################################################
+
+
