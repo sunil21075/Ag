@@ -21,18 +21,8 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-
-
-
 # 1. Prep binary conversion function --------------------------------------
-
-
-# Define function for reading binary 8-col files
-
 read_binary_8 <- function(file_name, file_path, hist){
-
-  # MRB:It doesn't appear that file_name is used...?
-
   if (hist) {
     start_year <- 1979
     end_year <- 2015
@@ -107,15 +97,9 @@ read_binary_8 <- function(file_name, file_path, hist){
   ymd_file <- create_ymdvalues(start_year, end_year)
 
   # read data #
-
   readbinarydata_addmdy(file_path, ymd_file)
-
 }
-
-
 # 2. Pre-processing prep --------------------------------------------------
-
-
 # 2a. Only use files in geographic locations we're interested in
 focal_files <- read.delim(file = "/home/mbrousil/files/listoffilesforMatt.txt",
                           header = F)
@@ -125,8 +109,6 @@ focal_files <- as.vector(focal_files$V1)
 # 2b. Note if working with a directory of historical data
 
 hist <- TRUE
-
-
 # 2c. If needed, make fastscratch folder matching the name of the 
 #     current directory
 
@@ -144,7 +126,6 @@ if (dir.exists(main_out) == F) {
 
 }
 
-
 # 2d. Prep list of files for processing
 
 # get files in current folder
@@ -158,18 +139,11 @@ dir_con <- dir_con[grep(pattern = "data_",
 dir_con <- dir_con[which(dir_con %in% focal_files)]
 
 print(dir_con)
-
-
-
 # 3. Process the data -----------------------------------------------------
-
-
 # Time the processing of this batch of files
 start_time <- Sys.time()
 
 for(file in dir_con){
-
-
   # 3a. read in binary meteorological data file from specified path
   met_data <- read_binary_8(file_path = file,
                             hist = hist)
@@ -179,21 +153,17 @@ for(file in dir_con){
 
   # data frame required
   met_data <- as.data.frame(met_data)
-
-
   # 3b. Clean it up
 
   # rename needed columns
   met_data <- met_data %>%
-    rename(Year = year,
-           Month = month,
-           Day = day,
-           Tmax = tmax,
-           Tmin = tmin) %>%
-    select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
-    data.frame()
-
-
+              rename(Year = year,
+                     Month = month,
+                     Day = day,
+                     Tmax = tmax,
+                     Tmin = tmin) %>%
+              select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
+              data.frame()
   # 3c. Get hourly interpolation
 
   # generate hourly data
@@ -203,9 +173,7 @@ for(file in dir_con){
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
 
-
   # 3d. Run the chill accumulation model and sum up by day
-  
   # we want this on a seasonal basis specific to chill
   met_hourly <- met_hourly %>%
     mutate(Chill_season = case_when(
