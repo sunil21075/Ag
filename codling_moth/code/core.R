@@ -7,17 +7,18 @@ library(dplyr)
 library(foreach)
 library(iterators)
 
-#####################################################################################################
-#############                                                                                   #####
-#############  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
-#############                                                                                   #####
-#####################################################################################################
+#####################################################################
+#############                                                   #####
+#############  Phase 1: Read binary data and parameters and     #####
+#############           generate CM and CMPOP files.            #####
+#############                                                   #####
+#####################################################################
 produce_CMPOP_local <- function (input_folder, filename, 
-                           param_dir, cod_moth_param_name, 
-                           scale_shift=0,
-                           start_year, end_year,
-                           lower=10, upper=31.11,
-                           location, category){
+                                 param_dir, cod_moth_param_name, 
+                                 scale_shift=0,
+                                 start_year, end_year,
+                                 lower=10, upper=31.11,
+                                 location, category){
   temp <- prepareData_CMPOP(filename, 
                             input_folder, 
                             param_dir, 
@@ -107,7 +108,7 @@ prepareData_CMPOP <- function(filename, input_folder,
   # create year, month, day values based on start year, number of years and leap year info
   ymd <- create_ymdvalues (nYears, Years, leap.year)
   
-  ## read met data and add year month day variables
+  ## read met data and add year, month, day variables
   input_file <- paste(input_folder, filename, sep="")
   metdata <- readbinarydata_addmdy(input_file, Nrecords, Nofvariables, ymd, ind)
   metdata_data.table <- data.table(metdata)
@@ -849,8 +850,8 @@ create_ymdvalues <- function(nYears, Years, leap.year) {
       days_in_mon <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
     }
     for( j in 1:12){
-      daycount_in_year <- c(daycount_in_year, seq(1,days_in_mon[j]))
-      moncount_in_year <- c(moncount_in_year, rep(j,days_in_mon[j]))
+      daycount_in_year <- c(daycount_in_year, seq(1, days_in_mon[j]))
+      moncount_in_year <- c(moncount_in_year, rep(j, days_in_mon[j]))
       yearrep_in_year <- c(yearrep_in_year, rep(Years[i],days_in_mon[j]))
     }
   }

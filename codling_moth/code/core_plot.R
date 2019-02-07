@@ -607,7 +607,7 @@ plot_scale_sensitivity_dot <- function(master_path, numeric_shifts){
           dot_plot =ggplot(curr_data, aes(x=shifts*100, y=generation, color=pop_type)) + 
                     geom_point() +
                     geom_line() + 
-                    geom_line(aes( x, y, linetype = "Historical" ), history_line, inherit.aes = FALSE) +
+                    geom_line(aes(x, y, linetype = "Historical" ), history_line, inherit.aes = FALSE) +
                     ylim(1.5, 4) + 
                     theme_bw() + 
                     theme(panel.grid.major = element_line(size = 0.3),

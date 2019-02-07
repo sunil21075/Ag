@@ -62,8 +62,6 @@ for (model in models){
   output_dir = data_dir
   ggsave(out_name, plot, path=output_dir, width=7, height=7, unit="in", dpi=500)
 }
-
-
 ##############################################################
 ###############################
 ############################### GDD box plots!
@@ -340,8 +338,6 @@ for (model in models){
          units = "in", 
          dpi=400)
 }
-
-
 
 
 

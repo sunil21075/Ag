@@ -23,18 +23,6 @@ models = c("45", "85")
 climate_scenarios = c("historical", "bcc-csm1-1-m", 
                     "BNU-ESM", "CanESM2", "CNRM-CM5",
                     "GFDL-ESM2G", "GFDL-ESM2M")
-the_theme <- theme(panel.spacing=unit(.5, "cm"),
-                   axis.text.y = element_text(size = 9, angle=90, color="black"),
-                   axis.text.x = element_text(size = 9, color="black", angle=45, 
-                                              margin=margin(t=10,r=5,b=-5,l=-5,"pt")),
-                   axis.title.x=element_blank(),
-                   legend.position="bottom",
-                   legend.spacing.x = unit(.1, 'cm'),
-                   legend.title=element_blank(),
-                   legend.text=element_text(size=10),
-                   legend.key.size = unit(.4, "cm"),
-                   panel.grid.major = element_line(size = 0.05),
-                   panel.grid.minor = element_line(size = 0.2))
 for (model in models){
   curr_data <- data.table(readRDS(paste0(data_dir, name_pref, model, ".rds")))
   curr_data <- within(curr_data, remove(location))
@@ -53,15 +41,25 @@ for (model in models){
             facet_grid(. ~ month, scales = "free") +
             labs(y="slope of regression line") +
             theme_bw() + 
-            the_theme +
+            theme(panel.spacing=unit(.5, "cm"),
+                  axis.text.y = element_text(size = 9, angle=90, color="black"),
+                  axis.text.x = element_text(size = 9, color="black", angle=45, 
+                                             margin=margin(t=10,r=5,b=-5,l=-5,"pt")),
+                  axis.title.x=element_blank(),
+                  legend.position="bottom",
+                  legend.spacing.x = unit(.1, 'cm'),
+                  legend.title=element_blank(),
+                  legend.text=element_text(size=10),
+                  legend.key.size = unit(.4, "cm"),
+                  panel.grid.major = element_line(size = 0.05),
+                  panel.grid.minor = element_line(size = 0.2)) +
             scale_x_discrete(labels=c("bcc-csm1-1-m" = "bcc", 
                                       "BNU-ESM" = "BNU",
                                       "CanESM2" = "Canada",
                                       "CNRM-CM5" = "CNRM",
                                       "GFDL-ESM2G" = "GF-G",
-                                      "GFDL-ESM2M" = "GF-M"),
-                              expand=c(0.2, 0)) +
-            # scale_y_continuous(limits = c(-10, 20), breaks=seq(-5, 20, by=5)) +
+                                      "GFDL-ESM2M" = "GF-M")) +
+            scale_y_continuous(limits = c(-10, 20), breaks=seq(-10, 20, by=5)) +
             scale_fill_manual(breaks=c("historical", "bcc-csm1-1-m", "BNU-ESM", "CanESM2",
                                        "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M"),
                               labels=c("historical", "bcc", "BNU", "Canada",
@@ -73,7 +71,7 @@ for (model in models){
             guides(color = guide_legend(nrow = 1))
   out_name <- paste0(model, "_bar_plot.png")
   ggsave(out_name, br_plt, path=plot_dir, 
-         dpi=500, device="png", width=10, height=3.1, unit="in")
+         dpi=500, device="png", width=10.5, height=3.1, unit="in")
 }
 ###################################
 ###################################
