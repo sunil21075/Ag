@@ -144,16 +144,16 @@ if(hist){
     # on 2018-12-05
     
     # 2040s
-    data_list_2040[[i]] <- process_2040(file)
+    data_list_2040[[i]] <- process_data(file, time_period = "2040")
     
     names(data_list_2040)[i] <- the_dir[i]
     
     # 2060s
-    data_list_2060[[i]] <- process_2060(file)
+    data_list_2060[[i]] <- process_data(file, time_period = "2060")
     names(data_list_2060)[i] <- the_dir[i]
     
     # 2080s
-    data_list_2080[[i]] <- process_2080(file)
+    data_list_2080[[i]] <- process_data(file, time_period = "2080")
     names(data_list_2080)[i] <- the_dir[i]
 
     rm(file) 
