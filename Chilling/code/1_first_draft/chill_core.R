@@ -303,7 +303,46 @@ process_2080 <- function(file) {
     return(processed_data)
 }
 
-
-
-
-
+process_data <- function(file, time_period) {
+  if (time_period=="2080"){
+    processed_data <- file %>%
+                      filter(Year > 2065 & Year <= 2095,
+                             Chill_season != "chill_2065-2066" &
+                               Chill_season != "chill_2095-2096")
+  } else if (time_period=="2060"){
+    processed_data <- file %>%
+                      filter(Year > 2045 & Year <= 2075,
+                             Chill_season != "chill_2045-2046" &
+                             Chill_season != "chill_2075-2076")
+  } else if (time_period=="2040"){
+    processed_data <- file %>%
+                      filter(Year > 2025 & Year <= 2055,
+                             Chill_season != "chill_2025-2026" &
+                             Chill_season != "chill_2055-2056")
+  }
+  processed_data <- processed_data %>% 
+                    group_by(Chill_season) %>%
+                    mutate(thresh_50 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 50),
+                           thresh_75 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 75),
+                           sum_J1 =  case_when(
+                             Month == 1 & Day == 1 ~ Cume_portions),
+                           sum_F1 = case_when(
+                             Month == 2 & Day == 1 ~ Cume_portions),
+                           sum_M1 = case_when(
+                             Month == 3 & Day == 1 ~ Cume_portions),
+                           sum_A1 = case_when(
+                             Month == 4 & Day == 1 ~ Cume_portions)) %>% 
+                    summarise(sum = sum(Daily_portions),
+                              thresh_50 = unique(thresh_50), # retain the thresholds
+                              thresh_75 = unique(thresh_75),
+                              sum_J1 = na.omit(sum_J1),
+                              sum_F1 = na.omit(sum_F1),
+                              sum_M1 = na.omit(sum_M1),
+                              sum_A1 = na.omit(sum_A1)) %>%
+                    data.frame() # to allow for ldply() later
+  return(processed_data)
+}
