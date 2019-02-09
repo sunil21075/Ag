@@ -79,6 +79,7 @@ rcp85 <- rcp85  %>% filter(Month %in% mos)
 modeled_hist <- modeled_hist  %>% filter(Month %in% mos)
 
 observed$scenario = "observed"
+colnames(observed)[colnames(observed) == 'climateScenario'] <- 'model'
 saveRDS(observed, paste0(write_dir, "observed", ".rds"))
 
 colnames(modeled_hist)[colnames(modeled_hist) == 'climateScenario'] <- 'model'
@@ -111,6 +112,7 @@ for (month in mos){
 
 mos = c(9, 10, 11, 12)
 modeled <- modeled  %>% filter(Month %in% mos)
-saveRDS(modeled, paste0(write_dir, "sept_through_dec.rds"))
+saveRDS(modeled, paste0(write_dir, "sept_through_dec_modeled.rds"))
 
-
+observed <- observed  %>% filter(Month %in% mos)
+saveRDS(observed, paste0(write_dir, "sept_through_dec_observed.rds"))
