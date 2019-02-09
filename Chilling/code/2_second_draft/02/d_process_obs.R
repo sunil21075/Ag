@@ -14,7 +14,7 @@ library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/data/hydro/users/Hossein/chill/data_by_core/chill_core.R"
+source_path = "/data/hydro/users/Hossein/chill/data_by_core/11_threshold/chill_core.R"
 source(source_path)
 # 2. Script setup ---------------------------------------------------------
 
@@ -23,7 +23,7 @@ print("does this look right?")
 getwd()
 
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/02/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/02/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -65,13 +65,7 @@ data_list_historical <- vector(mode = "list", length = 295)
   # 5b. Process gathered historical data ------------------------------------
   
   # Get medians for each location during historical period
-  summary_data_historical <- ldply(.data = data_list_historical,
-                                   .fun = function(x) medians(thresh_50 = x[, "thresh_50"],
-                                                              thresh_75 = x[, "thresh_75"],
-                                                              sum_J1 = x[, "sum_J1"],
-                                                              sum_F1 = x[, "sum_F1"],
-                                                              sum_M1 = x[, "sum_M1"],
-                                                              sum_A1 = x[, "sum_A1"]))
+  summary_data_historical <- get_medians(data_list_historical)
   
   head(summary_data_historical)
   

@@ -49,6 +49,7 @@ month_no = c(9, 10, 11, 12,
 month_name = c("Jan", "Feb", "Mar", "Apr", 
 	           "May", "Jun", "Jul", "Aug" ,
 	           "Sept", "Oct", "Nov", "Dec")
+
 weather_type = c("warm", "cold")
 ##############################
 ############################## Observed  data

@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-./merge_driver.R
+./d_merge_intervals.R
 
 exit 0

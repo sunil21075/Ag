@@ -58,7 +58,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/hourly_limited_locations/d_limited_modeled.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/hourly_limited_locations/d_intervals_modeled.R
 
 echo
 echo "----- DONE -----"
