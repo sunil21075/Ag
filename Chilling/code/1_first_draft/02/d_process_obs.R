@@ -3,7 +3,8 @@
 # data into format used for figures and maps.
 # Intended to work with observed-historical_data.sh script.
 
-# When working locally have been using this folder: setwd("~/chilling-model/test-data/historical/observed-hist-outputs/historical/UI_historical/VIC_Binary_CONUS_to_2016")
+# When working locally have been using this folder: 
+# setwd("~/chilling-model/test-data/historical/observed-hist-outputs/historical/UI_historical/VIC_Binary_CONUS_to_2016")
 # with local main_out <- "~/chilling-model/test-data/chill-figs/"
 
 # 1. Load packages --------------------------------------------------------
