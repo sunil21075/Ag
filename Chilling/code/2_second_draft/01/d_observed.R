@@ -1,19 +1,24 @@
+###################################################################
+#          **********                            **********
+#          **********        WARNING !!!!        **********
+#          **********                            **********
+##
+## DO NOT load any libraries here.
+## And do not load any libraries on the drivers!
+## Unless you are aware of conflicts between packages.
+## I spent hours to figrue out what the hell is going on!
+###################################################################
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-
 library(chillR)
-library(MESS)
-library(xts)
 library(tidyverse)
+library(lubridate)
 
 source_path = "/data/hydro/users/Hossein/chill/data_by_core/chill_core.R"
 source(source_path)
-
-# devtools::session_info()
 options(digits=9)
 
 # 2. Pre-processing prep --------------------------------------------------
-
 # 2a. Only use files in geographic locations we're interested in
 param_dir = "/home/hnoorazar/chilling_codes/parameters/"
 
@@ -21,68 +26,58 @@ local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
 local_files <- as.vector(local_files$V1)
 
 # 2b. Note if working with a directory of historical data
-
-hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)
+hist <- TRUE
 
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/modeled/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/01/observed/")
 
-# Get current folder
-current_dir <- gsub(x = getwd(),
-                    pattern = "/data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/",
-                    replacement = "")
-
-print("does this look right?")
-print(file.path(main_out, current_dir))
-
-# current_dir was in the following two lines, after main_out.
-if (dir.exists(file.path(main_out, current_dir)) == F) {
-  dir.create(path = file.path(main_out, current_dir), recursive = T)
+if (dir.exists(main_out) == F) {
+  dir.create(path = main_out, recursive = T)
 }
 
 # 2d. Prep list of files for processing
+
 # get files in current folder
 dir_con <- dir()
 
 # remove filenames that aren't data
-dir_con <- dir_con[grep(pattern = "data_", x = dir_con)]
+dir_con <- dir_con[grep(pattern = "data_",
+                        x = dir_con)]
 
 # choose only files that we're interested in
 dir_con <- dir_con[which(dir_con %in% local_files)]
-print ("line 238")
 
 # 3. Process the data -----------------------------------------------------
-
 # Time the processing of this batch of files
 start_time <- Sys.time()
 
 for(file in dir_con){
   # 3a. read in binary meteorological data file from specified path
-  met_data <- read_binary(file_path = file, hist = hist, no_vars=4)
-  print ("line 48")
-  print (paste0("line 248 - class(met_data) is ", class(met_data)))
+  met_data <- read_binary(file_path = file,
+                          hist = hist, no_vars=8)
+
   # I make the assumption that lat always has same number of decimal points
   lat <- as.numeric(substr(x = file, start = 6, stop = 13))
 
   # data frame required
   met_data <- as.data.frame(met_data)
-
+  
   # 3b. Clean it up
-  print ("line 90")
-
   # rename needed columns
+  print ("")
+  print ("line 63")
+  print (class(met_data))
+  print (colnames(met_data))
   met_data <- met_data %>%
               rename(Year = year,
                      Month = month,
                      Day = day,
                      Tmax = tmax,
                      Tmin = tmin) %>%
-              select(-c(precip, windspeed)) %>%
+              select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
               data.frame()
-  print("line 68")
-  # saveRDS(met_data[1:10, ], paste0(main_out, "/met_data", ".rds"))
-
   # 3c. Get hourly interpolation
+
   # generate hourly data
   met_hourly <- stack_hourly_temps(weather = met_data,
                                    latitude = lat)
@@ -91,15 +86,14 @@ for(file in dir_con){
   met_hourly <- met_hourly[[1]]
 
   # 3d. Run the chill accumulation model and sum up by day
-
   # we want this on a seasonal basis specific to chill
   met_hourly <- met_hourly %>%
-                mutate(Chill_season = case_when(
-                # If Jan:Aug then part of chill season of prev year - current year
-                Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
-                # If Sept:Dec then part of chill season of current year - next year
-                Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
-                ))
+    mutate(Chill_season = case_when(
+      # If Jan:Aug then part of chill season of prev year - current year
+      Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
+      # If Sept:Dec then part of chill season of current year - next year
+      Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
+    ))
   
   # sum within a day using NON-cumulative chill portions
   met_daily <- met_hourly %>%
@@ -109,21 +103,16 @@ for(file in dir_con){
                summarise(Daily_portions = sum(chill))
   
   met_daily <- met_daily %>%
-              group_by(Chill_season) %>%
-              mutate(Cume_portions = cumsum(Daily_portions))
-
+               group_by(Chill_season) %>%
+               mutate(Cume_portions = cumsum(Daily_portions))
+  
   # 3e. Save output
   write.table(x = met_daily,
               file = file.path(main_out,
-                               current_dir,
                                paste0("chill_output_",
                                       file,
                                       ".txt")),
               row.names = F)
-  
-  # saveRDS(met_hourly, paste0(main_out, current_dir, "/met_hourly", ".rds"))
-  # saveRDS(met_daily, paste0(main_out, current_dir, "/met_daily", file,".rds"))
-
   # Remove objects not needed in future iterations
   rm(met_data, met_hourly, met_daily)
 }

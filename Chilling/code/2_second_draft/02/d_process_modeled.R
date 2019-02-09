@@ -3,15 +3,15 @@
 # Uses outputs from chilling model as inputs.
 
 # 1. Load packages --------------------------------------------------------
+
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-
 library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/data/hydro/users/Hossein/chill/data_by_core/chill_core.R"
+source_path = "/data/hydro/users/Hossein/chill/data_by_core/11_threshold/chill_core.R"
 source(source_path)
 
 # 2. Script setup ---------------------------------------------------------
@@ -21,7 +21,7 @@ print("does this look right?")
 getwd()
 
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/02/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/02/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -144,16 +144,16 @@ if(hist){
     # on 2018-12-05
     
     # 2040s
-    data_list_2040[[i]] <- process_2040(file)
+    data_list_2040[[i]] <- process_data(file, time_period="2040")
     
     names(data_list_2040)[i] <- the_dir[i]
     
     # 2060s
-    data_list_2060[[i]] <- process_2060(file)
+    data_list_2060[[i]] <- process_data(file, time_period="2060")
     names(data_list_2060)[i] <- the_dir[i]
     
     # 2080s
-    data_list_2080[[i]] <- process_2080(file)
+    data_list_2080[[i]] <- process_data(file, time_period="2080")
     names(data_list_2080)[i] <- the_dir[i]
 
     rm(file) 
@@ -162,27 +162,9 @@ if(hist){
   # 5d. Process gathered future data ----------------------------------------
   
   # Apply this function to a list and spit out a dataframe
-  summary_data_2040 <- ldply(.data = data_list_2040,
-                             .fun = function(x) medians(thresh_50 = x[, "thresh_50"],
-                                                        thresh_75 = x[, "thresh_75"],
-                                                        sum_J1 = x[, "sum_J1"],
-                                                        sum_F1 = x[, "sum_F1"],
-                                                        sum_M1 = x[, "sum_M1"],
-                                                        sum_A1 = x[, "sum_A1"]))
-  summary_data_2060 <- ldply(.data = data_list_2060,
-                             .fun = function(x) medians(thresh_50 = x[, "thresh_50"],
-                                                        thresh_75 = x[, "thresh_75"],
-                                                        sum_J1 = x[, "sum_J1"],
-                                                        sum_F1 = x[, "sum_F1"],
-                                                        sum_M1 = x[, "sum_M1"],
-                                                        sum_A1 = x[, "sum_A1"]))
-  summary_data_2080 <- ldply(.data = data_list_2080,
-                             .fun = function(x) medians(thresh_50 = x[, "thresh_50"],
-                                                        thresh_75 = x[, "thresh_75"],
-                                                        sum_J1 = x[, "sum_J1"],
-                                                        sum_F1 = x[, "sum_F1"],
-                                                        sum_M1 = x[, "sum_M1"],
-                                                        sum_A1 = x[, "sum_A1"]))
+  summary_data_2040 <- get_medians(data_list_2040) 
+  summary_data_2060 <- get_medians(data_list_2060)
+  summary_data_2080 <- get_medians(data_list_2080)
   
   head(summary_data_2040)
   head(summary_data_2060)
@@ -224,9 +206,7 @@ if(hist){
    
   # Grab lat/long
   summary_data_2040 <- grab_coord(summary_data_2040)
-  
   summary_data_2060 <- grab_coord(summary_data_2060)
-  
   summary_data_2080 <- grab_coord(summary_data_2080)
   
   head(summary_data_2040)
@@ -235,9 +215,7 @@ if(hist){
   
   # Combine dfs for plotting ease
   summary_data_2040 <- summary_data_2040 %>% mutate(year = 2040)
-  
   summary_data_2060 <- summary_data_2060 %>% mutate(year = 2060)
-  
   summary_data_2080 <- summary_data_2080 %>% mutate(year = 2080)
   
   summary_data_comb <- bind_rows(summary_data_2040,

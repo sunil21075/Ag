@@ -1,13 +1,11 @@
 # Script for creating chill accumulation & threshold plots (not maps).
 # Intended to work with create-model-plots.sh script.
 
-
 # 1. Load packages --------------------------------------------------------
 
 library(ggpubr)
 library(plyr)
 library(tidyverse)
-
 
 # 2. Pull data from current directory -------------------------------------
 
@@ -34,10 +32,10 @@ cold_warm <- read.csv("/home/mbrousil/files/LocationGroups.csv")
 summary_comp <- inner_join(x = summary_comp, y = cold_warm,
                            by = c("long" = "longitude",
                                   "lat" = "latitude")) %>%
-  mutate(climate_type = case_when( # create var for cool/warm designation
-    locationGroup == 1 ~ "Cooler",
-    locationGroup == 2 ~ "Warmer")) %>%
-  select(-locationGroup, -.id)
+                mutate(climate_type = case_when( # create var for cool/warm designation
+                                                locationGroup == 1 ~ "Cooler",
+                                                locationGroup == 2 ~ "Warmer")) %>%
+                select(-locationGroup, -.id)
 
 
 
