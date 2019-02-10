@@ -30,10 +30,10 @@ clean <- function(data, scenario){
     # drop 2006-2024 years
     data = filter(data, year <=2005 | year >= 2025)
 
-    data$ClimateGroup[data$Year <= 2005] <- "Historical"
-	data$ClimateGroup[data$Year > 2025 & data$Year <= 2055] <- "2040's"
-	data$ClimateGroup[data$Year > 2045 & data$Year <= 2075] <- "2060's"
-	data$ClimateGroup[data$Year > 2065] <- "2080's"
+    data$ClimateGroup[data$year >= 1979 & data$year <= 2005] <- "Historical"
+    data$ClimateGroup[data$year > 2025 & data$year <= 2055] <- "2040's"
+    data$ClimateGroup[data$year > 2045 & data$year <= 2075] <- "2060's"
+    data$ClimateGroup[data$year > 2065 & data$year <= 2095] <- "2080's"
     
     # rename col names
     colnames(data)[colnames(data) == 'ClimateScenario'] <- 'model'
