@@ -116,7 +116,7 @@ prepareData_CMPOP <- function(filename, input_folder,
   
   # Calculate daily and cumulative gdd to met data. (gdd := growing degree days)
   metdata_data.table <- add_dd_cumdd(metdata_data.table, lower, upper)
-  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8 # why it is not shifted?
+  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd * 1.8 +32
 
   # add day of year from 1 to 365/366 depending on year
   metdata_data.table$dum <- 1 # dummy
@@ -184,7 +184,7 @@ prepareData_CM <- function(filename, input_folder,
   metdata <- add_dd_cumdd(metdata, lower, upper)
   
   # convert celcius to farenheit
-  metdata$Cum_dd_F = metdata$Cum_dd * 1.8
+  metdata$Cum_dd_F = metdata$Cum_dd * 1.8 + 32
   
   # add day of year from 1 to 365/366 depending on year
   metdata$dum <- 1 # dummy
@@ -876,7 +876,7 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   dataM[1:Nrecords, 3] <- temp[ind+2]/100.00 # Min temperature data
   dataM[1:Nrecords, 4] <- temp[ind+3]/100.00 # Wind speed data
   
-  AllData<-cbind(ymd, dataM)
+  AllData <- cbind(ymd, dataM)
   colnames(AllData) <- c("year","month","day","precip","tmax","tmin","winspeed")
   return(AllData)
 }

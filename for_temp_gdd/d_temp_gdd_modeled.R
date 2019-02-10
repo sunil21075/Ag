@@ -30,7 +30,7 @@ local_files <- as.vector(local_files$V1)
 hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)
 
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/temp_gdd/modeled/")
+main_out <- file.path("/data/hydro/users/Hossein/temp_gdd/modeled")
 
 # Get current folder
 current_dir <- gsub(x = getwd(),
@@ -72,9 +72,9 @@ for(file in dir_con){
   met_data <- as.data.frame(met_data)
 
   # 3b. Clean it up
-  print ("line 72")
-  print ("colnames(met_data)")
-  print (colnames(met_data))
+  # print ("line 72")
+  # print ("colnames(met_data)")
+  # print (colnames(met_data))
   # rename needed columns
   met_data <- met_data %>%
     select(-c(precip, windspeed)) %>%
@@ -85,7 +85,22 @@ for(file in dir_con){
   
   met_data <- add_dd_cumdd(data.table(met_data), lower=10, upper=31.11)
   met_data$tmean = (met_data$tmax + met_data$tmin)/2
-  
+  if (hist){
+    met_data$ClimateGroup[met_data$year >= 1950 & met_data$year <= 2015] <- "Historical"
+  } 
+  else {
+    met_data$ClimateGroup[met_data$year > 2025 & met_data$year <= 2055] <- "2040's"
+    met_data$ClimateGroup[met_data$year > 2045 & met_data$year <= 2075] <- "2060's"
+    met_data$ClimateGroup[met_data$year > 2065 & met_data$year <= 2095] <- "2080's"
+  }
+  print("current_dir")
+  print (current_dir)
+  print("")
+  print("file")
+  print(file)
+  met_data$latitude = substr(x=file, start=6, stop=13)
+  met_data$longitude = substr(x=file, start=15, stop=24)
+  met_data$ClimateScenario = unlist(strsplit(current_dir, split="/"))[1]
   saveRDS(met_data, file = file.path(main_out, current_dir, paste0(file, ".rds")))
   # write.table(x = met_daily,
   #             file = file.path(main_out,

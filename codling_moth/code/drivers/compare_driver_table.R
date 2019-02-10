@@ -1,4 +1,7 @@
-#!/share/apps/R-3.2.2_gcc/bin/Rscript
+#!/usr/bin/env Rscript
+# *** the above requires module loading a versin 	of R first ***
+
+##!/share/apps/R-3.2.2_gcc/bin/Rscript
 #library(chron)
 library(data.table)
 #library(reshape2)

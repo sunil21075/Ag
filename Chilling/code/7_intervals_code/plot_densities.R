@@ -56,10 +56,11 @@ plot_dens <- function(data, month_name){
 for (month in month_names){
 	data = data.table(readRDS(paste0(data_dir, month, ".rds")))
 
-	data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
+	# data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
+	data$ClimateGroup[data$Year <= 2005] <- "Historical"
 	data$ClimateGroup[data$Year > 2025 & data$Year <= 2055] <- "2040's"
 	data$ClimateGroup[data$Year > 2045 & data$Year <= 2075] <- "2060's"
-	data$ClimateGroup[data$Year > 2065 & data$Year <= 2095] <- "2080's"
+	data$ClimateGroup[data$Year > 2065] <- "2080's"
 
 	# There are years between 2006 and 2015 which ... becomes NA
 	data = na.omit(data)

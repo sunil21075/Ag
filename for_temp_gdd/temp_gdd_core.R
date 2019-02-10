@@ -154,3 +154,49 @@ add_dd_cumdd <- function(metdata_data.table, lower=10, upper=31.11) {
   metdata_data.table[, Cum_dd := cumsum(dd), by=list(year)]
   return(metdata_data.table)
 }
+
+merge_add_countyGroup <- function(input_dir, param_dir, 
+                                  locations_file_name,
+                                  locationGroup_fileName,
+                                  categories, file_prefix, version){
+
+  merged_data <- merge_data(input_dir, param_dir, categories, locations_file_name, file_prefix, version)
+  merged_data = add_countyGroup(merged_data, param_dir, loc_group_file_name= locationGroup_fileName)
+  return(merged_data)
+}
+
+merge_data <- function(input_dir, param_dir, categories, locations_file_name, file_prefix, version){
+  data = data.table()
+  
+  conn = file(paste0(param_dir, locations_file_name), open = "r")
+  locations = readLines(conn)
+  close(conn)
+
+  for(category in categories){
+    for(location in locations){
+      if(category != "historical") {
+        filename <- paste0(input_dir, "future_", file_prefix, "/", category, "/", version, "/", file_prefix, "_", location)
+      }
+      else {
+        filename <- paste0(input_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
+      }
+    data_to_add = read.table(filename, header = TRUE, sep = ",")
+    data <- rbind(data, data_to_add)
+    }
+  }
+  return(data)
+}
+
+add_countyGroup <- function(data, param_dir, loc_group_file_name){
+  loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
+  options(digits=9)
+  loc_grp$latitude = as.numeric(loc_grp$latitude)
+  loc_grp$longitude = as.numeric(loc_grp$longitude)
+
+  data$CountyGroup = 0L
+
+  for(i in 1:nrow(loc_grp)) {
+    data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
+  }
+  return (data) 
+}
