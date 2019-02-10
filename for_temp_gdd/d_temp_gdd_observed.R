@@ -61,25 +61,30 @@ for(file in dir_con){
   
   # 3b. Clean it up
   # rename needed columns
-  print ("")
-  print ("line 65")
-  print (class(met_data))
-  print (colnames(met_data))
+  # print ("")
+  # print ("line 65")
+  # print (class(met_data))
+  # print (colnames(met_data))
   met_data <- met_data %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
   
   met_data <- add_dd_cumdd(data.table(met_data), lower=10, upper=31.11)
   met_data$tmean = (met_data$tmax + met_data$tmin)/2
-  if (category== "historical"){
-    met_data$ClimateGroup[temp$year >= start_year & temp$year <= end_year] <- "Historical"
+  if (hist){
+    met_data$ClimateGroup[met_data$year >= 1950 & met_data$year <= 2015] <- "Historical"
   } 
   else {
-    met_data$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
-    met_data$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
-    met_data$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    met_data$ClimateGroup[met_data$year > 2025 & met_data$year <= 2055] <- "2040's"
+    met_data$ClimateGroup[met_data$year > 2045 & met_data$year <= 2075] <- "2060's"
+    met_data$ClimateGroup[met_data$year > 2065 & met_data$year <= 2095] <- "2080's"
   }
-
+  print("")
+  print("file")
+  print(file)
+  met_data$latitude = substr(x=file, start=6, stop=13)
+  met_data$longitude = substr(x=file, start=15, stop=24)
+  met_data$ClimateScenario = "observed"
   saveRDS(met_data, file = file.path(main_out, paste0(file, ".rds")))
   # write.table(x = met_daily,
   #             file = file.path(main_out,

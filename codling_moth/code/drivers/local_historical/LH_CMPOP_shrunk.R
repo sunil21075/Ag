@@ -10,8 +10,8 @@ source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth/local/raw/"
-write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
-param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
+write_dir =    "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
+param_dir  =   "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
 file_list = "local_list"
