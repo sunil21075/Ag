@@ -5,28 +5,24 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N temp_gdd_observed
+#PBS -N merge_85
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=20gb
-#PBS -l walltime=70:00:00
+#PBS -l mem=10gb
+#PBS -l walltime=20:00:00
 #PBS -q hydro
 
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /data/hydro/users/Hossein/temp_gdd/error/merge_E.txt
-#PBS -o /data/hydro/users/Hossein/temp_gdd/error/merge_O.txt
+#PBS -e /data/hydro/users/Hossein/temp_gdd/error/merge_85_E.txt
+#PBS -o /data/hydro/users/Hossein/temp_gdd/error/merge_85_O.txt
 
 ## Define path for reporting
 #PBS -m abe
+cd $PBS_O_WORKDIR
 
-echo
-echo We are in the $PWD directory
-echo
-
-cd /data/hydro/jennylabcommon2/metdata/historical/UI_historical/VIC_Binary_CONUS_to_2016
 
 echo
 echo We are now in $PWD.
@@ -35,14 +31,17 @@ echo
 # First we ensure a clean running environment:
 module purge
 
+### ulimit -s 16384 # enlarge stack limit to 16 megs
+### R --slave -e 'Cstack_info()["size"]'
+
 # Load R
 module load udunits/2.2.20
 module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla /data/hydro/users/Hossein/temp_gdd/d_merge.R rcp85
-
+# Rscript --vanilla /data/hydro/users/Hossein/temp_gdd/d_merge_separately.R rcp85
+Rscript --vanilla ./d_merge_separately.R rcp85
 echo
 echo "----- DONE -----"
 echo
