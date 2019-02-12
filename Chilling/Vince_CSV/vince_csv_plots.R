@@ -27,7 +27,11 @@ data$ClimateGroup[data$year > 2045 & data$year <= 2075] <- "2060's"
 data$ClimateGroup[data$year > 2065 & data$year <= 2095] <- "2080's"
 
 # There are years between 2006 and 2015 which ... becomes NA
-data = na.omit(data)
+# The second line is a better approach, it just drops
+# the rows containing NA in the given column.
+
+# data <- na.omit(data)
+data <- data[!is.na(data$ClimateGroup),]
 
 data_45 = filter(data, scenario %in% c("Historical", "RCP4.5"))
 data_85 = filter(data, scenario %in% c("Historical", "RCP8.5"))
