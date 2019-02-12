@@ -41,7 +41,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla /data/hydro/users/Hossein/chill/data_by_core/d_observed.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/2_second_draft/01/d_observed.R
 
 echo
 echo "----- DONE -----"

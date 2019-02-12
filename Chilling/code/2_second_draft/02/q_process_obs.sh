@@ -5,19 +5,19 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N historical-postprocess
+#PBS -N hist_postprocess
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=2gb
+#PBS -l mem=5gb
 #PBS -l walltime=10:00:00
 #PBS -q hydro
 
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /data/hydro/users/Hossein/chill/data_by_core/11_threshold/error/data-postprocess.e
-#PBS -o /data/hydro/users/Hossein/chill/data_by_core/11_threshold/error/data-postprocess.o
+#PBS -e /home/hnoorazar/chilling_codes/2_second_draft/error/h_postprocess.e
+#PBS -o /home/hnoorazar/chilling_codes/2_second_draft/error/h_postprocess.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -41,7 +41,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla /data/hydro/users/Hossein/chill/data_by_core/11_threshold/d_process_obs.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/2_second_draft/02/d_process_obs.R
 
 echo
 echo "----- DONE -----"

@@ -17,8 +17,8 @@
 ## Define path for output & error logs
 #PBS -k o
 ##PBS -j oe
-#PBS -e /data/hydro/users/Hossein/chill/data_by_core/error/modeled_E.txt
-#PBS -o /data/hydro/users/Hossein/chill/data_by_core/error/modeled.O.txt
+#PBS -e /home/hnoorazar/chilling_codes/2_second_draft/error/modeled_E.txt
+#PBS -o /home/hnoorazar/chilling_codes/2_second_draft/error/modeled.O.txt
 
 ## Define path for reporting
 #PBS -m abe
@@ -58,7 +58,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /data/hydro/users/Hossein/chill/data_by_core/d_modeled.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/2_second_draft/01/d_modeled.R
 
 echo
 echo "----- DONE -----"
