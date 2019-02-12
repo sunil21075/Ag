@@ -18,7 +18,7 @@ library(tidyverse)
 args = commandArgs(trailingOnly=TRUE)
 data_type = args[1]
 
-add_countyGroup <- function(data, loc_grp){
+add_countyGroup <- function(data){
 	options(digits=9)
 	param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
 	loc_group_file_name = "LocationGroups.csv"
@@ -26,7 +26,7 @@ add_countyGroup <- function(data, loc_grp){
 	loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
 	loc_grp$latitude = as.numeric(loc_grp$latitude)
 	loc_grp$longitude = as.numeric(loc_grp$longitude)
-	
+
 	data$CountyGroup = 0L
 	for(i in 1:nrow(loc_grp)) {
 		data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
@@ -60,7 +60,7 @@ clean <- function(data, scenario){
     return (data)
 }
 
-merge_a_model <- function(data_type, input_dir, output_dir, modeled_categories, loc_grp){
+merge_a_model <- function(data_type, input_dir, output_dir, modeled_categories){
 	for (cat in modeled_categories){
 		data = data.table()
 		data_dir = file.path(input_dir, cat, "/", data_type, "/")
@@ -76,7 +76,7 @@ merge_a_model <- function(data_type, input_dir, output_dir, modeled_categories, 
 			data <- rbind(data, curr_data)
 		}
 	print ("line 66 of merge_a_model(), before adding CountyGroup ")
-	data <- add_countyGroup(data=data, loc_grp=loc_grp)
+	data <- add_countyGroup(data=data)
 	data <- clean(data=data, scenario=data_type)
 	print ("---------------------------------------------------")
 	print ("line 69 of merge_a_model, before computing stats!")
@@ -95,13 +95,13 @@ merge_a_model <- function(data_type, input_dir, output_dir, modeled_categories, 
 }
 
 merge <- function(data_type){
-	options(digits=9)
-	param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
-	loc_group_file_name = "LocationGroups.csv"
-	locations_list = "local_list"
-	loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
-	loc_grp$latitude = as.numeric(loc_grp$latitude)
-	loc_grp$longitude = as.numeric(loc_grp$longitude)
+	# options(digits=9)
+	# param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
+	# loc_group_file_name = "LocationGroups.csv"
+	# locations_list = "local_list"
+	# loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
+	# loc_grp$latitude = as.numeric(loc_grp$latitude)
+	# loc_grp$longitude = as.numeric(loc_grp$longitude)
 
 	input_dir = "/data/hydro/users/Hossein/temp_gdd/modeled/"
 	output_dir= "/data/hydro/users/Hossein/temp_gdd/modeled/"
@@ -111,7 +111,7 @@ merge <- function(data_type){
 	versions = c("historical", "rcp45", "rcp85")
 	merge_a_model(data_type=data_type, 
 		          input_dir=input_dir, output_dir=output_dir, 
-		          modeled_categories=categories, loc_grp=loc_grp)
+		          modeled_categories=categories)
 }
 
 merge(data_type)
