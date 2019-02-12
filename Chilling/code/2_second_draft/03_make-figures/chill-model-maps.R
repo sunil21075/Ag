@@ -737,61 +737,240 @@ rm(list = ls(pattern = "thresh25_45"))
 #############
 ############# Thresh 30, RCP 45
 #############
-thresh20_45_min <- min(df_45$median_20)
-thresh20_45_max <- max(df_45$median_20)
+thresh30_45_min <- min(df_45$median_30)
+thresh30_45_max <- max(df_45$median_30)
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
-                   "thresh20_45", sep="_"),
+                   "thresh30_45", sep="_"),
          value ={
-          model_map(model = h, scenario_name = "rcp45", month_col = "median_20",
-                    min = thresh20_45_min, max = thresh20_45_max)}
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_30",
+                    min = thresh30_45_min, max = thresh30_45_max)}
          )
 }
 # Separately created maps for observed historical and ensemble mean
-observed_map_thresh20_45 <- observed_hist_map(min = thresh20_45_min,
-                                              max = thresh20_45_max,
-                                              month_col = "median_20")
+observed_map_thresh30_45 <- observed_hist_map(min = thresh30_45_min,
+                                              max = thresh30_45_max,
+                                              month_col = "median_30")
 
-ensemble_map_thresh20_45 <- ensemble_map(scenario_name = "rcp45", 
-                                   month_col = "median_20",
-                                   min = thresh20_45_min,
-                                   max = thresh20_45_max)
+ensemble_map_thresh30_45 <- ensemble_map(scenario_name = "rcp45", 
+                                         month_col = "median_30",
+                                         min = thresh30_45_min,
+                                         max = thresh30_45_max)
 
 # Need to add historical observed to this:
-thresh20_45_figs <- ggarrange(plotlist = list(observed_map_thresh20_45,
-                                              ensemble_map_thresh20_45,
-                                              bcc_csm1_1_m_map_thresh20_45,
-                                              bcc_csm1_1_map_thresh20_45,
-                                              BNU_ESM_map_thresh20_45,
-                                              CanESM2_map_thresh20_45,
-                                              CCSM4_map_thresh20_45, 
-                                              CNRM_CM5_map_thresh20_45,
-                                              CSIRO_Mk3_6_0_map_thresh20_45,
-                                              GFDL_ESM2G_map_thresh20_45,
-                                              GFDL_ESM2M_map_thresh20_45,
-                                              HadGEM2_CC365_map_thresh20_45,
-                                              HadGEM2_ES365_map_thresh20_45,
-                                              inmcm4_map_thresh20_45,
-                                              IPSL_CM5A_LR_map_thresh20_45, 
-                                              IPSL_CM5A_MR_map_thresh20_45,
-                                              IPSL_CM5B_LR_map_thresh20_45,
-                                              MIROC_ESM_CHEM_map_thresh20_45,
-                                              MIROC5_map_thresh20_45, 
-                                              MRI_CGCM3_map_thresh20_45,
-                                              NorESM1_M_map_thresh20_45),
+thresh30_45_figs <- ggarrange(plotlist = list(observed_map_thresh30_45,
+                                              ensemble_map_thresh30_45,
+                                              bcc_csm1_1_m_map_thresh30_45,
+                                              bcc_csm1_1_map_thresh30_45,
+                                              BNU_ESM_map_thresh30_45,
+                                              CanESM2_map_thresh30_45,
+                                              CCSM4_map_thresh30_45, 
+                                              CNRM_CM5_map_thresh30_45,
+                                              CSIRO_Mk3_6_0_map_thresh30_45,
+                                              GFDL_ESM2G_map_thresh30_45,
+                                              GFDL_ESM2M_map_thresh30_45,
+                                              HadGEM2_CC365_map_thresh30_45,
+                                              HadGEM2_ES365_map_thresh30_45,
+                                              inmcm4_map_thresh30_45,
+                                              IPSL_CM5A_LR_map_thresh30_45, 
+                                              IPSL_CM5A_MR_map_thresh30_45,
+                                              IPSL_CM5B_LR_map_thresh30_45,
+                                              MIROC_ESM_CHEM_map_thresh30_45,
+                                              MIROC5_map_thresh30_45, 
+                                              MRI_CGCM3_map_thresh30_45,
+                                              NorESM1_M_map_thresh30_45),
                               ncol = 2, nrow = 11,
                               common.legend = TRUE)
-lab = "Median days to reach 20 chill unit threshold under RCP 4.5"
-thresh20_45_figs <- annotate_figure(p = thresh20_45_figs,
+lab = "Median days to reach 30 chill unit threshold under RCP 4.5"
+thresh30_45_figs <- annotate_figure(p = thresh30_45_figs,
                                     top = text_grob(label = lab, 
                                                     face = "bold", size = 18))
 
-ggsave(filename = "thresh20_45.png", plot = thresh20_45_figs, device = "png",
+ggsave(filename = "thresh30_45.png", plot = thresh30_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
-rm(list = ls(pattern = "thresh20_45"))
+rm(list = ls(pattern = "thresh30_45"))
 ##############################################################################
-# 50 unit threshold, rcp45
+##############################################################################
+##############################################################################
+#############
+############# Thresh 35, RCP 45
+#############
+thresh35_45_min <- min(df_45$median_35)
+thresh35_45_max <- max(df_45$median_35)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh35_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_35",
+                    min = thresh35_45_min, max = thresh35_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh35_45 <- observed_hist_map(min = thresh35_45_min,
+                                              max = thresh35_45_max,
+                                              month_col = "median_20")
+
+ensemble_map_thresh35_45 <- ensemble_map(scenario_name = "rcp45", 
+                                         month_col = "median_35",
+                                         min = thresh35_45_min,
+                                         max = thresh35_45_max)
+
+# Need to add historical observed to this:
+thresh35_45_figs <- ggarrange(plotlist = list(observed_map_thresh35_45,
+                                              ensemble_map_thresh35_45,
+                                              bcc_csm1_1_m_map_thresh35_45,
+                                              bcc_csm1_1_map_thresh35_45,
+                                              BNU_ESM_map_thresh35_45,
+                                              CanESM2_map_thresh35_45,
+                                              CCSM4_map_thresh35_45, 
+                                              CNRM_CM5_map_thresh35_45,
+                                              CSIRO_Mk3_6_0_map_thresh35_45,
+                                              GFDL_ESM2G_map_thresh35_45,
+                                              GFDL_ESM2M_map_thresh35_45,
+                                              HadGEM2_CC365_map_thresh35_45,
+                                              HadGEM2_ES365_map_thresh35_45,
+                                              inmcm4_map_thresh35_45,
+                                              IPSL_CM5A_LR_map_thresh35_45, 
+                                              IPSL_CM5A_MR_map_thresh35_45,
+                                              IPSL_CM5B_LR_map_thresh35_45,
+                                              MIROC_ESM_CHEM_map_thresh35_45,
+                                              MIROC5_map_thresh35_45, 
+                                              MRI_CGCM3_map_thresh35_45,
+                                              NorESM1_M_map_thresh35_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 35 chill unit threshold under RCP 4.5"
+thresh35_45_figs <- annotate_figure(p = thresh35_45_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh35_45.png", plot = thresh35_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+rm(list = ls(pattern = "thresh35_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 40, RCP 45
+#############
+thresh40_45_min <- min(df_45$median_40)
+thresh40_45_max <- max(df_45$median_40)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh40_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_40",
+                    min = thresh40_45_min, max = thresh40_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh40_45 <- observed_hist_map(min = thresh40_45_min,
+                                              max = thresh40_45_max,
+                                              month_col = "median_40")
+
+ensemble_map_thresh40_45 <- ensemble_map(scenario_name = "rcp45", 
+                                         month_col = "median_40",
+                                         min = thresh40_45_min,
+                                         max = thresh40_45_max)
+
+# Need to add historical observed to this:
+thresh40_45_figs <- ggarrange(plotlist = list(observed_map_thresh40_45,
+                                              ensemble_map_thresh40_45,
+                                              bcc_csm1_1_m_map_thresh40_45,
+                                              bcc_csm1_1_map_thresh40_45,
+                                              BNU_ESM_map_thresh40_45,
+                                              CanESM2_map_thresh40_45,
+                                              CCSM4_map_thresh40_45, 
+                                              CNRM_CM5_map_thresh40_45,
+                                              CSIRO_Mk3_6_0_map_thresh40_45,
+                                              GFDL_ESM2G_map_thresh40_45,
+                                              GFDL_ESM2M_map_thresh40_45,
+                                              HadGEM2_CC365_map_thresh40_45,
+                                              HadGEM2_ES365_map_thresh40_45,
+                                              inmcm4_map_thresh40_45,
+                                              IPSL_CM5A_LR_map_thresh40_45, 
+                                              IPSL_CM5A_MR_map_thresh40_45,
+                                              IPSL_CM5B_LR_map_thresh40_45,
+                                              MIROC_ESM_CHEM_map_thresh40_45,
+                                              MIROC5_map_thresh40_45, 
+                                              MRI_CGCM3_map_thresh40_45,
+                                              NorESM1_M_map_thresh40_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 40 chill unit threshold under RCP 4.5"
+thresh40_45_figs <- annotate_figure(p = thresh40_45_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh40_45.png", plot = thresh40_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh40_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 45, RCP 45
+#############
+thresh45_45_min <- min(df_45$median_45)
+thresh45_45_max <- max(df_45$median_45)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh45_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_45",
+                    min = thresh45_45_min, max = thresh45_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh45_45 <- observed_hist_map(min = thresh45_45_min,
+                                              max = thresh45_45_max,
+                                              month_col = "median_20")
+
+ensemble_map_thresh45_45 <- ensemble_map(scenario_name = "rcp45", 
+                                         month_col = "median_45",
+                                         min = thresh45_45_min,
+                                         max = thresh45_45_max)
+
+# Need to add historical observed to this:
+thresh45_45_figs <- ggarrange(plotlist = list(observed_map_thresh45_45,
+                                              ensemble_map_thresh45_45,
+                                              bcc_csm1_1_m_map_thresh45_45,
+                                              bcc_csm1_1_map_thresh45_45,
+                                              BNU_ESM_map_thresh45_45,
+                                              CanESM2_map_thresh45_45,
+                                              CCSM4_map_thresh45_45, 
+                                              CNRM_CM5_map_thresh45_45,
+                                              CSIRO_Mk3_6_0_map_thresh45_45,
+                                              GFDL_ESM2G_map_thresh45_45,
+                                              GFDL_ESM2M_map_thresh45_45,
+                                              HadGEM2_CC365_map_thresh45_45,
+                                              HadGEM2_ES365_map_thresh45_45,
+                                              inmcm4_map_thresh45_45,
+                                              IPSL_CM5A_LR_map_thresh45_45, 
+                                              IPSL_CM5A_MR_map_thresh45_45,
+                                              IPSL_CM5B_LR_map_thresh45_45,
+                                              MIROC_ESM_CHEM_map_thresh45_45,
+                                              MIROC5_map_thresh45_45, 
+                                              MRI_CGCM3_map_thresh45_45,
+                                              NorESM1_M_map_thresh45_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 45 chill unit threshold under RCP 4.5"
+thresh45_45_figs <- annotate_figure(p = thresh45_45_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh45_45.png", plot = thresh45_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+rm(list = ls(pattern = "thresh45_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 50, RCP 45
+#############
 thresh50_45_min <- min(df_45$median_50)
 thresh50_45_max <- max(df_45$median_50)
 for(h in unique(stats_comp$model)) {
@@ -846,8 +1025,244 @@ ggsave(filename = "thresh50_45.png", plot = thresh50_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh50_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 55, RCP 45
+#############
+thresh55_45_min <- min(df_45$median_55)
+thresh55_45_max <- max(df_45$median_55)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh55_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_55",
+                    min = thresh55_45_min, max = thresh55_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh55_45 <- observed_hist_map(min = thresh55_45_min,
+                                              max = thresh55_45_max,
+                                              month_col = "median_55")
+ensemble_map_thresh55_45 <- ensemble_map(scenario_name = "rcp45", 
+                                   month_col = "median_55",
+                                   min = thresh55_45_min,
+                                   max = thresh55_45_max)
 
-# 75 unit threshold, rcp45
+# Need to add historical observed to this:
+thresh55_45_figs <- ggarrange(plotlist = list(observed_map_thresh55_45,
+                                              ensemble_map_thresh55_45,
+                                              bcc_csm1_1_m_map_thresh55_45,
+                                              bcc_csm1_1_map_thresh55_45,
+                                              BNU_ESM_map_thresh55_45,
+                                              CanESM2_map_thresh55_45,
+                                              CCSM4_map_thresh55_45, 
+                                              CNRM_CM5_map_thresh55_45,
+                                              CSIRO_Mk3_6_0_map_thresh55_45,
+                                              GFDL_ESM2G_map_thresh55_45,
+                                              GFDL_ESM2M_map_thresh55_45,
+                                              HadGEM2_CC365_map_thresh55_45,
+                                              HadGEM2_ES365_map_thresh55_45,
+                                              inmcm4_map_thresh55_45,
+                                              IPSL_CM5A_LR_map_thresh55_45, 
+                                              IPSL_CM5A_MR_map_thresh55_45,
+                                              IPSL_CM5B_LR_map_thresh55_45,
+                                              MIROC_ESM_CHEM_map_thresh55_45,
+                                              MIROC5_map_thresh55_45, 
+                                              MRI_CGCM3_map_thresh55_45,
+                                              NorESM1_M_map_thresh55_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh55_45_figs <- annotate_figure(p = thresh55_45_figs,
+                                    top = text_grob(label = "Median days to reach 55 chill unit threshold under rcp 45",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh55_45.png", plot = thresh55_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh55_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 60, RCP 45
+#############
+thresh60_45_min <- min(df_45$median_60)
+thresh60_45_max <- max(df_45$median_60)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh60_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_60",
+                    min = thresh60_45_min, max = thresh60_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh60_45 <- observed_hist_map(min = thresh60_45_min,
+                                              max = thresh60_45_max,
+                                              month_col = "median_60")
+ensemble_map_thresh60_45 <- ensemble_map(scenario_name = "rcp45", 
+                                   month_col = "median_60",
+                                   min = thresh60_45_min,
+                                   max = thresh60_45_max)
+
+# Need to add historical observed to this:
+thresh60_45_figs <- ggarrange(plotlist = list(observed_map_thresh60_45,
+                                              ensemble_map_thresh60_45,
+                                              bcc_csm1_1_m_map_thresh60_45,
+                                              bcc_csm1_1_map_thresh60_45,
+                                              BNU_ESM_map_thresh60_45,
+                                              CanESM2_map_thresh60_45,
+                                              CCSM4_map_thresh60_45, 
+                                              CNRM_CM5_map_thresh60_45,
+                                              CSIRO_Mk3_6_0_map_thresh60_45,
+                                              GFDL_ESM2G_map_thresh60_45,
+                                              GFDL_ESM2M_map_thresh60_45,
+                                              HadGEM2_CC365_map_thresh60_45,
+                                              HadGEM2_ES365_map_thresh60_45,
+                                              inmcm4_map_thresh60_45,
+                                              IPSL_CM5A_LR_map_thresh60_45, 
+                                              IPSL_CM5A_MR_map_thresh60_45,
+                                              IPSL_CM5B_LR_map_thresh60_45,
+                                              MIROC_ESM_CHEM_map_thresh60_45,
+                                              MIROC5_map_thresh60_45, 
+                                              MRI_CGCM3_map_thresh60_45,
+                                              NorESM1_M_map_thresh60_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh60_45_figs <- annotate_figure(p = thresh60_45_figs,
+                                    top = text_grob(label = "Median days to reach 60 chill unit threshold under rcp 45",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh60_45.png", plot = thresh60_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh60_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 65, RCP 45
+#############
+thresh65_45_min <- min(df_45$median_65)
+thresh65_45_max <- max(df_45$median_65)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh65_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_65",
+                    min = thresh65_45_min, max = thresh65_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh65_45 <- observed_hist_map(min = thresh65_45_min,
+                                              max = thresh65_45_max,
+                                              month_col = "median_65")
+ensemble_map_thresh65_45 <- ensemble_map(scenario_name = "rcp45", 
+                                   month_col = "median_65",
+                                   min = thresh65_45_min,
+                                   max = thresh65_45_max)
+
+# Need to add historical observed to this:
+thresh65_45_figs <- ggarrange(plotlist = list(observed_map_thresh65_45,
+                                              ensemble_map_thresh65_45,
+                                              bcc_csm1_1_m_map_thresh65_45,
+                                              bcc_csm1_1_map_thresh65_45,
+                                              BNU_ESM_map_thresh65_45,
+                                              CanESM2_map_thresh65_45,
+                                              CCSM4_map_thresh65_45, 
+                                              CNRM_CM5_map_thresh65_45,
+                                              CSIRO_Mk3_6_0_map_thresh65_45,
+                                              GFDL_ESM2G_map_thresh65_45,
+                                              GFDL_ESM2M_map_thresh65_45,
+                                              HadGEM2_CC365_map_thresh65_45,
+                                              HadGEM2_ES365_map_thresh65_45,
+                                              inmcm4_map_thresh65_45,
+                                              IPSL_CM5A_LR_map_thresh65_45, 
+                                              IPSL_CM5A_MR_map_thresh65_45,
+                                              IPSL_CM5B_LR_map_thresh65_45,
+                                              MIROC_ESM_CHEM_map_thresh65_45,
+                                              MIROC5_map_thresh65_45, 
+                                              MRI_CGCM3_map_thresh65_45,
+                                              NorESM1_M_map_thresh65_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh65_45_figs <- annotate_figure(p = thresh65_45_figs,
+                                    top = text_grob(label = "Median days to reach 65 chill unit threshold under rcp 45",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh65_45.png", plot = thresh65_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh65_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 70, RCP 45
+#############
+thresh70_45_min <- min(df_45$median_70)
+thresh70_45_max <- max(df_45$median_70)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh70_45", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_70",
+                    min = thresh70_45_min, max = thresh70_45_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh70_45 <- observed_hist_map(min = thresh70_45_min,
+                                              max = thresh70_45_max,
+                                              month_col = "median_60")
+ensemble_map_thresh70_45 <- ensemble_map(scenario_name = "rcp45", 
+                                   month_col = "median_60",
+                                   min = thresh70_45_min,
+                                   max = thresh70_45_max)
+
+# Need to add historical observed to this:
+thresh70_45_figs <- ggarrange(plotlist = list(observed_map_thresh70_45,
+                                              ensemble_map_thresh70_45,
+                                              bcc_csm1_1_m_map_thresh70_45,
+                                              bcc_csm1_1_map_thresh70_45,
+                                              BNU_ESM_map_thresh70_45,
+                                              CanESM2_map_thresh70_45,
+                                              CCSM4_map_thresh70_45, 
+                                              CNRM_CM5_map_thresh70_45,
+                                              CSIRO_Mk3_6_0_map_thresh70_45,
+                                              GFDL_ESM2G_map_thresh70_45,
+                                              GFDL_ESM2M_map_thresh70_45,
+                                              HadGEM2_CC365_map_thresh70_45,
+                                              HadGEM2_ES365_map_thresh70_45,
+                                              inmcm4_map_thresh70_45,
+                                              IPSL_CM5A_LR_map_thresh70_45, 
+                                              IPSL_CM5A_MR_map_thresh70_45,
+                                              IPSL_CM5B_LR_map_thresh70_45,
+                                              MIROC_ESM_CHEM_map_thresh70_45,
+                                              MIROC5_map_thresh70_45, 
+                                              MRI_CGCM3_map_thresh70_45,
+                                              NorESM1_M_map_thresh70_45),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh70_45_figs <- annotate_figure(p = thresh70_45_figs,
+                                    top = text_grob(label = "Median days to reach 70 chill unit threshold under RCP 4.5",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh70_45.png", plot = thresh70_45_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh70_45"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 75, RCP 45
+#############
 thresh75_45_min <- min(df_45$median_75)
 thresh75_45_max <- max(df_45$median_75)
 
@@ -904,23 +1319,425 @@ thresh75_45_figs <- annotate_figure(p = thresh75_45_figs,
 
 ggsave(filename = "thresh75_45.png", plot = thresh75_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
-
 rm(list = ls(pattern = "thresh75_45"))
 
-
-
 # 3d. RCP85 threshold figs ------------------------------------------------
+##############################################################################
+#############
+############# Thresh 20, RCP 85
+#############
+thresh20_85_min <- min(df_85$median_20)
+thresh20_85_max <- max(df_85$median_20)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh20_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_20",
+                    min = thresh20_85_min, max = thresh20_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh20_85 <- observed_hist_map(min = thresh20_85_min,
+                                              max = thresh20_85_max,
+                                              month_col = "median_20")
 
+ensemble_map_thresh20_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_20",
+                                   min = thresh20_85_min,
+                                   max = thresh20_85_max)
+
+# Need to add historical observed to this:
+thresh20_85_figs <- ggarrange(plotlist = list(observed_map_thresh20_85,
+                                              ensemble_map_thresh20_85,
+                                              bcc_csm1_1_m_map_thresh20_85,
+                                              bcc_csm1_1_map_thresh20_85,
+                                              BNU_ESM_map_thresh20_85,
+                                              CanESM2_map_thresh20_85,
+                                              CCSM4_map_thresh20_85, 
+                                              CNRM_CM5_map_thresh20_85,
+                                              CSIRO_Mk3_6_0_map_thresh20_85,
+                                              GFDL_ESM2G_map_thresh20_85,
+                                              GFDL_ESM2M_map_thresh20_85,
+                                              HadGEM2_CC365_map_thresh20_85,
+                                              HadGEM2_ES365_map_thresh20_85,
+                                              inmcm4_map_thresh20_85,
+                                              IPSL_CM5A_LR_map_thresh20_85, 
+                                              IPSL_CM5A_MR_map_thresh20_85,
+                                              IPSL_CM5B_LR_map_thresh20_85,
+                                              MIROC_ESM_CHEM_map_thresh20_85,
+                                              MIROC5_map_thresh20_85, 
+                                              MRI_CGCM3_map_thresh20_85,
+                                              NorESM1_M_map_thresh20_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 20 chill unit threshold under RCP 8.5"
+thresh20_85_figs <- annotate_figure(p = thresh20_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh20_85.png", plot = thresh20_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh20_85"))
+##############################################################################
+##############################################################################
+#############
+############# Thresh 25, RCP 85
+#############
+thresh25_85_min <- min(df_85$median_25)
+thresh25_85_max <- max(df_85$median_25)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh25_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_25",
+                    min = thresh25_85_min, max = thresh25_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh25_85 <- observed_hist_map(min = thresh25_85_min,
+                                              max = thresh25_85_max,
+                                              month_col = "median_20")
+
+ensemble_map_thresh25_85 <- ensemble_map(scenario_name = "rcp85", 
+                                         month_col = "median_25",
+                                         min = thresh25_85_min,
+                                         max = thresh25_85_max)
+
+# Need to add historical observed to this:
+thresh25_85_figs <- ggarrange(plotlist = list(observed_map_thresh25_85,
+                                              ensemble_map_thresh25_85,
+                                              bcc_csm1_1_m_map_thresh25_85,
+                                              bcc_csm1_1_map_thresh25_85,
+                                              BNU_ESM_map_thresh25_85,
+                                              CanESM2_map_thresh25_85,
+                                              CCSM4_map_thresh25_85, 
+                                              CNRM_CM5_map_thresh25_85,
+                                              CSIRO_Mk3_6_0_map_thresh25_85,
+                                              GFDL_ESM2G_map_thresh25_85,
+                                              GFDL_ESM2M_map_thresh25_85,
+                                              HadGEM2_CC365_map_thresh25_85,
+                                              HadGEM2_ES365_map_thresh25_85,
+                                              inmcm4_map_thresh25_85,
+                                              IPSL_CM5A_LR_map_thresh25_85, 
+                                              IPSL_CM5A_MR_map_thresh25_85,
+                                              IPSL_CM5B_LR_map_thresh25_85,
+                                              MIROC_ESM_CHEM_map_thresh25_85,
+                                              MIROC5_map_thresh25_85, 
+                                              MRI_CGCM3_map_thresh25_85,
+                                              NorESM1_M_map_thresh25_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 25 chill unit threshold under RCP 8.5"
+thresh25_85_figs <- annotate_figure(p = thresh25_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh25_85.png", plot = thresh25_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+rm(list = ls(pattern = "thresh25_85"))
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 30, RCP 85
+#############
+thresh30_85_min <- min(df_85$median_30)
+thresh30_85_max <- max(df_85$median_30)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh30_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_30",
+                    min = thresh30_85_min, max = thresh30_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh30_85 <- observed_hist_map(min = thresh30_85_min,
+                                              max = thresh30_85_max,
+                                              month_col = "median_30")
+
+ensemble_map_thresh30_85 <- ensemble_map(scenario_name = "rcp85", 
+                                         month_col = "median_30",
+                                         min = thresh30_85_min,
+                                         max = thresh30_85_max)
+
+# Need to add historical observed to this:
+thresh30_85_figs <- ggarrange(plotlist = list(observed_map_thresh30_85,
+                                              ensemble_map_thresh30_85,
+                                              bcc_csm1_1_m_map_thresh30_85,
+                                              bcc_csm1_1_map_thresh30_85,
+                                              BNU_ESM_map_thresh30_85,
+                                              CanESM2_map_thresh30_85,
+                                              CCSM4_map_thresh30_85, 
+                                              CNRM_CM5_map_thresh30_85,
+                                              CSIRO_Mk3_6_0_map_thresh30_85,
+                                              GFDL_ESM2G_map_thresh30_85,
+                                              GFDL_ESM2M_map_thresh30_85,
+                                              HadGEM2_CC365_map_thresh30_85,
+                                              HadGEM2_ES365_map_thresh30_85,
+                                              inmcm4_map_thresh30_85,
+                                              IPSL_CM5A_LR_map_thresh30_85, 
+                                              IPSL_CM5A_MR_map_thresh30_85,
+                                              IPSL_CM5B_LR_map_thresh30_85,
+                                              MIROC_ESM_CHEM_map_thresh30_85,
+                                              MIROC5_map_thresh30_85, 
+                                              MRI_CGCM3_map_thresh30_85,
+                                              NorESM1_M_map_thresh30_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 30 chill unit threshold under RCP 8.5"
+thresh30_85_figs <- annotate_figure(p = thresh30_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh30_85.png", plot = thresh30_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh30_85"))
+##############################################################################
+##############################################################################
+#############
+############# Thresh 35, RCP 85
+#############
+thresh35_85_min <- min(df_85$median_35)
+thresh35_85_max <- max(df_85$median_35)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh35_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_35",
+                    min = thresh35_85_min, max = thresh35_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh35_85 <- observed_hist_map(min = thresh35_85_min,
+                                              max = thresh35_85_max,
+                                              month_col = "median_20")
+
+ensemble_map_thresh35_85 <- ensemble_map(scenario_name = "rcp85", 
+                                         month_col = "median_35",
+                                         min = thresh35_85_min,
+                                         max = thresh35_85_max)
+
+# Need to add historical observed to this:
+thresh35_85_figs <- ggarrange(plotlist = list(observed_map_thresh35_85,
+                                              ensemble_map_thresh35_85,
+                                              bcc_csm1_1_m_map_thresh35_85,
+                                              bcc_csm1_1_map_thresh35_85,
+                                              BNU_ESM_map_thresh35_85,
+                                              CanESM2_map_thresh35_85,
+                                              CCSM4_map_thresh35_85, 
+                                              CNRM_CM5_map_thresh35_85,
+                                              CSIRO_Mk3_6_0_map_thresh35_85,
+                                              GFDL_ESM2G_map_thresh35_85,
+                                              GFDL_ESM2M_map_thresh35_85,
+                                              HadGEM2_CC365_map_thresh35_85,
+                                              HadGEM2_ES365_map_thresh35_85,
+                                              inmcm4_map_thresh35_85,
+                                              IPSL_CM5A_LR_map_thresh35_85, 
+                                              IPSL_CM5A_MR_map_thresh35_85,
+                                              IPSL_CM5B_LR_map_thresh35_85,
+                                              MIROC_ESM_CHEM_map_thresh35_85,
+                                              MIROC5_map_thresh35_85, 
+                                              MRI_CGCM3_map_thresh35_85,
+                                              NorESM1_M_map_thresh35_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 35 chill unit threshold under RCP 8.5"
+thresh35_85_figs <- annotate_figure(p = thresh35_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh35_85.png", plot = thresh35_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+rm(list = ls(pattern = "thresh35_85"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 40, RCP 85
+#############
+thresh40_85_min <- min(df_85$median_40)
+thresh40_85_max <- max(df_85$median_40)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh40_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_40",
+                    min = thresh40_85_min, max = thresh40_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh40_85 <- observed_hist_map(min = thresh40_85_min,
+                                              max = thresh40_85_max,
+                                              month_col = "median_40")
+
+ensemble_map_thresh40_85 <- ensemble_map(scenario_name = "rcp85", 
+                                         month_col = "median_40",
+                                         min = thresh40_85_min,
+                                         max = thresh40_85_max)
+
+# Need to add historical observed to this:
+thresh40_85_figs <- ggarrange(plotlist = list(observed_map_thresh40_85,
+                                              ensemble_map_thresh40_85,
+                                              bcc_csm1_1_m_map_thresh40_85,
+                                              bcc_csm1_1_map_thresh40_85,
+                                              BNU_ESM_map_thresh40_85,
+                                              CanESM2_map_thresh40_85,
+                                              CCSM4_map_thresh40_85, 
+                                              CNRM_CM5_map_thresh40_85,
+                                              CSIRO_Mk3_6_0_map_thresh40_85,
+                                              GFDL_ESM2G_map_thresh40_85,
+                                              GFDL_ESM2M_map_thresh40_85,
+                                              HadGEM2_CC365_map_thresh40_85,
+                                              HadGEM2_ES365_map_thresh40_85,
+                                              inmcm4_map_thresh40_85,
+                                              IPSL_CM5A_LR_map_thresh40_85, 
+                                              IPSL_CM5A_MR_map_thresh40_85,
+                                              IPSL_CM5B_LR_map_thresh40_85,
+                                              MIROC_ESM_CHEM_map_thresh40_85,
+                                              MIROC5_map_thresh40_85, 
+                                              MRI_CGCM3_map_thresh40_85,
+                                              NorESM1_M_map_thresh40_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 40 chill unit threshold under RCP 8.5"
+thresh40_85_figs <- annotate_figure(p = thresh40_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh40_85.png", plot = thresh40_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh40_85"))
+##############################################################################
+##############################################################################
+#############
+############# Thresh 45, RCP 85
+#############
+thresh45_85_min <- min(df_85$median_45)
+thresh45_85_max <- max(df_85$median_45)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh45_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp45", month_col = "median_45",
+                    min = thresh45_85_min, max = thresh45_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh45_85 <- observed_hist_map(min = thresh45_85_min,
+                                              max = thresh45_85_max,
+                                              month_col = "median_20")
+
+ensemble_map_thresh45_85 <- ensemble_map(scenario_name = "rcp85", 
+                                         month_col = "median_45",
+                                         min = thresh45_85_min,
+                                         max = thresh45_85_max)
+
+# Need to add historical observed to this:
+thresh45_85_figs <- ggarrange(plotlist = list(observed_map_thresh45_85,
+                                              ensemble_map_thresh45_85,
+                                              bcc_csm1_1_m_map_thresh45_85,
+                                              bcc_csm1_1_map_thresh45_85,
+                                              BNU_ESM_map_thresh45_85,
+                                              CanESM2_map_thresh45_85,
+                                              CCSM4_map_thresh45_85, 
+                                              CNRM_CM5_map_thresh45_85,
+                                              CSIRO_Mk3_6_0_map_thresh45_85,
+                                              GFDL_ESM2G_map_thresh45_85,
+                                              GFDL_ESM2M_map_thresh45_85,
+                                              HadGEM2_CC365_map_thresh45_85,
+                                              HadGEM2_ES365_map_thresh45_85,
+                                              inmcm4_map_thresh45_85,
+                                              IPSL_CM5A_LR_map_thresh45_85,
+                                              IPSL_CM5A_MR_map_thresh45_85,
+                                              IPSL_CM5B_LR_map_thresh45_85,
+                                              MIROC_ESM_CHEM_map_thresh45_85,
+                                              MIROC5_map_thresh45_85,
+                                              MRI_CGCM3_map_thresh45_85,
+                                              NorESM1_M_map_thresh45_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+lab = "Median days to reach 45 chill unit threshold under RCP 8.5"
+thresh45_85_figs <- annotate_figure(p = thresh45_85_figs,
+                                    top = text_grob(label = lab, 
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh45_85.png", plot = thresh45_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+rm(list = ls(pattern = "thresh45_85"))
+##############################################################################
+
+##############################################################################
+#############
+############# Thresh 50, RCP 85
+#############
+thresh50_85_min <- min(df_85$median_50)
+thresh50_85_max <- max(df_85$median_50)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh50_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_50",
+                    min = thresh50_85_min, max = thresh50_85_max)}
+         )
+}
+
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh50_85 <- observed_hist_map(min = thresh50_85_min,
+                                              max = thresh50_85_max,
+                                              month_col = "median_50")
+
+ensemble_map_thresh50_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_50",
+                                   min = thresh50_85_min,
+                                   max = thresh50_85_max)
+
+# Need to add historical observed to this:
+thresh50_85_figs <- ggarrange(plotlist = list(observed_map_thresh50_85,
+                                              ensemble_map_thresh50_85,
+                                              bcc_csm1_1_m_map_thresh50_85,
+                                              bcc_csm1_1_map_thresh50_85,
+                                              BNU_ESM_map_thresh50_85,
+                                              CanESM2_map_thresh50_85,
+                                              CCSM4_map_thresh50_85, 
+                                              CNRM_CM5_map_thresh50_85,
+                                              CSIRO_Mk3_6_0_map_thresh50_85,
+                                              GFDL_ESM2G_map_thresh50_85,
+                                              GFDL_ESM2M_map_thresh50_85,
+                                              HadGEM2_CC365_map_thresh50_85,
+                                              HadGEM2_ES365_map_thresh50_85,
+                                              inmcm4_map_thresh50_85,
+                                              IPSL_CM5A_LR_map_thresh50_85, 
+                                              IPSL_CM5A_MR_map_thresh50_85,
+                                              IPSL_CM5B_LR_map_thresh50_85,
+                                              MIROC_ESM_CHEM_map_thresh50_85,
+                                              MIROC5_map_thresh50_85, 
+                                              MRI_CGCM3_map_thresh50_85,
+                                              NorESM1_M_map_thresh50_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh50_85_figs <- annotate_figure(p = thresh50_85_figs,
+                                    top = text_grob(label = "Median days to reach 50 chill unit threshold under rcp 85",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh50_85.png", plot = thresh50_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh50_85"))
+##############################################################################
 # 50 unit threshold, rcp85
 thresh50_85_min <- min(df_85$median_50)
 thresh50_85_max <- max(df_85$median_50)
 
-
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "thresh50_85", sep="_"),
-         value =
-         {
+         value ={
            model_map(model = h, scenario_name = "rcp85", month_col = "median_50",
                      min = thresh50_85_min, max = thresh50_85_max)
          })
@@ -969,8 +1786,244 @@ ggsave(filename = "thresh50_85.png", plot = thresh50_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh50_85"))
+##############################################################################
 
-# 75 unit threshold, rcp85
+##############################################################################
+##############################################################################
+#############
+############# Thresh 55, RCP 85
+#############
+thresh55_85_min <- min(df_85$median_55)
+thresh55_85_max <- max(df_85$median_55)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh55_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_55",
+                    min = thresh55_85_min, max = thresh55_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh55_85 <- observed_hist_map(min = thresh55_85_min,
+                                              max = thresh55_85_max,
+                                              month_col = "median_55")
+ensemble_map_thresh55_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_55",
+                                   min = thresh55_85_min,
+                                   max = thresh55_85_max)
+
+# Need to add historical observed to this:
+thresh55_85_figs <- ggarrange(plotlist = list(observed_map_thresh55_85,
+                                              ensemble_map_thresh55_85,
+                                              bcc_csm1_1_m_map_thresh55_85,
+                                              bcc_csm1_1_map_thresh55_85,
+                                              BNU_ESM_map_thresh55_85,
+                                              CanESM2_map_thresh55_85,
+                                              CCSM4_map_thresh55_85, 
+                                              CNRM_CM5_map_thresh55_85,
+                                              CSIRO_Mk3_6_0_map_thresh55_85,
+                                              GFDL_ESM2G_map_thresh55_85,
+                                              GFDL_ESM2M_map_thresh55_85,
+                                              HadGEM2_CC365_map_thresh55_85,
+                                              HadGEM2_ES365_map_thresh55_85,
+                                              inmcm4_map_thresh55_85,
+                                              IPSL_CM5A_LR_map_thresh55_85, 
+                                              IPSL_CM5A_MR_map_thresh55_85,
+                                              IPSL_CM5B_LR_map_thresh55_85,
+                                              MIROC_ESM_CHEM_map_thresh55_85,
+                                              MIROC5_map_thresh55_85, 
+                                              MRI_CGCM3_map_thresh55_85,
+                                              NorESM1_M_map_thresh55_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh55_85_figs <- annotate_figure(p = thresh55_85_figs,
+                                    top = text_grob(label = "Median days to reach 55 chill unit threshold under rcp 85",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh55_85.png", plot = thresh55_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh55_85"))
+##############################################################################
+##############################################################################
+#############
+############# Thresh 60, RCP 8.5
+#############
+thresh60_85_min <- min(df_85$median_60)
+thresh60_85_max <- max(df_85$median_60)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh60_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_60",
+                    min = thresh60_85_min, max = thresh60_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh60_85 <- observed_hist_map(min = thresh60_85_min,
+                                              max = thresh60_85_max,
+                                              month_col = "median_60")
+ensemble_map_thresh60_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_60",
+                                   min = thresh60_85_min,
+                                   max = thresh60_85_max)
+
+# Need to add historical observed to this:
+thresh60_85_figs <- ggarrange(plotlist = list(observed_map_thresh60_85,
+                                              ensemble_map_thresh60_85,
+                                              bcc_csm1_1_m_map_thresh60_85,
+                                              bcc_csm1_1_map_thresh60_85,
+                                              BNU_ESM_map_thresh60_85,
+                                              CanESM2_map_thresh60_85,
+                                              CCSM4_map_thresh60_85, 
+                                              CNRM_CM5_map_thresh60_85,
+                                              CSIRO_Mk3_6_0_map_thresh60_85,
+                                              GFDL_ESM2G_map_thresh60_85,
+                                              GFDL_ESM2M_map_thresh60_85,
+                                              HadGEM2_CC365_map_thresh60_85,
+                                              HadGEM2_ES365_map_thresh60_85,
+                                              inmcm4_map_thresh60_85,
+                                              IPSL_CM5A_LR_map_thresh60_85, 
+                                              IPSL_CM5A_MR_map_thresh60_85,
+                                              IPSL_CM5B_LR_map_thresh60_85,
+                                              MIROC_ESM_CHEM_map_thresh60_85,
+                                              MIROC5_map_thresh60_85, 
+                                              MRI_CGCM3_map_thresh60_85,
+                                              NorESM1_M_map_thresh60_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh60_85_figs <- annotate_figure(p = thresh60_85_figs,
+                                    top = text_grob(label = "Median days to reach 60 chill unit threshold under RCP 8.5",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh60_85.png", plot = thresh60_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh60_85"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 65, RCP 8.5
+#############
+thresh65_85_min <- min(df_85$median_65)
+thresh65_85_max <- max(df_85$median_65)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh65_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_65",
+                    min = thresh65_85_min, max = thresh65_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh65_85 <- observed_hist_map(min = thresh65_85_min,
+                                              max = thresh65_85_max,
+                                              month_col = "median_65")
+ensemble_map_thresh65_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_65",
+                                   min = thresh65_85_min,
+                                   max = thresh65_85_max)
+
+# Need to add historical observed to this:
+thresh65_85_figs <- ggarrange(plotlist = list(observed_map_thresh65_85,
+                                              ensemble_map_thresh65_85,
+                                              bcc_csm1_1_m_map_thresh65_85,
+                                              bcc_csm1_1_map_thresh65_85,
+                                              BNU_ESM_map_thresh65_85,
+                                              CanESM2_map_thresh65_85,
+                                              CCSM4_map_thresh65_85, 
+                                              CNRM_CM5_map_thresh65_85,
+                                              CSIRO_Mk3_6_0_map_thresh65_85,
+                                              GFDL_ESM2G_map_thresh65_85,
+                                              GFDL_ESM2M_map_thresh65_85,
+                                              HadGEM2_CC365_map_thresh65_85,
+                                              HadGEM2_ES365_map_thresh65_85,
+                                              inmcm4_map_thresh65_85,
+                                              IPSL_CM5A_LR_map_thresh65_85, 
+                                              IPSL_CM5A_MR_map_thresh65_85,
+                                              IPSL_CM5B_LR_map_thresh65_85,
+                                              MIROC_ESM_CHEM_map_thresh65_85,
+                                              MIROC5_map_thresh65_85, 
+                                              MRI_CGCM3_map_thresh65_85,
+                                              NorESM1_M_map_thresh65_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh65_85_figs <- annotate_figure(p = thresh65_85_figs,
+                                    top = text_grob(label = "Median days to reach 65 chill unit threshold under RCP 8.5",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh65_85.png", plot = thresh65_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh65_85"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 70, RCP 8.5
+#############
+thresh70_85_min <- min(df_85$median_70)
+thresh70_85_max <- max(df_85$median_70)
+for(h in unique(stats_comp$model)) {
+  assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
+                   "thresh70_85", sep="_"),
+         value ={
+          model_map(model = h, scenario_name = "rcp85", month_col = "median_70",
+                    min = thresh70_85_min, max = thresh70_85_max)}
+         )
+}
+# Separately created maps for observed historical and ensemble mean
+observed_map_thresh70_85 <- observed_hist_map(min = thresh70_85_min,
+                                              max = thresh70_85_max,
+                                              month_col = "median_60")
+ensemble_map_thresh70_85 <- ensemble_map(scenario_name = "rcp85", 
+                                   month_col = "median_60",
+                                   min = thresh70_85_min,
+                                   max = thresh70_85_max)
+
+# Need to add historical observed to this:
+thresh70_85_figs <- ggarrange(plotlist = list(observed_map_thresh70_85,
+                                              ensemble_map_thresh70_85,
+                                              bcc_csm1_1_m_map_thresh70_85,
+                                              bcc_csm1_1_map_thresh70_85,
+                                              BNU_ESM_map_thresh70_85,
+                                              CanESM2_map_thresh70_85,
+                                              CCSM4_map_thresh70_85, 
+                                              CNRM_CM5_map_thresh70_85,
+                                              CSIRO_Mk3_6_0_map_thresh70_85,
+                                              GFDL_ESM2G_map_thresh70_85,
+                                              GFDL_ESM2M_map_thresh70_85,
+                                              HadGEM2_CC365_map_thresh70_85,
+                                              HadGEM2_ES365_map_thresh70_85,
+                                              inmcm4_map_thresh70_85,
+                                              IPSL_CM5A_LR_map_thresh70_85, 
+                                              IPSL_CM5A_MR_map_thresh70_85,
+                                              IPSL_CM5B_LR_map_thresh70_85,
+                                              MIROC_ESM_CHEM_map_thresh70_85,
+                                              MIROC5_map_thresh70_85, 
+                                              MRI_CGCM3_map_thresh70_85,
+                                              NorESM1_M_map_thresh70_85),
+                              ncol = 2, nrow = 11,
+                              common.legend = TRUE)
+
+thresh70_85_figs <- annotate_figure(p = thresh70_85_figs,
+                                    top = text_grob(label = "Median days to reach 70 chill unit threshold under RCP 4.5",
+                                                    face = "bold", size = 18))
+
+ggsave(filename = "thresh70_85.png", plot = thresh70_85_figs, device = "png",
+       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+rm(list = ls(pattern = "thresh70_85"))
+##############################################################################
+##############################################################################
+##############################################################################
+#############
+############# Thresh 70, RCP 8.5
+#############
 thresh75_85_min <- min(df_85$median_75)
 thresh75_85_max <- max(df_85$median_75)
 
@@ -1019,7 +2072,7 @@ thresh75_85_figs <- ggarrange(plotlist = list(observed_map_thresh75_85,
                               common.legend = TRUE)
 
 thresh75_85_figs <- annotate_figure(p = thresh75_85_figs,
-                                    top = text_grob(label = "Median days to reach 75 chill unit threshold under rcp 85",
+                                    top = text_grob(label = "Median days to reach 75 chill unit threshold under RCP 8.5",
                                                     face = "bold", size = 18))
 
 ggsave(filename = "thresh75_85.png", plot = thresh75_85_figs, device = "png",
