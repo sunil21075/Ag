@@ -15,14 +15,14 @@ library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/data/hydro/users/Hossein/chill/data_by_core/11_threshold/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
 # 2. Script setup ---------------------------------------------------------
 
 # Check current folder
 print("does this look right?")
 getwd()
-
+start_time <- Sys.time()
 # Set an output location for this script's outputs
 main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/02/")
 
@@ -91,7 +91,7 @@ data_list_historical <- vector(mode = "list", length = 295)
   # .id row contains originating filename of this data
   write.table(x = data_historical,
               file = file.path(main_out,
-                               "chill-data-summary-obs_hist.txt"),
+                               "summary_obs_hist.txt"),
               row.names = F)
   
   rm(data_historical)
@@ -104,6 +104,9 @@ data_list_historical <- vector(mode = "list", length = 295)
   
   write.table(x = summary_data_historical,
               file = file.path(main_out,
-                               "chill-data-summary-stats-obs_hist.txt"),
+                               "summary_stats_observed.txt"),
               row.names = F)
   
+end_time <- Sys.time()
+
+print( end_time - start_time)

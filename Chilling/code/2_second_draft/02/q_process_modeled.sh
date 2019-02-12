@@ -9,7 +9,7 @@
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=2gb
+#PBS -l mem=10gb
 #PBS -l walltime=10:00:00
 #PBS -q hydro
 #PBS -t 1-72
@@ -17,8 +17,8 @@
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /data/hydro/users/Hossein/chill/data_by_core/11_threshold/error/data-postprocess.e
-#PBS -o /data/hydro/users/Hossein/chill/data_by_core/11_threshold/error/data-postprocess.o
+#PBS -e /home/hnoorazar/chilling_codes/2_second_draft/error/m_postprocess.e
+#PBS -o /home/hnoorazar/chilling_codes/2_second_draft/error/m_postprocess.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -54,7 +54,7 @@ module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /data/hydro/users/Hossein/chill/data_by_core/11_threshold/d_process_modeled.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/2_second_draft/02/d_process_modeled.R
 
 echo
 echo "----- DONE -----"
