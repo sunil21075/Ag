@@ -24,10 +24,9 @@ local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
 local_files <- as.vector(local_files$V1)
 
 # 2b. Note if working with a directory of historical data
-hist <- TRUE
 
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/temp_gdd/observed/")
+main_out <- file.path("/data/hydro/users/Hossein/temp_gdd/observed")
 
 if (dir.exists(main_out) == F) {
   dir.create(path = main_out, recursive = T)
@@ -39,8 +38,7 @@ if (dir.exists(main_out) == F) {
 dir_con <- dir()
 
 # remove filenames that aren't data
-dir_con <- dir_con[grep(pattern = "data_",
-                        x = dir_con)]
+dir_con <- dir_con[grep(pattern = "data_", x = dir_con)]
 
 # choose only files that we're interested in
 dir_con <- dir_con[which(dir_con %in% local_files)]
@@ -51,7 +49,7 @@ start_time <- Sys.time()
 
 for(file in dir_con){
   # 3a. read in binary meteorological data file from specified path
-  met_data <- read_binary(file_path = file, hist = hist)
+  met_data <- read_binary(filename = file, hist = TRUE, no_vars=8)
 
   # I make the assumption that lat always has same number of decimal points
   lat <- as.numeric(substr(x = file, start = 6, stop = 13))
@@ -61,35 +59,17 @@ for(file in dir_con){
   
   # 3b. Clean it up
   # rename needed columns
-  # print ("")
-  # print ("line 65")
-  # print (class(met_data))
-  # print (colnames(met_data))
   met_data <- met_data %>%
-              select(-c(precip, windspeed)) %>%
+              select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
               data.frame()
   
   met_data <- add_dd_cumdd(data.table(met_data), lower=10, upper=31.11)
   met_data$tmean = (met_data$tmax + met_data$tmin)/2
-  if (hist){
-    met_data$ClimateGroup[met_data$year >= 1950 & met_data$year <= 2015] <- "Historical"
-  } 
-  else {
-    met_data$ClimateGroup[met_data$year > 2025 & met_data$year <= 2055] <- "2040's"
-    met_data$ClimateGroup[met_data$year > 2045 & met_data$year <= 2075] <- "2060's"
-    met_data$ClimateGroup[met_data$year > 2065 & met_data$year <= 2095] <- "2080's"
-  }
-  print("")
-  print("file")
-  print(file)
+
   met_data$latitude = substr(x=file, start=6, stop=13)
   met_data$longitude = substr(x=file, start=15, stop=24)
   met_data$ClimateScenario = "observed"
   saveRDS(met_data, file = file.path(main_out, paste0(file, ".rds")))
-  # write.table(x = met_daily,
-  #             file = file.path(main_out,
-  #                              paste0("chill_output_", file, ".txt")),
-  #                              row.names = F)
   rm(met_data)
 }
 
