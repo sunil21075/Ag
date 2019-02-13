@@ -35,12 +35,12 @@ add_countyGroup <- function(data){
 }
 
 clean <- function(data, scenario){
-	needed_colomns = c("year", "tmean", "Cum_dd", 
-		               "ClimateGroup", "ClimateScenario",
-		               "CountyGroup")
+	# needed_colomns = c("year", "tmean", "Cum_dd", 
+	# 	               "ClimateGroup", "ClimateScenario",
+	# 	               "CountyGroup", "latitude", "longitude")
 	# grab needed cols
-	data = subset(data, select=needed_colomns)
-    print (colnames(data))
+	data = within(data, remove(tmin, tmax))
+
     # drop 2006-2024 years
     data = filter(data, year <=2005 | year >= 2025)
     print (min(data$year))

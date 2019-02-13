@@ -23,7 +23,6 @@
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
-
 echo
 echo We are now in $PWD.
 echo

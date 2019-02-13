@@ -8,22 +8,96 @@
 ## Unless you are aware of conflicts between packages.
 ## I spent hours to figrue out what the hell is going on!
 ###################################################################
-
 options(digits=9)
-read_binary <- function(file_name, file_path, hist){
-	if (hist) {
-		start_year <- 1950
-		end_year <- 2005
-        } else{
-            start_year <- 2006
-            end_year <- 2099
-        }
-	ymd_file <- create_ymdvalues(start_year, end_year)
-  data <- read_binary_addmdy(file_path, ymd_file)
-	return(data)
+read_binary <- function(filename, hist, no_vars){
+  ######    The modeled historical is in /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/
+  ######    modeled historical is equivalent to having 4 variables, and years 1950-2005
+  ######
+  ######    The observed historical is in 
+  ######    /data/hydro/jennylabcommon2/metdata/historical/UI_historical/VIC_Binary_CONUS_to_2016
+  ######    observed historical is equivalent to having 8 variables, and years 1979-2016
+  ######
+
+  # sanitation check! 
+
+  if (hist){
+    if (no_vars==4){
+      start_year <- 1950
+      end_year <- 2005
+      print("-------------------------------")
+      print (paste0("no_vars= "))
+      print (no_vars)
+      print("-------------------------------")
+      print ("hist = ")
+      print (hist)
+      print("-------------------------------")
+      print (start_year)
+      print (end_year)
+      } else {
+        start_year <- 1979
+        end_year <- 2016
+        print("-------------------------------")
+        print (paste0("no_vars= "))
+        print (no_vars)
+        print("-------------------------------")
+        print ("hist = ")
+        print (hist)
+        print("-------------------------------")
+        print (start_year)
+        print (end_year)
+      }
+    } else {
+      start_year <- 2006
+      end_year <- 2099
+      print ("file_path")
+      print (file_path)
+      print("-------------------------------")
+      print (paste0("no_vars= "))
+      print (no_vars)
+      print("-------------------------------")
+      print ("hist = ")
+      print (hist)
+      print("-------------------------------")
+      print (start_year)
+      print (end_year)
+  }
+  ymd_file <- create_ymdvalues(start_year, end_year)
+  data <- read_binary_addmdy(filename, ymd_file, no_vars)
+  return(data)
 }
 
-read_binary_addmdy <- function(filename, ymd) {
+read_binary_addmdy <- function(filename, ymd, no_vars){
+    if (no_vars==4){
+        return(read_binary_addmdy_4var(filename, ymd))
+    } else {return(read_binary_addmdy_8var(filename, ymd))}
+}
+
+read_binary_addmdy_8var <- function(filename, ymd){
+    Nofvariables <- 8 # number of variables or column in the forcing data file
+    Nrecords <- nrow(ymd)
+    ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
+    fileCon  <-  file(filename, "rb")
+    temp <- readBin(fileCon, integer(), size = 2, n = Nrecords * Nofvariables,
+                    endian = "little")
+    dataM <- matrix(0, Nrecords, 8)
+    k <- 1
+    dataM[1:Nrecords, 1] <- temp[ind] / 40.00         # precip data
+    dataM[1:Nrecords, 2] <- temp[ind + 1] / 100.00    # Max temperature data
+    dataM[1:Nrecords, 3] <- temp[ind + 2] / 100.00    # Min temperature data
+    dataM[1:Nrecords, 4] <- temp[ind + 3] / 100.00    # Wind speed data
+    dataM[1:Nrecords, 5] <- temp[ind + 4] / 10000.00  # SPH
+    dataM[1:Nrecords, 6] <- temp[ind + 5] / 40.00     # SRAD
+    dataM[1:Nrecords, 7] <- temp[ind + 6] / 100.00    # Rmax
+    dataM[1:Nrecords, 8] <- temp[ind + 7] / 100.00    # RMin
+    AllData <- cbind(ymd, dataM)
+    # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
+    colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
+                           "windspeed", "SPH", "SRAD", "Rmax", "Rmin")
+    close(fileCon)
+    return(AllData)
+}
+
+read_binary_addmdy_4var <- function(filename, ymd) {
     Nofvariables <- 4 # number of variables or column in the forcing data file
     Nrecords <- nrow(ymd)
     ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
@@ -75,6 +149,10 @@ create_ymdvalues <- function(data_start_year, data_end_year){
     colnames(ymd) <- c("year", "month", "day")
     return(ymd)
 }
+######################################################################
+######################################################################
+######################################################################
+######################################################################
 
 # Function to compute and append gdd and cumulative gdd columns to met data
 add_dd_cumdd <- function(metdata_data.table, lower=10, upper=31.11) {
@@ -159,10 +237,23 @@ merge_add_countyGroup <- function(input_dir, param_dir,
                                   locations_file_name,
                                   locationGroup_fileName,
                                   categories, file_prefix, version){
-
   merged_data <- merge_data(input_dir, param_dir, categories, locations_file_name, file_prefix, version)
   merged_data = add_countyGroup(merged_data, param_dir, loc_group_file_name= locationGroup_fileName)
   return(merged_data)
+}
+
+add_countyGroup <- function(data, param_dir, loc_group_file_name){
+  loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
+  options(digits=9)
+  loc_grp$latitude = as.numeric(loc_grp$latitude)
+  loc_grp$longitude = as.numeric(loc_grp$longitude)
+
+  data$CountyGroup = 0L
+
+  for(i in 1:nrow(loc_grp)) {
+    data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
+  }
+  return (data) 
 }
 
 merge_data <- function(input_dir, param_dir, categories, locations_file_name, file_prefix, version){
@@ -185,18 +276,4 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
     }
   }
   return(data)
-}
-
-add_countyGroup <- function(data, param_dir, loc_group_file_name){
-  loc_grp = data.table(read.csv(paste0(param_dir, loc_group_file_name)))
-  options(digits=9)
-  loc_grp$latitude = as.numeric(loc_grp$latitude)
-  loc_grp$longitude = as.numeric(loc_grp$longitude)
-
-  data$CountyGroup = 0L
-
-  for(i in 1:nrow(loc_grp)) {
-    data[latitude == loc_grp[i, latitude] & longitude == loc_grp[i, longitude], ]$CountyGroup = loc_grp[i, locationGroup]
-  }
-  return (data) 
 }
