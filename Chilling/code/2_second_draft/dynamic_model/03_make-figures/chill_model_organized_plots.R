@@ -80,7 +80,6 @@ thresh_old_plots <- function(data, percentile){
 
   return (the_plot)
 }
-# -------------------------------------------------------------
 
 # Threshold plots
 
@@ -99,7 +98,6 @@ summary_comp_medians <- summary_comp %>%
 thresh_50_plot <- thresh_old_plots(summary_comp_medians, percentile="50")
 thresh_75_plot <- thresh_old_plots(summary_comp_medians, percentile="75")
 
-
 thresh_figs_medians <- ggarrange(thresh_50_plot,
                                  thresh_75_plot,
                                  ncol = 1, nrow = 2)
@@ -109,7 +107,7 @@ thresh_figs_medians <- ggarrange(thresh_50_plot,
 
 #############************************************************************
 #############
-############# Above This Line
+############# Above This Line is the old version plot
 #############
 #############************************************************************
 #############************************************************************
@@ -120,7 +118,7 @@ thresh_new_plot <- function(data, percentile){
   
   the_plot <- ggplot(data = data) +
               geom_point(aes(x = year, y = y, fill = scenario),
-                             alpha = 0.25, shape = 21, size = 1) +
+                             alpha = 0.25, shape = 21, size = .25) +
               geom_smooth(aes(x = year, y = y, color = scenario),
                           method = "lm", size=0.5, se = F) +
               facet_wrap( ~ climate_type) +

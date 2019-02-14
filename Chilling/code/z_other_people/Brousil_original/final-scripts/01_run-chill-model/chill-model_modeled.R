@@ -246,13 +246,13 @@ for(file in dir_con){
 
   # rename needed columns
   met_data <- met_data %>%
-    rename(Year = year,
-           Month = month,
-           Day = day,
-           Tmax = tmax,
-           Tmin = tmin) %>%
-    select(-c(precip, windspeed)) %>%
-    data.frame()
+              rename(Year = year,
+                     Month = month,
+                     Day = day,
+                     Tmax = tmax,
+                     Tmin = tmin) %>%
+              select(-c(precip, windspeed)) %>%
+              data.frame()
 
   # 3c. Get hourly interpolation
   # generate hourly data
@@ -266,23 +266,23 @@ for(file in dir_con){
 
   # we want this on a seasonal basis specific to chill
   met_hourly <- met_hourly %>%
-    mutate(Chill_season = case_when(
-      # If Jan:Aug then part of chill season of prev year - current year
-      Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
-      # If Sept:Dec then part of chill season of current year - next year
-      Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
-    ))
+                mutate(Chill_season = case_when(
+                  # If Jan:Aug then part of chill season of prev year - current year
+                  Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
+                  # If Sept:Dec then part of chill season of current year - next year
+                  Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
+                ))
   
   # sum within a day using NON-cumulative chill portions
   met_daily <- met_hourly %>%
-    group_by(Chill_season) %>% # should maintain correct day, time order
-    mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
-    group_by(Chill_season, Year, Month, Day) %>%
-    summarise(Daily_portions = sum(chill))
+                group_by(Chill_season) %>% # should maintain correct day, time order
+                mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
+                group_by(Chill_season, Year, Month, Day) %>%
+                summarise(Daily_portions = sum(chill))
   
   met_daily <- met_daily %>%
-    group_by(Chill_season) %>%
-    mutate(Cume_portions = cumsum(Daily_portions))
+                group_by(Chill_season) %>%
+                mutate(Cume_portions = cumsum(Daily_portions))
 
 
   # 3e. Save output
