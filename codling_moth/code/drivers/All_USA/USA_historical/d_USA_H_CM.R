@@ -8,7 +8,7 @@ library(iterators)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
-
+options(digits=9)
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/raw/"
 write_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/historical_CM/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
@@ -43,8 +43,8 @@ for(location in locations) {
                          lower=10, upper=31.11)
   temp_data <- data.table()
   if(category == "historical") {
-    temp$ClimateGroup[temp$year >= 1979 & temp$year <= 2015] <- "Historical"
-    temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2015, ])
+    temp$ClimateGroup[temp$year >= start_year & temp$year <= end_year] <- "Historical"
+    temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
   }
   else {
     temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
