@@ -24,6 +24,10 @@ merge <- function(data_type){
 
 	# list of directories in input_dir
 	categories = list.dirs(path = input_dir, full.names = F, recursive = F)
+	
+	# Remove incomplete model runs (see how you)
+    # categories <- categories[-grep(x = categories$model, pattern = "incomplete"), ]
+	
 	versions = c("historical", "rcp45", "rcp85")
 	merge_a_model(data_type=data_type, 
 		          input_dir=input_dir, output_dir=output_dir, 
@@ -45,7 +49,6 @@ merge_a_model <- function(data_type, input_dir, output_dir, modeled_categories){
 			curr_data <- data.table(readRDS(paste0(data_dir, afile)))
 			data <- rbind(data, curr_data)
 		}
-
 	data <- add_countyGroup(data=data)
 	
 	# compute the average of GDD
@@ -101,7 +104,7 @@ clean <- function(data, scenario){
 	data_non_overlap$ClimateGroup[data_non_overlap$year > 2050  & data_non_overlap$year <= 2075] <- "2060's"
 	data_non_overlap$ClimateGroup[data_non_overlap$year > 2075] <- "2080's"
 
-    data_overlap_hist = filter(data_overlap, year > 1979 & year <= 2005)
+    data_overlap_hist = filter(data_overlap, year >= 1979 & year <= 2005)
 	data_overlap_2040 = filter(data_overlap, year > 2025 & year <= 2055)
 	data_overlap_2060 = filter(data_overlap, year > 2045 & year <= 2075)
 	data_overlap_2080 = filter(data_overlap, year > 2065 & year <= 2095)
@@ -122,28 +125,26 @@ clean <- function(data, scenario){
      
     data_non_overlap = data.table(data_non_overlap)
     data_overlap = data.table(data_overlap)
-
+    
+    ########
     ######## Pick only the last day of each year for GDD
-    data_non_overlap = data_non_overlap[data_non_overlap$month==12, ]
-    data_non_overlap = data_non_overlap[data_non_overlap$day==31, ]
-    data_non_overlap = within(data_non_overlap, remove(tmin, tmax, latitude, longitude, month, day))
+    ########
+    gdd_non_overlap = data_non_overlap[data_non_overlap$month==12, ]
+    gdd_non_overlap = gdd_non_overlap[gdd_non_overlap$day==31, ]
+    gdd_non_overlap = within(gdd_non_overlap, remove(tmin, tmax, latitude, longitude, month, day))
 
-    data_overlap = data_overlap[data_overlap$month==12, ]
-    data_overlap = data_overlap[data_overlap$day==31, ]
-    data_overlap = within(data_overlap, remove(tmin, tmax, latitude, longitude, month, day))
+    gdd_overlap = data_overlap[data_overlap$month==12, ]
+    gdd_overlap = gdd_overlap[data_overlap$day==31, ]
+    gdd_overlap = within(gdd_overlap, remove(tmin, tmax, latitude, longitude, month, day))
     
     ########
     ########       Clean data for tmean!
     ########
-    data_tmean_overlap <- data
-    data_tmean_non_overlap <- data
+    data_tmean_overlap <- data_non_overlap
+    data_tmean_non_overlap <- data_overlap
+    rm(data_non_overlap, data_overlap)
 
-    data_tmean_non_overlap$ClimateGroup[data_tmean_non_overlap$year >= 1979 & data_tmean_non_overlap$year <= 2005] <- "Historical"
-	data_tmean_non_overlap$ClimateGroup[data_tmean_non_overlap$year > 2025  & data_tmean_non_overlap$year <= 2050] <- "2040's"
-	data_tmean_non_overlap$ClimateGroup[data_tmean_non_overlap$year > 2050  & data_tmean_non_overlap$year <= 2075] <- "2060's"
-	data_tmean_non_overlap$ClimateGroup[data_tmean_non_overlap$year > 2075] <- "2080's"
-
-    data_tmean_overlap_hist = filter(data_tmean_overlap, year > 1979 & year <= 2005)
+    data_tmean_overlap_hist = filter(data_tmean_overlap, year >= 1979 & year <= 2005)
 	data_tmean_overlap_2040 = filter(data_tmean_overlap, year > 2025 & year <= 2055)
 	data_tmean_overlap_2060 = filter(data_tmean_overlap, year > 2045 & year <= 2075)
 	data_tmean_overlap_2080 = filter(data_tmean_overlap, year > 2065 & year <= 2095)
@@ -165,9 +166,8 @@ clean <- function(data, scenario){
     data_tmean_non_overlap = data.table(data_tmean_non_overlap)
     data_tmean_overlap = data.table(data_tmean_overlap)
 
-    return (list(data_non_overlap, data_overlap, data_tmean_non_overlap, data_tmean_overlap))
+    return (list(gdd_non_overlap, gdd_overlap, data_tmean_non_overlap, data_tmean_overlap))
 }
-
 
 add_countyGroup <- function(data){
 	options(digits=9)
