@@ -15,9 +15,17 @@ echo We are now in $PWD.
 
 # First we ensure a clean running environment:
 module purge
-# Load modules (if needed)
-module load R/R-3.2.2_gcc
 
-./d_USA_H_CM.R historical
+# Load R
+module load udunits/2.2.20
+module load libxml2/2.9.4
+module load gdal/2.1.2_gcc proj/4.9.2
+module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
+
+Rscript --vanilla ./d_USA_H_CM.R historical
+
+echo
+echo "----- DONE -----"
+echo
 
 exit 0

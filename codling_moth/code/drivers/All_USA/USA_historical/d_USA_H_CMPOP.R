@@ -10,7 +10,7 @@ source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
 raw_data_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/raw/"
-write_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/historical_CMPOP"
+write_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/historical_CMPOP/"
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
