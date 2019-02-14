@@ -80,6 +80,11 @@ for(file in dir_con){
   met_data$latitude = substr(x=file, start=6, stop=13)
   met_data$longitude = substr(x=file, start=15, stop=24)
   met_data$ClimateScenario = unlist(strsplit(current_dir, split="/"))[1]
+
+
+  ## Drop the years that are not in the observed data
+  ## so we have a consistent time interval
+  met_data = filter(met_data, year>= 1979)
   saveRDS(met_data, file = file.path(main_out, current_dir, paste0(file, ".rds")))
   rm(met_data)
 }
