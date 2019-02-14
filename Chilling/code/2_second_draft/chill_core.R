@@ -11,17 +11,28 @@
 # 1. Prep binary conversion functions ------------------------
 # Define function for reading binary 8-col files
 options(digits=9)
-
 read_binary <- function(file_name, file_path, hist, no_vars){
+  ######    The modeled historical is in /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/
+  ######    modeled historical is equivalent to having 4 variables, and years 1950-2005
+  ######
+  ######    The observed historical is in 
+  ######    /data/hydro/jennylabcommon2/metdata/historical/UI_historical/VIC_Binary_CONUS_to_2016
+  ######    observed historical is equivalent to having 8 variables, and years 1979-2016
+  ######
 	if (hist) {
-		start_year <- 1950
-		end_year <- 2005
-        } else{
-            start_year <- 2006
-            end_year <- 2099
-        }
+    if (no_vars==4){
+      start_year <- 1950
+      end_year <- 2005
+      } else {
+        start_year <- 1979
+        end_year <- 2016
+      }
+    } else{
+      start_year <- 2006
+      end_year <- 2099
+  }
 	ymd_file <- create_ymdvalues(start_year, end_year)
-    data <- read_binary_addmdy(file_path, ymd_file, no_vars)
+  data <- read_binary_addmdy(file_path, ymd_file, no_vars)
 	return(data)
 }
 
