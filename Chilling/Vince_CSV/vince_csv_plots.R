@@ -90,19 +90,19 @@ the_theme <- theme_bw() +
                      axis.title.x = element_text(face = "plain", size=12, 
                                                   margin = margin(t=4, r=0, b=0, l=0)),
                      # axis.title.x=element_blank(),
-                     axis.text.x = element_text(size = 8, face = "plain", 
+                     axis.text.x = element_text(size = 10, face = "plain", 
                                                 color="black"),
                      axis.ticks.x = element_blank(),
                      axis.title.y = element_text(face = "plain", size = 12, 
                                                  margin = margin(t=0, r=3, b=0, l=0)),
-                     axis.text.y = element_text(size = 8, face="plain", color="black")
+                     axis.text.y = element_text(size = 10, face="plain", color="black")
                      # axis.title.y = element_blank()
                      )
 
-vince_box0 <- ggplot(data = data, aes(x=variable, y=value), group = variable) + 
+vince_box_45_85 <- ggplot(data = data, aes(x=variable, y=value), group = variable) + 
               geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
 			            position=position_dodge(width=0.5)) + 
-              facet_wrap(~loc, scales="free", ncol=6, dir="v") + 
+              facet_grid(~loc, scales="free") + 
               labs(x="control method", 
                    y="population percentage", 
                    color = "Climate Group") + 
@@ -118,7 +118,7 @@ vince_box0 <- ggplot(data = data, aes(x=variable, y=value), group = variable) +
 vince_45 <- ggplot(data = data_45, aes(x=variable, y=value), group = variable) + 
             geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                          position=position_dodge(width=0.5)) + 
-            facet_wrap(~loc, scales="free", ncol=6, dir="v") + 
+            facet_grid(~loc, scales="free") + 
             labs(x="control method", 
                  y="population percentage", 
                  color = "Climate Group") + 
@@ -134,7 +134,7 @@ vince_45 <- ggplot(data = data_45, aes(x=variable, y=value), group = variable) +
 vince_85 <- ggplot(data = data_85, aes(x=variable, y=value), group = variable) + 
                 geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                              position=position_dodge(width=0.5)) + 
-                facet_wrap(~loc, scales="free", ncol=6, dir="v") + 
+                facet_grid(~loc, scales="free") + 
                 labs(x="control method", 
                      y="population percentage", 
                      color = "Climate Group") + 
@@ -148,8 +148,7 @@ vince_85 <- ggplot(data = data_85, aes(x=variable, y=value), group = variable) +
                                   labels=c("Historical", "2040", "2060", "2080")) +
                 the_theme
 
-big_plot <- ggarrange(vince_box0, vince_45,
-                      vince_85,
+big_plot <- ggarrange(vince_box_45_85, vince_45, vince_85,
                       label.x = "control method",
                       label.y = "population percentage",
                       ncol = 1, 
@@ -203,4 +202,113 @@ ggsave(filename = "rcp45_85.png",
 #        dpi=400, 
 #        device = "png")
 
+data_85$RCP = "RCP 8.5"
+data_45$RCP = "RCP 4.5"
+data_back = rbind(data_85, data_45)
 
+the_theme <- theme_bw() + 
+               theme(plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
+                     panel.border = element_rect(fill=NA, size=.3),
+                     # plot.title = element_text(hjust = 0.5),
+                     #plot.subtitle = element_text(hjust = 0.5),
+                     panel.grid.major = element_line(size = 0.05),
+                     panel.grid.minor = element_blank(),
+                     panel.spacing=unit(.25,"cm"),
+                     legend.position="bottom", 
+                     legend.title = element_blank(),
+                     legend.key.size = unit(1.5, "line"),
+                     legend.text=element_text(size=9),
+                     legend.margin=margin(t= .1, r=0, b=.5, l=0, unit = 'cm'),
+                     legend.spacing.x = unit(.05, 'cm'),
+                     strip.text.x = element_text(size = 10),
+                     axis.ticks = element_line(color = "black", size = .2),
+                     #axis.text = element_text(face = "plain", size = 2.5, color="black"),
+                     axis.title.x = element_text(face = "plain", size=16, 
+                                                  margin = margin(t=10, r=0, b=0, l=0)),
+                     # axis.title.x=element_blank(),
+                     axis.text.x = element_text(size = 10, face = "plain", 
+                                                color="black"),
+                     axis.ticks.x = element_blank(),
+                     axis.title.y = element_text(face = "plain", size = 16, 
+                                                 margin = margin(t=0, r=10, b=0, l=0)),
+                     axis.text.y = element_text(size = 10, face="plain", color="black")
+                     # axis.title.y = element_blank()
+                     )
+
+facet45_85 <- ggplot(data = data_back, aes(x=variable, y=value), group = variable) + 
+                geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
+                             position=position_dodge(width=0.5)) + 
+                facet_grid(~ RCP ~ loc, scales="free") + 
+                labs(x="control method", 
+                     y="The % of the untreated control population", 
+                     color = "Climate Group") + 
+                scale_color_manual(values=color_ord,
+                                   name="Time\nPeriod", 
+                                   limits = color_ord,
+                                   labels=c("Historical", "2040", "2060", "2080")) +
+                scale_fill_manual(values=color_ord,
+                                  name="Time\nPeriod", 
+                                  labels=c("Historical", "2040", "2060", "2080")) +
+                the_theme
+
+ggsave(filename = "facet45_85.png", 
+       path = "/Users/hn/Desktop/", 
+       plot = facet45_85,
+       width = 12, height = 10, units = "in",
+       dpi=400, 
+       device = "png")
+
+
+the_theme <- theme_bw() + 
+               theme(plot.title = element_text(size = 18), 
+                     plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
+                     panel.border = element_rect(fill=NA, size=.3),
+                     # plot.title = element_text(hjust = 0.5),
+                     #plot.subtitle = element_text(hjust = 0.5),
+                     panel.grid.major = element_line(size = 0.05),
+                     panel.grid.minor = element_blank(),
+                     panel.spacing=unit(.25,"cm"),
+                     legend.position="bottom", 
+                     legend.title = element_blank(),
+                     legend.key.size = unit(1.5, "line"),
+                     legend.text=element_text(size=9),
+                     legend.margin=margin(t= .1, r=0, b=.5, l=0, unit = 'cm'),
+                     legend.spacing.x = unit(.05, 'cm'),
+                     strip.text.x = element_text(size = 10),
+                     axis.ticks = element_line(color = "black", size = .2),
+                     #axis.text = element_text(face = "plain", size = 2.5, color="black"),
+                     axis.title.x = element_text(face = "plain", size=16, 
+                                                  margin = margin(t=10, r=0, b=0, l=0)),
+                     # axis.title.x=element_blank(),
+                     axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank(),
+                     axis.title.y = element_text(face = "plain", size = 16, 
+                                                 margin = margin(t=0, r=10, b=0, l=0)),
+                     axis.text.y = element_text(size = 10, face="plain", color="black")
+                     # axis.title.y = element_blank()
+                     )
+
+MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=variable, y=value), group = variable) + 
+            geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
+                         position=position_dodge(width=0.5)) + 
+            facet_grid(~ RCP ~ loc, scales="free") + 
+            labs(# x="control method",
+                 x = element_blank(),
+                 y="The % of the untreated control population", 
+                 color = "Climate Group") + 
+            ggtitle(label = paste0("Control method in this plot is MD and spray")) +
+            scale_color_manual(values=color_ord,
+                               name="Time\nPeriod", 
+                               limits = color_ord,
+                               labels=c("Historical", "2040", "2060", "2080")) +
+            scale_fill_manual(values=color_ord,
+                              name="Time\nPeriod", 
+                              labels=c("Historical", "2040", "2060", "2080")) +
+            the_theme
+
+ggsave(filename = "MS_Spray.png", 
+       path = "/Users/hn/Desktop/", 
+       plot = MS_Spray,
+       width = 12, height = 10, units = "in",
+       dpi=400, 
+       device = "png")
