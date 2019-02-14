@@ -200,7 +200,7 @@ navbarPage(title = div(
                                                  )
                                     )
                       ),
-		       tabPanel("Median Day Of Year (By Generation)", 
+		       tabPanel("Median Day of Year (By Generation)", 
                     div(class="outer",
                         tags$head(# Include our custom CSS
                                 includeCSS("styles.css")
