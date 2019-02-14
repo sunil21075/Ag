@@ -25,7 +25,7 @@ weather_type = c("Warmer", "Cooler")
 
 plot_intervals <- function(data, month_name){
 	the_theme <- theme_bw() + 
-               theme(plot.margin = unit(c(t=0.1, r=0.1, b=.1, l=0.1), "cm"),
+               theme(plot.margin = unit(c(t=0.1, r=0.1, b=1, l=0.1), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      plot.title = element_text(hjust = 0.5),
                      plot.subtitle = element_text(hjust = 0.5),
