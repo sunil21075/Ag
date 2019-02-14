@@ -119,7 +119,6 @@ main_out <- file.path("/fastscratch",
                       "UI_historical",
                       "VIC_Binary_CONUS_to_2016")
 
-
 if (dir.exists(main_out) == F) {
 
   dir.create(path = main_out, recursive = T)
