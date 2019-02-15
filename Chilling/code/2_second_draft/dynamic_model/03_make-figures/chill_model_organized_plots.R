@@ -8,7 +8,6 @@ library(plyr)
 library(tidyverse)
 
 # 2. Pull data from current directory -------------------------------------
-
 the_dir <- dir()
 
 # remove filenames that aren't data
@@ -47,7 +46,6 @@ saveRDS(summary_comp, paste0(write_dir, "summary_comp.rds"))
 #############              ********** start from here **********
 #############
 ##############################################################################
-
 
 summary_comp <- data.table(readRDS(paste0(write_dir, "summary_comp.rds")))
 
@@ -111,6 +109,13 @@ thresh_figs_medians <- ggarrange(thresh_50_plot,
 #############
 #############************************************************************
 #############************************************************************
+
+summary_comp_loc_medians <- summary_comp %>%
+                            filter(model != "observed") %>%
+                            group_by(climate_type, year, model, scenario) %>%
+                            summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1))
+
+
 # Two plots, collapsing all warm/cool locations but keeping all models separate
 thresh_new_plot <- function(data, percentile){
   y = eval(parse(text =paste0( "data$", "thresh_", percentile, "_med")))
@@ -130,15 +135,12 @@ thresh_new_plot <- function(data, percentile){
               ggtitle(label = lab) +
               theme_bw() + 
               theme(plot.title = element_text(hjust = 0.5),
-                    plot.subtitle = element_text(hjust = 0.5))
+                    plot.subtitle = element_text(hjust = 0.5),
+                    axis.text.x = element_text(size = 10, face = "plain", color="black"),
+                    axis.text.y = element_text(size = 10, face = "plain", color="black")
+                    )
   return (the_plot)
 }
-
-summary_comp_loc_medians <- summary_comp %>%
-                            filter(model != "observed") %>%
-                            group_by(climate_type, year, model, scenario) %>%
-                            summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1))
-
 
 thresh_20_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentile="20")
 thresh_25_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentile="25")
@@ -278,7 +280,7 @@ thresh_figs <- ggarrange(thresh_future,
                          ncol = 1, nrow = 2,
                          heights = c(12, 1.1))
 
-plot_path = "/Users/hn/Documents/GitHub/Kirti/Chilling/HN_figures/"
+plot_path = "/Users/hn/Documents/GitHub/Kirti/Chilling/figures/utah/"
 ggsave(plot = thresh_figs, filename ="chill_plot_thresholds.png",
        dpi=400, path=plot_path,
        height = 70, width = 18, units = "in", limitsize = FALSE)
@@ -292,11 +294,11 @@ accum_plot <- function(data, y_name, due){
               geom_point(aes(x = year, y = y, fill = scenario),
                          alpha = 0.25, shape = 21) +
               geom_smooth(aes(x = year, y = y, color = scenario),
-                          method = "lm", size=.5, se = F) +
+                          method = "lm", size=.8, se = F) +
               facet_wrap( ~ climate_type) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
-                                    aesthetics = c("color", "fill")) +
+                                    aesthetics = c("color", "fill")) +              
               ylab("Median accum. chill units") +
               xlab("Year") +
               ggtitle(label = lab,
@@ -304,7 +306,9 @@ accum_plot <- function(data, y_name, due){
               theme_bw() + 
               theme(plot.title = element_text(hjust = 0.5),
                     plot.subtitle = element_text(hjust = 0.5),
-                    legend.position = "bottom")
+                    legend.position = "bottom",
+                    axis.text.x = element_text(size = 10, face = "plain", color="black"),
+                    axis.text.y = element_text(size = 10, face = "plain", color="black"))
   return(acc_plot)
 }
 
@@ -325,7 +329,9 @@ accum_hist_plot <- function(data, y_name, due){
                       subtitle = "by location") +
               theme_bw() + 
               theme(plot.title = element_text(hjust = 0.5),
-                    plot.subtitle = element_text(hjust = 0.5))
+                    plot.subtitle = element_text(hjust = 0.5),
+                    axis.text.x = element_text(size = 10, face = "plain", color="black"),
+                    axis.text.y = element_text(size = 10, face = "plain", color="black"))
   return(hist_plt)
 }
 # Data frame for historical values to be used for these figures

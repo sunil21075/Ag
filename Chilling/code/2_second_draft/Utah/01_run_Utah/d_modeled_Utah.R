@@ -13,7 +13,6 @@
 library(chillR)
 library(tidyverse)
 library(lubridate)
-
 source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
 options(digits=9)
@@ -62,8 +61,7 @@ start_time <- Sys.time()
 
 for(file in dir_con){
   # 3a. read in binary meteorological data file from specified path
-  met_data <- read_binary(file_path = file,
-                          hist = hist, no_vars=4)
+  met_data <- read_binary(file_path = file, hist = hist, no_vars=4)
 
   # I make the assumption that lat always has same number of decimal points
   lat <- as.numeric(substr(x = file, start = 6, stop = 13))
