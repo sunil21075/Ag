@@ -201,12 +201,8 @@ for(file in dir_con){
                                       file,
                                       ".txt")),
               row.names = F)
-
-
   # Remove objects not needed in future iterations
   rm(met_data, met_hourly, met_daily)
-
-
 }
 
 # How long did it take?

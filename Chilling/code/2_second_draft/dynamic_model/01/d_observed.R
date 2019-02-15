@@ -11,7 +11,7 @@
 
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-options(digits=9)
+
 library(chillR)
 library(tidyverse)
 library(lubridate)
@@ -31,7 +31,7 @@ hist <- TRUE
 #     current directory
 
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/01_step_data/observed/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/01/observed")
 
 if (dir.exists(main_out) == F) {
   dir.create(path = main_out, recursive = T)
@@ -112,7 +112,7 @@ for(file in dir_con){
   # sum within a day using NON-cumulative chill portions
   met_daily <- met_hourly %>%
                group_by(Chill_season) %>% # should maintain correct day, time order
-               mutate(chill = Utah_Model(HourTemp = Temp, summ = F)) %>%
+               mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
                group_by(Chill_season, Year, Month, Day) %>%
                summarise(Daily_portions = sum(chill))
   print ("___________________________________")
@@ -124,6 +124,12 @@ for(file in dir_con){
    met_daily <- met_daily %>%
                 group_by(Chill_season) %>%
                 mutate(Cume_portions = cumsum(Daily_portions))
+  print ("___________________________________")
+  print (" Line 12 dim(min and max year of met_daily)")
+  print (dim(met_daily))
+  print (max(met_daily$Year))
+  print (min(met_daily$Year))
+  
   # 3e. Save output
   write.table(x = met_daily,
               file = file.path(main_out,

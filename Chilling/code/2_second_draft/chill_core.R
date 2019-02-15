@@ -11,7 +11,7 @@
 # 1. Prep binary conversion functions ------------------------
 # Define function for reading binary 8-col files
 options(digits=9)
-read_binary <- function(file_name, file_path, hist, no_vars){
+read_binary <- function(file_path, hist, no_vars){
   ######    The modeled historical is in /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/
   ######    modeled historical is equivalent to having 4 variables, and years 1950-2005
   ######
@@ -25,11 +25,11 @@ read_binary <- function(file_name, file_path, hist, no_vars){
       end_year <- 2005
       } else {
         start_year <- 1979
-        end_year <- 2016
+        end_year <- 2015
       }
-    } else{
-      start_year <- 2006
-      end_year <- 2099
+  } else{
+    start_year <- 2006
+    end_year <- 2099
   }
 	ymd_file <- create_ymdvalues(start_year, end_year)
   data <- read_binary_addmdy(file_path, ymd_file, no_vars)
@@ -161,9 +161,9 @@ threshold_func <- function(file, data_type){
            Chill_season != "chill_2005-2006")
   } else {
     data <- file %>%
-    # Only want complete seasons of data
-    filter(Chill_season != "chill_1978-1979" &
-           Chill_season != "chill_2015-2016")
+            # Only want complete seasons of data
+            filter(Chill_season != "chill_1978-1979" &
+                   Chill_season != "chill_2015-2016")
   }
   data <- data %>% 
           # Within a season

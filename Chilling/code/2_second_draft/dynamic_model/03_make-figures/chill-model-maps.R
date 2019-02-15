@@ -16,6 +16,17 @@ library(tidyverse)
 # print to check
 getwd()
 
+##### either choose utah or dynamic
+model_name = "dynamic"
+
+if (model_name=="utah"){
+  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/utah_model_stats/")
+  plot_path = "/Users/hn/Documents/GitHub/Kirti/Chilling/figures/utah/"
+} else if (model_name=="dynamic"){
+  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats")
+  plot_path = "/Users/hn/Documents/GitHub/Kirti/Chilling/figures/dynamic/"
+}
+getwd()
 the_dir <- dir()
 
 # remove filenames that aren't data
@@ -153,6 +164,7 @@ head(df_45)
 
 accum_jan45_min <- min(df_45$median_J1)
 accum_jan45_max <- max(df_45$median_J1)
+cat("accum_jan45_min= ", accum_jan45_min, "-- accum_jan45_max= ", accum_jan45_max)
 
 # Create and automatically assign a map object for each model
 for(h in unique(stats_comp$model)) {
@@ -175,8 +187,6 @@ ensemble_map_jan45 <- ensemble_map(scenario_name = "rcp45",
                                    month_col = "median_J1", min = accum_jan45_min,
                                    max = accum_jan45_max)
 
-print("test 1")
-ls()
 # Need to add historical observed to this:
 accum_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45,
                                               ensemble_map_jan45,
@@ -202,16 +212,21 @@ accum_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45,
                               ncol = 2, nrow = 11,
                               common.legend = TRUE)
 
-print("test 2")
-ls()
-accum_jan45_figs<- annotate_figure(p = accum_jan45_figs,
+accum_jan45_figs <- annotate_figure(p = accum_jan45_figs,
                                    top = text_grob(label = "Median accumulated chill units by Jan. 1 under RCP 4.5",
                                                    face = "bold", size = 18))
-print("test 3")
-ls()
-plot_path = "/Users/hn/Documents/GitHub/Kirti/Chilling/HN_figures/maps/"
+
 ggsave(filename = "accum-jan45.png", plot = accum_jan45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+hist_ensemble_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45, ensemble_map_jan45),
+                                      ncol = 2, nrow = 1,
+                                      common.legend = TRUE)
+
+ggsave(filename = "accum-jan45_obs_ensemble.png", plot = hist_ensemble_jan45_figs, 
+       device = "png",
+       width = 10, height = 4, units = "in", 
+       dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "jan45"))
 
@@ -333,14 +348,12 @@ accum_apr45_min <- min(df_45$median_A1)
 accum_apr45_max <- max(df_45$median_A1)
 
 for(h in unique(stats_comp$model)) {
-  
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "apr45", sep="_"),
          value ={
           model_map(model = h, scenario_name = "rcp45", month_col = "median_A1",
-                    min = accum_apr45_min, max = accum_apr45_max)
-        }
-        )
+                    min = accum_apr45_min, max = accum_apr45_max)}
+          )
 }
 
 observed_map_apr45 <- observed_hist_map(min = accum_apr45_min, max = accum_apr45_max,
@@ -398,11 +411,9 @@ accum_jan85_max <- max(df_85$median_J1)
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "jan85", sep="_"),
-         value ={
-          model_map(model = h, scenario_name = "rcp85", month_col = "median_J1",
-                     min = accum_jan85_min, max = accum_jan85_max)
-        }
-        )
+         value ={model_map(model = h, scenario_name = "rcp85", month_col = "median_J1",
+                     min = accum_jan85_min, max = accum_jan85_max)}
+         )
 }
 
 observed_map_jan85 <- observed_hist_map(min = accum_jan85_min, max = accum_jan85_max,
@@ -441,8 +452,9 @@ accum_jan85_figs<- annotate_figure(p = accum_jan85_figs,
                    top = text_grob(label = "Median accumulated chill units by Jan 1 under RCP 8.5",
                                    face = "bold", size = 18))
 
-ggsave(filename = "accum-jan85.png", plot = accum_jan85_figs, device = "png",
-       width = 15, height = 40, units = "in")
+ggsave(filename = "accum_jan85.png", 
+       plot = accum_jan85_figs, device = "png",
+       width = 15, height = 40, units = "in", path=plot_path)
 rm(list = ls(pattern = "jan85"))
 ################################################
 ################################################ February, rcp 85
@@ -453,11 +465,8 @@ accum_feb85_max <- max(df_85$median_F1)
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "feb85", sep="_"),
-         value = {
-          model_map(model = h, scenario_name = "rcp85", month_col = "median_F1",
-                    min = accum_feb85_min, max = accum_feb85_max)
-        }
-        )
+         value = {model_map(model = h, scenario_name = "rcp85", month_col = "median_F1",
+                    min = accum_feb85_min, max = accum_feb85_max)})
 }
 
 observed_map_feb85 <- observed_hist_map(min = accum_feb85_min, max = accum_feb85_max,
@@ -496,10 +505,9 @@ accum_feb85_figs<- annotate_figure(p = accum_feb85_figs,
                                    face = "bold", size = 18))
 
 ggsave(filename = "accum-feb85.png", plot = accum_feb85_figs, device = "png",
-       width = 15, height = 40, units = "in")
+       width = 15, height = 40, units = "in", path=plot_path)
 
 rm(list = ls(pattern = "feb85"))
-
 ################################################ March, rcp 85
 accum_mar85_min <- min(df_85$median_M1)
 accum_mar85_max <- max(df_85$median_M1)
@@ -508,9 +516,7 @@ for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "mar85", sep="_"),
          value ={model_map(model = h, scenario_name = "rcp85", month_col = "median_M1",
-                     min = accum_mar85_min, max = accum_mar85_max)
-         }
-         )
+                     min = accum_mar85_min, max = accum_mar85_max)})
 }
 
 observed_map_mar85 <- observed_hist_map(min = accum_mar85_min, max = accum_mar85_max,
@@ -550,7 +556,7 @@ accum_mar85_figs<- annotate_figure(p = accum_mar85_figs,
                                    face = "bold", size = 18))
 
 ggsave(filename = "accum-mar85.png", plot = accum_mar85_figs, device = "png",
-       width = 15, height = 40, units = "in")
+       width = 15, height = 40, units = "in", path=plot_path)
 rm(list = ls(pattern = "mar85"))
 
 ################################################ April, rcp 85
@@ -560,11 +566,8 @@ accum_apr85_max <- max(df_85$median_A1)
 for(h in unique(stats_comp$model)) {  
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "apr85", sep="_"),
-         value ={
-           model_map(model = h, scenario_name = "rcp85", month_col = "median_A1",
-                     min = accum_apr85_min, max = accum_apr85_max)
-         }
-         )
+         value ={model_map(model = h, scenario_name = "rcp85", month_col = "median_A1",
+                     min = accum_apr85_min, max = accum_apr85_max)})
 }
 
 observed_map_apr85 <- observed_hist_map(min = accum_apr85_min, max = accum_apr85_max,
@@ -604,9 +607,9 @@ accum_apr85_figs <- annotate_figure(p = accum_apr85_figs,
                                    face = "bold", size = 18))
 
 ggsave(filename = "accum-apr85.png", plot = accum_apr85_figs, device = "png",
-       width = 15, height = 40, units = "in")
-rm(list = ls(pattern = "apr85"))
+       width = 15, height = 40, units = "in", path=plot_path)
 
+rm(list = ls(pattern = "apr85"))
 ###################################################################################
 ###########************************************************************************
 ###########
@@ -626,10 +629,8 @@ thresh20_45_max <- max(df_45$median_20)
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "thresh20_45", sep="_"),
-         value ={
-          model_map(model = h, scenario_name = "rcp45", month_col = "median_20",
-                    min = thresh20_45_min, max = thresh20_45_max)}
-         )
+         value ={model_map(model = h, scenario_name = "rcp45", month_col = "median_20",
+                    min = thresh20_45_min, max = thresh20_45_max)})
 }
 # Separately created maps for observed historical and ensemble mean
 observed_map_thresh20_45 <- observed_hist_map(min = thresh20_45_min,
@@ -675,7 +676,6 @@ ggsave(filename = "thresh20_45.png", plot = thresh20_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh20_45"))
 ##############################################################################
-##############################################################################
 #############
 ############# Thresh 25, RCP 45
 #############
@@ -684,10 +684,8 @@ thresh25_45_max <- max(df_45$median_25)
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "thresh25_45", sep="_"),
-         value ={
-          model_map(model = h, scenario_name = "rcp45", month_col = "median_25",
-                    min = thresh25_45_min, max = thresh25_45_max)}
-         )
+         value ={model_map(model = h, scenario_name = "rcp45", month_col = "median_25",
+                    min = thresh25_45_min, max = thresh25_45_max)})
 }
 # Separately created maps for observed historical and ensemble mean
 observed_map_thresh25_45 <- observed_hist_map(min = thresh25_45_min,
@@ -730,9 +728,8 @@ thresh25_45_figs <- annotate_figure(p = thresh25_45_figs,
 
 ggsave(filename = "thresh25_45.png", plot = thresh25_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
 rm(list = ls(pattern = "thresh25_45"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 30, RCP 45
@@ -791,8 +788,6 @@ ggsave(filename = "thresh30_45.png", plot = thresh30_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh30_45"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 35, RCP 45
 #############
@@ -848,8 +843,6 @@ thresh35_45_figs <- annotate_figure(p = thresh35_45_figs,
 ggsave(filename = "thresh35_45.png", plot = thresh35_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh35_45"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 40, RCP 45
@@ -908,8 +901,6 @@ ggsave(filename = "thresh40_45.png", plot = thresh40_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh40_45"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 45, RCP 45
 #############
@@ -965,8 +956,6 @@ thresh45_45_figs <- annotate_figure(p = thresh45_45_figs,
 ggsave(filename = "thresh45_45.png", plot = thresh45_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh45_45"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 50, RCP 45
@@ -1026,8 +1015,6 @@ ggsave(filename = "thresh50_45.png", plot = thresh50_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh50_45"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 55, RCP 45
 #############
@@ -1083,8 +1070,6 @@ ggsave(filename = "thresh55_45.png", plot = thresh55_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh55_45"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 60, RCP 45
@@ -1142,8 +1127,6 @@ ggsave(filename = "thresh60_45.png", plot = thresh60_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh60_45"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 65, RCP 45
 #############
@@ -1199,8 +1182,6 @@ ggsave(filename = "thresh65_45.png", plot = thresh65_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh65_45"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 70, RCP 45
@@ -1258,8 +1239,6 @@ ggsave(filename = "thresh70_45.png", plot = thresh70_45_figs, device = "png",
 
 rm(list = ls(pattern = "thresh70_45"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 75, RCP 45
 #############
@@ -1275,7 +1254,6 @@ for(h in unique(stats_comp$model)) {
                      min = thresh75_45_min, max = thresh75_45_max)
          }
   )
-  
 }
 
 # Separately created maps for observed historical and ensemble mean
@@ -1321,7 +1299,9 @@ ggsave(filename = "thresh75_45.png", plot = thresh75_45_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh75_45"))
 
-# 3d. RCP85 threshold figs ------------------------------------------------
+#***********************                        ***********************
+#*********************** RCP85 threshold figs   ***********************
+#***********************                        ***********************
 ##############################################################################
 #############
 ############# Thresh 20, RCP 85
@@ -1380,7 +1360,6 @@ ggsave(filename = "thresh20_85.png", plot = thresh20_85_figs, device = "png",
 
 rm(list = ls(pattern = "thresh20_85"))
 ##############################################################################
-##############################################################################
 #############
 ############# Thresh 25, RCP 85
 #############
@@ -1436,9 +1415,6 @@ thresh25_85_figs <- annotate_figure(p = thresh25_85_figs,
 ggsave(filename = "thresh25_85.png", plot = thresh25_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh25_85"))
-##############################################################################
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 30, RCP 85
@@ -1497,7 +1473,6 @@ ggsave(filename = "thresh30_85.png", plot = thresh30_85_figs, device = "png",
 
 rm(list = ls(pattern = "thresh30_85"))
 ##############################################################################
-##############################################################################
 #############
 ############# Thresh 35, RCP 85
 #############
@@ -1553,8 +1528,6 @@ thresh35_85_figs <- annotate_figure(p = thresh35_85_figs,
 ggsave(filename = "thresh35_85.png", plot = thresh35_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh35_85"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 40, RCP 85
@@ -1613,7 +1586,6 @@ ggsave(filename = "thresh40_85.png", plot = thresh40_85_figs, device = "png",
 
 rm(list = ls(pattern = "thresh40_85"))
 ##############################################################################
-##############################################################################
 #############
 ############# Thresh 45, RCP 85
 #############
@@ -1669,8 +1641,6 @@ thresh45_85_figs <- annotate_figure(p = thresh45_85_figs,
 ggsave(filename = "thresh45_85.png", plot = thresh45_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 rm(list = ls(pattern = "thresh45_85"))
-##############################################################################
-
 ##############################################################################
 #############
 ############# Thresh 50, RCP 85
@@ -1777,7 +1747,6 @@ thresh50_85_figs <- ggarrange(plotlist = list(observed_map_thresh50_85,
                                               NorESM1_M_map_thresh50_85),
                               ncol = 2, nrow = 11,
                               common.legend = TRUE)
-
 thresh50_85_figs <- annotate_figure(p = thresh50_85_figs,
                                     top = text_grob(label = "Median days to reach 50 chill unit threshold under rcp 85",
                                                     face = "bold", size = 18))
@@ -1786,9 +1755,6 @@ ggsave(filename = "thresh50_85.png", plot = thresh50_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh50_85"))
-##############################################################################
-
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 55, RCP 85
@@ -1846,7 +1812,6 @@ ggsave(filename = "thresh55_85.png", plot = thresh55_85_figs, device = "png",
 
 rm(list = ls(pattern = "thresh55_85"))
 ##############################################################################
-##############################################################################
 #############
 ############# Thresh 60, RCP 8.5
 #############
@@ -1902,8 +1867,6 @@ ggsave(filename = "thresh60_85.png", plot = thresh60_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh60_85"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 65, RCP 8.5
@@ -1961,8 +1924,6 @@ ggsave(filename = "thresh65_85.png", plot = thresh65_85_figs, device = "png",
 
 rm(list = ls(pattern = "thresh65_85"))
 ##############################################################################
-##############################################################################
-##############################################################################
 #############
 ############# Thresh 70, RCP 8.5
 #############
@@ -2018,8 +1979,6 @@ ggsave(filename = "thresh70_85.png", plot = thresh70_85_figs, device = "png",
        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
 
 rm(list = ls(pattern = "thresh70_85"))
-##############################################################################
-##############################################################################
 ##############################################################################
 #############
 ############# Thresh 70, RCP 8.5

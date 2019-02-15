@@ -1,11 +1,3 @@
-# Script for creating inputs for chill accumulation and threshold figures for
-# historical observed data. Summarizes the observed historical chill unit
-# data into format used for figures and maps.
-# Intended to work with observed-historical_data.sh script.
-
-# When working locally have been using this folder: 
-# setwd("~/chilling-model/test-data/historical/observed-hist-outputs/historical/UI_historical/VIC_Binary_CONUS_to_2016")
-# with local main_out <- "~/chilling-model/test-data/chill-figs/"
 
 # 1. Load packages --------------------------------------------------------
 .libPaths("/data/hydro/R_libs35")
@@ -18,13 +10,14 @@ library(tidyverse)
 source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
 # 2. Script setup ---------------------------------------------------------
-
+options(digits=9)
 # Check current folder
 print("does this look right?")
 getwd()
 start_time <- Sys.time()
+
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/02/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/2nd_step/02_observed/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -43,11 +36,14 @@ the_dir <- the_dir[grep(pattern = "chill_output_data",
 # Pre-allocate lists to be used
 data_list_historical <- vector(mode = "list", length = 295)
 
+print ("Line 38 data_list_historical")
+getwd()
+print ("----------------------------------")
 # 5. Iterate through files and process ------------------------------------
   
-  # 5a. Iterate through historical files ------------------------------------
-  
-  # For each data file
+# 5a. Iterate through historical files ------------------------------------
+
+# For each data file
 for(i in 1:length(the_dir)){
   
   # Read in file
@@ -55,7 +51,9 @@ for(i in 1:length(the_dir)){
                      header = T,
                      colClasses = c("factor", "numeric", "numeric", "numeric",
                                     "numeric", "numeric"))
-  
+  print ("line 55")
+  print ("dim(file)")
+  print (dim(file))
   names(data_list_historical)[i] <- the_dir[i]
   
   # Append it to a list following some processing
