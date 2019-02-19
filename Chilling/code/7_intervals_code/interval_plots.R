@@ -9,10 +9,14 @@ library(ggpubr) # for ggarrange
 data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
 
 # iof = interval of interest
-iof = c(c(-Inf, -2), c(-2, 4), 
-        c(4, 6), c(6, 8), 
-        c(8, 13), c(13, 16), 
+iof = c(c(-Inf, -2), 
+        c(-2, 4), 
+        c(4, 6), 
+        c(6, 8), 
+        c(8, 13), 
+        c(13, 16), 
         c(16, Inf))
+
 iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
 
 # These are the order of months in climate calendar!
@@ -40,17 +44,14 @@ plot_intervals <- function(data, month_name){
                      legend.spacing.x = unit(.05, 'cm'),
                      strip.text.x = element_text(size = 10),
                      axis.ticks = element_line(color = "black", size = .2),
-                     #axis.text = element_text(face = "plain", size = 2.5, color="black"),
                      axis.title.x = element_text(face = "plain", size=10, 
                      	                            margin = margin(t=4, r=0, b=0, l=0)),
-                     # axis.title.x=element_blank(),
                      axis.text.x = element_text(size = 6, face = "plain", 
                      	                          color="black", angle=-30),
                      axis.ticks.x = element_blank(),
                      axis.title.y = element_text(face = "plain", size = 10, 
                                                  margin = margin(t=0, r=.1, b=0, l=0)),
                      axis.text.y = element_text(size = 6, face="plain", color="black")
-                     # axis.title.y = element_blank()
                      )
 	obs_plot = ggplot(data = data) +
              geom_point(aes(x = Year, y = no_hours, fill = factor(scenario)),
@@ -108,8 +109,8 @@ big_plot <- ggarrange(Sept_plot, observed_Sept_plot,
                       Jan_plot, observed_Jan_plot,
                       Feb_plot, observed_Feb_plot,
                       Mar_plot, observed_Mar_plot,
-                      label.x = "Year",
-                      label.y = "No. of hours in a given temp. interval",
+                      label.x = "year",
+                      label.y = "no. of hours in a given temp. interval",
                       ncol = 1, 
                       nrow = 14, 
                       common.legend = T,

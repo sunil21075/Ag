@@ -17,7 +17,7 @@ getwd()
 start_time <- Sys.time()
 
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/2nd_step/02_observed/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/02/02_observed/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {

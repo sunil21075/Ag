@@ -12,32 +12,28 @@ plot_dens <- function(data, month_name){
     iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
     x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
     the_theme <- theme_bw() + 
-               theme(plot.margin = unit(c(t=0.1, r=0.1, b=1, l=0.1), "cm"),
-                     panel.border = element_rect(fill=NA, size=.3),
-                     plot.title = element_text(hjust = 0.5),
-                     plot.subtitle = element_text(hjust = 0.5),
-                     panel.grid.major = element_line(size = 0.05),
-                     panel.grid.minor = element_blank(),
-                     panel.spacing=unit(.25,"cm"),
-                     legend.position="bottom", 
-                     legend.title = element_blank(),
-                     legend.key.size = unit(1, "line"),
-                     legend.text=element_text(size=7),
-                     legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
-                     legend.spacing.x = unit(.08, 'cm'),
-                     strip.text.x = element_text(size = 10),
-                     axis.ticks = element_line(color = "black", size = .2),
-                     #axis.text = element_text(face = "plain", size = 2.5, color="black"),
-                     axis.title.x = element_text(face = "plain", size=10, 
-                                                     margin = margin(t=4, r=0, b=0, l=0)),
-                     # axis.title.x=element_blank(),
-                     axis.text.x = element_text(size = 6, face = "plain", color="black"),
-                     axis.ticks.x = element_blank(),
-                     axis.title.y = element_text(face = "plain", size = 10, 
-                                                 margin = margin(t=0, r=2, b=0, l=0)),
-                     axis.text.y = element_text(size = 6, face="plain", color="black")
-                     # axis.title.y = element_blank()
-                     )
+                 theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),
+                       panel.border = element_rect(fill=NA, size=.3),
+                       plot.title = element_text(hjust = 0.5),
+                       plot.subtitle = element_text(hjust = 0.5),
+                       panel.grid.major = element_line(size = 0.05),
+                       panel.grid.minor = element_blank(),
+                       panel.spacing=unit(.3,"cm"),
+                       legend.position="bottom", 
+                       legend.title = element_blank(),
+                       legend.key.size = unit(1, "line"),
+                       legend.text=element_text(size=7),
+                       legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
+                       legend.spacing.x = unit(.08, 'cm'),
+                       strip.text.x = element_text(size = 14),
+                       axis.ticks = element_line(color = "black", size = .2),
+                       axis.title.x = element_text(face = "plain", size=15, 
+                                                   margin = margin(t=4, r=0, b=0, l=0)),
+                       axis.text.x = element_text(size = 12, face = "plain", color="black", angle=30),
+                       axis.title.y = element_text(face = "plain", size = 15, 
+                                                   margin = margin(t=0, r=6, b=0, l=0)),
+                       axis.text.y = element_text(size = 12, face="plain", color="black")
+                       )
     obs_plot = ggplot(data, aes(x=Temp, fill=factor(ClimateGroup))) + 
                geom_density(alpha=.5, size=.1) + 
                geom_vline(xintercept = iof_breaks, 
@@ -52,26 +48,29 @@ plot_dens <- function(data, month_name){
                        name="Time\nPeriod", 
                        limits = color_ord,
                        labels=c("1950-2005","2025-2050","2051-2075","2076-2099")) + 
-               scale_x_continuous(name="temp.", breaks=x_breaks, limits=c(-40, 50)) + 
+               scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
                the_theme
     return(obs_plot)
 }
+history_max = 2015
 
 for (month in month_names){
     data = data.table(readRDS(paste0(data_dir, month, ".rds")))
+    data$CountyGroup[data$CountyGroup == "Warmer"] = "Warmer Areas"
+    data$CountyGroup[data$CountyGroup == "Cooler"] = "Cooler Areas"
 
     # data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
-    data$ClimateGroup[data$Year <= 2005] <- "1950-2005"
+    data$ClimateGroup[data$Year <= history_max] <- paste0("1950-", history_max)
     data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
     data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
     data$ClimateGroup[data$Year > 2075] <- "2076-2099"
 
-    # There are years between 2006 and 2015 which ... becomes NA
+    # There are years between (history_max+1) and 2025 which ... becomes NA
     data = na.omit(data)
 
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
-                                levels = c("1950-2005", "2025-2050", "2051-2075", "2076-2099"))
+                                levels = c(paste0("1950-", history_max), "2025-2050", "2051-2075", "2076-2099"))
 
     # assign(x = paste0(month, "_density_plot"),
     #        value = { plot_dens(data=data,
@@ -80,11 +79,11 @@ for (month in month_names){
     data_85 = data %>% filter(scenario %in% c("historical", "rcp85"))
 
     assign(x = paste0(month, "_density_plot_", "rcp45"),
-           value = { plot_dens(data=data_45,
-                                  month_name=month)})
+           value = {plot_dens(data=data_45,
+                              month_name=month)})
     assign(x = paste0(month, "_density_plot_", "rcp85"),
            value = { plot_dens(data=data_85,
-                                  month_name=month)})
+                               month_name=month)})
 }
 
 #######
@@ -98,11 +97,11 @@ big_plot_45 <- ggarrange(Sept_density_plot_rcp45,
                          Jan_density_plot_rcp45,
                          Feb_density_plot_rcp45,
                          Mar_density_plot_rcp45,
-                         label.x = "Hourly temp.",
-                         label.y = "Density",
+                         label.x = "hourly temp.",
+                         label.y = "density",
                          ncol = 1, 
                          nrow = 7, 
-                         common.legend = T,
+                         common.legend = F,
                          legend = "bottom")
 ggsave(filename = "density_45.png", 
        path = "/Users/hn/Desktop/", 
@@ -122,11 +121,11 @@ big_plot_85 <- ggarrange(Sept_density_plot_rcp85,
                          Jan_density_plot_rcp85,
                          Feb_density_plot_rcp85,
                          Mar_density_plot_rcp85,
-                         label.x = "Hourly temp.",
-                         label.y = "Density",
+                         label.x = "hourly temp.",
+                         label.y = "density",
                          ncol = 1, 
                          nrow = 7, 
-                         common.legend = T,
+                         common.legend = F,
                          legend = "bottom")
 ggsave(filename = "density_85.png", 
        path = "/Users/hn/Desktop/", 

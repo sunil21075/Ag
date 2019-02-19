@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N hist_postprocess_utah
+#PBS -N hist_postprocess
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
@@ -25,7 +25,7 @@ echo
 echo We are in the $PWD directory
 echo
 
-cd /data/hydro/users/Hossein/chill/data_by_core/utah_model/01/observed/
+cd /data/hydro/users/Hossein/chill/data_by_core/utah_model/01_step_data/observed/
 
 echo
 echo We are now in $PWD.

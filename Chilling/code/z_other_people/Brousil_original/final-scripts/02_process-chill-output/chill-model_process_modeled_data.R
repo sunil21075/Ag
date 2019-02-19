@@ -80,47 +80,45 @@ if(hist){
     names(data_list_historical)[i] <- the_dir[i]
     
     # Append it to a list following some processing
-    data_list_historical[[i]] <-  file %>%
-      # Only want complete seasons of data
-      filter(Chill_season != "chill_1949-1950" &
-               Chill_season != "chill_2005-2006") %>% 
-      # Within a season
-      group_by(Chill_season) %>%
-      # Mutate output is the row index of the first time where it meets threshold
-      # within the group. (Index is the same as counting the start date as day = 1)
-      mutate(thresh_50 = detect_index(.x = Cume_portions,
-                                      .f = chill_thresh,
-                                      threshold = 50), # threshold = 50 chill portions
-             thresh_75 = detect_index(.x = Cume_portions,
-                                      .f = chill_thresh,
-                                      threshold = 75),
-             # Below we set the row where, ex. month = 1 (jan) and day = 1 to be
-             # equal to the value of Cume_portions. This creates one non-NA row
-             # for the whole column. Then in summarise we remove all NAs, which
-             # collapses the column to a single value -- perfect for a one-line
-             # summary per season.
-             sum_J1 =  case_when( # January 1 chill sum
-               Month == 1 & Day == 1 ~ Cume_portions),
-             sum_F1 = case_when( # February 1 chill sum, etc
-               Month == 2 & Day == 1 ~ Cume_portions),
-             sum_M1 = case_when(
-               Month == 3 & Day == 1 ~ Cume_portions),
-             sum_A1 = case_when(
-               Month == 4 & Day == 1 ~ Cume_portions)) %>% 
-      summarise(sum = sum(Daily_portions),
-                thresh_50 = unique(thresh_50), # retain the thresholds
-                thresh_75 = unique(thresh_75),
-                sum_J1 = na.omit(sum_J1),
-                sum_F1 = na.omit(sum_F1),
-                sum_M1 = na.omit(sum_M1),
-                sum_A1 = na.omit(sum_A1)) %>%
-      data.frame() # to allow for ldply() later
+    data_list_historical[[i]] <- file %>%
+                      # Only want complete seasons of data
+                      filter(Chill_season != "chill_1949-1950" &
+                             Chill_season != "chill_2005-2006") %>% 
+                      # Within a season
+                      group_by(Chill_season) %>%
+                      # Mutate output is the row index of the first time where it meets threshold
+                      # within the group. (Index is the same as counting the start date as day = 1)
+                      mutate(thresh_50 = detect_index(.x = Cume_portions,
+                                                      .f = chill_thresh,
+                                                      threshold = 50), # threshold = 50 chill portions
+                             thresh_75 = detect_index(.x = Cume_portions,
+                                                      .f = chill_thresh,
+                                                      threshold = 75),
+                             # Below we set the row where, ex. month = 1 (jan) and day = 1 to be
+                             # equal to the value of Cume_portions. This creates one non-NA row
+                             # for the whole column. Then in summarise we remove all NAs, which
+                             # collapses the column to a single value -- perfect for a one-line
+                             # summary per season.
+                             sum_J1 =  case_when( # January 1 chill sum
+                               Month == 1 & Day == 1 ~ Cume_portions),
+                             sum_F1 = case_when( # February 1 chill sum, etc
+                               Month == 2 & Day == 1 ~ Cume_portions),
+                             sum_M1 = case_when(
+                               Month == 3 & Day == 1 ~ Cume_portions),
+                             sum_A1 = case_when(
+                               Month == 4 & Day == 1 ~ Cume_portions)) %>% 
+                      summarise(sum = sum(Daily_portions),
+                                thresh_50 = unique(thresh_50), # retain the thresholds
+                                thresh_75 = unique(thresh_75),
+                                sum_J1 = na.omit(sum_J1),
+                                sum_F1 = na.omit(sum_F1),
+                                sum_M1 = na.omit(sum_M1),
+                                sum_A1 = na.omit(sum_A1)) %>%
+                      data.frame() # to allow for ldply() later
     
     rm(file)
     
   }
-  
-  
   
   # 5b. Process gathered historical data ------------------------------------
    
