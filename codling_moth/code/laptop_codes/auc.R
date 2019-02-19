@@ -3,7 +3,7 @@
 rm(list=ls())
 # compute are under the curve (shorter)
 
-library(MESS) # has the aux function in it.
+library(MESS) # has the auc function in it.
 library(data.table)
 
 data_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/diapause/"
@@ -16,6 +16,7 @@ file_list = list.files(path = data_dir,
 
 gen_borders = c(213, 1153, 2313, 3443, 4453)
 time_periods = c("Historical", "2040's", "2060's", "2080's")
+
 for (file in file_list){ 
   ######### initiate the output table
   pop_type = unlist(strsplit(file, "_"))[2]
@@ -68,8 +69,13 @@ for (file in file_list){
     
     data_total_cold = data_total[data_total$CountyGroup==1]
     data_escap_cold = data_escap[data_escap$CountyGroup==1]
+    
     ##########################################
-    ########################################## warmer total
+    #####
+    ##### warmer total
+    #####
+    ##########################################
+
     # gen 1
     data_gen = data_total_warm[data_total_warm$CumulativeDDF>=gen_borders[1] & data_total_warm$CumulativeDDF<gen_borders[2]]
     df[1, 2] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
@@ -85,9 +91,14 @@ for (file in file_list){
     # gen 4
     data_gen = data_total_warm[data_total_warm$CumulativeDDF>=gen_borders[4] & data_total_warm$CumulativeDDF<=gen_borders[5]]
     df[1, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
+    
     ##########################################
-    ########################################## warmer escape
-    # gen 1
+    #####
+    ##### warmer escape
+    #####
+    ##########################################
+    
+    ### gen 1
     data_gen = data_escap_warm[data_escap_warm$CumulativeDDF>=gen_borders[1] & data_escap_warm$CumulativeDDF<gen_borders[2]]
     df[2, 2] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
     
@@ -102,8 +113,13 @@ for (file in file_list){
     # gen 4
     data_gen = data_escap_warm[data_escap_warm$CumulativeDDF>=gen_borders[4] & data_escap_warm$CumulativeDDF<=gen_borders[5]]
     df[2, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
+
     ##########################################
-    ########################################## colder total
+    #####
+    ##### colder total
+    #####
+    ##########################################
+    
     # gen 1
     data_gen = data_total_cold[data_total_cold$CumulativeDDF>=gen_borders[1] & data_total_cold$CumulativeDDF<gen_borders[2]]
     df[3, 2] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
@@ -119,8 +135,13 @@ for (file in file_list){
     # gen 4
     data_gen = data_total_cold[data_total_cold$CumulativeDDF>=gen_borders[4] & data_total_cold$CumulativeDDF<=gen_borders[5]]
     df[3, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
+
     ##########################################
-    ########################################## colder escape
+    #####
+    ##### colder escape
+    #####
+    ##########################################
+
     # gen 1
     data_gen = data_escap_cold[data_escap_cold$CumulativeDDF>=gen_borders[1] & data_escap_cold$CumulativeDDF<gen_borders[2]]
     df[4, 2] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
