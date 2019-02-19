@@ -21,7 +21,7 @@ print("does this look right?")
 getwd()
 start_time <- Sys.time()
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/dynamic_model/02/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/11_threshold/02/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -52,6 +52,7 @@ hist <- basename(getwd()) == "historical"
 if(hist){
   
   # 5a. Iterate through historical files ----------------------------------
+  
   # For each data file
   for(i in 1:length(the_dir)){
     

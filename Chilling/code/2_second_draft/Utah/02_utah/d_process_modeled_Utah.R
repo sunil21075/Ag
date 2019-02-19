@@ -17,7 +17,7 @@ print("does this look right?")
 getwd()
 start_time <- Sys.time()
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/2nd_step/02_modeled/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/02/02_modeled/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -181,7 +181,7 @@ if(hist){
   data2060 <- ldply(data_list_2060, function(x) data.frame(x))
   data2080 <- ldply(data_list_2080, function(x) data.frame(x))
   
-  all_years <- bind_rows(data2040, data2060, data2060)
+  all_years <- bind_rows(data2040, data2060, data2080)
   
   head(all_years)
   

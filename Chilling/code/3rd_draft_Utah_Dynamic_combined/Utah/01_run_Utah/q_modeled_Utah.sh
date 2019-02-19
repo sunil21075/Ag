@@ -5,20 +5,20 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N modeled
+#PBS -N utah_01_modeled
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=2gb
-#PBS -l walltime=01:45:00
+#PBS -l mem=10gb
+#PBS -l walltime=50:00:00
 #PBS -q hydro
 #PBS -t 1-72
 
 ## Define path for output & error logs
 #PBS -k o
 ##PBS -j oe
-#PBS -e /data/hydro/users/Hossein/chill/data_by_core/error/modeled_E.txt
-#PBS -o /data/hydro/users/Hossein/chill/data_by_core/error/modeled.O.txt
+#PBS -e /home/hnoorazar/chilling_codes/2_second_draft/utah_model/01/error/modeled_E.txt
+#PBS -o /home/hnoorazar/chilling_codes/2_second_draft/utah_model/01/error/modeled_O.txt
 
 ## Define path for reporting
 #PBS -m abe
@@ -50,15 +50,15 @@ module purge
 # module load libxml2/2.9.4
 # module load gdal/2.1.2_gcc proj/4.9.2
 # module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
-module load gcc/7.3.0
-module load r/3.5.1/gcc/7.3.0
-# module load r/3.5.1
+# module load gcc/7.3.0
+# module load r/3.5.1/gcc/7.3.0
+module load r/3.5.1
 # module load R
 
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /data/hydro/users/Hossein/chill/data_by_core/d_modeled.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/2_second_draft/utah_model/01/d_modeled_Utah.R
 
 echo
 echo "----- DONE -----"

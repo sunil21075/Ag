@@ -1,7 +1,3 @@
-# Script for creating inputs for chill accumulation and threshold figures.
-# Intended to work with array-modeled_data.sh script.
-# Uses outputs from chilling model as inputs.
-
 # 1. Load packages --------------------------------------------------------
 
 .libPaths("/data/hydro/R_libs35")
@@ -11,17 +7,17 @@ library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/data/hydro/users/Hossein/chill/data_by_core/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
-
+options(digits=9)
 # 2. Script setup ---------------------------------------------------------
 
 # Check current folder
 print("does this look right?")
 getwd()
-
+start_time <- Sys.time()
 # Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/02/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/utah_model/2nd_step/02_modeled/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -72,7 +68,17 @@ if(hist){
   # 5b. Process gathered historical data ------------------------------------
   # Get medians for each location during historical period
   summary_data_historical <- ldply(.data = data_list_historical,
-                                   .fun = function(x) medians(thresh_50 = x[, "thresh_50"],
+                                   .fun = function(x) medians(thresh_20 = x[, "thresh_20"],
+                                                              thresh_25 = x[, "thresh_25"],
+                                                              thresh_30 = x[, "thresh_30"],
+                                                              thresh_35 = x[, "thresh_35"],
+                                                              thresh_40 = x[, "thresh_40"],
+                                                              thresh_45 = x[, "thresh_45"],
+                                                              thresh_50 = x[, "thresh_50"],
+                                                              thresh_55 = x[, "thresh_55"],
+                                                              thresh_60 = x[, "thresh_60"],
+                                                              thresh_65 = x[, "thresh_65"],
+                                                              thresh_70 = x[, "thresh_70"],
                                                               thresh_75 = x[, "thresh_75"],
                                                               sum_J1 = x[, "sum_J1"],
                                                               sum_F1 = x[, "sum_F1"],
@@ -102,8 +108,8 @@ if(hist){
   # .id row contains originating filename of this data
   write.table(x = data_historical,
               file = file.path(main_out,
-                               paste0("chill-data-summary-",
-                                      basename(dirname(getwd())), # model name
+                               paste0("summary_",
+                                      gsub("-", "_", basename(dirname(getwd()))), # model name
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),
@@ -119,8 +125,8 @@ if(hist){
 
   write.table(x = summary_data_historical,
               file = file.path(main_out,
-                               paste0("chill-data-summary-stats-",
-                                      basename(dirname(getwd())), # model name
+                               paste0("summary_stats_",
+                                      gsub("-", "_",basename(dirname(getwd()))), # model name
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),
@@ -144,16 +150,16 @@ if(hist){
     # on 2018-12-05
     
     # 2040s
-    data_list_2040[[i]] <- process_data(file, time_period = "2040")
+    data_list_2040[[i]] <- process_data(file, time_period="2040")
     
     names(data_list_2040)[i] <- the_dir[i]
     
     # 2060s
-    data_list_2060[[i]] <- process_data(file, time_period = "2060")
+    data_list_2060[[i]] <- process_data(file, time_period="2060")
     names(data_list_2060)[i] <- the_dir[i]
     
     # 2080s
-    data_list_2080[[i]] <- process_data(file, time_period = "2080")
+    data_list_2080[[i]] <- process_data(file, time_period="2080")
     names(data_list_2080)[i] <- the_dir[i]
 
     rm(file) 
@@ -175,7 +181,7 @@ if(hist){
   data2060 <- ldply(data_list_2060, function(x) data.frame(x))
   data2080 <- ldply(data_list_2080, function(x) data.frame(x))
   
-  all_years <- bind_rows(data2040, data2060, data2060)
+  all_years <- bind_rows(data2040, data2060, data2080)
   
   head(all_years)
   
@@ -195,8 +201,8 @@ if(hist){
   # .id row contains originating filename of this data
   write.table(x = all_years,
               file = file.path(main_out,
-                               paste0("chill-data-summary-",
-                                      basename(dirname(getwd())), # model name
+                               paste0("summary_",
+                                      gsub( "-", "_", basename(dirname(getwd()))), # model name
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),
@@ -227,11 +233,16 @@ if(hist){
  
   write.table(x = summary_data_comb,
               file = file.path(main_out,
-                               paste0("chill-data-summary-stats-",
-                                      basename(dirname(getwd())), # model name
+                               paste0("summary_stats_",
+                                      gsub("-", "_", basename(dirname(getwd()))), # model name
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),
               row.names = F)   
 }
+# How long did it take?
+end_time <- Sys.time()
+
+print( end_time - start_time)
+
 

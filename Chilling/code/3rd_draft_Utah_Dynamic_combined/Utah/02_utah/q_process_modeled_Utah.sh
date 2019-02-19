@@ -36,7 +36,7 @@ dir_list=()
 while IFS= read -d $'\0' -r file ; do
 dir_list=("${dir_list[@]}" "$file")
 
-done < <(find /data/hydro/users/Hossein/chill/data_by_core/utah_model/01/modeled -mindepth 2 -maxdepth 2 -type d -print0)
+done < <(find /data/hydro/users/Hossein/chill/data_by_core/utah_model/01_step_data/modeled -mindepth 2 -maxdepth 2 -type d -print0)
 
 echo
 echo "${dir_list[@]}"
