@@ -36,7 +36,7 @@ for (model in models){
 	locations = unique(curr_data$location)
 	rm(curr_data)
 
-    # initiale data tables for slopes with -999.
+    # initialize data tables for slopes with -999.
 	april_slopes <- setNames(data.table(matrix(nrow = 295, ncol = 9)), 
 		                     c("location", climate_scenarios, "month"))
 	april_slopes[is.na(april_slopes)] <- (-999)

@@ -165,6 +165,7 @@ threshold_func <- function(file, data_type){
             filter(Chill_season != "chill_1978-1979" &
                    Chill_season != "chill_2015-2016")
   }
+  
   data <- data %>% 
           # Within a season
           group_by(Chill_season) %>%
@@ -282,6 +283,12 @@ get_medians <- function(a_list){
   return (medians_data)
 }
 
+##################################################
+#####                                        #####
+#####    this is the overlapping one         #####
+#####    the non-overlap is below            #####
+#####                                        #####
+##################################################
 process_data <- function(file, time_period) {
   if (time_period=="2040"){
     processed_data <- file %>%
@@ -298,6 +305,87 @@ process_data <- function(file, time_period) {
                        filter(Year > 2065 & Year <= 2095,
                               Chill_season != "chill_2065-2066" &
                               Chill_season != "chill_2095-2096")
+  }
+  processed_data <- processed_data %>% 
+                    group_by(Chill_season) %>%
+                    mutate(thresh_20 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 20),
+                           thresh_25 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 25),
+                           thresh_30 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 30),
+                           thresh_35 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 35),
+                           thresh_40 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 40),
+                           thresh_45 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 45),
+                           thresh_50 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 50),
+                           thresh_55 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 55),
+                           thresh_60 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 60),
+                           thresh_65 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 65),
+                           thresh_70 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 70),
+                           thresh_75 = detect_index(.x = Cume_portions,
+                                                    .f = chill_thresh,
+                                                    threshold = 75),
+                           sum_J1 = case_when(Month == 1 & Day == 1 ~ Cume_portions),
+                           sum_F1 = case_when(Month == 2 & Day == 1 ~ Cume_portions),
+                           sum_M1 = case_when(Month == 3 & Day == 1 ~ Cume_portions),
+                           sum_A1 = case_when(Month == 4 & Day == 1 ~ Cume_portions)) %>% 
+                    summarise(sum = sum(Daily_portions),
+                              thresh_20 = unique(thresh_20), # retain the thresholds
+                              thresh_25 = unique(thresh_25),
+                              thresh_30 = unique(thresh_30),
+                              thresh_35 = unique(thresh_35),
+                              thresh_40 = unique(thresh_40),
+                              thresh_45 = unique(thresh_45),
+                              thresh_50 = unique(thresh_50),
+                              thresh_55 = unique(thresh_55),
+                              thresh_60 = unique(thresh_60),
+                              thresh_65 = unique(thresh_65),
+                              thresh_70 = unique(thresh_70),
+                              thresh_75 = unique(thresh_75),
+                              sum_J1 = na.omit(sum_J1),
+                              sum_F1 = na.omit(sum_F1),
+                              sum_M1 = na.omit(sum_M1),
+                              sum_A1 = na.omit(sum_A1)) %>%
+                    data.frame() # to allow for ldply() later
+  return(processed_data)
+}
+
+
+process_data_non_overlap <- function(file, time_period) {
+  if (time_period == "2025_2050"){
+    processed_data <- file %>%
+                      filter(Year > 2025 & Year <= 2050,
+                             Chill_season != "chill_2025-2026" &
+                             Chill_season != "chill_2050-2051")
+  } else if (time_period == "2051_2075"){
+    processed_data <- file %>%
+                      filter(Year > 2050 & Year <= 2075,
+                             Chill_season != "chill_2050-2051" &
+                             Chill_season != "chill_2075-2076")
+  } else if (time_period == "2076_2100") {
+     processed_data <- file %>%
+                       filter(Year > 2075 & Year <= 2099,
+                              Chill_season != "chill_2075-2076" &
+                              Chill_season != "chill_2099-2100")
   }
   processed_data <- processed_data %>% 
                     group_by(Chill_season) %>%

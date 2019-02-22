@@ -2,8 +2,8 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N merge_limited
-#PBS -l nodes=1:ppn=1,walltime=70:00:00
-#PBS -l mem=20gb
+#PBS -l nodes=1:ppn=1,walltime=1:00:00
+#PBS -l mem=4gb
 #PBS -q hydro
 #PBS -e /home/hnoorazar/chilling_codes/hourly_limited_locations/error/merge_E.txt
 #PBS -o /home/hnoorazar/chilling_codes/hourly_limited_locations/error/merge_O.txt

@@ -134,8 +134,6 @@ for (model in models){
          guides(fill=guide_legend(title="")) + 
          facet_grid(. ~ month, scales="free") +
 
-  
-  
 }
 
 

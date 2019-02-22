@@ -39,8 +39,8 @@ if (model_name=="utah"){
   thresh_min = utah_thresh_min
   thresh_max = utah_thresh_max
 } else if (model_name=="dynamic"){
-  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats")
-  plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats"
+  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/")
+  plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/"
   chill_min = dynamic_chill_min
   chill_max = dynamic_chill_max
   thresh_min = dynamic_thresh_min
@@ -51,7 +51,7 @@ getwd()
 the_dir <- dir()
 
 # remove filenames that aren't data
-the_dir <- the_dir[grep(pattern = "summary", x = the_dir)]
+the_dir <- the_dir[grep(pattern = ".txt", x = the_dir)]
 
 # Data for maps
 the_dir_stats <- the_dir[grep(pattern = "summary_stats", x = the_dir)]
@@ -208,7 +208,8 @@ observed_map_jan45 <- observed_hist_map(min = accum_jan45_min, max = accum_jan45
                                         month_col = "median_J1")
 
 ensemble_map_jan45 <- ensemble_map(scenario_name = "rcp45", 
-                                   month_col = "median_J1", min = accum_jan45_min,
+                                   month_col = "median_J1", 
+                                   min = accum_jan45_min,
                                    max = accum_jan45_max)
 
 # Need to add historical observed to this:
@@ -662,8 +663,6 @@ ggsave(filename = "accum-apr85.png", plot = accum_apr85_figs, device = "png",
        width = 15, height = 40, units = "in", path=plot_path)
 
 rm(list = ls(pattern = "apr85"))
-
-
 ###################################################################################
 ###########************************************************************************
 ###########
