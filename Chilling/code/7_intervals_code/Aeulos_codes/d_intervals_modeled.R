@@ -1,30 +1,11 @@
-# Script intended to take meteorological data from 
-# ../jennylabcommon2/metdata/maca_v2_vic_binary and run chill model on it.
-# Note that as of 2018-11-19 I split this separate from the script that runs
-# the /historical/UI_historical data because the historical data start and end
-# years are different between modeled historical (maca_) and UI_historical
-
-# Overview:
-# 1. Functions for converting binary data
-# 2. Prep file list for processing and output location
-# 3. Read binary and run through chill model
-#.libPaths("/data/hydro/R_libs")
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-#install.packages(c("base64enc", bitops", "chillR", "MESS", "colorspace", "lubridate", "tidyverse"), 
-#                 dependencies = TRUE, repos = 'https://cran.rstudio.com')
-
-# Test if packages can be used
 library(chillR)
 library(MESS)
 library(xts)
 library(tidyverse)
-# library(rgdal)
 devtools::session_info()
-# library(dplyr, lib.loc="/home/hnoorazar/R/R_libs/")
 
-# 1. Prep binary conversion functions -------------------------------------
-# Define function for reading binary 8-col files
 options(digits=9)
 ################ re-written in the chill_core.
 read_binary_8 <- function(file_name, file_path, hist){
@@ -187,15 +168,15 @@ param_dir = "/home/hnoorazar/chilling_codes/parameters/"
 local_files <- read.delim(file = paste0(param_dir, "limited_locations.txt"), header = F)
 local_files <- as.vector(local_files$V1)
 
+print ("line 170")
+print (local_files)
+
 # 2b. Note if working with a directory of historical data
 
 hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)
 
-# 2c. If needed, make fastscratch folder matching the name of the
-#     current directory
-
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/chill/a_limited_locs/")
+main_out <- file.path("/data/hydro/users/Hossein/chill/7_time_intervals/")
 
 # Get current folder
 current_dir <- gsub(x = getwd(),
@@ -221,7 +202,6 @@ dir_con <- dir_con[grep(pattern = "data_",
 # choose only files that we're interested in
 dir_con <- dir_con[which(dir_con %in% local_files)]
 print ("line 238")
-#saveRDS(data.frame(dir_con), paste0("/home/hnoorazar/chilling_codes/01_run-chill-model/", "dir_con.rds"))
 # 3. Process the data -----------------------------------------------------
 
 # Time the processing of this batch of files
@@ -277,7 +257,7 @@ for(file in dir_con){
   saveRDS(met_hourly, paste0(main_out, current_dir, "/met_hourly_", file, ".rds"))
 
   # Remove objects not needed in future iterations
-  rm(met_data, met_hourly, met_daily)
+  rm(met_data, met_hourly)
 }
 
 # How long did it take?

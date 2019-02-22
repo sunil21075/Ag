@@ -1,20 +1,5 @@
-# Script intended to take meteorological data from 
-# ../jennylabcommon2/metdata/historical/UI_historical/VIC_Binary_CONUS_to_2016
-# and run chill model on it. Note that as of 2018-11-19 I split this separate 
-# from the script that runs the metdata/maca_v2_vic_binary data because the 
-# historical data start and end years are different between modeled historical 
-# (maca_) and UI_historical
-
-# Runs with run-chill-model_historical-observed.sh
-
-# Overview:
-# 1. Functions for converting binary data
-# 2. Prep file list for processing and output location
-# 3. Read binary and run through chill model
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-
-# Necessary packages:
 library(chillR, lib.loc="/data/hydro/R_libs35")
 library(tidyverse, lib.loc="/data/hydro/R_libs35")
 library(lubridate, lib.loc="/data/hydro/R_libs35")
@@ -113,8 +98,7 @@ hist <- TRUE
 #     current directory
 
 # Define main output path
-main_out <- file.path("/data/hydro/users/Hossein/chill/a_limited_locs/historical/UI_historical/VIC_Binary_CONUS_to_2016")
-# main_out <- file.path("/fastscratch", "mbrousil", "historical", "UI_historical", "VIC_Binary_CONUS_to_2016")
+main_out <- file.path("/data/hydro/users/Hossein/chill/7_time_intervals/observed/")
 
 if (dir.exists(main_out) == F) {
   dir.create(path = main_out, recursive = T)

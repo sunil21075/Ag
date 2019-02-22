@@ -4,14 +4,18 @@ library(data.table)
 library(dplyr)
 library(foreach)
 
-read_data_dir= "/data/hydro/users/Hossein/chill/7_time_intervals/a_limited_locs/"
+read_data_dir= "/data/hydro/users/Hossein/chill/7_time_intervals/"
 write_dir   = "/data/hydro/users/Hossein/chill/7_time_intervals/"
-file_names = c("met_hourly_data_43.53125_-116.59375.rds", 
-	           "met_hourly_data_45.65625_-121.15625.rds")
-weather_type = c("Warmer", "Cooler")
+file_names = c("met_hourly_data_48.40625_-119.53125.rds", 
+	           "met_hourly_data_46.28125_-119.34375.rds")
+
+weather_type = c("Cooler Area", "Warmer Area")
 
 climate_scenarios = list.files(read_data_dir, all.files=F, include.dirs=F)
+print ("__________________________________")
+print ("climate_scenarios are ")
 print (climate_scenarios)
+print ("__________________________________")
 projection_type = c("historical", "rcp45", "rcp85")
 
 observed = data.table()
@@ -20,20 +24,20 @@ rcp45 = data.table()
 rcp85 = data.table()
 
 for (cs in climate_scenarios){
-	if (cs == "historical"){
+	if (cs == "observed"){
 		curr_path = file.path(read_data_dir, cs)
 		f = data.table(readRDS(paste0(curr_path, "/", file_names[1])))
 		f$climateScenario = "observed"
-		f$CountyGroup = "Warmer"
-		f$location = "43.53125_-116.59375"
+		f$CountyGroup = "Cooler Area"
+		f$location = "48.40625_-119.53125"
 		observed <- rbind(observed, f)
 		
 		f = data.table(readRDS(paste0(curr_path, "/", file_names[2])))
 		f$climateScenario = "observed"
-		f$CountyGroup = "Cooler"
-		f$location = "45.65625_-121.15625"
+		f$CountyGroup = "Warmer Area"
+		f$location = "46.28125_-119.34375"
 		observed <- rbind(observed, f)
-	} else{		
+	} else {		
 		for (proj in projection_type){
 			curr_path = file.path(read_data_dir, cs, proj)
 			for (file in file_names){
@@ -41,11 +45,11 @@ for (cs in climate_scenarios){
 			    f$climateScenario = cs
 			    
 			    if (file==file_names[1]){
-			    	f$CountyGroup = "Warmer"
-			    	f$location = "43.53125_-116.59375"
-			    	} else{
-			    		f$CountyGroup = "Cooler"
-			    		f$location = "45.65625_-121.15625"
+			    	f$CountyGroup = "Cooler Area"
+			    	f$location = "48.40625_-119.53125"
+			    	} else {
+			    		f$CountyGroup = "Warmer Area"
+			    		f$location = "46.28125_-119.34375"
 			    	}
 			    
 			    if (proj=="historical"){
@@ -109,10 +113,26 @@ for (month in mos){
 	data <- observed %>% filter(Month == month)
 	saveRDS(data, paste0(write_dir, "observed_", month_names[month], ".rds"))
 }
-
+########################################################
+#######                                          #######
+#######    Sept-through-Feb (includes Feb.)      #######
+#######                                          #######
+########################################################
 mos = c(9, 10, 11, 12)
 modeled <- modeled  %>% filter(Month %in% mos)
-saveRDS(modeled, paste0(write_dir, "sept_through_dec_modeled.rds"))
+saveRDS(modeled, paste0(write_dir, "sept_thru_dec_modeled.rds"))
 
 observed <- observed  %>% filter(Month %in% mos)
-saveRDS(observed, paste0(write_dir, "sept_through_dec_observed.rds"))
+saveRDS(observed, paste0(write_dir, "sept_thru_dec_observed.rds"))
+
+########################################################
+#######                                          #######
+#######     Sept-through-Jan (includes Jan.)     #######
+#######                                          #######
+########################################################
+mos = c(9, 10, 11, 12, 1)
+modeled <- modeled  %>% filter(Month %in% mos)
+saveRDS(modeled, paste0(write_dir, "sept_thru_jan_modeled.rds"))
+
+observed <- observed  %>% filter(Month %in% mos)
+saveRDS(observed, paste0(write_dir, "sept_thru_jan_observed.rds"))

@@ -46,12 +46,12 @@ done < <(find /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/ -mindepth 
 module purge
 
 # Load R
-# module load udunits/2.2.20
-# module load libxml2/2.9.4
-# module load gdal/2.1.2_gcc proj/4.9.2
-# module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
-# module load gcc/7.3.0
-# module load r/3.5.1/gcc/7.3.0
+module load udunits/2.2.20
+module load libxml2/2.9.4
+module load gdal/2.1.2_gcc proj/4.9.2
+module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
+module load gcc/7.3.0
+module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 # module load R
 

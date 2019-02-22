@@ -6,17 +6,9 @@ library(data.table)
 library(dplyr)
 library(MESS) # has the auc function in it.
 library(zoo)
+options(digits=9)
 
 data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
-
-##                      *************
-##                      ** WARNING **
-##                      *************
-## If you change history_max, you have to get down below 
-## and change the places in which we take care of chill_season stuff.
-## 
-history_max = 2015
-options(digits=9)
 
 iof = list(c(-Inf, -2), 
            c(-2, 4), 
@@ -25,7 +17,6 @@ iof = list(c(-Inf, -2),
            c(8, 13), 
            c(13, 16), 
            c(16, Inf))
-
 iof_char = c("(-Inf, -2]",
              "(-2, 4]",
              "(4, 6]",
@@ -33,16 +24,16 @@ iof_char = c("(-Inf, -2]",
              "(8, 13]",
              "(13, 16]",
              "(16, Inf)")
-
 iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
-
-month_names = c("Jan", "Feb", "Mar", "Sept", "Oct", "Nov", "Dec")
+month_names = c("Jan", "Feb", "Mar", "Sept", "Oct", "Nov", "Dec",
+                "sept_thru_dec_modeled", "sept_thru_jan_modeled")
 
 for (month in month_names){
     ##########################################
     #                                        #
     #         initialize the AUC table       #
     #         to populate                    #
+    #                                        #
     ##########################################
     df_help <- data.frame(matrix(ncol = 15, nrow = 7))
     colnames(df_help) <- c("temp_intervals", "hist_warm", "hist_cold",
@@ -62,20 +53,18 @@ for (month in month_names){
 
     data = data.table(readRDS(paste0(data_dir, month, ".rds")))
     data = within(data, remove(model, location, Month))
-    data$CountyGroup[data$CountyGroup == "Warmer"] = "Warmer Areas"
-    data$CountyGroup[data$CountyGroup == "Cooler"] = "Cooler Areas"
 
-    data$ClimateGroup[data$Year <= history_max] <- paste0("1950-", history_max)
+    data$ClimateGroup[data$Year <= 2005] <- "1950-2005"
     data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
     data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
     data$ClimateGroup[data$Year > 2075] <- "2076-2099"
 
-    # There are years between (history_max+1) and 2025 which ... becomes NA
+    # There are years between (2005+1) and 2025 which ... becomes NA
     data = na.omit(data)
 
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
-                                levels = c(paste0("1950-", history_max), "2025-2050", "2051-2075", "2076-2099"))
+                                levels = c("1950-2005", "2025-2050", "2051-2075", "2076-2099"))
 
     ##########################################
     #                                        #
@@ -93,9 +82,9 @@ for (month in month_names){
     #                                        #
     ##########################################
     data_hist <- data_hist %>% 
-                 filter(Year > 1950 & Year <= history_max,
+                 filter(Year > 1950 & Year <= 2005,
                         Chill_season != "chill_1949-1950" &
-                        Chill_season != "chill_2015-2016")
+                        Chill_season != "chill_2005-2006")
 
     data_45 <- data_45 %>% 
                filter(Year >= 2025 & Year <= 2100,
@@ -108,7 +97,8 @@ for (month in month_names){
     ##########################################
     #                                        #
     #          separate time_periods         #
-    #                   (ClimateGroup)       #
+    #                  (ClimateGroup)        #
+    #                                        #
     ########################################## 45
     data_45_2025_2050 <- data_45  %>% 
                          filter(Year >= 2025 & Year <= 2050,
@@ -147,26 +137,26 @@ for (month in month_names){
     #          separate warm/cool.           #
     #                                        #
     ########################################## H
-    data_hist_w = data_hist %>% filter(CountyGroup == "Warmer Areas")
-    data_hist_c = data_hist %>% filter(CountyGroup == "Cooler Areas")
+    data_hist_w = data_hist %>% filter(CountyGroup == "Warmer Area")
+    data_hist_c = data_hist %>% filter(CountyGroup == "Cooler Area")
     rm(data_hist)
     ########################################## 45
-    data_45_2025_2050_w = data_45_2025_2050 %>% filter(CountyGroup == "Warmer Areas")
-    data_45_2051_2075_w = data_45_2051_2075 %>% filter(CountyGroup == "Warmer Areas")
-    data_45_2076_2099_w = data_45_2076_2099 %>% filter(CountyGroup == "Warmer Areas")
+    data_45_2025_2050_w = data_45_2025_2050 %>% filter(CountyGroup == "Warmer Area")
+    data_45_2051_2075_w = data_45_2051_2075 %>% filter(CountyGroup == "Warmer Area")
+    data_45_2076_2099_w = data_45_2076_2099 %>% filter(CountyGroup == "Warmer Area")
 
-    data_45_2025_2050_c = data_45_2025_2050 %>% filter(CountyGroup == "Cooler Areas")
-    data_45_2051_2075_c = data_45_2051_2075 %>% filter(CountyGroup == "Cooler Areas")
-    data_45_2076_2099_c = data_45_2076_2099 %>% filter(CountyGroup == "Cooler Areas")
+    data_45_2025_2050_c = data_45_2025_2050 %>% filter(CountyGroup == "Cooler Area")
+    data_45_2051_2075_c = data_45_2051_2075 %>% filter(CountyGroup == "Cooler Area")
+    data_45_2076_2099_c = data_45_2076_2099 %>% filter(CountyGroup == "Cooler Area")
     rm(data_45_2025_2050, data_45_2051_2075, data_45_2076_2099)
     ########################################## 85
-    data_85_2025_2050_w = data_85_2025_2050 %>% filter(CountyGroup == "Warmer Areas")
-    data_85_2051_2075_w = data_85_2051_2075 %>% filter(CountyGroup == "Warmer Areas")
-    data_85_2076_2099_w = data_85_2076_2099 %>% filter(CountyGroup == "Warmer Areas")
+    data_85_2025_2050_w = data_85_2025_2050 %>% filter(CountyGroup == "Warmer Area")
+    data_85_2051_2075_w = data_85_2051_2075 %>% filter(CountyGroup == "Warmer Area")
+    data_85_2076_2099_w = data_85_2076_2099 %>% filter(CountyGroup == "Warmer Area")
 
-    data_85_2025_2050_c = data_85_2025_2050 %>% filter(CountyGroup == "Cooler Areas")
-    data_85_2051_2075_c = data_85_2051_2075 %>% filter(CountyGroup == "Cooler Areas")
-    data_85_2076_2099_c = data_85_2076_2099 %>% filter(CountyGroup == "Cooler Areas")
+    data_85_2025_2050_c = data_85_2025_2050 %>% filter(CountyGroup == "Cooler Area")
+    data_85_2051_2075_c = data_85_2051_2075 %>% filter(CountyGroup == "Cooler Area")
+    data_85_2076_2099_c = data_85_2076_2099 %>% filter(CountyGroup == "Cooler Area")
     rm(data_85_2025_2050, data_85_2051_2075, data_85_2076_2099)
     
     ##########################################
@@ -418,11 +408,11 @@ for (month in month_names){
     dt = data.table(x = xt, y = yt)
 
     df_help[1, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt <= -2])$x, y = (dt[xt <= -2])$y)
-    df_help[2, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > -2 & xt <= 4])$x, y = (dt[xt > -2 & xt <= 4])$y)
-    df_help[3, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 4  & xt <= 6])$x, y = (dt[xt > 4  & xt <= 6])$y)
-    df_help[4, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 6  & xt <= 8])$x, y = (dt[xt > 6  & xt <= 8])$y)
-    df_help[5, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 8  & xt <= 13])$x, y= (dt[xt > 8  & xt <= 13])$y)
-    df_help[6, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 13 & xt <= 16])$x, y=(dt[xt > 13 & xt <= 16])$y)
+    df_help[2, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > -2 & xt <= 4])$x,  y = (dt[xt > -2 & xt <= 4])$y)
+    df_help[3, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 4  & xt <= 6])$x,  y = (dt[xt > 4  & xt <= 6])$y)
+    df_help[4, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 6  & xt <= 8])$x,  y = (dt[xt > 6  & xt <= 8])$y)
+    df_help[5, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 8  & xt <= 13])$x, y = (dt[xt > 8  & xt <= 13])$y)
+    df_help[6, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 13 & xt <= 16])$x, y =(dt[xt > 13 & xt <= 16])$y)
     df_help[7, "rcp85_(2076_2099)_C"] <- auc(x = (dt[xt > 16])$x, y = (dt[xt > 16])$y)
     rm(X, Y, xt, yt, dt, data_85_2076_2099_c)
     
@@ -434,7 +424,6 @@ for (month in month_names){
 
     ####################################################################################
     ########################################## Educational - For reference
-    
     # file %>%
     # filter(Year > 2025 & Year <= 2055,
     # Chill_season != "chill_2025-2026" &
@@ -447,7 +436,6 @@ for (month in month_names){
     
     ##########################################
     # df[4, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
-    
     ####################################################################################
     
 }
