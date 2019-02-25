@@ -50,18 +50,17 @@ for(file in dir_con){
 
   met_data <- read_binary(file_path = file, hist = hist, no_vars=8)
 
-  lat <- unlist(strsplit(file, "_"))[2]
-  long <- unlist(strsplit(file, "_"))[3]
-  met_data$location = paste0(lat, long)
-  print (sort(colnames(met_data)))
   # data frame required
   met_data <- data.table(met_data)
-  print (sort(colnames(met_data)))
   met_data <- met_data %>%
               select(-c(precip, tmin, SPH, SRAD, Rmax, Rmin, tmax, day, month)) %>%
               data.table()
+  # compute the precipitation over a year
+  met_data <- aggregate(met_data$precip, by=list(year=met_data$year), FUN=sum)
 
-  # 3e. Save output
+  # rename the new column generated
+  colnames(met_data)[colnames(met_data)=="x"] <- "precip"
+
   saveRDS(met_data, paste0(main_out, current_dir, "/", file, ".rds"))
   rm(met_data, lat, long)
 }

@@ -19,8 +19,6 @@ param_dir = file.path("/home/hnoorazar/cleaner_codes/parameters/")
 locations_list = read.table(paste0(param_dir, "local_list.txt"), header=F, sep=",")
 locations_list <- as.vector(locations_list$V1)
 local_files = paste0("data_", locations_list)
-print ("line 47")
-print (head(local_files))
 
 # 2b. Note if working with a directory of historical data
 hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)
@@ -34,12 +32,6 @@ if (hist == FALSE){
                         pattern = "/data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/",
                         replacement = "")
     
-    print (current_dir)
-    print ("line 36")
-    print("The following should be the output directory")
-    print("does it look right?")
-    print(file.path(main_out, current_dir))
-
     if (dir.exists(file.path(main_out, current_dir)) == F) {
       dir.create(path = file.path(main_out, current_dir), recursive = T)
     }
@@ -60,28 +52,24 @@ if (hist == FALSE){
     start_time <- Sys.time()
 
     for(file in dir_con){
-      print ("line 58")
-      print (file)
+      
       # 3a. read in binary meteorological data file from specified path
       met_data <- read_binary(file_path = file,
                               hist = hist, 
                               no_vars=4)
-      print (colnames(met_data))
+      
       met_data <- as.data.frame(met_data)
 
-      lat <- unlist(strsplit(file, "_"))[2]
-      long <- unlist(strsplit(file, "_"))[3]
-      met_data$location = paste0(lat, long)
-      print ("line 73")
-      print (lat)
-      print (long)
-      print (sort(colnames(met_data)))
       met_data <- met_data %>%
                   select(-c(month, day, tmax, tmin, windspeed)) %>%
                   data.table()
-      print ("line 81, before saving")
-      print (colnames(met_data))
-      print (paste0(main_out, current_dir, "/", file, ".rds"))
+
+      # compute the precipitation over a year
+      met_data <- aggregate(met_data$precip, by=list(year=met_data$year), FUN=sum) 
+      
+      # rename the new column generated
+      colnames(met_data)[colnames(met_data)=="x"] <- "precip"
+
       saveRDS(met_data, paste0(main_out, current_dir, "/", file, ".rds"))
       rm(met_data, lat, long)
     }
