@@ -168,9 +168,6 @@ param_dir = "/home/hnoorazar/chilling_codes/parameters/"
 local_files <- read.delim(file = paste0(param_dir, "limited_locations.txt"), header = F)
 local_files <- as.vector(local_files$V1)
 
-print ("line 170")
-print (local_files)
-
 # 2b. Note if working with a directory of historical data
 
 hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)

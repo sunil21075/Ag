@@ -10,6 +10,8 @@ library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
+options(digits=9)
+options(digit=9)
 
 source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)

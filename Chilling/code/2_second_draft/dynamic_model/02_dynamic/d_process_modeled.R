@@ -10,6 +10,8 @@ library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
+options(digits=9)
+options(digit=9)
 
 source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
@@ -148,14 +150,9 @@ if(hist){
                        header = T,
                        colClasses = c("factor", "numeric", "numeric", "numeric",
                                       "numeric", "numeric"))
-    
-    # The breakpoints for decades came from 
-    # https://github.com/HNoorazar/Kirti/blob/master/codling_moth/code/core.R
-    # on 2018-12-05
-    
+      
     # 2040s
     data_list_2040[[i]] <- process_data(file, time_period="2040")
-    
     names(data_list_2040)[i] <- the_dir[i]
     
     # 2060s

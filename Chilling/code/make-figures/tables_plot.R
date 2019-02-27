@@ -16,20 +16,20 @@ main_data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 the_theme = theme_bw() + 
             theme(panel.spacing = unit(1, "lines"),
                   panel.grid.major = element_blank(),
-                  legend.text = element_text(size=8),
+                  legend.text = element_text(size=10),
                   legend.title = element_blank(),
                   legend.position = "bottom",
                   legend.key.size = unit(.3, "cm"),
                   legend.margin=margin(t=-.1, r=0, b=.1, l=0, unit = 'cm'),
                   legend.spacing.x = unit(.1, 'cm'),
-                  strip.text = element_text(size=8, face="plain"),
+                  strip.text = element_text(size=10, face="plain"),
                   plot.title = element_text(hjust = 0.5),
                   plot.subtitle = element_text(hjust = 0.5),
-                  axis.text.y = element_text(size = 8, face = "plain", color="black"),
+                  axis.text.y = element_text(size =10, face = "plain", color="black"),
                   axis.title.x = element_text(face = "plain", size=10, 
                                               margin = margin(t=8, r=0, b=0, l=0)),
-                  axis.text.x = element_text(size = 8, face = "plain", color="black"),
-                  axis.title.y = element_text(face = "plain", size = 10, 
+                  axis.text.x = element_text(size =10, face = "plain", color="black"),
+                  axis.title.y = element_text(face = "plain", size = 12, 
                                               margin = margin(t=0, r=8, b=0, l=0)))
 
 color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")

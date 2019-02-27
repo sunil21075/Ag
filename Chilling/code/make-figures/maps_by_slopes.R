@@ -6,8 +6,7 @@ library(lubridate)
 library(purrr)
 library(scales)
 library(tidyverse)
-library(data.table)
-options(digit=9)
+options(diigt=9)
 
 #####################################################################################
 ####                                                                             ####
@@ -19,9 +18,10 @@ observed_map <- function(data, month_col, min, max) {
            geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
                         fill = "grey", color = "black") +
            geom_point(aes_string(x = "long", y = "lat",
-                                 color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+                                 color = month_col), alpha = 0.4) +
+           scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
+                                 limits = c(min, max),
+                                 breaks = pretty_breaks(n = 4)) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            ggtitle("Observed historical") + 
            theme_bw()
@@ -29,15 +29,16 @@ observed_map <- function(data, month_col, min, max) {
 
 model_map <- function(data, model_name, scenario_name, month_col, min, max) {
   data %>% filter(model == model_name,
-                  scenario == scenario_name | scenario == "historical") %>%
+  	              scenario == scenario_name | scenario == "historical") %>%
            ggplot() +
            geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
                         fill = "grey", color = "black") +
             # aes_string to allow naming of column in function 
            geom_point(aes_string(x = "long", y = "lat",
-                                 color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+                                 color = month_col), alpha = 0.4) +
+           scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
+                                 limits = c(min, max),
+                                 breaks = pretty_breaks(n = 4)) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            facet_wrap(~ scenario, nrow = 1) +
            ggtitle(paste0(model_name)) + 
@@ -52,9 +53,10 @@ ensemble_map <- function(data, month_col, min, max) {
                         fill = "grey", color = "black") +
            # aes_string to allow naming of column in function 
            geom_point(aes_string(x = "long", y = "lat",
-                                 color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+                                 color = month_col), alpha = 0.4) +
+           scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
+                                 limits = c(min, max),
+                                 breaks = pretty_breaks(n = 4)) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            facet_wrap(~ scenario, nrow = 1) +
            ggtitle("Ensemble means") + 
@@ -67,8 +69,8 @@ utah_data_dir= "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping
 
 model_names = c("utah", "dynamic")
 model = model_names[1]
-for (model in model_names){
 
+for (model in model_names){
   if (model=="dynamic"){
     data_dir = dynamic_data_dir
   } else {
@@ -107,17 +109,17 @@ for (model in model_names){
   observed_min = min(observed_slopes$slope)
   observed_max = max(observed_slopes$slope)
 
-  universal_min = min(modeled_min, observed_min)
-  universal_max = max(modeled_max, observed_max)
+  # universal_min = min(modeled_min, observed_min)
+  # universal_max = max(modeled_max, observed_max)
 
-  universal_min = -8.25
-  universal_max = 1.09
+  # universal_min = -8.25
+  # universal_max = 1.09
 
   ens_plot <- ensemble_map(data=ensemble_slopes, month_col = "slope", 
-  	                       min = universal_min, max = universal_max) 
+  	                       min = modeled_min, max = modeled_max) 
 
   obs_plot <- observed_map(data=observed_slopes, month_col = "slope", 
-                           min = universal_min, max = universal_max)
+                           min = observed_min, max = observed_max)
 
 
   assembeled <- ggarrange(plotlist = list(obs_plot, ens_plot), 

@@ -20,8 +20,8 @@ observed_map <- function(data, month_col, min, max) {
                         fill = "grey", color = "black") +
            geom_point(aes_string(x = "long", y = "lat",
                                  color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+           scale_color_gradient2(midpoint=0, low="blue", mid="white",
+                                 high="red", space ="Lab" ) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            ggtitle("Observed historical") + 
            theme_bw()
@@ -36,8 +36,8 @@ model_map <- function(data, model_name, scenario_name, month_col, min, max) {
             # aes_string to allow naming of column in function 
            geom_point(aes_string(x = "long", y = "lat",
                                  color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+           scale_color_gradient2(midpoint=0, low="blue", mid="white",
+                                 high="red", space ="Lab" ) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            facet_wrap(~ scenario, nrow = 1) +
            ggtitle(paste0(model_name)) + 
@@ -53,8 +53,8 @@ ensemble_map <- function(data, month_col, min, max) {
            # aes_string to allow naming of column in function 
            geom_point(aes_string(x = "long", y = "lat",
                                  color = month_col), alpha = 0.4, size=.4) +
-           scale_color_gradient2(midpoint=0, low="red", mid="white",
-                                 high="blue", space ="Lab", limits=c(-.2, .2) ) +
+           scale_color_gradient2(midpoint=0, low="blue", mid="white",
+                                 high="red", space ="Lab" ) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            facet_wrap(~ scenario, nrow = 1) +
            ggtitle("Ensemble means") + 

@@ -4,8 +4,6 @@
 #############
 #############************************************************************
 #############************************************************************
-options(digits=9)
-options(digit=9)
 
 thresh_old_plots <- function(data, percentile){
   y = eval(parse(text =paste0( "data$", "thresh_", percentile, "_med")))

@@ -7,8 +7,6 @@ library(ggpubr)
 library(plyr)
 library(tidyverse)
 library(ggplot2)
-options(digits=9)
-options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
 
@@ -97,12 +95,12 @@ thresh_new_plot <- function(data, percentile){
               theme_bw() + 
               theme(plot.title = element_text(hjust = 0.5),
                     plot.subtitle = element_text(hjust = 0.5),
-                    axis.text.y = element_text(size = 12, face = "plain", color="black"),
-                    axis.title.x = element_text(face = "plain", size=15, 
+                    axis.text.y = element_text(size = 14, face = "plain", color="black"),
+                    axis.title.x = element_text(face = "plain", size=17, 
                                                 margin = margin(t=8, r=0, b=0, l=0)),
-                    axis.text.x = element_text(size = 12, face = "plain", color="black"),
+                    axis.text.x = element_text(size = 14, face = "plain", color="black"),
                     axis.ticks.x = element_blank(),
-                    axis.title.y = element_text(face = "plain", size = 15, 
+                    axis.title.y = element_text(face = "plain", size = 17, 
                                                 margin = margin(t=0, r=8, b=0, l=0)),
                     panel.spacing=unit(.5, "cm")
                     )
@@ -215,19 +213,19 @@ thresh_hist_plot <- summary_comp %>%
                     theme(plot.title = element_text(hjust = 0.5),
                           plot.subtitle = element_text(hjust = 0.5),
                           legend.position = "bottom",
-                          axis.text.y = element_text(size = 12, face = "plain", color="black"),
-                          axis.title.x = element_text(face = "plain", size=15, 
+                          axis.text.y = element_text(size = 14, face = "plain", color="black"),
+                          axis.title.x = element_text(face = "plain", size=17, 
                                                       margin = margin(t=8, r=0, b=0, l=0)),
-                          axis.text.x = element_text(size = 12, face = "plain", color="black"),
+                          axis.text.x = element_text(size = 14, face = "plain", color="black"),
                           axis.ticks.x = element_blank(),
-                          axis.title.y = element_text(face = "plain", size = 15, 
+                          axis.title.y = element_text(face = "plain", size = 17, 
                                                       margin = margin(t=0, r=8, b=0, l=0)),
                           panel.spacing=unit(.5, "cm")
                           )
 
 thresh_hist_plot <- annotate_figure(p = thresh_hist_plot,
                                     top = text_grob(label = "Observed historical accumulation by location",
-                                                    face = "bold", size = 16))
+                                                    face = "bold", size = 18))
 
 # Combine the plots and export
 thresh_future <- ggarrange(thresh_20_all_plot, thresh_25_all_plot,
@@ -280,8 +278,8 @@ accum_plot <- function(data, y_name, due){
                     plot.title = element_text(hjust = 0.5),
                     plot.subtitle = element_text(hjust = 0.5),
                     legend.position = "bottom",
-                    axis.text.x = element_text(size = 10, face = "plain", color="black"),
-                    axis.text.y = element_text(size = 10, face = "plain", color="black"),
+                    axis.text.x = element_text(size = 12, face = "plain", color="black"),
+                    axis.text.y = element_text(size = 12, face = "plain", color="black"),
                     panel.spacing=unit(.5, "cm"))
   return(acc_plot)
 }
