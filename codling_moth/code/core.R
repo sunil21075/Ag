@@ -1201,7 +1201,7 @@ generate_diapause_map1 <- function(input_dir, file_name,
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(AbsPctDiapGen3 = (auc(CumulativeDDF, AbsDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctDiapGen4 = (auc(CumulativeDDF, AbsDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   #
-  sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(AbsPctNonDiapGen1 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = ], by = group_vec, all.x = TRUE)
+  sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(AbsPctNonDiapGen1 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(AbsPctNonDiapGen2 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(AbsPctNonDiapGen3 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctNonDiapGen4 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
@@ -1213,6 +1213,13 @@ diapause_map1_prep <- function(input_dir, file_name,
                                param_dir, location_group_name="LocationGroups.csv"){
   file_name = paste0(input_dir, file_name, ".rds")
   data <- data.table(readRDS(file_name))
+  data <- data %>% filter(year >= 2025)
+
+  data <- within(data, remove(CountyGroup, ClimateGroup))
+
+  # kill repetitions due to overlapping time periods
+  data <- unique(data)
+
 
   loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
   options(digits=9)
@@ -1237,10 +1244,10 @@ diapause_map1_prep <- function(input_dir, file_name,
   rm(data)
   startingpopulationfortheyear<-1000
   
-  #generation1
+  # generation1
   sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-       by =list(year,ClimateScenario, 
-       latitude,longitude,ClimateGroup, CountyGroup) ]
+        by =list(year, ClimateScenario, 
+                 latitude, longitude, ClimateGroup) ]
   sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
   sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1*sub$diapause1/100
   sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
