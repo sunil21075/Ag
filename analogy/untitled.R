@@ -1,0 +1,5 @@
+sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[7,5] & CumulativeDDF < CodMothParams[7,6], .(AbsPctDiapGen3 = (auc(CumulativeDDF, AbsDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
+print ("line 291")
+sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctDiapGen4 = (auc(CumulativeDDF, AbsDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
+print ("line 293")
+sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(AbsPctNonDiapGen1=(auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
