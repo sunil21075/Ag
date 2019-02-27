@@ -500,12 +500,8 @@ shinyServer(function(input, output, session) {
       future_version = unlist(temp[2])
     }
 
-    if(future_version == "rcp45") {
-	data = d_rcp45
-    }
-    else {
-	data = d
-    }
+    if(future_version == "rcp45") { data = d_rcp45
+    } else { data = d }
 
     layerlist = levels(data$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
     
@@ -572,7 +568,7 @@ shinyServer(function(input, output, session) {
                                           }
                                           if(future_version == "rcp45") {data = d_rcp45
                                           } else { data = d}
-                                          layerlist = levels(data$timeFrame) # c("Historical", "2040's", "2060's", "2080's")
+                                          layerlist = levels(data$timeFrame) # Historical, 2040, 2060, 2080
                                           sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(col)))
                                           sub_Emerg = sub_Emerg[, .(medianDoY = as.integer(median( get(col) ))), by = c("timeFrame", "location")]
                                           medianEmerg = list( hist = subset(sub_Emerg, timeFrame == layerlist[1]),
@@ -629,21 +625,20 @@ shinyServer(function(input, output, session) {
     }
 
     if(future_version == "rcp45") {
-	diap_d = diap_rcp45
-    }
-    else {
-	diap_d = diap
+      diap_d = diap_rcp45
+    } else {
+      diap_d = diap
     }
 
-    layerlist = levels(diap_d$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
+    layerlist = levels(diap_d$ClimateGroup) # Historical, 2040, 2060, 2080
 
     sub_Diap = subset(diap_d, ClimateGroup == climate_group, select = c(ClimateGroup, CountyGroup, latitude, longitude, get(col)))
     sub_Diap$location = paste0(sub_Diap$latitude, "_", sub_Diap$longitude)
     
     meanDiap = list( hist = subset(sub_Diap, ClimateGroup == layerlist[1]),
-                        `2040` = subset(sub_Diap, ClimateGroup == layerlist[2]),
-                        `2060` = subset(sub_Diap, ClimateGroup == layerlist[3]),
-                        `2080` = subset(sub_Diap, ClimateGroup == layerlist[4]))
+                     `2040` = subset(sub_Diap, ClimateGroup == layerlist[2]),
+                     `2060` = subset(sub_Diap, ClimateGroup == layerlist[3]),
+                     `2080` = subset(sub_Diap, ClimateGroup == layerlist[4]))
     
     DiapMap <- constructMap(meanDiap, layerlist, palColumn = col, legendVals = seq(0, 100), "Percentage (%)", RdBu_reverse)
     DiapMap
