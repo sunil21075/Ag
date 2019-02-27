@@ -80,7 +80,7 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
              axis.title.x = element_text(face= "plain", size=16, margin = margin(t=10, r=0, b=0, l=0)),
              axis.title.y = element_text(face="plain", size=16, margin = margin(t=0, r=10, b=0, l=0))
              )
-  ggsave(output_name, p1, path=plot_path, width=7, height=7, unit="in", dpi=500)
+  ggsave(output_name, p1, path=plot_path, width=7, height=7, unit="in", dpi=400)
 }
 
 plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version, 
@@ -809,9 +809,9 @@ plot_No_generations_4_latex <- function(input_dir,
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
   
-  if (stage=="larva"){
+  if (stage=="Larva"){
     var = "NumLarvaGens"
-  } else {
+  } else if (stage=="Adult"){
     var = "NumAdultGens"
   }
   
@@ -849,11 +849,8 @@ plot_No_generations_4_latex <- function(input_dir,
                    legend.spacing.x = unit(.05, 'cm'),
                    strip.text.x = element_text(size = 5),
                    axis.ticks = element_line(color = "black", size = .2),
-                   #axis.text = element_text(face = "plain", size = 2.5, color="black"),
                    axis.title.x = element_text(face = "plain", size=6, margin = margin(t=2.5, r=0, b=0, l=0)),
-                   # axis.title.x=element_blank(),
                    axis.text.x = element_text(size = 4, face="plain", color="black"),
-                   # axis.title.y = element_text(face = "plain", size=6, margin = margin(t=0, r=0, b=0, l=0)),
                    axis.title.y = element_blank(),
                    axis.text.y  = element_blank(),
                    axis.ticks.y = element_blank()
@@ -937,9 +934,6 @@ plot_No_generations <- function(input_dir,
                    legend.margin=margin(t=-.1, r=0, b=0, l=0, unit='cm'),
                    legend.spacing.x = unit(.05, 'cm'),
                    legend.title = element_blank(),
-                   # plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-                   #panel.grid.major = element_line(size = 0.1),
-                   #panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank(),
                    panel.spacing=unit(.5, "cm"),
                    axis.text = element_text(face = "plain", size = 10, color="black"),
@@ -1004,10 +998,6 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
            geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                         position=position_dodge(width=0.5)) + 
            scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
-         # geom_vline(xintercept=4.5, linetype="solid", color = "grey", size=1)+
-         # geom_vline(xintercept=8.5, linetype="solid", color = "grey", size=1)+
-         # annotate("text", x=2.5, y=369, angle=270, label= "boat", size=8, fontface="plain") + 
-          
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
            labs(x="Time period", y="Julian day", color = "Climate Group") + 
            theme_bw() +
