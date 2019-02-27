@@ -1,32 +1,41 @@
-# Script for creating inputs for chill accumulation and threshold figures for
-# historical observed data. Summarizes the observed historical chill unit
-# data into format used for figures and maps.
-# Intended to work with observed-historical_data.sh script.
 
-# When working locally have been using this folder: 
-# setwd("~/chilling-model/test-data/historical/observed-hist-outputs/historical/UI_historical/VIC_Binary_CONUS_to_2016")
-# with local main_out <- "~/chilling-model/test-data/chill-figs/"
-
-# 1. Load packages --------------------------------------------------------
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
 library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
-options(digits=9)
-options(digit=9)
 
-source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
 source(source_path)
-# 2. Script setup ---------------------------------------------------------
+options(digit=9)
+options(digits=9)
 
+# 2. Script setup ---------------------------------------------------------
 # Check current folder
 print("does this look right?")
 getwd()
 start_time <- Sys.time()
-# Set an output location for this script's outputs
-main_out <- file.path("/data/hydro/users/Hossein/chill/data_by_core/dynamic_model/02/")
+
+######################################################################
+##                                                                  ##
+##              Terminal/shell/bash arguments                       ##
+##                                                                  ##
+######################################################################
+
+args = commandArgs(trailingOnly=TRUE)
+model_type = args[1]
+
+######################################################################
+chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
+
+if (model_type == "dynamic"){
+  main_out <- file.path(chill_out, "clean_up/dynamic/")
+} else if (model_type == "utah") {
+  main_out <- file.path(chill_out, "clean_up/utah/")
+
+}
+
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {

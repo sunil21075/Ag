@@ -21,17 +21,17 @@ plot_dens <- function(data, month_name){
                        legend.position="bottom", 
                        legend.title = element_blank(),
                        legend.key.size = unit(1, "line"),
-                       legend.text=element_text(size=9),
+                       legend.text=element_text(size=11),
                        legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
                        legend.spacing.x = unit(.08, 'cm'),
-                       strip.text.x = element_text(size = 14),
+                       strip.text.x = element_text(size = 16),
                        axis.ticks = element_line(color = "black", size = .2),
-                       axis.title.x = element_text(face = "plain", size=15, 
+                       axis.title.x = element_text(face = "plain", size=17, 
                                                    margin = margin(t=4, r=0, b=0, l=0)),
-                       axis.text.x = element_text(size = 12, face = "plain", color="black", angle=-30),
-                       axis.title.y = element_text(face = "plain", size = 15, 
+                       axis.text.x = element_text(size = 14, face = "plain", color="black", angle=-30),
+                       axis.title.y = element_text(face = "plain", size = 17, 
                                                    margin = margin(t=0, r=6, b=0, l=0)),
-                       axis.text.y = element_text(size = 12, face="plain", color="black")
+                       axis.text.y = element_text(size = 14, face="plain", color="black")
                        )
     obs_plot = ggplot(data, aes(x=Temp, fill=factor(ClimateGroup))) + 
                geom_density(alpha=.5, size=.1) + 
@@ -160,11 +160,11 @@ ggsave(filename = "density_85.png",
 ###                                               ###
 #####################################################
 
+rm(data)
 library(data.table)
 library(dplyr)
 library(ggplot2)
 library(ggpubr) # for ggarrange
-rm(data)
 
 plot_dens <- function(data, month_name){
     color_ord = c("grey70", "dodgerblue", "olivedrab4", "khaki2")
@@ -180,18 +180,18 @@ plot_dens <- function(data, month_name){
                        legend.position="bottom", 
                        legend.title = element_blank(),
                        legend.key.size = unit(.5, "line"),
-                       legend.text=element_text(size=4),
+                       legend.text=element_text(size=6),
                        legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
                        legend.spacing.x = unit(.08, 'cm'),
-                       strip.text.x = element_text(size = 7),
+                       strip.text.x = element_text(size = 9),
                        axis.ticks = element_line(color="black", size=.2),
-                       axis.title.x = element_text(face = "plain", size=7, margin = margin(t=4, r=0, b=0, l=0)),
-                       axis.title.y = element_text(face = "plain", size=7, margin = margin(t=0, r=4, b=0, l=0)),
+                       axis.title.x = element_text(face = "plain", size=9, margin = margin(t=4, r=0, b=0, l=0)),
+                       axis.title.y = element_text(face = "plain", size=9, margin = margin(t=0, r=4, b=0, l=0)),
 
-                       axis.text.x = element_text(size = 5, face = "plain", color="black", 
+                       axis.text.x = element_text(size = 7, face = "plain", color="black", 
                                                   angle=-30, margin=margin(t=0 , r=0, b=0, l=0,"pt")),
-                       axis.text.y = element_text(size = 5, face = "plain", color="black"),
-                       plot.title = element_text(size = 8, hjust = 0.5)
+                       axis.text.y = element_text(size = 7, face = "plain", color="black"),
+                       plot.title = element_text(size = 10, hjust = 0.5)
                        )
     
     if (month == "sept_thru_dec_modeled"){
@@ -219,12 +219,10 @@ plot_dens <- function(data, month_name){
 }
 
 data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
-
+rm(data)
 month_names = c("sept_thru_dec_modeled", "sept_thru_jan_modeled")
-
 for (month in month_names){
     data = data.table(readRDS(paste0(data_dir, month, ".rds")))
-    # data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
     data$ClimateGroup[data$Year <= 2005] <- "1950-2005"
     data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
     data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
@@ -232,7 +230,7 @@ for (month in month_names){
 
     # There are years between (2006) and 2025 which ... becomes NA
     data = na.omit(data)
-
+    dim(data)
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
                                 levels = c("1950-2005", "2025-2050", 
@@ -247,19 +245,35 @@ for (month in month_names){
     assign(x = paste0(month, "_density_", "rcp85"),
            value = { plot_dens(data=data_85,
                                month_name=month)})
-    
-    ggsave(filename = paste0(month, "_density_rcp85.png"), 
-           path = "/Users/hn/Desktop/", 
-           plot = sept_thru_dec_rcp85,
-           width=8, height=3, units = "in",
-           dpi=400, 
-           device = "png")
-
-    ggsave(filename = paste0(month, "_density_rcp45.png"), 
-           path = "/Users/hn/Desktop/", 
-           plot = sept_thru_dec_rcp45,
-           width=8, height=3, units = "in",
-           dpi=400, 
-           device = "png")
     rm(data_45, data_85)
 }
+
+
+ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp45.png"), 
+       path = "/Users/hn/Desktop/",
+       plot = sept_thru_dec_modeled_density_rcp45,
+       width=8, height=3, units = "in",
+       dpi=400, 
+       device = "png")
+
+ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp85.png"), 
+       path = "/Users/hn/Desktop/", 
+       plot = sept_thru_dec_modeled_density_rcp85,
+       width=8, height=3, units = "in",
+       dpi=400, 
+       device = "png")
+
+
+ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp45.png"), 
+       path = "/Users/hn/Desktop/",
+       plot = sept_thru_jan_modeled_density_rcp45,
+       width=8, height=3, units = "in",
+       dpi=400, 
+       device = "png")
+
+ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp85.png"), 
+       path = "/Users/hn/Desktop/", 
+       plot = sept_thru_jan_modeled_density_rcp85,
+       width=8, height=3, units = "in",
+       dpi=400, 
+       device = "png")

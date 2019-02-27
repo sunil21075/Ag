@@ -38,18 +38,18 @@ plot_intervals <- function(data, month_name){
                      legend.position="bottom", 
                      legend.title = element_blank(),
                      legend.key.size = unit(1, "line"),
-                     legend.text=element_text(size=7),
+                     legend.text=element_text(size=9),
                      legend.margin=margin(t= -0.2, r = 0, b = 0, l = 0, unit = 'cm'),
                      legend.spacing.x = unit(.05, 'cm'),
-                     strip.text.x = element_text(size = 10),
+                     strip.text.x = element_text(size = 12),
                      axis.ticks = element_line(color = "black", size = .2),
-                     axis.title.x = element_text(face = "plain", size=10, 
+                     axis.title.x = element_text(face = "plain", size=12, 
                                                  margin = margin(t=6, r=0, b=0, l=0)),
-                     axis.text.x = element_text(size = 6, face = "plain", 
+                     axis.text.x = element_text(size = 8, face = "plain", 
                                                 color="black", angle=-30),
-                     axis.title.y = element_text(face = "plain", size = 10, 
+                     axis.title.y = element_text(face = "plain", size = 12, 
                                                  margin = margin(t=0, r=6, b=0, l=0)),
-                     axis.text.y = element_text(size = 6, face="plain", color="black")
+                     axis.text.y = element_text(size = 8, face="plain", color="black")
                      )
   obs_plot = ggplot(data = data) +
              geom_point(aes(x = Year, y = no_hours, fill = factor(scenario)),

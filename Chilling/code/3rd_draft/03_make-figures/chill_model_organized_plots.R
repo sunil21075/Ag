@@ -7,8 +7,6 @@ library(ggpubr)
 library(plyr)
 library(tidyverse)
 library(ggplot2)
-options(digits=9)
-options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
 

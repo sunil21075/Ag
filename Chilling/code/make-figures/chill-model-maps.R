@@ -10,8 +10,6 @@ library(lubridate)
 library(purrr)
 library(scales)
 library(tidyverse)
-options(digits=9)
-options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
 

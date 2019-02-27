@@ -115,6 +115,19 @@ for (month in mos){
 }
 ########################################################
 #######                                          #######
+#######     Sept-through-Jan (includes Jan.)     #######
+#######                                          #######
+########################################################
+mos = c(9, 10, 11, 12, 1)
+modeled <- modeled  %>% filter(Month %in% mos)
+saveRDS(modeled, paste0(write_dir, "sept_thru_jan_modeled.rds"))
+
+observed <- observed  %>% filter(Month %in% mos)
+saveRDS(observed, paste0(write_dir, "sept_thru_jan_observed.rds"))
+
+
+########################################################
+#######                                          #######
 #######    Sept-through-Feb (includes Feb.)      #######
 #######                                          #######
 ########################################################
@@ -125,14 +138,3 @@ saveRDS(modeled, paste0(write_dir, "sept_thru_dec_modeled.rds"))
 observed <- observed  %>% filter(Month %in% mos)
 saveRDS(observed, paste0(write_dir, "sept_thru_dec_observed.rds"))
 
-########################################################
-#######                                          #######
-#######     Sept-through-Jan (includes Jan.)     #######
-#######                                          #######
-########################################################
-mos = c(9, 10, 11, 12, 1)
-modeled <- modeled  %>% filter(Month %in% mos)
-saveRDS(modeled, paste0(write_dir, "sept_thru_jan_modeled.rds"))
-
-observed <- observed  %>% filter(Month %in% mos)
-saveRDS(observed, paste0(write_dir, "sept_thru_jan_observed.rds"))
