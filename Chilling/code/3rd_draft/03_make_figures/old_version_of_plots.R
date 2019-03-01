@@ -1,3 +1,6 @@
+options(digits=9)
+options(digit=9)
+
 #############************************************************************
 #############
 ############# This is the plot in the old version folder

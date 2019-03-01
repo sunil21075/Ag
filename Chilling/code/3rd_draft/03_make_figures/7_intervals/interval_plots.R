@@ -6,7 +6,7 @@ library(ggpubr) # for ggarrange
 ##############################
 ############################## Global variables
 ##############################
-data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 
 # iof = interval of interest
 iof = c(c(-Inf, -2), 
@@ -23,7 +23,6 @@ month_no = c(1, 2, 3, 9, 10, 11, 12)
 month_names = c("Jan", "Feb", "Mar",
                 "Sept", "Oct", "Nov", "Dec"
                 )
-
 weather_type = c("Warmer Area", "Cooler Area")
 
 plot_intervals <- function(data, month_name){
@@ -82,17 +81,19 @@ for(month in month_names){
          value = { plot_intervals(data=data,
                                   month_name=month)})
 
-  data = paste0(data_dir, "observed_" ,month, ".rds")
+  data = paste0(data_dir, "observed_", month, ".rds")
   data = data.table(readRDS(data))
   data <- data %>% 
           mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
           group_by(Chill_season, Year, Month, scenario, temp_cat, CountyGroup) %>% 
           summarise(no_hours = n())
   data$temp_cat = factor(data$temp_cat, order=T)
+  
   assign(x = paste0("observed_", month, "_plot"),
          value = { plot_intervals(data=data,
                                   month_name=month)})
-}
+
+} ## end for-loop
 
 ####################################################################
 #################
@@ -314,7 +315,7 @@ ggsave(plot = mar_neck,
 #####                                                          #####
 ####################################################################
 
-input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
+input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 # iof = interval of interest
 iof = c(c(-Inf, -2), c(-2, 4), 
         c(4, 6), c(6, 8), 
@@ -365,7 +366,7 @@ rm(data)
 #####                                                          #####
 ####################################################################
 
-input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_time_intervals_data/"
+input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 # iof = interval of interest
 iof = c(c(-Inf, -2), c(-2, 4), 
         c(4, 6), c(6, 8), 

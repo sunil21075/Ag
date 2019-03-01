@@ -1,15 +1,10 @@
-# Script for creating inputs for chill accumulation and threshold figures.
-# Intended to work with array-modeled_data.sh script.
-# Uses outputs from chilling model as inputs.
-
-# 1. Load packages --------------------------------------------------------
 
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
+library(plyr)
 options(digit=9)
 options(digits=9)
 
@@ -23,7 +18,7 @@ start_time <- Sys.time()
 
 ######################################################################
 ##                                                                  ##
-##              Terminal/shell/bash arguments                       ##
+##                     Terminal arguments                           ##
 ##                                                                  ##
 ######################################################################
 
@@ -72,7 +67,7 @@ if (dir.exists(file.path(main_out)) == F) {
 # List of filenames
 the_dir <- dir()
 
-# Remove filenames that aren't data, if they exist
+# Remove file names that aren't data, if they exist
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 
@@ -154,7 +149,7 @@ if(hist){
   # If future data, then proceed with decadal calculations:
   
   # 5c. Iterate through future files ----------------------------------------
-}else{
+} else {
   for(i in 1:length(the_dir)){
     file <- read.table(file = the_dir[i],
                        header = T,

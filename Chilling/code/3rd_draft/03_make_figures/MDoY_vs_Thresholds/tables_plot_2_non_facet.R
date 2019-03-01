@@ -7,9 +7,10 @@ library(plyr)
 library(tidyverse)
 library(ggplot2)
 ###############################################
+# color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")
 model_dir_postfix = "_model_stats/"
 
-time_period_types = c("non_overlapping", "overlapping")
+time_period_types = c("non_overlapping") # , "overlapping"
 model_types = c("dynamic", "utah")
 main_data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 
@@ -18,7 +19,8 @@ the_theme = theme_bw() +
                   panel.grid.major = element_blank(),
                   legend.text = element_text(size=8),
                   legend.title = element_blank(),
-                  legend.position = "bottom",
+                  legend.position = "right",
+                  legend.box = "horizontal", 
                   legend.key.size = unit(.3, "cm"),
                   legend.margin=margin(t=-.1, r=0, b=.1, l=0, unit = 'cm'),
                   legend.spacing.x = unit(.1, 'cm'),
@@ -32,12 +34,11 @@ the_theme = theme_bw() +
                   axis.title.y = element_text(face = "plain", size = 10, 
                                               margin = margin(t=0, r=8, b=0, l=0)))
 
-color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")
-
 for (model_type in model_types){
   for (time_period_type in time_period_types){
-    print(model_type)
+    print (model_type)
     print (time_period_type)
+
     if (time_period_type == "non_overlapping"){
       legend_labs = c("Historical", "2025-2050", "2051-2075", "2076-2100")
       time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2100")
@@ -56,31 +57,54 @@ for (model_type in model_types){
                            thresh_60_med="60", thresh_65_med="65",
                            thresh_70_med="70", thresh_75_med="75"
                             ))
-
   
     data$scen_clim = paste0(data$scenario, "_(", data$ClimateGroup, ")")
-    data = within(data, remove(scenario, ClimateGroup))
+    data = within(data, remove(scenario, ClimateGroup))    
     
     data_melt = melt(data, id=c("climate_type", "scen_clim"))
-
     data_melt[,] <- lapply(data_melt, factor)
     data_melt[,] <- lapply(data_melt, 
                            function(x) type.convert(as.character(x), 
                            as.is = TRUE))
 
-    data_melt[,3] <- lapply(data_melt[,3], as.numeric)
+    data_melt[, 3] <- lapply(data_melt[, 3], as.numeric)
+
+    data_melt$scen_clim[data_melt$scen_clim == "historical_(Historical)"] = "Modeled Historical"
+    
+    data_melt$scen_clim[data_melt$scen_clim == "rcp45_(2025_2050)"] = "(RCP 4.5: 2025-2050)"
+    data_melt$scen_clim[data_melt$scen_clim == "rcp45_(2051_2075)"] = "(RCP 4.5: 2051-2075)"
+    data_melt$scen_clim[data_melt$scen_clim == "rcp45_(2076_2100)"] = "(RCP 4.5: 2076-2099)"
+    
+    data_melt$scen_clim[data_melt$scen_clim == "rcp85_(2025_2050)"] = "(RCP 8.5: 2025-2050)"
+    data_melt$scen_clim[data_melt$scen_clim == "rcp85_(2051_2075)"] = "(RCP 8.5: 2051-2075)"
+    data_melt$scen_clim[data_melt$scen_clim == "rcp85_(2076_2100)"] = "(RCP 8.5: 2076-2099)"
+
+    orders = c("Modeled Historical", 
+               "(RCP 4.5: 2025-2050)", "(RCP 4.5: 2051-2075)", "(RCP 4.5: 2076-2099)", 
+               "(RCP 8.5: 2025-2050)", "(RCP 8.5: 2051-2075)", "(RCP 8.5: 2076-2099)")
+    
+    data_melt$scen_clim <- factor(data_melt$scen_clim, levels=orders, order=T)
 
     plot = ggplot(data_melt, aes(x=variable, y=value), fill=factor(scen_clim)) + 
-           geom_path(aes(colour = factor(scen_clim))) + 
+           geom_line(aes(color = factor(scen_clim), size=factor(scen_clim), linetype=factor(scen_clim) ) ) + 
            facet_grid( ~ climate_type, scales = "free") + 
            labs(x = "thresholds", y = "median DoY") +
            scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+           scale_color_manual(values=c("black", 
+                                       "blue", "brown", "green4", 
+                                       "red", "magenta", "orange")) + 
+           # scale_size_manual(values=c(.5, .3, .3, .3, .3, .3, .3)) +
+           scale_size_manual(values=c(.7, .5, .5, .5, .5, .5, .5)) +
+           scale_linetype_manual(values=c("solid", 
+                                          "dotdash", "dotdash", "dotdash", 
+                                          "solid", "solid", "solid")) + 
            the_theme
 
     output_name = paste0(model_type, "_", time_period_type, "_", "medianDoY_thresh_nonFacet.png")
     plot_path = "/Users/hn/Desktop/"
     ggsave(filename = output_name, plot = plot, device="png", 
-           path=plot_path, width=6, height=5, unit="in")
+           path=plot_path, width=7, height=4.5, unit="in")
 
   }
 }
+
