@@ -4,12 +4,11 @@ rm(list=ls())
 library(data.table)
 library(ggpubr)
 library(plyr)
-library(tidyverse)
 library(ggplot2)
 ###########################################
 model_dir_postfix = "_model_stats/"
 
-time_period_types = c("non_overlapping", "overlapping")
+time_period_types = c("non_overlapping") # , "overlapping"
 model_types = c("dynamic", "utah")
 main_data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 

@@ -7,23 +7,21 @@ library(ggpubr)
 library(plyr)
 library(tidyverse)
 library(ggplot2)
-options(digits=9)
-options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
 
-main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
-# main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
+# main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
+main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
 
 write_dir_utah = paste0(main_in_dir, "utah_model_stats/")
 write_dir_dynamic = paste0(main_in_dir, "dynamic_model_stats/")
 
 model = "utah"
 
-if (model=="dynamic"){
+if (model == "dynamic"){
   setwd(write_dir_dynamic)
   write_dir = write_dir_dynamic
-} else {
+} else if (model == "utah") {
   setwd(write_dir_utah)
   write_dir = write_dir_utah
 }
@@ -68,6 +66,10 @@ if (model=="dynamic"){
 
 summary_comp <- data.table(readRDS(paste0(write_dir, "summary_comp.rds")))
 
+summary_comp$scenario[summary_comp$scenario=="historical"] = "Historical"
+summary_comp$scenario[summary_comp$scenario=="rcp45"] = "RCP 4.5"
+summary_comp$scenario[summary_comp$scenario=="rcp85"] = "RCP 8.5"
+
 # 3. Plotting -------------------------------------------------------------
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
@@ -84,25 +86,26 @@ thresh_new_plot <- function(data, percentile){
               geom_point(aes(x = year, y = y, fill = scenario),
                              alpha = 0.25, shape = 21, size = .25) +
               geom_smooth(aes(x = year, y = y, color = scenario),
-                          method = "lm", size=0.5, se = F) +
+                           method = "lm", size=0.7, se = F) +
               facet_wrap( ~ climate_type) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +
               geom_hline(yintercept=c(122, 137), linetype="solid", color ="red", size=0.2) +
               scale_y_continuous(breaks=c(0, 50, 75, 100, 122, 137, 150, 200, 250, 300)) + 
-              ylab("Median days") +
-              xlab("Year") +
+              ylab("median days") +
+              xlab("year") +
               ggtitle(label = lab) +
               theme_bw() + 
               theme(plot.title = element_text(hjust = 0.5),
+                    legend.title = element_blank(),
                     plot.subtitle = element_text(hjust = 0.5),
-                    axis.text.y = element_text(size = 12, face = "plain", color="black"),
-                    axis.title.x = element_text(face = "plain", size=15, 
+                    axis.text.y = element_text(size = 14, face = "plain", color="black"),
+                    axis.title.x = element_text(face = "plain", size=17, 
                                                 margin = margin(t=8, r=0, b=0, l=0)),
-                    axis.text.x = element_text(size = 12, face = "plain", color="black"),
+                    axis.text.x = element_text(size = 14, face = "plain", color="black"),
                     axis.ticks.x = element_blank(),
-                    axis.title.y = element_text(face = "plain", size = 15, 
+                    axis.title.y = element_text(face = "plain", size = 17, 
                                                 margin = margin(t=0, r=8, b=0, l=0)),
                     panel.spacing=unit(.5, "cm")
                     )
@@ -122,6 +125,7 @@ thresh_65_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentil
 thresh_70_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentile="70")
 thresh_75_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentile="75")
 
+hist_sm_sz = .4
 thresh_hist_plot <- summary_comp %>%
                     filter(model == "observed") %>%
                     group_by(climate_type, year) %>%
@@ -131,76 +135,76 @@ thresh_hist_plot <- summary_comp %>%
                                    alpha = 0.4,
                                    shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_75_med, col = "75 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_70_med, fill = "70 units"), 
                                    alpha = 0.4,
                                    shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_70_med, col = "70 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
 
                     geom_point(aes(x = year, y = thresh_65_med, fill = "65 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_65_med, col = "65 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_60_med, fill = "60 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_60_med, col = "60 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
 
                     geom_point(aes(x = year, y = thresh_55_med, fill = "55 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_55_med, col = "55 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_50_med, fill = "50 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_50_med, col = "50 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
 
                     geom_point(aes(x = year, y = thresh_45_med, fill = "45 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_45_med, col = "45 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_40_med, fill = "40 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_40_med, col = "40 units"), 
-                                method = "lm",size=0.5,
+                                method = "lm",size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_35_med, fill = "35 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_35_med, col = "35 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_30_med, fill = "30 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_30_med, col = "30 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_25_med, fill = "25 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_25_med, col = "25 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_point(aes(x = year, y = thresh_20_med, fill = "20 units"), 
                                alpha = 0.4,
                                shape = 21, size = 1) +
                     geom_smooth(aes(x = year, y = thresh_20_med, col = "20 units"), 
-                                method = "lm", size=0.5,
+                                method = "lm", size=hist_sm_sz,
                                 se = F) +
                     geom_hline(yintercept=c(122, 137), linetype="solid", color ="red", size=0.2) +
                     scale_color_manual(name = "Threshold", values = seq(1:12)) +
@@ -215,19 +219,20 @@ thresh_hist_plot <- summary_comp %>%
                     theme(plot.title = element_text(hjust = 0.5),
                           plot.subtitle = element_text(hjust = 0.5),
                           legend.position = "bottom",
-                          axis.text.y = element_text(size = 12, face = "plain", color="black"),
-                          axis.title.x = element_text(face = "plain", size=15, 
+                          legend.title = element_blank(),
+                          axis.text.y = element_text(size = 14, face = "plain", color="black"),
+                          axis.title.x = element_text(face = "plain", size=17, 
                                                       margin = margin(t=8, r=0, b=0, l=0)),
-                          axis.text.x = element_text(size = 12, face = "plain", color="black"),
+                          axis.text.x = element_text(size = 14, face = "plain", color="black"),
                           axis.ticks.x = element_blank(),
-                          axis.title.y = element_text(face = "plain", size = 15, 
+                          axis.title.y = element_text(face = "plain", size = 17, 
                                                       margin = margin(t=0, r=8, b=0, l=0)),
                           panel.spacing=unit(.5, "cm")
                           )
 
 thresh_hist_plot <- annotate_figure(p = thresh_hist_plot,
                                     top = text_grob(label = "Observed historical accumulation by location",
-                                                    face = "bold", size = 16))
+                                                    face = "bold", size = 18))
 
 # Combine the plots and export
 thresh_future <- ggarrange(thresh_20_all_plot, thresh_25_all_plot,
@@ -266,20 +271,27 @@ accum_plot <- function(data, y_name, due){
               geom_point(aes(x = year, y = y, fill = scenario),
                          alpha = 0.25, shape = 21) +
               geom_smooth(aes(x = year, y = y, color = scenario),
-                          method = "lm", size=.8, se = F) +
+                          method = "lm", size=1.2, se = F) +
               facet_wrap( ~ climate_type) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +              
-              ylab("Median accum. chill units") +
-              xlab("Year") +
+              ylab("median accum. chill units") +
+              xlab("year") +
               ggtitle(label = lab,
                       subtitle = "by location, scenario, and model") +
               theme_bw() + 
               theme(plot.margin = unit(c(t=.5, r=.5, b=.5, l=0.5), "cm"),
                     plot.title = element_text(hjust = 0.5),
+                    legend.title = element_blank(),
+                    legend.text = element_text(size=10),
                     plot.subtitle = element_text(hjust = 0.5),
                     legend.position = "bottom",
+                    legend.margin=margin(t= -.5, r = 0, b = 0, l = 0),
+                    axis.title.x = element_text(size=14, face = "plain", 
+                                                margin = margin(t=10, r=0, b=0, l=0)),
+                    axis.title.y = element_text(size=14, face= "plain", 
+                                                margin = margin(t=0, r=10, b=0, l=0)),
                     axis.text.x = element_text(size = 10, face = "plain", color="black"),
                     axis.text.y = element_text(size = 10, face = "plain", color="black"),
                     panel.spacing=unit(.5, "cm"))
@@ -297,12 +309,13 @@ accum_hist_plot <- function(data, y_name, due){
                               se = F, size=.5, color = "#21908CFF") +
               facet_wrap( ~ climate_type) +
               ylab("Accum. chill units") +
-              xlab("Year") +
+              xlab("year") +
               scale_x_continuous(limits = c(1950, 2075)) +
               ggtitle(label = lab,
                       subtitle = "by location") +
               theme_bw() + 
               theme(plot.margin = unit(c(t=.5, r=.5, b=.5, l=0.5), "cm"),
+                    legend.title = element_blank(),
                     plot.title = element_text(hjust = 0.5),
                     plot.subtitle = element_text(hjust = 0.5),
                     axis.text.x = element_text(size = 10, face = "plain", color="black"),

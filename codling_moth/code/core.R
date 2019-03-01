@@ -831,7 +831,7 @@ provide_time_stuff <- function(start_year, end_year){
   Nofvariables <- 4 # number of varaibles or column in the forcing data file
   Years <- seq(start_year, end_year)
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
-  return (list(nYears, Nrecords, Nofvariables, Years, ind))
+  return(list(nYears, Nrecords, Nofvariables, Years, ind))
   }
 ###############################################################################################################
 ###############################################################################################################
