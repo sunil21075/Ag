@@ -169,8 +169,8 @@ ensemble_map <- function(data, color_col) {
                    # axis.text.y = element_text(size=3, face="plain", color="black"),
                    # legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
                    ) +
-             scale_color_gradient2(midpoint=0, low="red", mid="white", high="blue", 
-                                   space ="Lab", limits=c(low_lim, up_lim))
+             scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+                                   space ="Lab")
 }
 
 #######################################################################
