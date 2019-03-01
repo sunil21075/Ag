@@ -4,8 +4,6 @@ library(dplyr)
 options(digit=9)
 options(digits=9)
 
-
-
 #############################################
 ###                                       ###
 ###       Define Functions here           ###
@@ -20,7 +18,11 @@ define_path <- function(model_name){
 }
 
 clean_process <- function(data){
-    data <- within(data, remove(sum_J1, sum_F1, sum_M1, sum_A1, sum))
+
+    data <- subset(data, select=c(Chill_season, sum_J1, 
+    	                          sum_F1, sum_M1, lat, long, climate_type,
+    	                          scenario, model, year))
+    
     data <- data %>% filter(year <= 2005 | year >= 2025)
 
     data$time_period = 0L
@@ -43,12 +45,12 @@ detect_non_met_years <- function(dataT, threshs){
     ## model, e.g. BNU, in a given time_period, e.g. historical,
     ## has not met a given threshold.
 
-    result <- data %>% 
-              group_by(lat, long, time_period, scenario, model, climate_type) %>%
-              summarise_all(funs(sum(. == 0))) %>% data.table()
+    # result <- data %>% 
+    #           group_by(lat, long, time_period, scenario, model, climate_type) %>%
+    #           summarise_all(funs(sum(. == 0))) %>% data.table()
 
 
-              data %>%
+    result <- data %>%
 			  mutate(time_range = cut(SUM_J1, breaks = seq(20, 75, 5))) %>%
 			  group_by(city, temp_range, .drop = FALSE) %>%
 			  summarize(years = n_distinct(year))

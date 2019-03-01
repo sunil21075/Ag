@@ -167,9 +167,9 @@ numeric_percentages_time[6,] = numeric_percentages_time[5,] - numeric_percentage
 numeric_percentages_time[9,] = numeric_percentages_time[8,] - numeric_percentages_time[7,]
 numeric_percentages_time[12,]= numeric_percentages_time[11,]- numeric_percentages_time[10,]
 
-numeric_percentages_time$Four_to_13 = numeric_percentages_time[, 4] + 
-                                      numeric_percentages_time[, 5] + 
-                                      numeric_percentages_time[, 6]
+numeric_percentages_time$Four_to_13 = numeric_percentages_time[, 3] + 
+                                      numeric_percentages_time[, 4] + 
+                                      numeric_percentages_time[, 5]
 
 numeric_percentages_time = numeric_percentages_time*100
 # put back the name column in there
