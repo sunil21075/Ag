@@ -1,5 +1,8 @@
+
+rm(list=ls())
 library(data.table)
 library(dplyr)
+library(tidyverse)
 
 options(digit=9)
 options(digits=9)
@@ -17,52 +20,220 @@ define_path <- function(model_name){
     }
 }
 
-clean_process <- function(data){
-
-    data <- subset(data, select=c(Chill_season, sum_J1, 
-    	                          sum_F1, sum_M1, lat, long, climate_type,
-    	                          scenario, model, year))
+clean_process <- function(dt){
+    dt <- subset(dt, select=c(Chill_season, sum_J1, 
+                              sum_F1, sum_M1, lat, long, climate_type,
+                              scenario, model, year))
     
-    data <- data %>% filter(year <= 2005 | year >= 2025)
+    dt <- dt %>% filter(year <= 2005 | year >= 2025)
+    
+    time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2099")
+    dt$time_period = 0L
+    dt$time_period[dt$year <= 2005] <- time_periods[1]
+    dt$time_period[dt$year >= 2025 & dt$year<=2050] <- time_periods[2]
+    dt$time_period[dt$year >  2050 & dt$year<=2075] <- time_periods[3]
+    dt$time_period[dt$year >  2075] <- time_periods[4]
+    dt$time_period = factor(dt$time_period, levels=time_periods, order=T)
 
-    data$time_period = 0L
-    data$time_period[data$year<=2005] <- "Historical"
-    data$time_period[data$year>=2025 & data$year<=2050] <- "2025_2050"
-    data$time_period[data$year> 2050 & data$year<=2075] <- "2051_2075"
-    data$time_period[data$year> 2075] <- "2076_2099"
+    dt$scenario[dt$scenario == "rcp45"] <- "RCP 4.5"
+    dt$scenario[dt$scenario == "rcp85"] <- "RCP 8.5"
+    dt$scenario[dt$scenario == "historical"] <- "Historical"
 
-    data$scenario[data$scenario == "rcp45"] <- "RCP 4.5"
-    data$scenario[data$scenario == "rcp85"] <- "RCP 8.5"
-    data$scenario[data$scenario == "historical"] <- "Historical"
-
-    data <- within(data, remove(year, Chill_season, sum_M1, sum_A1, sum))
-    return (data)
+    jan_data <- subset(dt, select=c(sum_J1, lat, long, climate_type, scenario, model, time_period, Chill_season))
+    feb_data <- subset(dt, select=c(sum_F1, lat, long, climate_type, scenario, model, time_period, Chill_season))
+    mar_data <- subset(dt, select=c(sum_M1, lat, long, climate_type, scenario, model, time_period, Chill_season))
+    return (list(jan_data, feb_data, mar_data))
 }
 
-detect_non_met_years <- function(dataT, threshs){
+count_years_threshs_met <- function(dataT, due){
     ## This function detects the number of years
     ## for which a given location, in a given 
     ## model, e.g. BNU, in a given time_period, e.g. historical,
-    ## has not met a given threshold.
+    ## has met a given threshold.
 
     # result <- data %>% 
     #           group_by(lat, long, time_period, scenario, model, climate_type) %>%
     #           summarise_all(funs(sum(. == 0))) %>% data.table()
+    h_year_count <- length(unique(dataT[dataT$time_period=="Historical",]$Chill_season))
+    f1_year_count <- length(unique(dataT[dataT$time_period== "2025_2050",]$Chill_season))
+    f2_year_count <- length(unique(dataT[dataT$time_period== "2051_2075",]$Chill_season))
+    f3_year_count <- length(unique(dataT[dataT$time_period== "2076_2099",]$Chill_season))
+    print (c(h_year_count, f1_year_count, f2_year_count, f3_year_count))
+    if (due == "Jan"){
+        col_name = "sum_J1"
+        } else if (due == "Feb"){
+            col_name = "sum_F1"
+        } else if(due =="Mar"){
+            col_name = "sum_M1"
+    }
 
+    bks = seq(20, 75, 5)
+    result <- dataT %>%
+              mutate(thresh_range = cut(get(col_name), breaks = bks )) %>%
+              group_by(lat, long, climate_type, time_period, 
+                       thresh_range, model, scenario) %>%
+              summarize(no_years = n_distinct(Chill_season)) %>% 
+              data.table()
 
-    result <- data %>%
-			  mutate(time_range = cut(SUM_J1, breaks = seq(20, 75, 5))) %>%
-			  group_by(city, temp_range, .drop = FALSE) %>%
-			  summarize(years = n_distinct(year))
+    result <- na.omit(result) # Figure out why some become NA
+  
+    time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2099")
+    result$time_period = factor(result$time_period, 
+                                levels=time_periods,
+                                order=T)
+    
+    result$thresh_range <- factor(result$thresh_range, order=T)
+    result$thresh_range <- fct_rev(result$thresh_range)
+    result <- result[order(thresh_range), ]
+
+    # df %>% group_by(id) %>% mutate(csum = cumsum(value))
+    # df$csum <- ave(df$value, df$id, FUN=cumsum)
+    result <- result %>% 
+              group_by(lat, long, climate_type, time_period, model, scenario) %>% 
+              mutate(n_years_passed = cumsum(no_years)) %>% 
+              data.table()
+    ########
+    ######## Debuging purposes
+    ########
+    # first_location <- result %>% 
+    #                   filter(lat == result$lat[1], 
+    #                            long == result$long[1],
+    #                            model == "CCSM4",
+    #                            time_period == "2076_2099", 
+    #                            scenario == "RCP 8.5") %>% 
+    #                   data.table()
+
+    # first_location <- first_location[order(-thresh_range, model, time_period), ]
+    ##########################################################################
+    #                                                                        #
+    #  There are 55 years of historical                                      #
+    #            24 years in 2025_2050                                       #
+    #            24 years in 2051_2075                                       #
+    #            23 years in 2076_2099 (why? what happened in there?)        #
+    #                                                                        #
+    ##########################################################################    
+    # the following can be done more efficiently!
+    result_hist <- result %>% filter(time_period == "Historical") %>% data.table()
+    result_50 <- result %>% filter(time_period == "2025_2050") %>% data.table()
+    result_75 <- result %>% filter(time_period == "2051_2075") %>% data.table()
+    result_99 <- result %>% filter(time_period == "2076_2099") %>% data.table()
+    
+    result_hist$frac_passed = result_hist$n_years_passed / h_year_count
+    result_50$frac_passed = result_50$n_years_passed / f1_year_count
+    result_75$frac_passed = result_75$n_years_passed / f2_year_count
+    result_99$frac_passed = result_99$n_years_passed / f3_year_count
+
+    result <- rbind(result_hist, result_50, result_75, result_99)
+
+    ########
+    ######## Debuging purposes
+    ########
+    # first_location <- result %>% 
+    #                   filter(lat == result$lat[1], 
+    #                            long == result$long[1],
+    #                            model == "CCSM4",
+    #                            time_period == "2076_2099", 
+    #                            scenario == "RCP 8.5") %>% 
+    #                   data.table()
+
+    # first_location <- first_location[order(-thresh_range, model, time_period), ]
 
     return(result)
 }
+
+plot_boxes <- function(p_data, due, noch=T){
+    color_ord = c("grey70" , "dodgerblue", "olivedrab4", "red") # 
+    time_lab = c("Historical", "2025-2050", "2051-2075", "2075-2099")
+    thresh_lab = seq(20, 75, 5)
+    box_width = 0.8
+
+    if (due == "Jan"){
+        title_s = "Thresholds met by Jan. 1st"
+        } else if (due == "Feb") {
+            title_s = "Thresholds met by Feb. 1st"
+        } else if (due == "Mar"){
+            title_s = "Thresholds met by Mar. 1st"
+    }
+    # reverse the order of thresholds so
+    # they appear from small to large in the plot
+    # We can rename them as well.
+    p_data$thresh_range <- fct_rev(p_data$thresh_range)
+
+    # do the following so historical data appear in both RCP's subplots
+    p_data_f <- p_data %>% filter(scenario != "Historical")
+    p_data_h_45 <- p_data %>% filter(scenario == "Historical")
+    p_data_h_85 <- p_data %>% filter(scenario == "Historical")
+    p_data_h_45$scenario = "RCP 4.5"
+    p_data_h_85$scenario = "RCP 8.5"
+    p_data = rbind(p_data_h_45, p_data_h_85, p_data_f)
+
+    the_theme <- theme_bw() + 
+                 theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                      panel.border = element_rect(fill=NA, size=.3),
+                      panel.grid.major = element_line(size = 0.05),
+                      panel.grid.minor = element_blank(),
+                      panel.spacing.y = unit(.35, "cm"),
+                      panel.spacing.x = unit(.25, "cm"),
+                      legend.position = "bottom", 
+                      legend.key.size = unit(1, "line"),
+                      legend.spacing.x = unit(.2, 'cm'),
+                      legend.text = element_text(size=11),
+                      legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
+                      legend.title = element_blank(),
+                      strip.text.x = element_text(size=10),
+                      strip.text.y = element_text(size=10),
+                      axis.ticks = element_line(size=.1, color="black"),
+                      # axis.text.x = element_blank(), # element_text(size=7, face="plain", color="black"),
+                      axis.text.y = element_text(size=10, face="plain", color="black"),
+
+                      axis.title.x = element_text(size=13, face="plain", margin = margin(t=10, r=0, b=0, l=0)),
+                      axis.title.y = element_text(size=13, face="plain", margin = margin(t=0, r=8, b=0, l=0))
+                      )
+
+    box <- ggplot(data = p_data, aes(x=thresh_range, y=frac_passed, fill=time_period)) +
+           geom_boxplot(outlier.size = -.3, notch= noch, width=box_width, lwd=.1) +
+           labs(x = "thresholds", y = "chill portion fraction met") +
+           facet_grid(~ scenario ~  climate_type) + 
+           scale_fill_manual(values = color_ord,
+                             name = "Time\nPeriod", 
+                             labels = time_lab) + 
+           scale_color_manual(values = color_ord,
+                             name = "Time\nPeriod", 
+                             limits = color_ord,
+                             labels = time_lab) + 
+           scale_x_discrete(# breaks = c("Historical", "2025_2050", "2051_2075", "2076_2099"),
+                            labels = thresh_lab)  +
+           ggtitle(title_s)  +
+           the_theme
+    output_name <- paste0(due,"_", noch, "_thresholds.png")
+    ggsave(output_name, box, 
+           path="/Users/hn/Desktop/", width=10, height=4, unit="in", dpi=400)
+}
+
 #############################################
 
 main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
-
-model_specific_dir_name = c("dynamic_model_stats/", "utah_model_stats/")
-model_names = c("dynamic", "utah")
+model_names = c("dynamic") # , "utah"
+model_specific_dir_name = paste0(model_names, "_model_stats/")
 
 file_name = "summary_comp.rds"
+data = data.table(readRDS(paste0(main_in_dir, model_specific_dir_name, file_name)))
+
+information <- clean_process(data)
+jan_data = information[[1]]
+feb_data = information[[2]]
+mar_data = information[[3]]
+rm(information, data)
+
+jan_result = count_years_threshs_met(jan_data, due="Jan")
+feb_result = count_years_threshs_met(feb_data, due="Feb")
+mar_result = count_years_threshs_met(mar_data, due="Mar")
+
+rm(jan_data, feb_data, mar_data)
+
+plot_boxes(p_data=jan_result, due="Jan", noch=F)
+plot_boxes(p_data=feb_result, due="Feb", noch=F)
+plot_boxes(p_data=mar_result, due="Mar", noch=F)
+
+
 
