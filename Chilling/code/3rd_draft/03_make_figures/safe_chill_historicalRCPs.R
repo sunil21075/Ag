@@ -85,12 +85,12 @@ produce_data_4_plots <- function(data){
 
     median_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
                                             group_by(time_period, lat, long, scenario) %>%
-                                            summarise(mean_over_model = median(quan_90)) %>%
+                                            summarise(median_over_model = median(quan_90)) %>%
                                             data.table()
 
     median_quan_per_loc_period_model_feb <- quan_per_loc_period_model_feb %>%
                                             group_by(time_period, lat, long, scenario) %>%
-                                            summarise(mean_over_model = median(quan_90)) %>%
+                                            summarise(median_over_model = median(quan_90)) %>%
                                             data.table()
     
     
@@ -142,7 +142,7 @@ safe_box_plot <- function(data, due){
     )
     
     safe_b <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
-        geom_boxplot(outlier.size=-.25, notch=TRUE, width=box_width, lwd=.1) +
+        geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
         theme_bw() +
         labs(x="", y="safe chill") +
         facet_grid(~ climate_type ~ scenario ) + 
@@ -174,7 +174,7 @@ ensemble_map <- function(data, color_col, due) {
     if (color_col=="mean_over_model"){
        low_lim = min(data$mean_over_model)
        up_lim = max(data$mean_over_model)
-    } else if (color_col=="mediam_over_model"){
+    } else if (color_col=="median_over_model"){
        low_lim = min(data$median_over_model)
        up_lim = max(data$median_over_model)
     }
@@ -187,7 +187,7 @@ ensemble_map <- function(data, color_col, due) {
                                    color = color_col), alpha = 0.4, size=.4) +
              coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
              facet_grid(~ scenario ~ time_period) +
-             ggtitle(paste0("Ensemble means by ", due, " 1st")) + 
+             ggtitle(paste0("Ensemble ", unlist(strsplit(color_col, "_"))[1] , "by ", due, " 1st")) + 
              theme_bw() + 
              theme(legend.position = "bottom",
                    legend.title = element_blank(),
@@ -221,6 +221,17 @@ for (time_type in time_types){
         out_dir = file.path(main_in, time_type, model_type, "/")
         
         datas = data.table(readRDS(in_dir))
+        datas <- datas %>% filter(model != "observed")
+
+        ########################################################
+        #
+        # Pick up Omak And Richland
+        #
+        ########################################################
+
+        datas <- datas %>% filter(lat == 48.40625 | lat == 46.28125)
+        datas <- datas %>% filter(long == -119.53125 | long == -119.34375)
+
         information = produce_data_4_plots(datas)
 
         safe_jan <- safe_box_plot(information[[1]], due="Jan.")
@@ -241,6 +252,16 @@ for (time_type in time_types){
 
         # output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_feb.png") 
         # ggsave(output_name, mean_map_feb, path=out_dir, width=7, height=4.5, unit="in", dpi=400)
+
+        # medians over models
+        median_map_jan = ensemble_map(data=information[[3]], color_col="median_over_model", due="Jan.")
+        median_map_feb = ensemble_map(data=information[[6]], color_col="median_over_model", due="Feb.")
+
+        output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_jan.png") 
+        ggsave(output_name, median_map_jan, path=out_dir, width=7, height=4.5, unit="in", dpi=400)
+
+        output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_feb.png") 
+        ggsave(output_name, median_map_feb, path=out_dir, width=7, height=4.5, unit="in", dpi=400)
         
     }
 }

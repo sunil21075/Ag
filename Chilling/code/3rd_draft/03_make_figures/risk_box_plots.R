@@ -3,6 +3,7 @@ rm(list=ls())
 library(data.table)
 library(dplyr)
 library(tidyverse)
+library(ggpubr) # for ggarrange
 
 options(digit=9)
 options(digits=9)
@@ -54,11 +55,10 @@ count_years_threshs_met <- function(dataT, due){
     # result <- data %>% 
     #           group_by(lat, long, time_period, scenario, model, climate_type) %>%
     #           summarise_all(funs(sum(. == 0))) %>% data.table()
-    h_year_count <- length(unique(dataT[dataT$time_period=="Historical",]$Chill_season))
+    h_year_count <- length(unique(dataT[dataT$time_period =="Historical",]$Chill_season))
     f1_year_count <- length(unique(dataT[dataT$time_period== "2025_2050",]$Chill_season))
     f2_year_count <- length(unique(dataT[dataT$time_period== "2051_2075",]$Chill_season))
     f3_year_count <- length(unique(dataT[dataT$time_period== "2076_2099",]$Chill_season))
-    print (c(h_year_count, f1_year_count, f2_year_count, f3_year_count))
     if (due == "Jan"){
         col_name = "sum_J1"
         } else if (due == "Feb"){
@@ -68,19 +68,39 @@ count_years_threshs_met <- function(dataT, due){
     }
 
     bks = seq(20, 75, 5)
+    bks = c(bks, 200)
+
     result <- dataT %>%
               mutate(thresh_range = cut(get(col_name), breaks = bks )) %>%
               group_by(lat, long, climate_type, time_period, 
                        thresh_range, model, scenario) %>%
               summarize(no_years = n_distinct(Chill_season)) %>% 
               data.table()
-
-    result <- na.omit(result) # Figure out why some become NA
+    
+    # print(sum(is.na(result)))
+    # result <- na.omit(result)
   
     time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2099")
     result$time_period = factor(result$time_period, 
                                 levels=time_periods,
                                 order=T)
+    ####################################################3
+    result[result$thresh_rresultnge == "(75,200]" ]$thresh_rresultnge = "75"
+    result[result$thresh_rresultnge == "(70,75]" ]$thresh_rresultnge = "70"
+    result[result$thresh_rresultnge == "(65,70]" ]$thresh_rresultnge = "65"
+    result[result$thresh_rresultnge == "(60,65]" ]$thresh_rresultnge = "60"
+    result[result$thresh_rresultnge == "(55,60]" ]$thresh_rresultnge = "55"
+    result[result$thresh_rresultnge == "(50,55]" ]$thresh_rresultnge = "50"
+    result[result$thresh_rresultnge == "(45,50]" ]$thresh_rresultnge = "45"
+    result[result$thresh_rresultnge == "(40,45]" ]$thresh_rresultnge = "40"
+    result[result$thresh_rresultnge == "(35,40]" ]$thresh_rresultnge = "35"
+    result[result$thresh_rresultnge == "(30,35]" ]$thresh_rresultnge = "30"
+    result[result$thresh_rresultnge == "(25,30]" ]$thresh_rresultnge = "25"
+    result[result$thresh_rresultnge == "(20,25]" ]$thresh_rresultnge = "20"
+
+    level_s = c("20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75")
+    result$thresh_range = factor(result$thresh_range, levels =level_s,  order=T)
+    #########################################3
     
     result$thresh_range <- factor(result$thresh_range, order=T)
     result$thresh_range <- fct_rev(result$thresh_range)
@@ -143,10 +163,9 @@ count_years_threshs_met <- function(dataT, due){
 
 plot_boxes <- function(p_data, due, noch=T){
     color_ord = c("grey70" , "dodgerblue", "olivedrab4", "red") # 
-    time_lab = c("Historical", "2025-2050", "2051-2075", "2075-2099")
-    thresh_lab = seq(20, 75, 5)
+    time_lab = c("Historical", "2025-2050", "2051-2075", "2076-2099")
+    
     box_width = 0.8
-
     if (due == "Jan"){
         title_s = "Thresholds met by Jan. 1st"
         } else if (due == "Feb") {
@@ -159,6 +178,12 @@ plot_boxes <- function(p_data, due, noch=T){
     # We can rename them as well.
     p_data$thresh_range <- fct_rev(p_data$thresh_range)
 
+    thresh_lab <- levels(p_data$thresh_range)
+    thresh_lab <- unlist(strsplit(thresh_lab, ","))
+    thresh_lab <- thresh_lab[c(TRUE, FALSE)]
+    thresh_lab <- unlist(strsplit(thresh_lab, "(", fixed=T))
+    thresh_lab <- thresh_lab[c(FALSE, TRUE)]
+
     # do the following so historical data appear in both RCP's subplots
     p_data_f <- p_data %>% filter(scenario != "Historical")
     p_data_h_45 <- p_data %>% filter(scenario == "Historical")
@@ -167,8 +192,8 @@ plot_boxes <- function(p_data, due, noch=T){
     p_data_h_85$scenario = "RCP 8.5"
     p_data = rbind(p_data_h_45, p_data_h_85, p_data_f)
 
-    the_theme <- theme_bw() + 
-                 theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+    the_theme <-theme_bw() + 
+                theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                       panel.border = element_rect(fill=NA, size=.3),
                       panel.grid.major = element_line(size = 0.05),
                       panel.grid.minor = element_blank(),
@@ -189,7 +214,6 @@ plot_boxes <- function(p_data, due, noch=T){
                       axis.title.x = element_text(size=13, face="plain", margin = margin(t=10, r=0, b=0, l=0)),
                       axis.title.y = element_text(size=13, face="plain", margin = margin(t=0, r=8, b=0, l=0))
                       )
-
     box <- ggplot(data = p_data, aes(x=thresh_range, y=frac_passed, fill=time_period)) +
            geom_boxplot(outlier.size = -.3, notch= noch, width=box_width, lwd=.1) +
            labs(x = "thresholds", y = "chill portion fraction met") +
@@ -197,19 +221,20 @@ plot_boxes <- function(p_data, due, noch=T){
            scale_fill_manual(values = color_ord,
                              name = "Time\nPeriod", 
                              labels = time_lab) + 
-           scale_color_manual(values = color_ord,
-                             name = "Time\nPeriod", 
-                             limits = color_ord,
-                             labels = time_lab) + 
-           scale_x_discrete(# breaks = c("Historical", "2025_2050", "2051_2075", "2076_2099"),
+           scale_x_discrete(#breaks = x_breaks,
                             labels = thresh_lab)  +
            ggtitle(title_s)  +
            the_theme
-    output_name <- paste0(due,"_", noch, "_thresholds.png")
+    output_name <- paste0(due, "_", "_thresholds.png")
     ggsave(output_name, box, 
            path="/Users/hn/Desktop/", width=10, height=4, unit="in", dpi=400)
+    return(box)
 }
 
+#############################################
+#############################################
+############################################# Driver
+#############################################
 #############################################
 
 main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
@@ -217,23 +242,82 @@ model_names = c("dynamic") # , "utah"
 model_specific_dir_name = paste0(model_names, "_model_stats/")
 
 file_name = "summary_comp.rds"
-data = data.table(readRDS(paste0(main_in_dir, model_specific_dir_name, file_name)))
+mdata <- data.table(readRDS(paste0(main_in_dir, model_specific_dir_name, file_name)))
+mdata <- mdata %>% filter(model != "observed")
 
-information <- clean_process(data)
+########################################################
+#
+# Pick up Omak And Richland
+#
+########################################################
+mdata <- mdata %>% filter(lat == 48.40625 | lat == 46.28125)
+mdata <- mdata %>% filter(long == -119.53125 | long == -119.34375)
+
+# data$CountyGroup[data$location == "48.40625_-119.53125"] = "omak"
+# data$CountyGroup[data$location == "46.28125_-119.34375"] = "rich"
+
+information <- clean_process(mdata)
 jan_data = information[[1]]
 feb_data = information[[2]]
 mar_data = information[[3]]
 rm(information, data)
 
-jan_result = count_years_threshs_met(jan_data, due="Jan")
-feb_result = count_years_threshs_met(feb_data, due="Feb")
-mar_result = count_years_threshs_met(mar_data, due="Mar")
-
+jan_result = count_years_threshs_met(dataT = jan_data, due="Jan")
+feb_result = count_years_threshs_met(dataT = feb_data, due="Feb")
+mar_result = count_years_threshs_met(dataT = mar_data, due="Mar")
 rm(jan_data, feb_data, mar_data)
 
-plot_boxes(p_data=jan_result, due="Jan", noch=F)
-plot_boxes(p_data=feb_result, due="Feb", noch=F)
-plot_boxes(p_data=mar_result, due="Mar", noch=F)
+jan_plot <- plot_boxes(p_data=jan_result, due="Jan", noch=F)
+feb_plot <- plot_boxes(p_data=feb_result, due="Feb", noch=F)
+mar_plot <- plot_boxes(p_data=mar_result, due="Mar", noch=F)
+
+big_plot <- ggarrange(jan_plot, 
+                      feb_plot,
+                      mar_plot,
+                      label.x = "threshold",
+                      label.y = "chill portion fraction met",
+                      ncol = 1, 
+                      nrow = 3, 
+                      common.legend = T,
+                      legend = "bottom")
+ggsave("all_in_one.png", big_plot, 
+       path="/Users/hn/Desktop/", width=10, height=12, unit="in", dpi=400)
+    
+
+
+######################################################################
+#                                                                    #
+#           The colorful box plots where colors indicates            #
+#           level of risk. We do not need RCP 4.5 and                #
+#           There we go:                                             #
+#           (and we want to average over all models and locations)   #
+#                                                                    #
+######################################################################
+jan_result <- jan_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
+
+data <- jan_result
+data <- data %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
+data <- within(data, remove(lat, long, no_years, n_years_passed))
+
+data_w <- data %>% filter(climate_type == "Warmer Area")
+data_c <- data %>% filter(climate_type == "Cooler Area")
+
+data_w <- within(data_w, remove(climate_type))
+data_c <- within(data_c, remove(climate_type))
+        
+result <- data_w %>% 
+          group_by(time_period, thresh_range, model, scenario) %>% 
+          aggregate(average_met = mean(frac_passed)) %>% 
+          data.table()
+
+feb_result <- feb_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
+mar_result <- mar_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
+
+
+
+
+
+
 
 
 
