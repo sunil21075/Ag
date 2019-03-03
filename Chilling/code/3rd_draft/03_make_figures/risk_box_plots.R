@@ -85,21 +85,21 @@ count_years_threshs_met <- function(dataT, due){
                                 levels=time_periods,
                                 order=T)
     ####################################################3
-    result[result$thresh_rresultnge == "(75,200]" ]$thresh_rresultnge = "75"
-    result[result$thresh_rresultnge == "(70,75]" ]$thresh_rresultnge = "70"
-    result[result$thresh_rresultnge == "(65,70]" ]$thresh_rresultnge = "65"
-    result[result$thresh_rresultnge == "(60,65]" ]$thresh_rresultnge = "60"
-    result[result$thresh_rresultnge == "(55,60]" ]$thresh_rresultnge = "55"
-    result[result$thresh_rresultnge == "(50,55]" ]$thresh_rresultnge = "50"
-    result[result$thresh_rresultnge == "(45,50]" ]$thresh_rresultnge = "45"
-    result[result$thresh_rresultnge == "(40,45]" ]$thresh_rresultnge = "40"
-    result[result$thresh_rresultnge == "(35,40]" ]$thresh_rresultnge = "35"
-    result[result$thresh_rresultnge == "(30,35]" ]$thresh_rresultnge = "30"
-    result[result$thresh_rresultnge == "(25,30]" ]$thresh_rresultnge = "25"
-    result[result$thresh_rresultnge == "(20,25]" ]$thresh_rresultnge = "20"
+    # result[result$thresh_range == "(75,200]" ]$thresh_range = "75"
+    # result[result$thresh_range == "(70,75]" ]$thresh_range = "70"
+    # result[result$thresh_range == "(65,70]" ]$thresh_range = "65"
+    # result[result$thresh_range == "(60,65]" ]$thresh_range = "60"
+    # result[result$thresh_range == "(55,60]" ]$thresh_range = "55"
+    # result[result$thresh_range == "(50,55]" ]$thresh_range = "50"
+    # result[result$thresh_range == "(45,50]" ]$thresh_range = "45"
+    # result[result$thresh_range == "(40,45]" ]$thresh_range = "40"
+    # result[result$thresh_range == "(35,40]" ]$thresh_range = "35"
+    # result[result$thresh_range == "(30,35]" ]$thresh_range = "30"
+    # result[result$thresh_range == "(25,30]" ]$thresh_range = "25"
+    # result[result$thresh_range == "(20,25]" ]$thresh_range = "20"
 
-    level_s = c("20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75")
-    result$thresh_range = factor(result$thresh_range, levels =level_s,  order=T)
+    # level_s = c("20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75")
+    # result$thresh_range = factor(result$thresh_range, levels =level_s,  order=T)
     #########################################3
     
     result$thresh_range <- factor(result$thresh_range, order=T)
@@ -250,8 +250,8 @@ mdata <- mdata %>% filter(model != "observed")
 # Pick up Omak And Richland
 #
 ########################################################
-mdata <- mdata %>% filter(lat == 48.40625 | lat == 46.28125)
-mdata <- mdata %>% filter(long == -119.53125 | long == -119.34375)
+# mdata <- mdata %>% filter(lat == 48.40625 | lat == 46.28125)
+# mdata <- mdata %>% filter(long == -119.53125 | long == -119.34375)
 
 # data$CountyGroup[data$location == "48.40625_-119.53125"] = "omak"
 # data$CountyGroup[data$location == "46.28125_-119.34375"] = "rich"
@@ -260,7 +260,7 @@ information <- clean_process(mdata)
 jan_data = information[[1]]
 feb_data = information[[2]]
 mar_data = information[[3]]
-rm(information, data)
+rm(information, mdata)
 
 jan_result = count_years_threshs_met(dataT = jan_data, due="Jan")
 feb_result = count_years_threshs_met(dataT = feb_data, due="Feb")
@@ -283,41 +283,4 @@ big_plot <- ggarrange(jan_plot,
 ggsave("all_in_one.png", big_plot, 
        path="/Users/hn/Desktop/", width=10, height=12, unit="in", dpi=400)
     
-
-
-######################################################################
-#                                                                    #
-#           The colorful box plots where colors indicates            #
-#           level of risk. We do not need RCP 4.5 and                #
-#           There we go:                                             #
-#           (and we want to average over all models and locations)   #
-#                                                                    #
-######################################################################
-jan_result <- jan_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
-
-data <- jan_result
-data <- data %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
-data <- within(data, remove(lat, long, no_years, n_years_passed))
-
-data_w <- data %>% filter(climate_type == "Warmer Area")
-data_c <- data %>% filter(climate_type == "Cooler Area")
-
-data_w <- within(data_w, remove(climate_type))
-data_c <- within(data_c, remove(climate_type))
-        
-result <- data_w %>% 
-          group_by(time_period, thresh_range, model, scenario) %>% 
-          aggregate(average_met = mean(frac_passed)) %>% 
-          data.table()
-
-feb_result <- feb_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
-mar_result <- mar_result %>% filter(scenario=="Historical" | scenario=="RCP 8.5")
-
-
-
-
-
-
-
-
 
