@@ -61,12 +61,12 @@ produce_data_4_plots <- function(data){
     #######################################################################
     quan_per_loc_period_model_jan <- data %>% 
                                      group_by(time_period, lat, long, scenario, model, climate_type) %>%
-                                     summarise(quan_90 = quantile(sum_J1, probs = 0.9)) %>%
+                                     summarise(quan_90 = quantile(sum_J1, probs = 0.1)) %>%
                                      data.table()
     
     quan_per_loc_period_model_feb <- data %>% 
                                      group_by(time_period, lat, long, scenario, model, climate_type) %>%
-                                     summarise(quan_90 = quantile(sum_F1, probs = 0.9)) %>%
+                                     summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
                                      data.table()
 
     # it seems there is a library, perhaps tidyverse, that messes up
@@ -229,8 +229,9 @@ for (time_type in time_types){
         #
         ########################################################
 
-        datas <- datas %>% filter(lat == 48.40625 | lat == 46.28125)
-        datas <- datas %>% filter(long == -119.53125 | long == -119.34375)
+        # datas <- datas %>% filter(lat == 48.40625 | lat == 46.28125)
+        # datas <- datas %>% filter(long == -119.53125 | long == -119.34375)
+        ########################################################
 
         information = produce_data_4_plots(datas)
 
