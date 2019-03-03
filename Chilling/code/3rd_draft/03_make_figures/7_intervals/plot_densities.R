@@ -21,7 +21,7 @@ plot_dens <- function(data, month_name){
                        legend.position="bottom", 
                        legend.title = element_blank(),
                        legend.key.size = unit(1, "line"),
-                       legend.text=element_text(size=11),
+                       legend.text=element_text(size=12),
                        legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
                        legend.spacing.x = unit(.08, 'cm'),
                        strip.text.x = element_text(size = 16),
@@ -42,11 +42,11 @@ plot_dens <- function(data, month_name){
                ggtitle(label = paste0("The density of hourly temp. in the month of ", month_name, ".")) +
                scale_fill_manual(values=color_ord,
                       name="Time\nPeriod", 
-                      labels=c("1950-2005","2025-2050","2051-2075","2076-2099")) + 
+                      labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
                scale_color_manual(values=color_ord,
                        name="Time\nPeriod", 
                        limits = color_ord,
-                       labels=c("1950-2005","2025-2050","2051-2075","2076-2099")) + 
+                       labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
                scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
                the_theme
     return(obs_plot)
@@ -62,7 +62,7 @@ for (month in month_names){
     data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
     data$scenario[data$scenario == "historical"] = "Historical"
     # data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
-    data$ClimateGroup[data$Year <= 2005] <- "1950-2005"
+    data$ClimateGroup[data$Year <= 2005] <- "Historical"
     data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
     data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
     data$ClimateGroup[data$Year > 2075] <- "2076-2099"
@@ -72,7 +72,7 @@ for (month in month_names){
 
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
-                                levels = c("1950-2005", "2025-2050",
+                                levels = c("Historical", "2025-2050",
                                            "2051-2075", "2076-2099"))
 
     data_45 = data %>% filter(scenario %in% c("historical", "rcp45"))
@@ -90,21 +90,20 @@ for (month in month_names){
 ####### RCP45
 #######
 
-big_plot_45 <- ggarrange(Sept_density_plot_rcp45, 
-                         Oct_density_plot_rcp45,
-                         Nov_density_plot_rcp45,
-                         Dec_density_plot_rcp45,
-                         Jan_density_plot_rcp45,
-                         Feb_density_plot_rcp45,
-                         Mar_density_plot_rcp45,
-                         label.x = "hourly temp.",
-                         label.y = "density",
-                         ncol = 1, 
-                         nrow = 7, 
-                         common.legend = F,
-                         legend = "bottom")
-
-ggsave(filename = "density_45.png", 
+# big_plot_45 <- ggarrange(Sept_density_plot_rcp45, 
+                         # Oct_density_plot_rcp45,
+                         # Nov_density_plot_rcp45,
+                         # Dec_density_plot_rcp45,
+                         # Jan_density_plot_rcp45,
+                         # Feb_density_plot_rcp45,
+                         # Mar_density_plot_rcp45,
+                         # label.x = "hourly temp.",
+                         # label.y = "density",
+                         # ncol = 1, 
+                         # nrow = 7, 
+                         # common.legend = F,
+                         # legend = "bottom")
+# ggsave(filename = "density_45.png", 
        path = "/Users/hn/Desktop/", 
        plot = big_plot_45,
        width = 15, height = 40, units = "in",
@@ -185,7 +184,7 @@ plot_dens <- function(data, month_name){
                        legend.position="bottom", 
                        legend.title = element_blank(),
                        legend.key.size = unit(.9, "line"),
-                       legend.text=element_text(size=6),
+                       legend.text=element_text(size=8),
                        legend.margin=margin(t= -0.1, r=0, b=0, l=0, unit='cm'),
                        legend.spacing.x = unit(.08, 'cm'),
                        strip.text.x = element_text(size=10),
@@ -211,11 +210,11 @@ plot_dens <- function(data, month_name){
                ggtitle(label = gtitle) +
                scale_fill_manual(values=color_ord,
                       name="Time\nPeriod", 
-                      labels=c("1950-2005", "2025-2050", "2051-2075", "2076-2099")) + 
+                      labels=c("Historical", "2025-2050", "2051-2075", "2076-2099")) + 
                scale_color_manual(values=color_ord,
                        name="Time\nPeriod", 
                        limits = color_ord,
-                       labels=c("1950-2005", "2025-2050", "2051-2075", "2076-2099")) + 
+                       labels=c("Historical", "2025-2050", "2051-2075", "2076-2099")) + 
                scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
                the_theme
     return(obs_plot)
@@ -230,7 +229,7 @@ for (month in month_names){
     data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
     data$scenario[data$scenario == "historical"] = "Historical"
 
-    data$ClimateGroup[data$Year <= 2005] <- "1950-2005"
+    data$ClimateGroup[data$Year <= 2005] <- "Historical"
     data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
     data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
     data$ClimateGroup[data$Year > 2075] <- "2076-2099"
@@ -241,7 +240,7 @@ for (month in month_names){
     dim(data)
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
-                                levels = c("1950-2005", "2025-2050", 
+                                levels = c("Historical", "2025-2050", 
                                            "2051-2075", "2076-2099"))
 
     data_45 = data %>% filter(scenario %in% c("Historical", "RCP 4.5"))
@@ -256,12 +255,12 @@ for (month in month_names){
     rm(data_45, data_85)
 }
 
-ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp45.png"), 
-       path = "/Users/hn/Desktop/",
-       plot = sept_thru_dec_modeled_density_rcp45,
-       width=8, height=3, units = "in",
-       dpi=400, 
-       device = "png")
+#ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp45.png"), 
+       # path = "/Users/hn/Desktop/",
+       # plot = sept_thru_dec_modeled_density_rcp45,
+       # width=8, height=3, units = "in",
+       # dpi=400, 
+       # device = "png")
 ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp85.png"), 
        path = "/Users/hn/Desktop/", 
        plot = sept_thru_dec_modeled_density_rcp85,
@@ -269,16 +268,33 @@ ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp85.png"),
        dpi=400, 
        device = "png")
 
-
-ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp45.png"), 
-        path = "/Users/hn/Desktop/",
-        plot = sept_thru_jan_modeled_density_rcp45,
-        width=8, height=3, units = "in",
-        dpi=400, 
-        device = "png")
+#ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp45.png"), 
+        # path = "/Users/hn/Desktop/",
+        # plot = sept_thru_jan_modeled_density_rcp45,
+        # width=8, height=3, units = "in",
+        # dpi=400, 
+        # device = "png")
 ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp85.png"), 
         path = "/Users/hn/Desktop/", 
         plot = sept_thru_jan_modeled_density_rcp85,
         width=8, height=3, units = "in",
         dpi=400, 
         device = "png")
+
+big_plot_85 <- ggarrange(sept_thru_dec_modeled_density_rcp85, 
+                         sept_thru_jan_modeled_density_rcp85,
+                         label.x = "hourly temp.",
+                         label.y = "density",
+                         ncol = 1, 
+                         nrow = 2, 
+                         common.legend = T,
+                         legend = "bottom")
+
+ggsave(filename = "density_thru_dec_sept_85.png", 
+       path = "/Users/hn/Desktop/", 
+       plot = big_plot_85,
+       width = 8, height = 6, units = "in",
+       dpi=400, 
+       device = "png")
+
+

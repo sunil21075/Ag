@@ -1,10 +1,10 @@
 
-rm(list=ls())
+#rm(list=ls())
 
 library(data.table)
 library(ggpubr)
 library(tidyverse)
-library(plyr)
+#library(plyr)
 library(ggplot2)
 ##########################################################################
 #               *********      WARNING !!!    *********                  #
@@ -62,13 +62,21 @@ for (model_type in model_types){
     data_dir = paste0(main_data_dir, time_period_type, "/", model_type, model_dir_postfix, "tables/")
     data <- data.table(read.csv(file=paste0(data_dir, model_type, "_medians.csv"), header=TRUE))
 
-    data <- rename(data, c(thresh_20_med="20", thresh_25_med="25",
-                           thresh_30_med="30", thresh_35_med="35",
-                           thresh_40_med="40", thresh_45_med="45",
-                           thresh_50_med="50", thresh_55_med="55",
-                           thresh_60_med="60", thresh_65_med="65",
-                           thresh_70_med="70", thresh_75_med="75"
-                            ))
+    # data <- plyr::rename(data, c(thresh_20_med="20", thresh_25_med="25",
+    #                              thresh_30_med="30", thresh_35_med="35",
+    #                              thresh_40_med="40", thresh_45_med="45",
+    #                              thresh_50_med="50", thresh_55_med="55",
+    #                              thresh_60_med="60", thresh_65_med="65",
+    #                              thresh_70_med="70", thresh_75_med="75"
+    #                               ))
+    setnames(data, old=c("thresh_20_med", "thresh_25_med",
+                         "thresh_30_med", "thresh_35_med",
+                         "thresh_40_med", "thresh_45_med",
+                         "thresh_50_med", "thresh_55_med",
+                         "thresh_60_med", "thresh_65_med",
+                         "thresh_70_med", "thresh_75_med"), 
+                   new=c("20", "25", "30", "35", "40", "45", "50", 
+                         "55", "60", "65", "70", "75"))
   
     data$scen_clim = paste0(data$scenario, "_(", data$ClimateGroup, ")")
     data = within(data, remove(scenario, ClimateGroup))    
@@ -98,10 +106,11 @@ for (model_type in model_types){
     data_melt$scen_clim <- factor(data_melt$scen_clim, levels=orders, order=T)
 
     plot = ggplot(data_melt, aes(x=variable, y=value), fill=factor(scen_clim)) + 
-           geom_line(aes(color = factor(scen_clim), size=factor(scen_clim), linetype=factor(scen_clim) ) ) + 
+           geom_line(aes(color = factor(scen_clim), size=factor(scen_clim), linetype=factor(scen_clim))) + 
            facet_grid( ~ climate_type, scales = "free") + 
            labs(x = "thresholds", y = "median DoY") +
            scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+           scale_y_continuous(limits = c(70, 200), breaks = seq(70, 200, by = 10)) +
            scale_color_manual(values=c("black", 
                                        "blue", "brown", "green4", 
                                        "red", "magenta", "orange")) + 
@@ -132,23 +141,31 @@ for (model_type in model_types){
 
     if (time_period_type == "non_overlapping"){
       legend_labs = c("Historical", "2025-2050", "2051-2075", "2076-2100")
-      time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2100")
+      time_periods= c("Historical", "2025_2050", "2051_2075", "2076_2100")
     } else {
       legend_labs = c("Historical", "2040's", "2060's", "2080's")
-      time_periods = c("Historical", "2040's", "2060's", "2080's")
+      time_periods= c("Historical", "2040's", "2060's", "2080's")
     }
     
     data_dir = paste0(main_data_dir, time_period_type, "/", model_type, model_dir_postfix, "tables/")
     data <- data.table(read.csv(file=paste0(data_dir, model_type, "_quan_90.csv"), header=TRUE))
 
-    data <- plyr::rename(data, c(thresh_20_Q90="20", thresh_25_Q90="25",
-                           thresh_30_Q90="30", thresh_35_Q90="35",
-                           thresh_40_Q90="40", thresh_45_Q90="45",
-                           thresh_50_Q90="50", thresh_55_Q90="55",
-                           thresh_60_Q90="60", thresh_65_Q90="65",
-                           thresh_70_Q90="70", thresh_75_Q90="75"
-                            ))
-  
+    # data <- plyr::rename(data, c(thresh_20_Q90="20", thresh_25_Q90="25",
+    #                              thresh_30_Q90="30", thresh_35_Q90="35",
+    #                              thresh_40_Q90="40", thresh_45_Q90="45",
+    #                              thresh_50_Q90="50", thresh_55_Q90="55",
+    #                              thresh_60_Q90="60", thresh_65_Q90="65",
+    #                              thresh_70_Q90="70", thresh_75_Q90="75"
+    #                               ))
+    setnames(data, old=c("thresh_20_Q90", "thresh_25_Q90",
+                         "thresh_30_Q90", "thresh_35_Q90",
+                         "thresh_40_Q90", "thresh_45_Q90",
+                         "thresh_50_Q90", "thresh_55_Q90",
+                         "thresh_60_Q90", "thresh_65_Q90",
+                         "thresh_70_Q90", "thresh_75_Q90"), 
+                   new=c("20", "25", "30", "35", "40", "45", "50", 
+                         "55", "60", "65", "70", "75"))
+
     data$scen_clim = paste0(data$scenario, "_(", data$ClimateGroup, ")")
     data = within(data, remove(scenario, ClimateGroup))
     
@@ -181,6 +198,7 @@ for (model_type in model_types){
            facet_grid( ~ climate_type, scales = "free") + 
            labs(x = "thresholds", y = "90th quantile DoY") +
            scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+           scale_y_continuous(limits = c(70, 200), breaks = seq(70, 200, by = 10)) +
            scale_color_manual(values=c("black", 
                                        "blue", "brown", "green4", 
                                        "red", "magenta", "orange")) + 

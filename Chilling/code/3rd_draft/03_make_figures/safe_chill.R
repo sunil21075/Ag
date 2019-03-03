@@ -225,6 +225,8 @@ for (time_type in time_types){
         out_dir = file.path(main_in, time_type, model_type, "/")
         
         datas = data.table(readRDS(in_dir))
+        datas <- datas %>% filter(model != "observed")
+        
         information = produce_data_4_plots(datas)
 
         safe_jan <- safe_box_plot(information[[1]])
