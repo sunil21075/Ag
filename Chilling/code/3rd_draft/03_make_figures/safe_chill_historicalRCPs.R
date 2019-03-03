@@ -16,7 +16,7 @@ options(digits=9)
 #######################################################################
 
 produce_data_4_plots <- function(data){
-    needed_cols = c("Chill_season", "sum_J1", "sum_F1","year", "model", 
+    needed_cols = c("Chill_season", "sum_J1", "sum_F1", "sum_M1", "year", "model", 
                     "scenario", "lat", "long", "climate_type")
 
     ################### CLEAN DATA
@@ -69,6 +69,11 @@ produce_data_4_plots <- function(data){
                                      summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
                                      data.table()
 
+    quan_per_loc_period_model_mar <- data %>% 
+                                     group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                     summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
+                                     data.table()
+
     # it seems there is a library, perhaps tidyverse, that messes up
     # the above line, so the two variables above are 1-by-1. 
     # just close and re-open R Studio
@@ -82,6 +87,11 @@ produce_data_4_plots <- function(data){
                                           group_by(time_period, lat, long, scenario) %>%
                                           summarise(mean_over_model = mean(quan_90)) %>%
                                           data.table()
+    
+    mean_quan_per_loc_period_model_mar <- quan_per_loc_period_model_feb %>%
+                                          group_by(time_period, lat, long, scenario) %>%
+                                          summarise(mean_over_model = mean(quan_90)) %>%
+                                          data.table()                                          
 
     median_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
                                             group_by(time_period, lat, long, scenario) %>%
@@ -92,6 +102,11 @@ produce_data_4_plots <- function(data){
                                             group_by(time_period, lat, long, scenario) %>%
                                             summarise(median_over_model = median(quan_90)) %>%
                                             data.table()
+    
+    median_quan_per_loc_period_model_mar <- quan_per_loc_period_model_feb %>%
+                                            group_by(time_period, lat, long, scenario) %>%
+                                            summarise(median_over_model = median(quan_90)) %>%
+                                            data.table()                                            
     
     
     # quan_per_loc_period_model_jan$time_period = factor(quan_per_loc_period_model_jan$time_period, order=T)
@@ -107,7 +122,10 @@ produce_data_4_plots <- function(data){
                 median_quan_per_loc_period_model_jan,
                 quan_per_loc_period_model_feb, 
                 mean_quan_per_loc_period_model_feb, 
-                median_quan_per_loc_period_model_feb)
+                median_quan_per_loc_period_model_feb,
+                quan_per_loc_period_model_mar, 
+                mean_quan_per_loc_period_model_mar, 
+                median_quan_per_loc_period_model_mar)
           )
 }
 
@@ -228,21 +246,27 @@ for (time_type in time_types){
         # Pick up Omak And Richland
         #
         ########################################################
+        # datas$location = paste0(datas$lat, "_", datas$long)
+        # datas <- datas %>% filter(datas$location == "48.40625_-119.53125" | datas$location == "46.28125_-119.34375")
+        # datas <- within(datas, remove(location))
 
-        # datas <- datas %>% filter(lat == 48.40625 | lat == 46.28125)
-        # datas <- datas %>% filter(long == -119.53125 | long == -119.34375)
         ########################################################
 
         information = produce_data_4_plots(datas)
 
         safe_jan <- safe_box_plot(information[[1]], due="Jan.")
         safe_feb <- safe_box_plot(information[[4]], due="Feb.")
+        safe_mar <- safe_box_plot(information[[7]], due="Mar.")
         
+        # out_dir
         output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_Jan.png")
-        ggsave(output_name, safe_jan, path=out_dir, width=4, height=4, unit="in", dpi=400)
+        ggsave(output_name, safe_jan, path="/Users/hn/Desktop/", width=4, height=4, unit="in", dpi=400)
 
         output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_Feb.png")
-        ggsave(output_name, safe_feb, path=out_dir, width=4, height=4, unit="in", dpi=400)
+        ggsave(output_name, safe_feb, path="/Users/hn/Desktop/", width=4, height=4, unit="in", dpi=400)
+
+        output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_Mar.png")
+        ggsave(output_name, safe_mar, path="/Users/hn/Desktop/", width=4, height=4, unit="in", dpi=400)
         
         # means over models
         # mean_map_jan = ensemble_map(data=information[[2]], color_col="mean_over_model", due="Jan.")
@@ -257,12 +281,16 @@ for (time_type in time_types){
         # medians over models
         median_map_jan = ensemble_map(data=information[[3]], color_col="median_over_model", due="Jan.")
         median_map_feb = ensemble_map(data=information[[6]], color_col="median_over_model", due="Feb.")
+        median_map_mar = ensemble_map(data=information[[6]], color_col="median_over_model", due="Mar.")
 
         output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_jan.png") 
-        ggsave(output_name, median_map_jan, path=out_dir, width=7, height=4.5, unit="in", dpi=400)
+        ggsave(output_name, median_map_jan, path="/Users/hn/Desktop/", width=7, height=4.5, unit="in", dpi=400)
 
         output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_feb.png") 
-        ggsave(output_name, median_map_feb, path=out_dir, width=7, height=4.5, unit="in", dpi=400)
+        ggsave(output_name, median_map_feb, path="/Users/hn/Desktop/", width=7, height=4.5, unit="in", dpi=400)
+
+        output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_map_mar.png") 
+        ggsave(output_name, median_map_mar, path="/Users/hn/Desktop/", width=7, height=4.5, unit="in", dpi=400)
         
     }
 }
