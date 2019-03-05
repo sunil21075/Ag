@@ -18,20 +18,20 @@ args = commandArgs(trailingOnly=TRUE)
 time_type = args[1]
 
 if (time_type == "future"){
-	input_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
+    input_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
     write_dir = paste0(write_dir, "local/data_bases/")
     version = args[2]
     file_name = paste0("CMPOP_", version)
 } else if (time_type == "past"){
-	input_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/"
+    input_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/"
     write_dir = paste0(write_dir, "usa/data_bases/")
     version = "observed"
 }
 
 result = diap_map1_prep_4_analog_Rel(input_dir, file_name, param_dir,
-	                                 time_type,
-	                                 CodMothParams_name = "CodlingMothparameters.txt", 
-	                                 location_group_name = "LocationGroups.csv")
+                                     time_type,
+                                     CodMothParams_name = "CodlingMothparameters.txt", 
+                                     location_group_name = "LocationGroups.csv")
 
 saveRDS(result, paste0(write_dir, "Rel_preped_4_diap_CMPOP_", version, ".rds"))
 

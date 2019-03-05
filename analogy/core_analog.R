@@ -18,108 +18,6 @@
 options(digits=9)
 options(digit=9)
 
-read_binary <- function(file_path, hist, no_vars){
-  if (hist) {
-    if (no_vars==4){
-      start_year <- 1950
-      end_year <- 2005
-      } else {
-        start_year <- 1979
-        end_year <- 2015
-      }
-  } else{
-    start_year <- 2006
-    end_year <- 2099
-  }
-  ymd_file <- create_ymdvalues(start_year, end_year)
-  data <- read_binary_addmdy(file_path, ymd_file, no_vars)
-  return(data)
-}
-
-read_binary_addmdy <- function(filename, ymd, no_vars){
-    if (no_vars==4){
-        return(read_binary_addmdy_4var(filename, ymd))
-    } else {return(read_binary_addmdy_8var(filename, ymd))}
-}
-
-read_binary_addmdy_8var <- function(filename, ymd){
-    Nofvariables <- 8 # number of variables or column in the forcing data file
-    Nrecords <- nrow(ymd)
-    ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
-    fileCon  <-  file(filename, "rb")
-    temp <- readBin(fileCon, integer(), size = 2, n = Nrecords * Nofvariables,
-                    endian = "little")
-    dataM <- matrix(0, Nrecords, 8)
-    k <- 1
-    dataM[1:Nrecords, 1] <- temp[ind] / 40.00         # precip data
-    dataM[1:Nrecords, 2] <- temp[ind + 1] / 100.00    # Max temperature data
-    dataM[1:Nrecords, 3] <- temp[ind + 2] / 100.00    # Min temperature data
-    dataM[1:Nrecords, 4] <- temp[ind + 3] / 100.00    # Wind speed data
-    dataM[1:Nrecords, 5] <- temp[ind + 4] / 10000.00  # SPH
-    dataM[1:Nrecords, 6] <- temp[ind + 5] / 40.00     # SRAD
-    dataM[1:Nrecords, 7] <- temp[ind + 6] / 100.00    # Rmax
-    dataM[1:Nrecords, 8] <- temp[ind + 7] / 100.00    # RMin
-    AllData <- cbind(ymd, dataM)
-    # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
-    colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
-                           "windspeed", "SPH", "SRAD", "Rmax", "Rmin")
-    close(fileCon)
-    return(AllData)
-}
-
-read_binary_addmdy_4var <- function(filename, ymd) {
-    Nofvariables <- 4 # number of variables or column in the forcing data file
-    Nrecords <- nrow(ymd)
-    ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
-    fileCon <-  file(filename, "rb")
-    temp <- readBin(fileCon, integer(), size = 2, n = Nrecords * Nofvariables,
-                    endian="little")
-    dataM <- matrix(0, Nrecords, 4)
-    k <- 1
-    dataM[1:Nrecords, 1] <- temp[ind] / 40.00       # precip data
-    dataM[1:Nrecords, 2] <- temp[ind + 1] / 100.00  # Max temperature data
-    dataM[1:Nrecords, 3] <- temp[ind + 2] / 100.00  # Min temperature data
-    dataM[1:Nrecords, 4] <- temp[ind + 3] / 100.00  # Wind speed data
-
-    AllData <- cbind(ymd, dataM)
-    # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
-    colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
-                           "windspeed")
-    close(fileCon)
-    return(AllData)
-}
-
-create_ymdvalues <- function(data_start_year, data_end_year){
-    Years <- seq(data_start_year, data_end_year)
-    nYears <- length(Years)
-    daycount_in_year <- 0
-    moncount_in_year <- 0
-    yearrep_in_year <- 0
-
-    for (i in 1:nYears){
-        ly <- leap_year(Years[i])
-        if (ly == TRUE){
-            days_in_mon <- c(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-        }
-      else{
-        days_in_mon <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-      }
-
-      for (j in 1:12){
-        daycount_in_year <- c(daycount_in_year, seq(1, days_in_mon[j]))
-        moncount_in_year <- c(moncount_in_year, rep(j, days_in_mon[j]))
-        yearrep_in_year <- c(yearrep_in_year, rep(Years[i], days_in_mon[j]))
-      }
-    }
-
-    daycount_in_year <- daycount_in_year[-1] #delete the leading 0
-    moncount_in_year <- moncount_in_year[-1]
-    yearrep_in_year <- yearrep_in_year[-1]
-    ymd <- cbind(yearrep_in_year, moncount_in_year, daycount_in_year)
-    colnames(ymd) <- c("year", "month", "day")
-    return(ymd)
-}
-
 ####################################################################
 ##                                                                ##
 ##            Read the data off the laptop                        ##
@@ -129,25 +27,28 @@ create_ymdvalues <- function(data_start_year, data_end_year){
 ####################################################################
 
 generate_short_CM_files <- function(in_dir, out_dir){
-    # in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
-    # out_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
-    file_names = c("combined_CM_rcp45.rds", "combined_CM_rcp85.rds")
-    for (file in file_names){
-        data <- data.table(readRDS(paste0(in_dir, file)))
-        data <- subset(data, select = c("year", "location", "ClimateScenario",
-                                        "Emergence",
-                                        "LGen1_0.25", "LGen1_0.5", "LGen1_0.75",
-                                        "LGen2_0.25", "LGen2_0.5", "LGen2_0.75",
-                                        "LGen3_0.25", "LGen3_0.5", "LGen3_0.75",
-                                        "LGen4_0.25", "LGen4_0.5", "LGen4_0.75",
-                                        "AGen1_0.25", "AGen1_0.5", "AGen1_0.75",
-                                        "AGen2_0.25", "AGen2_0.5", "AGen2_0.75",
-                                        "AGen3_0.25", "AGen3_0.5", "AGen3_0.75",
-                                        "AGen4_0.25", "AGen4_0.5", "AGen4_0.75"))
-        
-        saveRDS(data, paste0(out_dir, "short_", file))
-        rm(data)
-    }
+  ## 
+  ## This function just sebsets the useful columns.
+  ##
+  # in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
+  # out_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
+  file_names = c("combined_CM_rcp45.rds", "combined_CM_rcp85.rds")
+  for (file in file_names){
+      data <- data.table(readRDS(paste0(in_dir, file)))
+      data <- subset(data, select = c("year", "location", "ClimateScenario",
+                                      "Emergence",
+                                      "LGen1_0.25", "LGen1_0.5", "LGen1_0.75",
+                                      "LGen2_0.25", "LGen2_0.5", "LGen2_0.75",
+                                      "LGen3_0.25", "LGen3_0.5", "LGen3_0.75",
+                                      "LGen4_0.25", "LGen4_0.5", "LGen4_0.75",
+                                      "AGen1_0.25", "AGen1_0.5", "AGen1_0.75",
+                                      "AGen2_0.25", "AGen2_0.5", "AGen2_0.75",
+                                      "AGen3_0.25", "AGen3_0.5", "AGen3_0.75",
+                                      "AGen4_0.25", "AGen4_0.5", "AGen4_0.75"))
+      
+      saveRDS(data, paste0(out_dir, "short_", file))
+      rm(data)
+  }
 }
 
 generate_CM_files <- function(in_dir, out_dir){
@@ -166,48 +67,47 @@ generate_CM_files <- function(in_dir, out_dir){
     }
 }
 
-clean_gens_files <- function(data, var){
-    # remove historical data
-    data <- data %>% filter(year >= 2025)
-
-    # remove historical level stuck in ClimateScenario
-    data$ClimateScenario = factor(data$ClimateScenario)
-    
-    data$location = paste0(data$latitude, "_", data$longitude)
-    
-    data <- subset(data, select = c("year", "location", var, "ClimateScenario"))
-    data = unique(data)
-    return(data)
-}
-
 # create number of generations by Aug 23, and Nov 5th
 # the data is on the computer for this.
-
-generate_no_generations <- function(input_dir, file_name, stage, dead_line, version){
-    file_name <- paste0(input_dir, file_name)
-    data <- data.table(readRDS(file_name))
-    if (stage == "Larva"){
-        var = "NumLarvaGens"
-    } else if (stage == "Adult"){
-        var = "NumAdultGens"
-    }
-    ############################################
-    ##
-    ## Clean data, we just need future data 
-    ## for local stuff.
-    ##
-    ############################################
-    # some how there is no 2025 in the data!
-    data <- clean_gens_files(data, var)
-    colnames(data)[colnames(data) == var] <- paste0(var, "_", dead_line)
-    return(data)
+generate_no_generations <- function(input_dir, file_name, stage="Larva", dead_line="Aug", version){
+  file_name <- paste0(input_dir, file_name)
+  data <- data.table(readRDS(file_name))
+  if (stage == "Larva"){
+      var = "NumLarvaGens"
+     } else if (stage == "Adult"){
+      var = "NumAdultGens"
+  }
+  ############################################
+  ##
+  ## Clean data, we just need future data 
+  ## for local stuff.
+  ##
+  ############################################
+  # some how there is no 2025 in the data!
+  data <- clean_gens_files(data, var)
+  colnames(data)[colnames(data) == var] <- paste0(var, "_", dead_line)
+  return(data)
 }
 
+clean_gens_files <- function(data, var){
+  # remove historical data
+  data <- data %>% filter(year >= 2025 | year <= 2015)
+  
+  # remove historical level stuck in ClimateScenario
+  data$ClimateScenario = factor(data$ClimateScenario)
+    
+  data$location = paste0(data$latitude, "_", data$longitude)
+    
+  data <- subset(data, select = c("year", "location", var, "ClimateScenario"))
+  data = unique(data)
+  return(data)
+}
 ######################################################################
 ##                                                                    ##
 ##                 Generate the following features:                   ##
 ##                     1. Median DoY (First Flight)                   ##
-##                     2. Pest risk for Gen 3/4, for 25/75%           ##
+##                     2. Pest risk for Gen 3/4, for 25/75 %          ##
+##                                  (not any more)                    ##
 ##                     3. Fraction of escaped diapause for each Gen.  ##
 ##                     4. No. Generations.                            ##
 ##                     5. GDD accumulation.                           ##
@@ -217,17 +117,17 @@ generate_no_generations <- function(input_dir, file_name, stage, dead_line, vers
 #######
 ####### First Flight
 #######
-generate_mDoY_FF <- function(data){
-    mDoY_FF <- generate_FF(data)
+generate_mDoY_FF <- function(dt){
+    mDoY_FF <- clean_4_FF(dt)
     mDoY_FF <- within(mDoY_FF, remove(ClimateScenario))
     mDoY_FF = mDoY_FF[, .(medianDoY = as.integer(median(emergence))),
                         by = c("year", "location")]
     return(mDoY_FF)
 }
 
-generate_FF <- function(data){
+clean_4_FF <- function(dt){
     need_cols <- c("year", "location", "ClimateScenario", "Emergence")
-    sub_Emerg = subset(data, !is.na("Emergence"), select = need_cols)
+    sub_Emerg <- subset(dt, !is.na("Emergence"), select = need_cols)
     sub_Emerg$ClimateScenario <- factor(sub_Emerg$ClimateScenario)
     colnames(sub_Emerg)[colnames(sub_Emerg) == "Emergence"] <- paste0("emergence")
     return(sub_Emerg)
@@ -283,8 +183,6 @@ generate_diapause_map1_for_analog <- function(input_dir, file_name, param_dir, t
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[8,5] & CumulativeDDF < CodMothParams[8,6], .(AbsPctNonDiapGen4 = (auc(CumulativeDDF, AbsNonDiap)/auc(CumulativeDDF, AbsLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   return (sub2)
 }
-
-##################################################################
 
 diapause_map1_prep_for_analog <- function(input_dir, file_name, param_dir, time_type, location_group_name = "/LocationGroups.csv"){
     options(digits=9)
@@ -372,46 +270,31 @@ diapause_map1_prep_for_analog <- function(input_dir, file_name, param_dir, time_
                                                 by = c("ClimateScenario",
                                                        "latitude", "longitude", 
                                                        "dayofyear", "year")]
-    print ("line 397 - end of prep")
     return (sub)
 }
-##################################################################
+#############################
 
 gen_diap_map1_4_analog_Rel <- function(input_dir, file_name, param_dir, time_type, CodMothParams_name, location_group_name = "LocationGroups.csv"){
   CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",")
   sub1 = data.table(readRDS(input_dir, file_name))
-  print ("line 592")  
   group_vec = c("latitude", "longitude", "ClimateScenario", "year")
 
   sub2 = sub1[, .(RelPctDiap=(auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, 
                   RelPctNonDiap = (auc(CumulativeDDF, RelNonDiap)/auc(CumulativeDDF, RelLarvaPop))*100), 
                   by=group_vec]
-  
-  print ("line 603")
+
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctDiapGen1=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 608")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctDiapGen2=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 610")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctDiapGen3=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 612")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctDiapGen4=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 614")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctNonDiapGen1=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 616")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctNonDiapGen2=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 618")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctNonDiapGen3=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  print ("line 620")
   sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctNonDiapGen4=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
   return (sub2)
 }
 
-##################################################################
-
-diap_map1_prep_4_analog_Rel <- function(input_dir, file_name,
-                                        param_dir, 
-                                        time_type,
-                                        location_group_name = "/LocationGroups.csv"){
+diap_map1_prep_4_analog_Rel <- function(input_dir, file_name, param_dir,  time_type, location_group_name = "/LocationGroups.csv"){
     options(digits=9)
     file_N = paste0(input_dir, file_name, ".rds")
     data <- data.table(readRDS(file_N))
@@ -459,14 +342,13 @@ diap_map1_prep_4_analog_Rel <- function(input_dir, file_name,
                                                 by = c("ClimateScenario",
                                                        "latitude", "longitude", 
                                                        "dayofyear", "year")]
-    print ("line 676 -  end of prep")
     return (sub)
 }
-#######################
+################################################################################
 make_unique <- function(input_dir, param_dir, location_group_name){
 
-    # This fukcing function is created because unique, ~duplicate,
-    # nothing could work! So, we first separate the fucking data
+    # This fukcing function is created because neither unique, nor !duplicate,
+    # could work! So, we first separate the fucking data
     # then bind it together with another function.
     # then compute diapause stuff
     #
@@ -507,7 +389,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2060's")
-    data <- data %>% filter(year >= 2056 & year <= 2064)
+    data <- data %>% filter(year >= 2056 & year <= 2065)
 
     data <- within(data, remove(CountyGroup, County, 
                                 tmax, tmin, DailyDD, day, 
@@ -590,7 +472,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2060's")
-    data <- data %>% filter(year >= 2056 & year <= 2064)
+    data <- data %>% filter(year >= 2056 & year <= 2065)
 
     data <- within(data, remove(CountyGroup, County, 
                                 tmax, tmin, DailyDD, day, 
@@ -641,3 +523,111 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
     saveRDS(data, paste0(out_dir, "CMPOP_2080_rcp85.rds"))
 }
+
+###############################################################
+######                                                   ######
+######               Read the binary data                ######
+######                                                   ######
+###############################################################
+
+read_binary <- function(file_path, hist, no_vars){
+  if (hist) {
+    if (no_vars==4){
+      start_year <- 1950
+      end_year <- 2005
+      } else {
+        start_year <- 1979
+        end_year <- 2015
+      }
+  } else{
+    start_year <- 2006
+    end_year <- 2099
+  }
+  ymd_file <- create_ymdvalues(start_year, end_year)
+  data <- read_binary_addmdy(file_path, ymd_file, no_vars)
+  return(data)
+}
+
+read_binary_addmdy <- function(filename, ymd, no_vars){
+  if (no_vars==4){
+      return(read_binary_addmdy_4var(filename, ymd))
+  } else {return(read_binary_addmdy_8var(filename, ymd))}
+}
+
+read_binary_addmdy_8var <- function(filename, ymd){
+  Nofvariables <- 8 # number of variables or column in the forcing data file
+  Nrecords <- nrow(ymd)
+  ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
+  fileCon  <-  file(filename, "rb")
+  temp <- readBin(fileCon, integer(), size = 2, n = Nrecords * Nofvariables,
+                  endian = "little")
+  dataM <- matrix(0, Nrecords, 8)
+  k <- 1
+  dataM[1:Nrecords, 1] <- temp[ind] / 40.00         # precip data
+  dataM[1:Nrecords, 2] <- temp[ind + 1] / 100.00    # Max temperature data
+  dataM[1:Nrecords, 3] <- temp[ind + 2] / 100.00    # Min temperature data
+  dataM[1:Nrecords, 4] <- temp[ind + 3] / 100.00    # Wind speed data
+  dataM[1:Nrecords, 5] <- temp[ind + 4] / 10000.00  # SPH
+  dataM[1:Nrecords, 6] <- temp[ind + 5] / 40.00     # SRAD
+  dataM[1:Nrecords, 7] <- temp[ind + 6] / 100.00    # Rmax
+  dataM[1:Nrecords, 8] <- temp[ind + 7] / 100.00    # RMin
+  AllData <- cbind(ymd, dataM)
+  # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
+  colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
+                         "windspeed", "SPH", "SRAD", "Rmax", "Rmin")
+  close(fileCon)
+  return(AllData)
+}
+
+read_binary_addmdy_4var <- function(filename, ymd) {
+  Nofvariables <- 4 # number of variables or column in the forcing data file
+  Nrecords <- nrow(ymd)
+  ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
+  fileCon <-  file(filename, "rb")
+  temp <- readBin(fileCon, integer(), size = 2, n = Nrecords * Nofvariables,
+                  endian="little")
+  dataM <- matrix(0, Nrecords, 4)
+  k <- 1
+  dataM[1:Nrecords, 1] <- temp[ind] / 40.00       # precip data
+  dataM[1:Nrecords, 2] <- temp[ind + 1] / 100.00  # Max temperature data
+  dataM[1:Nrecords, 3] <- temp[ind + 2] / 100.00  # Min temperature data
+  dataM[1:Nrecords, 4] <- temp[ind + 3] / 100.00  # Wind speed data
+
+  AllData <- cbind(ymd, dataM)
+  # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
+  colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
+                         "windspeed")
+  close(fileCon)
+  return(AllData)
+}
+
+create_ymdvalues <- function(data_start_year, data_end_year){
+  Years <- seq(data_start_year, data_end_year)
+  nYears <- length(Years)
+  daycount_in_year <- 0
+  moncount_in_year <- 0
+  yearrep_in_year <- 0
+    
+  for (i in 1:nYears){
+    ly <- leap_year(Years[i])
+    if (ly == TRUE){
+        days_in_mon <- c(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+       } else {
+        days_in_mon <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    }
+
+    for (j in 1:12){
+      daycount_in_year <- c(daycount_in_year, seq(1, days_in_mon[j]))
+      moncount_in_year <- c(moncount_in_year, rep(j, days_in_mon[j]))
+      yearrep_in_year <- c(yearrep_in_year, rep(Years[i], days_in_mon[j]))
+    }
+  }
+
+  daycount_in_year <- daycount_in_year[-1] #delete the leading 0
+  moncount_in_year <- moncount_in_year[-1]
+  yearrep_in_year <- yearrep_in_year[-1]
+  ymd <- cbind(yearrep_in_year, moncount_in_year, daycount_in_year)
+  colnames(ymd) <- c("year", "month", "day")
+  return(ymd)
+}
+
