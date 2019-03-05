@@ -2,7 +2,6 @@
 .libPaths()
 library(data.table)
 library(dplyr)
-library(MESS) # has the auc function in it.
 library(geepack)
 library(chron)
 
