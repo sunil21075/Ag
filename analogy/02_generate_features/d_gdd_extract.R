@@ -18,21 +18,20 @@ args = commandArgs(trailingOnly=TRUE)
 time_type = args[1]
 
 if (time_type == "future"){
-    input_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
+    input_dir = "/data/hydro/users/Hossein/analog/local/data_bases/001_unique_CMPOP/"
     write_dir = paste0(write_dir, "local/data_bases/")
-    version = args[2]
-    file_name = paste0("CMPOP_", version)
 } else if (time_type == "past"){
     input_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/"
     write_dir = paste0(write_dir, "usa/data_bases/")
     version = "observed"
 }
 
-result = diap_map1_prep_4_analog_Rel(input_dir, file_name, param_dir,
-                                     time_type,
-                                     CodMothParams_name = "CodlingMothparameters.txt", 
-                                     location_group_name = "LocationGroups.csv")
 
-saveRDS(result, paste0(write_dir, "Rel_preped_4_diap_CMPOP_", version, ".rds"))
+gdd_45 <- extract_gdd(in_dir=input_dir, file_name = "CMPOP_rcp45.rds")
+saveRDS(gdd_45, paste0(write_dir, "gdd_rcp45.rds"))
+rm(gdd_45)
 
+gdd_85 <- extract_gdd(in_dir=input_dir, file_name = "CMPOP_rcp85.rds")
+saveRDS(gdd_85, paste0(write_dir, "gdd_rcp85.rds"))
+rm(gdd_85)
 

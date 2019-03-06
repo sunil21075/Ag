@@ -15,7 +15,7 @@ options(digits=9)
 #
 
 in_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
-out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
+out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/001_unique_CMPOP/"
 
 CMPOP_2040_rcp45 <- data.table(readRDS(paste0(in_dir, "CMPOP_2040_rcp45.rds")))
 CMPOP_2060_rcp45 <- data.table(readRDS(paste0(in_dir, "CMPOP_2060_rcp45.rds")))

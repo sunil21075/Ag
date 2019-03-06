@@ -561,13 +561,13 @@ shinyServer(function(input, output, session) {
   output$map_emerg_doy <- renderLeaflet({col = "Emergence"
                                          if(input$cg_emerg_doy == "Historical") {climate_group = input$cg_emerg_doy
                                                                                  future_version = "rcp85"
-                                          } else {
+                                            } else {
                                             temp = tstrsplit(input$cg_emerg_doy, "_")
                                             climate_group = unlist(temp[1])
                                             future_version = unlist(temp[2])
                                           }
                                           if(future_version == "rcp45") {data = d_rcp45
-                                          } else { data = d}
+                                            } else { data = d}
                                           layerlist = levels(data$timeFrame) # Historical, 2040, 2060, 2080
                                           sub_Emerg = subset(data, !is.na(timeFrame) & !is.na(get(col)) & timeFrame == climate_group, select = c(timeFrame, year, location, get(col)))
                                           sub_Emerg = sub_Emerg[, .(medianDoY = as.integer(median( get(col) ))), by = c("timeFrame", "location")]

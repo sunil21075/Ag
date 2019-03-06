@@ -35,6 +35,7 @@ generate_short_CM_files <- function(in_dir, out_dir){
   file_names = c("combined_CM_rcp45.rds", "combined_CM_rcp85.rds")
   for (file in file_names){
       data <- data.table(readRDS(paste0(in_dir, file)))
+      data <- data.table(readRDS(paste0(in_dir, file)))
       data <- subset(data, select = c("year", "location", "ClimateScenario",
                                       "Emergence",
                                       "LGen1_0.25", "LGen1_0.5", "LGen1_0.75",
@@ -52,19 +53,19 @@ generate_short_CM_files <- function(in_dir, out_dir){
 }
 
 generate_CM_files <- function(in_dir, out_dir){
-    # in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
-    # out_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
-    file_names = c("combined_CM_rcp45.rds", "combined_CM_rcp85.rds")
-    for (file in file_names){
-        data <- data.table(readRDS(paste0(in_dir, file)))
-        data <- data %>% filter(year >= 2025)
-        data$location = paste0(data$latitude, "_", data$longitude)
-        data <- within(data, remove(longitude, latitude))
-        data <- within(data, remove(CountyGroup, County, ClimateGroup))
-        data = unique(data)
-        saveRDS(data, paste0(out_dir, file))
-        rm(data)
-    }
+  # in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
+  # out_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/analog/"
+  file_names = c("combined_CM_rcp45.rds", "combined_CM_rcp85.rds")
+  for (file in file_names){
+    data <- data.table(readRDS(paste0(in_dir, file)))
+    data <- data %>% filter(year >= 2025)
+    data$location = paste0(data$latitude, "_", data$longitude)
+    data <- within(data, remove(longitude, latitude))
+    data <- within(data, remove(CountyGroup, County, ClimateGroup))
+    data = unique(data)
+    saveRDS(data, paste0(out_dir, file))
+    rm(data)
+  }
 }
 
 # create number of generations by Aug 23, and Nov 5th
@@ -138,6 +139,12 @@ clean_4_FF <- function(dt){
 ######      Generate data for escaped diapause stuff     ######
 ######                                                   ######
 ###############################################################
+##
+## The following two functions also includes absolute fraction which is too much.
+## Hence, the two functions after that is written to just include relative population
+## The following two functions also need to be updated so that exita columns are not
+## saved and the needed info is created right in them, as opposed to having extra drivers
+##
 
 generate_diapause_map1_for_analog <- function(input_dir, file_name, param_dir, time_type, CodMothParams_name, location_group_name = "LocationGroups.csv"){
   CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",")
@@ -274,79 +281,113 @@ diapause_map1_prep_for_analog <- function(input_dir, file_name, param_dir, time_
 }
 #############################
 
-gen_diap_map1_4_analog_Rel <- function(input_dir, file_name, param_dir, time_type, CodMothParams_name, location_group_name = "LocationGroups.csv"){
+gen_diap_map1_4_analog_Rel <- function(sub1, param_dir, time_type, CodMothParams_name, location_group_name = "LocationGroups.csv"){
   CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",")
-  sub1 = data.table(readRDS(input_dir, file_name))
   group_vec = c("latitude", "longitude", "ClimateScenario", "year")
 
   sub2 = sub1[, .(RelPctDiap=(auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, 
                   RelPctNonDiap = (auc(CumulativeDDF, RelNonDiap)/auc(CumulativeDDF, RelLarvaPop))*100), 
                   by=group_vec]
 
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctDiapGen1=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctDiapGen2=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctDiapGen3=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctDiapGen4=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctNonDiapGen1=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctNonDiapGen2=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctNonDiapGen3=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
-  sub2=merge(sub2,sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctNonDiapGen4=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctDiapGen1=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctDiapGen2=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctDiapGen3=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctDiapGen4=(auc(CumulativeDDF,RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[5,5]&CumulativeDDF<CodMothParams[5,6],.(RelPctNonDiapGen1=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[6,5]&CumulativeDDF<CodMothParams[6,6],.(RelPctNonDiapGen2=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[7,5]&CumulativeDDF<CodMothParams[7,6],.(RelPctNonDiapGen3=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  sub2=merge(sub2, sub1[CumulativeDDF>=CodMothParams[8,5]&CumulativeDDF<CodMothParams[8,6],.(RelPctNonDiapGen4=(auc(CumulativeDDF,RelNonDiap)/auc(CumulativeDDF,RelLarvaPop))*100),by=group_vec],by=group_vec,all.x=T)
+  
+  # double check, but with high certaintly we do not need the first four lines above!
+  sub2 <- within(sub2, remove("RelPctDiapGen1", "RelPctDiapGen2", "RelPctDiapGen3", "RelPctDiapGen4"))
+  sub2$location <- paste0(sub2$latitude, "_", sub2$longitude)
+  sub2 <- within(sub2, remove("latitude", "longitude"))
+
+  sub2 <- subset(sub2, select=c("location", "year", 
+                                "RelPctNonDiapGen1", "RelPctNonDiapGen2",
+                                "RelPctNonDiapGen3", "RelPctNonDiapGen4"))
+  sub2 <- sub2 %>%
+          group_by(location, year) %>%
+          summarise_at(.funs = funs(mean(., na.rm=TRUE)), vars(RelPctNonDiapGen1 : RelPctNonDiapGen4))%>% 
+          data.table()
+  setnames(sub2, old=c("RelPctNonDiapGen1", "RelPctNonDiapGen2", 
+                       "RelPctNonDiapGen3", "RelPctNonDiapGen4"), 
+                 new=c("mean_escaped_Gen1", "mean_escaped_Gen2",
+                       "mean_escaped_Gen3", "mean_escaped_Gen4"))
+
   return (sub2)
 }
 
 diap_map1_prep_4_analog_Rel <- function(input_dir, file_name, param_dir,  time_type, location_group_name = "/LocationGroups.csv"){
-    options(digits=9)
-    file_N = paste0(input_dir, file_name, ".rds")
-    data <- data.table(readRDS(file_N))
-    print (paste0("line 624"))
-    theta = 0.2163108 + (2 * atan(0.9671396 * tan(0.00860 * (data$dayofyear - 186))))
-    phi = asin(0.39795 * cos(theta))
-    D = 24 - ((24/pi) * acos((sin(6 * pi / 180) + 
-                      (sin(data$latitude * pi / 180) * sin(phi)))/(cos(data$latitude * pi / 180) * cos(phi))))
-    data$daylength = D
+  options(digits=9)
+  file_N = paste0(input_dir, file_name, ".rds")
+  data <- data.table(readRDS(file_N))
+  print (paste0("line 624"))
+  theta = 0.2163108 + (2 * atan(0.9671396 * tan(0.00860 * (data$dayofyear - 186))))
+  phi = asin(0.39795 * cos(theta))
+  D = 24 - ((24/pi) * acos((sin(6 * pi / 180) + 
+                    (sin(data$latitude * pi / 180) * sin(phi)))/(cos(data$latitude * pi / 180) * cos(phi))))
+  data$daylength = D
 
-    data$diapause = 102.6077 * exp(-exp(-(-1.306483) * (data$daylength - 16.95815)))
-    data$diapause1 = data$diapause
-    data[diapause1 > 100, diapause1 := 100]
-    data$enterDiap = (data$diapause1/100) * data$SumLarva
-    data$escapeDiap = data$SumLarva - data$enterDiap
+  data$diapause = 102.6077 * exp(-exp(-(-1.306483) * (data$daylength - 16.95815)))
+  data$diapause1 = data$diapause
+  data[diapause1 > 100, diapause1 := 100]
+  data$enterDiap = (data$diapause1/100) * data$SumLarva
+  data$escapeDiap = data$SumLarva - data$enterDiap
 
-    sub = data
-    rm(data)
-    startingpopulationfortheyear <- 1000
-  
-    # Gen 1
-    sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-          by =list(year, ClimateScenario, latitude, longitude) ]
-   
-    # Gen 2
-    sub[, LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
-          by = list(year, ClimateScenario, latitude, longitude)]
+  sub = data
+  rm(data)
+  startingpopulationfortheyear <- 1000
 
-    # Gen 3
-    sub[, LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), 
-          by =list(year,ClimateScenario, latitude, longitude)]
-    print (paste0("line 668 of core "))
-    # Gen 4
-    sub[, LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), 
-          by =list(year, ClimateScenario, latitude, longitude)]
+  # Gen 1
+  sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
+        by =list(year, ClimateScenario, latitude, longitude) ]
+ 
+  # Gen 2
+  sub[, LarvaGen2RelFraction := LarvaGen2/sum(LarvaGen2), 
+        by = list(year, ClimateScenario, latitude, longitude)]
 
-    sub = subset(sub, select = c("latitude", "longitude", 
-                                 "ClimateScenario",
-                                 "year", "dayofyear", "CumDDinF", 
-                                 "SumLarva", "enterDiap", 
-                                 "escapeDiap"))
-    sub = sub[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
-                                                RelNonDiap = mean(escapeDiap), 
-                                                CumulativeDDF = mean(CumDDinF)), 
-                                                by = c("ClimateScenario",
-                                                       "latitude", "longitude", 
-                                                       "dayofyear", "year")]
-    return (sub)
+  # Gen 3
+  sub[, LarvaGen3RelFraction := LarvaGen3/sum(LarvaGen3), 
+        by =list(year,ClimateScenario, latitude, longitude)]
+  print (paste0("line 668 of core "))
+  # Gen 4
+  sub[, LarvaGen4RelFraction := LarvaGen4/sum(LarvaGen4), 
+        by =list(year, ClimateScenario, latitude, longitude)]
+
+  sub = subset(sub, select = c("latitude", "longitude", 
+                               "ClimateScenario",
+                               "year", "dayofyear", "CumDDinF", 
+                               "SumLarva", "enterDiap", 
+                               "escapeDiap"))
+  sub = sub[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
+                                              RelNonDiap = mean(escapeDiap), 
+                                              CumulativeDDF = mean(CumDDinF)), 
+                                              by = c("ClimateScenario",
+                                                     "latitude", "longitude", 
+                                                     "dayofyear", "year")]
+
+  return (sub)
 }
 ################################################################################
-make_unique <- function(input_dir, param_dir, location_group_name){
 
+extract_gdd <- function(in_dir, file_name){
+  dt <- data.table(readRDS(paste0(in_dir, file_name)))
+
+  # extract locations and years and the last day of the year
+  # which has the last GDD
+  dt <- dt %>% 
+        group_by(location, year) %>%
+        filter(month==12 & day==31) %>%
+        data.table()
+  dt <- subset(dt, select=c("year", "location", "CumDDinF"))
+  dt <- dt[, .(mean_gdd = mean(CumDDinF)), 
+              by = c("location", "year")]
+  return(dt)
+}
+
+################################################################################
+make_unique <- function(input_dir, param_dir, location_group_name){
     # This fukcing function is created because neither unique, nor !duplicate,
     # could work! So, we first separate the fucking data
     # then bind it together with another function.
@@ -365,20 +406,19 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     print ("line 21")
     data = data %>% filter(ClimateGroup == "2040's")
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
 
     data$location = paste0(data$latitude, "_", data$longitude)
     data <- data %>% filter(location %in% loc_grp$location)
     data$latitude = as.numeric(data$latitude)
     data$longitude = as.numeric(data$longitude)
-    print (paste0("line 30 of core dim(data) is ", dim(data)))
     data = within(data, remove(ClimateGroup))
     out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
     saveRDS(data, paste0(out_dir, "CMPOP_2040_rcp45.rds"))
@@ -392,13 +432,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
 
     data$location = paste0(data$latitude, "_", data$longitude)
@@ -417,13 +457,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
     data = within(data, remove(ClimateGroup))
 
@@ -448,13 +488,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     print ("line 103")
     data = data %>% filter(ClimateGroup == "2040's")
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
 
     data$location = paste0(data$latitude, "_", data$longitude)
@@ -475,13 +515,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD,
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
 
     data$location = paste0(data$latitude, "_", data$longitude)
@@ -500,13 +540,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
     data <- within(data, remove(CountyGroup, County, 
-                                tmax, tmin, DailyDD, day, 
+                                tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
                                 PercLarva, PercLarvaGen1, PercLarvaGen2, 
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
-                                SumAdult, SumEgg, SumPupa, month, CumDDinC
+                                SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
     data = within(data, remove(ClimateGroup))
 
@@ -517,13 +557,63 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     # data$latitude = as.numeric(substr(x = data$location, start = 1, stop = 8))
     # data$latitude = as.numeric(sapply(strsplit(data$location, "_"), function(x) x[1]))
     # data$longitude= as.numeric(sapply(strsplit(data$location, "_"), function(x) x[2]))
-
-    print (paste0("line 171 of core ", dim(data)))
     
     out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
     saveRDS(data, paste0(out_dir, "CMPOP_2080_rcp85.rds"))
 }
 
+################################################################################
+###############################################################
+######                                                   ######
+######               combine precip data                 ######
+######                                                   ######
+###############################################################
+merge_precip <- function(main_in_dir, location_type){
+
+  if (location_type == "local"){
+    models = c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
+    carbon_types = c("rcp45", "rcp85")
+    all_data_45 <- data.table()
+    all_data_85 <- data.table()
+    for (carbon in carbon_types){
+      all_data <- data.table()
+      for (model in models){
+        curr_path = paste0(main_in_dir, model, "/", carbon, "/")
+        # list of files in current folder
+        files = list.files(path = curr_path, pattern = "data_")
+        for (file in files){
+          dt <- data.table(readRDS(paste0(curr_path, file)))
+          dt <- dt %>% filter(year >= 2026 & year <= 2095)
+          location = gsub("data_", "", file)
+          location = gsub(".rds", "", location)
+          dt$location <- location
+          dt$ClimateScenario <- model
+          all_data = rbind(all_data, dt)
+        }
+      }
+    if (carbon == "rcp45"){ all_data_45 <- all_data } else if (carbon == "rcp85") { all_data_85 <- all_data}
+    }
+    all_data_45 <- all_data_45[, .(mean_precip = mean(precip)), by = c("location", "year")]
+    all_data_85 <- all_data_85[, .(mean_precip = mean(precip)), by = c("location", "year")]
+    return(list(all_data_45, all_data_85))
+   } else if (location_type == "usa"){
+    
+    all_data = data.table()
+    # list of files in current folder
+    files = list.files(path = main_in_dir, pattern = "data_")
+    
+    for (file in files){
+      dt <- data.table(readRDS(paste0(main_in_dir, file)))
+      location = gsub("data_", "", file)
+      location = gsub(".rds", "", location)
+      dt$location <- location
+      all_data = rbind(all_data, dt)
+    }
+    all_data$ClimateScenario = "observed"
+    all_data <- all_data[, .(mean_precip = mean(precip)), by = c("location", "year")]
+    return (all_data)
+  }
+}
 ###############################################################
 ######                                                   ######
 ######               Read the binary data                ######

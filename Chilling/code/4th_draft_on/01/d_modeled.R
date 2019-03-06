@@ -89,11 +89,6 @@ for(file in dir_con){
   # 3b. Clean it up
   # rename needed columns
   met_data <- met_data %>%
-              rename(Year = year,
-                     Month = month,
-                     Day = day,
-                     Tmax = tmax,
-                     Tmin = tmin) %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
   
@@ -109,31 +104,31 @@ for(file in dir_con){
 
   # we want this on a seasonal basis specific to chill
   met_hourly <- met_hourly %>%
-                mutate(Chill_season = case_when(
+                mutate(chill_season = case_when(
                 # If Jan:Aug then part of chill season of prev year - current year
-                Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
+                month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", year),
                 # If Sept:Dec then part of chill season of current year - next year
-                Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
+                month %in% c(9:12) ~ paste0("chill_", year, "-", (year + 1))
                 ))
   
   # sum within a day using NON-cumulative chill portions
   if (model_type == "dynamic"){
     met_daily <- met_hourly %>%
-                 group_by(Chill_season) %>% # should maintain correct day, time order
+                 group_by(chill_season) %>% # should maintain correct day, time order
                  mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
-                 group_by(Chill_season, Year, Month, Day) %>%
-                 summarise(Daily_portions = sum(chill))
+                 group_by(chill_season, year, month, day) %>%
+                 summarise(daily_portions = sum(chill))
   } else if (model_type == "utah"){
     met_daily <- met_hourly %>%
-                 group_by(Chill_season) %>% # should maintain correct day, time order
+                 group_by(chill_season) %>% # should maintain correct day, time order
                  mutate(chill = Utah_Model(HourTemp = Temp, summ = F)) %>%
-                 group_by(Chill_season, Year, Month, Day) %>%
-                 summarise(Daily_portions = sum(chill))
+                 group_by(chill_season, year, month, day) %>%
+                 summarise(daily_portions = sum(chill))
   }
   
   met_daily <- met_daily %>%
-              group_by(Chill_season) %>%
-              mutate(Cume_portions = cumsum(Daily_portions))
+              group_by(chill_season) %>%
+              mutate(cume_portions = cumsum(daily_portions))
 
   # 3e. Save output
   write.table(x = met_daily,
