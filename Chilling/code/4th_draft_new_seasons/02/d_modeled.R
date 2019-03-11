@@ -1,14 +1,14 @@
 
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
+library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
-library(plyr)
 options(digit=9)
 options(digits=9)
 
-source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
 source(source_path)
 
 # Check current folder
@@ -36,31 +36,13 @@ overlap_type = args[2]
 
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-main_out <- file.path(chill_out, model_type, "/02/")
+main_out <- file.path(chill_out, model_type, "02/")
 
 if (overlap_type == "non_overlap" ){
   main_out <- file.path(main_out, "/non_overlap/")
   } else if (overlap_type == "overlap" ) {
     main_out <- file.path(main_out, "/overlap/")
 }
-
-# Set an output location for this script's outputs
-# if (model_type=="dynamic"){
-#   if (overlap_type == "non_overlap" ){
-#     main_out <- file.path(chill_out, "/dynamic/02/non_overlap/")
-
-#     } else if (overlap_type == "overlap" ) {
-#       main_out <- file.path(chill_out, "/dynamic/02/overlap/")
-#   }
-  
-#   } else if (model_type=="utah"){
-#   if (overlap_type == "non_overlap"){
-#     main_out <- file.path(chill_out, "/utah/02/non_overlap/")
-
-#     } else if (overlap_type == "overlap" ) {
-#       main_out <- file.path(chill_out, "/utah/02/overlap/")
-#   }
-# }
 
 print (model_type)
 print (overlap_type)
@@ -114,7 +96,7 @@ if(hist){
   # Briefly want to export the raw data from the lists for use in other figs
   data_historical <- ldply(data_list_hist, function(x) data.frame(x))
 
-  data_historical$year <- as.numeric(substr(x = data_historical$Chill_season,
+  data_historical$year <- as.numeric(substr(x = data_historical$chill_season,
                                             start = 12, stop = 15))
   data_historical$model <- basename(dirname(getwd()))
   data_historical$scenario <- basename(getwd())
@@ -209,7 +191,7 @@ if(hist){
   
   all_years <- bind_rows(dataF1, dataF2, dataF3)
 
-  all_years$year <- as.numeric(substr(x = all_years$Chill_season,
+  all_years$year <- as.numeric(substr(x = all_years$chill_season,
                                       start = 12, stop = 15))
   all_years$model <- basename(dirname(getwd()))
   all_years$scenario <- basename(getwd())

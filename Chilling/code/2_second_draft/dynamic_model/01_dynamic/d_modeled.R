@@ -85,8 +85,8 @@ for(file in dir_con){
                      Tmin = tmin) %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
-            print("line 84")
-            print (colnames(met_data))
+  print("line 84")
+  print (colnames(met_data))
   # saveRDS(met_data[1:10, ], paste0(main_out, "/met_data", ".rds"))
 
   # 3c. Get hourly interpolation

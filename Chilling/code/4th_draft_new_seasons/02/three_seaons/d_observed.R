@@ -6,7 +6,7 @@ library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
 source(source_path)
 options(digit=9)
 options(digits=9)
@@ -25,27 +25,23 @@ start_time <- Sys.time()
 
 args = commandArgs(trailingOnly=TRUE)
 model_type = args[1]
+season_start = args[2]
 
 ######################################################################
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-if (model_type == "dynamic"){
-  main_out <- file.path(chill_out, "clean_up/dynamic/")
-} else if (model_type == "utah") {
-  main_out <- file.path(chill_out, "clean_up/utah/")
-
-}
-
+main_out <- file.path(chill_out, model_type, "02", season_start, "/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
   dir.create(path = main_out, recursive = T)
 }
+print (paste0( "(", model_type, "," , ",", season_start, ")"))
+print (main_out)
 
 # 3. Some set up ----------------------------------------------------------
 
-# List of filenames
-the_dir <- dir()
+the_dir <- dir() # List of filenames
 
 # Remove filenames that aren't data, if they exist
 the_dir <- the_dir[grep(pattern = "chill_output_data",
@@ -55,10 +51,8 @@ the_dir <- the_dir[grep(pattern = "chill_output_data",
 data_list_historical <- vector(mode = "list", length = 295)
 
 # 5. Iterate through files and process ------------------------------------
-  
-  # 5a. Iterate through historical files ------------------------------------
-  
-  # For each data file
+#    5a. Iterate through historical files ---------------------------------
+
 for(i in 1:length(the_dir)){
   
   # Read in file

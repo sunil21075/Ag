@@ -6,7 +6,7 @@ library(lubridate)
 library(purrr)
 library(tidyverse)
 
-source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
 source(source_path)
 options(digit=9)
 options(digits=9)
@@ -29,13 +29,7 @@ model_type = args[1]
 ######################################################################
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-main_out <- file.path(chill_out, model_type, "/02/observed/")
-
-# if (model_type == "dynamic"){
-#   main_out <- file.path(chill_out, "/dynamic/02/observed/")
-# } else if (model_type == "utah") {
-#   main_out <- file.path(chill_out, "/utah/02/observed/")
-# }
+main_out <- file.path(chill_out, model_type, "02/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -84,7 +78,7 @@ head(summary_data_historical)
 # Briefly want to export the raw data from the lists for use in other figs
 data_historical <- ldply(data_list_historical, function(x) data.frame(x))
 
-data_historical$year <- as.numeric(substr(x = data_historical$Chill_season,
+data_historical$year <- as.numeric(substr(x = data_historical$chill_season,
                                           start = 12, stop = 15))
 data_historical$model <- "observed"
 data_historical$scenario <- "historical"

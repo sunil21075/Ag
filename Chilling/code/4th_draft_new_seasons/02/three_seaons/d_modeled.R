@@ -1,14 +1,14 @@
 
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
+library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
-library(plyr)
 options(digit=9)
 options(digits=9)
 
-source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
 source(source_path)
 
 # Check current folder
@@ -25,6 +25,7 @@ start_time <- Sys.time()
 args = commandArgs(trailingOnly=TRUE)
 model_type = args[1]
 overlap_type = args[2]
+season_start = args[3]
 
 ######################################################################
 ##                                                                  ##
@@ -36,26 +37,14 @@ overlap_type = args[2]
 
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-# Set an output location for this script's outputs
-if (model_type=="dynamic"){
-  if (overlap_type == "non_overlap" ){
-    main_out <- file.path(chill_out, "clean_up/dynamic/non_overlap/")
-
-    } else if (overlap_type == "overlap" ) {
-      main_out <- file.path(chill_out, "clean_up/dynamic/overlap/")
-  }
-  
-  } else if (model_type=="utah"){
-  if (overlap_type == "non_overlap"){
-    main_out <- file.path(chill_out, "clean_up/utah/non_overlap/")
-
-    } else if (overlap_type == "overlap" ) {
-      main_out <- file.path(chill_out, "clean_up/utah/overlap/")
-  }
+main_out <- file.path(chill_out, model_type, "02", season_start)
+if (overlap_type == "non_overlap" ){
+  main_out <- file.path(main_out, "non_overlap/")
+  } else if (overlap_type == "overlap" ) {
+    main_out <- file.path(main_out, "overlap/")
 }
 
-print (model_type)
-print (overlap_type)
+print (paste0( "(", model_type, "," , overlap_type, ",", season_start, ")"))
 print (main_out)
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
@@ -69,7 +58,6 @@ the_dir <- dir()
 
 # Remove file names that aren't data, if they exist
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
-
 
 # Pre-allocate lists to be used
 data_list_hist <- vector(mode = "list", length = 295)
@@ -86,7 +74,6 @@ hist <- basename(getwd()) == "historical"
 if(hist){
   # 5a. Iterate through historical files ----------------------------------
   for(i in 1:length(the_dir)){
-
     file <- read.table(file = the_dir[i],
                        header = T,
                        colClasses = c("factor", "numeric", "numeric", "numeric",
@@ -110,10 +97,8 @@ if(hist){
                                             start = 12, stop = 15))
   data_historical$model <- basename(dirname(getwd()))
   data_historical$scenario <- basename(getwd())
-  data_historical$lat = as.numeric(substr(x = data_historical$.id,
-                                          start = 19, stop = 26))
-  data_historical$long = as.numeric(substr(x = data_historical$.id,
-                                           start = 28, stop = 37))
+  data_historical$lat = as.numeric(substr(x = data_historical$.id, start = 19, stop = 26))
+  data_historical$long= as.numeric(substr(x = data_historical$.id, start = 28, stop = 37))
   data_historical <- unique(data_historical)
   
   # No longer needed

@@ -14,7 +14,7 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
 source(source_path)
 options(digits=9)
 options(digit=9)
@@ -32,7 +32,13 @@ model_type = args[1]
 # Define main output path
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-main_out <- file.path(chill_out, model_type, "01/modeled/")
+main_out <- file.path(chill_out, model_type, "/01/modeled/")
+
+# if (model_type == "dynamic"){
+#   main_out <- file.path(chill_out, "cleanup/dynamic/")
+# } else if (model_type == "utah"){
+#   main_out <- file.path(chill_out, "cleanup/utah/")
+# }
 
 # 2. Pre-processing prep --------------------------------------------------
 # 2a. Only use files in geographic locations we're interested in
@@ -85,11 +91,6 @@ for(file in dir_con){
   # 3b. Clean it up
   # rename needed columns
   met_data <- met_data %>%
-              rename(Year = year,
-                     Month = month,
-                     Day = day,
-                     Tmax = tmax,
-                     Tmin = tmin) %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
   
@@ -104,32 +105,31 @@ for(file in dir_con){
   # 3d. Run the chill accumulation model and sum up by day
 
   # we want this on a seasonal basis specific to chill
-  met_hourly <- met_hourly %>%
-                mutate(Chill_season = case_when(
-                # If Jan:Aug then part of chill season of prev year - current year
-                Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
-                # If Sept:Dec then part of chill season of current year - next year
-                Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
-                ))
+  #################################################################################
+  #
+  #              Chill season start at Sep.
+  #
+  #################################################################################
+  met_hourly <- put_chill_season(met_hourly, chill_start)
   
   # sum within a day using NON-cumulative chill portions
   if (model_type == "dynamic"){
     met_daily <- met_hourly %>%
-                 group_by(Chill_season) %>% # should maintain correct day, time order
+                 group_by(chill_season) %>% # should maintain correct day, time order
                  mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
-                 group_by(Chill_season, Year, Month, Day) %>%
-                 summarise(Daily_portions = sum(chill))
+                 group_by(chill_season, year, month, day) %>%
+                 summarise(daily_portions = sum(chill))
   } else if (model_type == "utah"){
     met_daily <- met_hourly %>%
-                 group_by(Chill_season) %>% # should maintain correct day, time order
+                 group_by(chill_season) %>% # should maintain correct day, time order
                  mutate(chill = Utah_Model(HourTemp = Temp, summ = F)) %>%
-                 group_by(Chill_season, Year, Month, Day) %>%
-                 summarise(Daily_portions = sum(chill))
+                 group_by(chill_season, year, month, day) %>%
+                 summarise(daily_portions = sum(chill))
   }
   
   met_daily <- met_daily %>%
-              group_by(Chill_season) %>%
-              mutate(Cume_portions = cumsum(Daily_portions))
+              group_by(chill_season) %>%
+              mutate(cume_portions = cumsum(daily_portions))
 
   # 3e. Save output
   write.table(x = met_daily,
