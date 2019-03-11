@@ -20,8 +20,7 @@ A <- summary_compy %>% filter(any_vars(is.na(.)))
 A <- A %>% filter_all(any_vars(is.na(.)))
 
 ######## The same
-A = A[, .(mean_gdd = mean(CumDDinF)), 
-         by = c("location", "year")]
+A = A[, .(mean_gdd = mean(CumDDinF)), by = c("location", "year")]
 
 B <- B %>%
      group_by(location, year) %>%
@@ -48,5 +47,11 @@ quan_per_feb <- feb_result %>%
                 summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                 data.table()
 
+# count number of NA in each column
+all_data_dt[, lapply(.SD, function(x) sum(is.na(x))), .SDcols = 1:9]
+
+
+# change order of columns of data table
+setcolorder(x, c("c", "b", "a"))
 
 

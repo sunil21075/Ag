@@ -15,7 +15,7 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/3rd_draft/chill_core.R"
 source(source_path)
 
 options(digit=9)
@@ -34,11 +34,7 @@ model_type = args[1]
 # Define main output path
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-if (model_type == "dynamic"){
-  main_out <- file.path(chill_out, "cleanup/dynamic/observed/")
-} else if (model_type == "utah"){
-  main_out <- file.path(chill_out, "cleanup/utah/observed/")
-}
+main_out <- file.path(chill_out, "/", model_type, "/01/observed/")
 
 # 2a. Only use files in geographic locations we're interested in
 param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")

@@ -1,15 +1,13 @@
-#####################################################################
-#############                                                   #####
-#############  Phase 1: Read binary data and parameters and     #####
-#############           generate CM and CMPOP files.            #####
-#############                                                   #####
-#####################################################################
-produce_CMPOP_local <- function (input_folder, filename, 
-                                 param_dir, cod_moth_param_name, 
-                                 scale_shift=0,
-                                 start_year, end_year,
-                                 lower=10, upper=31.11,
-                                 location, category){
+#####################################################################################################
+#############                                                                                   #####
+#############  Phase 1: Read binary data and parameters and generate CM and CMPOP files.        #####
+#############                                                                                   #####
+#####################################################################################################
+produce_CMPOP <- function (input_folder, filename, 
+                           param_dir, cod_moth_param_name, scale_shift,
+                           start_year, end_year,
+                           lower=10, upper=31.11,
+                           location, category){
   temp <- prepareData_CMPOP(filename, 
                             input_folder, 
                             param_dir, 
@@ -44,12 +42,12 @@ produce_CMPOP_local <- function (input_folder, filename,
   return (temp_data)
 }
 
-produce_CM_local <- function(input_folder, filename,
-                             param_dir, cod_moth_param_name,
-                             scale_shift=0,
-                             start_year, end_year, 
-                             lower=10, upper=31.11,
-                             location, category){
+produce_CM <- function(input_folder, filename,
+                       param_dir, cod_moth_param_name,
+                       scale_shift,
+                       start_year, end_year, 
+                       lower=10, upper=31.11,
+                       location, category){
   loc = tstrsplit(location, "_")
   temp <- prepareData_CM(filename, 
                          input_folder, 
@@ -86,7 +84,7 @@ produce_CM_local <- function(input_folder, filename,
 ############################################
 prepareData_CMPOP <- function(filename, input_folder,
                               param_dir, cod_moth_param_name,
-                              scale_shift=0,
+                              scale_shift,
                               start_year, end_year, 
                               lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
@@ -99,20 +97,19 @@ prepareData_CMPOP <- function(filename, input_folder,
   # create year, month, day values based on start year, number of years and leap year info
   ymd <- create_ymdvalues (nYears, Years, leap.year)
   
-  ## read met data and add year, month, day variables
+  ## read met data and add year month day variables
   input_file <- paste(input_folder, filename, sep="")
   metdata <- readbinarydata_addmdy(input_file, Nrecords, Nofvariables, ymd, ind)
   metdata_data.table <- data.table(metdata)
   rm (metdata)
   
   # Calculate daily and cumulative gdd to met data. (gdd := growing degree days)
-  # why three is no 32 in conversion?
   metdata_data.table <- add_dd_cumdd(metdata_data.table, lower, upper)
-  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd * 1.8
+  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd *1.8 # why it is not shifted?
 
   # add day of year from 1 to 365/366 depending on year
   metdata_data.table$dum <- 1 # dummy
-  metdata_data.table[, dayofyear := cumsum(dum), by=list(year)] #?
+  metdata_data.table[, dayofyear := cumsum(dum), by=list(year)]
   
   CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=TRUE, sep=",")
   
@@ -154,7 +151,7 @@ prepareData_CMPOP <- function(filename, input_folder,
 ########################################################################################################
 ########################################################################################################
 prepareData_CM <- function(filename, input_folder, 
-                           param_dir, cod_moth_param_name, scale_shift=0,
+                           param_dir, cod_moth_param_name, scale_shift,
                            start_year, end_year, 
                            lower, upper){
   time_stuff <- provide_time_stuff(start_year, end_year)
@@ -176,7 +173,7 @@ prepareData_CM <- function(filename, input_folder,
   metdata <- add_dd_cumdd(metdata, lower, upper)
   
   # convert celcius to farenheit
-  metdata$Cum_dd_F = metdata$Cum_dd * 1.8 
+  metdata$Cum_dd_F = metdata$Cum_dd * 1.8
   
   # add day of year from 1 to 365/366 depending on year
   metdata$dum <- 1 # dummy
@@ -285,7 +282,7 @@ prepareData_CM <- function(filename, input_folder,
     
     em = 0 # emergence occured
     
-    # add each year to dataframe
+    #add each year to dataframe
     generations[nrow(generations) + 1, 1] <- i
     
     # for each day of the year
@@ -606,7 +603,7 @@ prepareData_CM <- function(filename, input_folder,
 }
 ###############################################################################################################
 ###############################################################################################################
-CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scale_shift=0) {
+CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scale_shift) {
   # Number of stages which is 16: egg_1   thorugh egg_4,
   #                               Larva_1 thorugh Larva_4
   #                               Pupa_1  thorugh Pupa_4
@@ -624,7 +621,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
   for (i in 1:stage_gen_toiterate) {
     perc_num <- pweibull(metdata_data.table$Cum_dd_F, 
                          shape=CodMothParams[i,3], 
-                         scale=CodMothParams[i,4] * (1 + scale_shift))
+                         scale=CodMothParams[i,4] * (1+scale_shift))
     perc_num <- data.frame(perc_num)
     colnames(perc_num) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, perc_num)
@@ -678,7 +675,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
 }
 ##############################################################################################################
 ##############################################################################################################
-CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_shift=0){
+CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_shift){
   # Number of stages which is 16: egg_1   thorugh egg_4,
   #                               Larva_1 thorugh Larva_4
   #                               Pupa_1  thorugh Pupa_4
@@ -822,7 +819,7 @@ provide_time_stuff <- function(start_year, end_year){
   Nofvariables <- 4 # number of varaibles or column in the forcing data file
   Years <- seq(start_year, end_year)
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
-  return(list(nYears, Nrecords, Nofvariables, Years, ind))
+  return (list(nYears, Nrecords, Nofvariables, Years, ind))
   }
 ###############################################################################################################
 ###############################################################################################################
@@ -842,8 +839,8 @@ create_ymdvalues <- function(nYears, Years, leap.year) {
       days_in_mon <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
     }
     for( j in 1:12){
-      daycount_in_year <- c(daycount_in_year, seq(1, days_in_mon[j]))
-      moncount_in_year <- c(moncount_in_year, rep(j, days_in_mon[j]))
+      daycount_in_year <- c(daycount_in_year, seq(1,days_in_mon[j]))
+      moncount_in_year <- c(moncount_in_year, rep(j,days_in_mon[j]))
       yearrep_in_year <- c(yearrep_in_year, rep(Years[i],days_in_mon[j]))
     }
   }
@@ -868,7 +865,7 @@ readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
   dataM[1:Nrecords, 3] <- temp[ind+2]/100.00 # Min temperature data
   dataM[1:Nrecords, 4] <- temp[ind+3]/100.00 # Wind speed data
   
-  AllData <- cbind(ymd, dataM)
+  AllData<-cbind(ymd, dataM)
   colnames(AllData) <- c("year","month","day","precip","tmax","tmin","winspeed")
   return(AllData)
 }
@@ -901,8 +898,7 @@ merge_data <- function(input_dir, param_dir, categories, locations_file_name, fi
       else {
         filename <- paste0(input_dir, "historical_", file_prefix, "/", file_prefix, "_" ,location)
       }
-    data_to_add = read.table(filename, header = TRUE, sep = ",")
-    data <- rbind(data, data_to_add)
+    data <- rbind(data, read.table(filename, header = TRUE, sep = ","))
     }
   }
   return(data)
@@ -1047,9 +1043,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     loc_grp$latitude = as.numeric(loc_grp$latitude)
     loc_grp$longitude = as.numeric(loc_grp$longitude)
 
-    # Do we even need the following? Already data are generated for proper locations!
-    # on March 6, 2019, Im commenting it out
-    # data <- data[latitude %in% loc_grp$latitude & longitude %in% loc_grp$longitude]
+    data <- data[latitude %in% loc_grp$latitude & longitude %in% loc_grp$longitude]
 
     theta = 0.2163108 + (2 * atan(0.9671396 * tan(0.00860 * (data$dayofyear - 186))))
     phi = asin(0.39795 * cos(theta))
@@ -1209,15 +1203,10 @@ diapause_map1_prep <- function(input_dir, file_name,
 
   loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
   options(digits=9)
-  print ("from core line 1210")
-  print (param_dir)
-  print (location_group_name)
-  print (head(loc_grp))
   loc_grp$latitude = as.numeric(loc_grp$latitude)
   loc_grp$longitude = as.numeric(loc_grp$longitude)
 
-  # March 6th, 2019, commented out! data alreay are produced for these proper locations!
-  # data <- data[latitude %in% loc_grp$latitude & longitude %in% loc_grp$longitude]
+  data <- data[latitude %in% loc_grp$latitude & longitude %in% loc_grp$longitude]
 
   theta = 0.2163108 + (2 * atan(0.9671396 * tan(0.00860 * (data$dayofyear - 186))))
   phi = asin(0.39795 * cos(theta))
@@ -1235,10 +1224,10 @@ diapause_map1_prep <- function(input_dir, file_name,
   rm(data)
   startingpopulationfortheyear<-1000
   
-  # generation1
+  #generation1
   sub[, LarvaGen1RelFraction := LarvaGen1/sum(LarvaGen1), 
-        by =list(year, ClimateScenario, 
-                 latitude, longitude, ClimateGroup) ]
+       by =list(year,ClimateScenario, 
+       latitude,longitude,ClimateGroup, CountyGroup) ]
   sub$AbsPopLarvaGen1 <- sub$LarvaGen1RelFraction*startingpopulationfortheyear
   sub$AbsPopLarvaGen1Diap <- sub$AbsPopLarvaGen1*sub$diapause1/100
   sub$AbsPopLarvaGen1NonDiap <- sub$AbsPopLarvaGen1- sub$AbsPopLarvaGen1Diap
@@ -1275,15 +1264,9 @@ diapause_map1_prep <- function(input_dir, file_name,
   sub$AbsPopDiap <- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
   sub$AbsPopNonDiap <- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + 
                       sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
-  
-  print ("line 1275 of core")
-  print (sort(colnames(sub)))
-  # County was in the following, however, it seems
-  # for all USA there is no county (at least I do not have it!)
-  # so ... This is done on March 6th, for creating the features for analog
-  # 
+
   sub = subset(sub, select = c("latitude", "longitude", 
-                               "CountyGroup", 
+                               "County", "CountyGroup", 
                                "ClimateScenario", "ClimateGroup", 
                                "year", "dayofyear", "CumDDinF", 
                                "SumLarva", "enterDiap", 
@@ -1574,89 +1557,3 @@ generate_scale_sens_table <- function(master_path, shifts){
     write.csv(DT_2080_cold, file = file, row.names=FALSE)
   }
 }
-
-
-###########################################################################
-#########################
-######################### LeafLet Maps
-#########################
-###########################################################################
-#library(shiny)
-#library(shinydashboard)
-#library(shinyBS)
-#library(rgdal)    # for readOGR and others
-#library(maps)
-#library(sp)       # for spatial objects
-#library(leaflet)  # for interactive maps (NOT leafletR here)
-#library(dplyr)    # for working with data frames
-#library(ggplot2)  # for plotting
-#library(data.table)
-#library(reshape2)
-#library(RColorBrewer)
-
-
-constructMap <- function(mapLayerData, layerlist, palColumn, legendVals, title, gradient = "RdBu") {
-  pal <- colorNumeric(
-                      # palette = "Blues,Paired,Greens,Purples",
-                      # check - https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/colorPaletteCheatsheet.pdf
-                      palette = gradient, # Spectral_reverse, #"Spectral",
-                      domain = legendVals
-                      )
-    myLabelFormat = function(..., dates=FALSE){ 
-      if(dates){ function(type = "numeric", cuts){ 
-                          format(as.Date(cuts, origin = "2018-01-01"), "%b %d")
-                        }  
-      } else {
-        labelFormat(...)
-      }
-    } 
-
-    map <- leaflet() %>% 
-           addTiles() %>% 
-           addProviderTiles(providers$CartoDB.Positron) %>% 
-           setView(lat = 47.40, lng = -119.53, zoom = 7)
-    
-    for(i in 1:length(mapLayerData)){
-                loc = tstrsplit(mapLayerData[[i]]$location, "_")
-                mapLayerData[[i]]$latitude = as.numeric(unlist(loc[1]))
-                mapLayerData[[i]]$longitude = as.numeric(unlist(loc[2]))
-                map <- addCircleMarkers(map,
-                                        data = mapLayerData[[i]],
-                                        lat = mapLayerData[[i]]$latitude, lng = mapLayerData[[i]]$longitude,
-                                        stroke = FALSE,
-                                        radius = 7,
-                                        fillOpacity = 0.9,
-                                        color = ~pal(mapLayerData[[i]][, get(palColumn)]) #,
-                                        #popup=paste0("<b>", title, ": </b>", 
-                                        #              round(mapLayerData[[i]][, get(palColumn)], 1),
-                                        #              "<br/><b>Latitude: </b> ", mapLayerData[[i]]$latitude, 
-                                        #              "<br/><b>Longitude: </b> ", mapLayerData[[i]]$longitude)
-                                        )
-              }
-    
-    if(title == "Median Day of Year") { map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
-                                                        title = title,
-                                                        labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
-                                                        opacity = 0.7) 
-    } else { map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
-                             title = title,
-                             labFormat = myLabelFormat(prefix = " "),
-                             opacity = 0.7)
-          }
-    map
-  }
-
-# addTiles() %>% 
-# addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png", attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>% 
-# addTiles() %>% addProviderTiles(providers$Esri.NatGeoWorldMap, group = "Nat Geo") %>%
-# addTiles() %>% addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite") %>%
-# addProviderTiles(providers$CartoDB.Positron) %>% 
-
-
-
-
-
-
-
-
-
