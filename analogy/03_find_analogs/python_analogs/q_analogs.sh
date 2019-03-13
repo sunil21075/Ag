@@ -1,11 +1,11 @@
 
 ## Define a job name
-#PBS -N python_analogs
+#PBS -N python_analogs_85
 #PBS -q hydro
 #PBS -l nodes=1:ppn=4,walltime=99:00:00
 #PBS -l mem=4gb
-#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/error/e_analog
-#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/error/o_analog
+#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/error/e_85_analog
+#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/error/o_85_analog
 #PBS -m abe
 
 module load python/2.7.8
