@@ -23,11 +23,8 @@ main_out <- file.path("/fastscratch",
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
-  
   dir.create(path = main_out, recursive = T)
-  
 }
-
 
 # 3. Some set up ----------------------------------------------------------
 

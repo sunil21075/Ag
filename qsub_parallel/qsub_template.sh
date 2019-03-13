@@ -20,56 +20,56 @@ echo ' '
 
 stagein()
 {
-	 echo ' '
-	 echo Transferring files from server to compute node
-	 echo Writing files in node directory  ${WORKDIR}
-	 echo present directory is 
-	 pwd
-	 cd ${WORKDIR}
-	 rm -r thisjobname_set1
-	 mkdir thisjobname_set1
-	 cd thisjobname_set1
-	 echo now present directory is
-	 	pwd
-	 echo list of files is 
-	  	ls
-	 rm -r cropcells_set1
-	 rm -r metdata
-	 mkdir cropcells_set1
-	 mkdir metdata
-	 # transfer soil file
-	 cp -r  /data/kiran/Data/VIC/params/soil/cropsoilsfiles_moreset/newparams/soil_param.set1 ./
-	 
-	 # transfer crop parameter and lib files
-	 cp -r  /data/kiran/Data/VIC/params/crop/cropparam_Sep27_2011_noprecip_WSDA_alloutside_pasture50p ./
-	 cp -r  /data/kiran/Data/VIC/params/crop/croplib_allcrops ./
+  echo ' '
+  echo Transferring files from server to compute node
+  echo Writing files in node directory  ${WORKDIR}
+  echo present directory is 
+  pwd
+  cd ${WORKDIR}
+  rm -r thisjobname_set1
+  mkdir thisjobname_set1
+  cd thisjobname_set1
+  echo now present directory is
+      pwd
+  echo list of files is 
+      ls
+  rm -r cropcells_set1
+  rm -r metdata
+  mkdir cropcells_set1
+  mkdir metdata
+  # transfer soil file
+  cp -r /data/kiran/Data/VIC/params/soil/cropsoilsfiles_moreset/newparams/soil_param.set1 ./
+  
+  # transfer crop parameter and lib files
+  cp -r /data/kiran/Data/VIC/params/crop/cropparam_Sep27_2011_noprecip_WSDA_alloutside_pasture50p ./
+  cp -r /data/kiran/Data/VIC/params/crop/croplib_allcrops ./
 
-	 # transfer veg param and lib file
-	 cp -r  /data/kiran/Data/VIC/params/veg/vegparam_allcrops ./
-	 cp -r  /data/kiran/Data/VIC/params/veg/veglib ./
+  # transfer veg param and lib file
+  cp -r /data/kiran/Data/VIC/params/veg/vegparam_allcrops ./
+  cp -r /data/kiran/Data/VIC/params/veg/veglib ./
 
-	 # transfer CropSyst folder
-	 cp -r  /data/kiran/Data/VIC/params/CropSyst ./
+  # transfer CropSyst folder
+  cp -r /data/kiran/Data/VIC/params/CropSyst ./
 	
-	 # transfer global paramter file
-         cp -r  /data/kiran/Data/VIC/params/global/kirtifirstpaper/thisjobname/global_param_set1 ./
-	 # transfer the executable file
-	 cp -r  /data/kiran/VIC/VIC_Crop/VICCROP407 ./
+  # transfer global paramter file
+  cp -r /data/kiran/Data/VIC/params/global/kirtifirstpaper/thisjobname/global_param_set1 ./
+  
+  # transfer the executable file
+  cp -r /data/kiran/VIC/VIC_Crop/VICCROP407 ./
 
-	 # transfer the met data
+  # transfer the met data
 
-	 cat /data/kiran/Data/VIC/params/metdatalistmultipleset/list_set1 | while read LINE ; do
-	 echo "copying $LINE..."
-	 cp   /data/kirti/vic_inputdata0625_pnw_combined_05142008/$LINE ./metdata/
+  cat /data/kiran/Data/VIC/params/metdatalistmultipleset/list_set1 | while read LINE ; do
+  echo "copying $LINE..."
+  cp /data/kirti/vic_inputdata0625_pnw_combined_05142008/$LINE ./metdata/
 
-	done
-	cd metdata
-	echo number of files in met data
-	ls | wc -l
-	cd ..
-	echo now directory should to back
-	pwd
-
+  done
+  cd metdata
+  echo number of files in met data
+  ls | wc -l
+  cd ..
+  echo now directory should to back
+  pwd
 }
 
 ############################################################
@@ -78,10 +78,10 @@ stagein()
 
 runprogram()
 {
-	echo In runprogram:
-	echo present working directory:
-	pwd
-	./VICCROP407 -g global_param_set1
+  echo In runprogram:
+  echo present working directory:
+  pwd
+  ./VICCROP407 -g global_param_set1
 }
 
 ###########################################################
@@ -90,20 +90,19 @@ runprogram()
 
 stageout()
 {
-	 echo ' '
-	 echo Transferring files from compute nodes to server
-	 echo Number of files in results:
-	 ls cropcells_set1 | wc -l
-	 cp -r ./cropcells_set1/* /data/jennylabcommon/kirtidata/firstpaper/thisjobname/
-	 echo after deleting number of files:
-	 cd ..
-	 rm -r thisjobname_set1
-	 echo current directory is
-	 pwd	
-	 echo list after deteting hist
-	 ls
- }
-
+  echo ' '
+  echo Transferring files from compute nodes to server
+  echo Number of files in results:
+  ls cropcells_set1 | wc -l
+  cp -r ./cropcells_set1/* /data/jennylabcommon/kirtidata/firstpaper/thisjobname/
+  echo after deleting number of files:
+  cd ..
+  rm -r thisjobname_set1
+  echo current directory is
+  pwd	
+  echo list after deteting hist
+  ls
+}
 
 early()
 {
@@ -113,7 +112,6 @@ early()
  }
 
 # trap 'early; stageout' 2 9 15
-
 
 ##################################################
 #   Staging in, running the job, and staging out #

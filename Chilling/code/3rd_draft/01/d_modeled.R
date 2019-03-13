@@ -45,7 +45,7 @@ hist <- ifelse(grepl(pattern = "historical", x = getwd()) == T, TRUE, FALSE)
 
 # Get current folder
 current_dir <- gsub(x = getwd(),
-                    pattern = "/data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/",
+                    pattern = "/data/hydro/users/Hossein/analog/local/ready_features/broken_down_location_year_level/",
                     replacement = "")
 
 print("does this look right?")

@@ -155,16 +155,12 @@ dir_con <- dir_con[which(dir_con %in% focal_files)]
 
 print(dir_con)
 
-
-
 # 3. Process the data -----------------------------------------------------
-
 
 # Time the processing of this batch of files
 start_time <- Sys.time()
 
 for(file in dir_con){
-
 
   # 3a. read in binary meteorological data file from specified path
   met_data <- read_binary_8(file_path = file,
@@ -175,7 +171,6 @@ for(file in dir_con){
 
   # data frame required
   met_data <- as.data.frame(met_data)
-
 
   # 3b. Clean it up
 
