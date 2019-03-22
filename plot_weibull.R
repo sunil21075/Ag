@@ -27,7 +27,6 @@ for (i in 1:16){
 }
 
 
-
 for (i in 1:16){
   shap = params[i, 3]
   scal = params[i, 4] * (1.2)
