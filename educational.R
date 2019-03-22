@@ -54,4 +54,37 @@ all_data_dt[, lapply(.SD, function(x) sum(is.na(x))), .SDcols = 1:9]
 # change order of columns of data table
 setcolorder(x, c("c", "b", "a"))
 
+# reshape a vector into matrix
+d <- matrix(NN.dist, nrow = 70, byrow = FALSE)
+
+
+df.melted <- melt(myDF[, -1], id.vars = NULL)
+myNewDF <- t(df.melted[, 2])
+colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
+
+
+# initialize data frame data table dataframe datatable
+table = data.frame()
+
+#################### Install packages on aeolus
+
+https://docs.aeolus.wsu.edu/docs_running_applications.html
+
+qsub -I [job script].sh
+
+module load gcc/7.3.0
+module load r/3.5.1/gcc/7.3.0
+R
+install.packages(c("lattice", "abctools"), lib="~/.local/lib/R3.5.1", repos="https://ftp.osuosl.org/pub/cran")
+
+Ctrl-d
+exit
+
+Finally, you’ll need to create a file to tell R where 
+your packages live. Create a file called .Renviron 
+in your home directory, and specify your library directory:
+R_LIBS_USER=~/.local/lib/R3.5.1
+
+#################### Install packages on aeolus
+
 

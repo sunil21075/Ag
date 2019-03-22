@@ -6,6 +6,7 @@ do
 cp qsub_template ./$runname/qsub_set1
 sed -i s/thisjobname/"$runname"/g ./$runname/qsub_set1
 cd $runname
+
 for (( i = 2; i <= 87; i++ )) 
 do
 cp qsub_set1 qsub_set$i
