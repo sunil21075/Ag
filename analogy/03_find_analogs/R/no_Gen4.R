@@ -61,12 +61,12 @@ n_neighbors = 500
 information = find_NN_info_W4G(all_dt_usa, local_dt, n_neighbors=n_neighbors, out_dir=out_dir)
 
 NN_dist_tb = information[[1]]
-NNs_loc_year_tb = information[[2]]
+NN_loc_year_tb = information[[2]]
 NN_sigma_tb = information[[3]]
 
-saveRDS(NN_dist_tb, paste0(out_dir, "NN_dist_tb_", model_type, ".rds"))
-saveRDS(NNs_loc_year_tb, paste0(out_dir, "NNs_loc_year_tb_", model_type, ".rds"))
-saveRDS(NN_sigma_tb, paste0(out_dir, "NN_sigma_tb_", model_type, ".rds"))
+saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", model_type, ".rds"))
+saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", model_type, ".rds"))
+saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", model_type, ".rds"))
 
 
 
