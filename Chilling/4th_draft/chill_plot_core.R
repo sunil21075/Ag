@@ -125,9 +125,19 @@ produce_data_4_plots <- function(data){
                                    summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
                                    data.table()
 
+  quan_per_loc_period_model_apr <- data %>% 
+                                   group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                   summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
+                                   data.table()
+
   # it seems there is a library, perhaps tidyverse, that messes up
   # the above line, so the two variables above are 1-by-1. 
   # just close and re-open R Studio
+  ########################################################################
+  #######                                                          #######
+  #######                     Means                              #######
+  #######                                                          #######
+  ########################################################################
   
   mean_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
                                         group_by(time_period, lat, long, scenario) %>%
@@ -144,6 +154,15 @@ produce_data_4_plots <- function(data){
                                         summarise(mean_over_model = mean(quan_90)) %>%
                                         data.table()
 
+  mean_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                        group_by(time_period, lat, long, scenario) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+  ########################################################################
+  #######                                                          #######
+  #######                     Medians                              #######
+  #######                                                          #######
+  ########################################################################
   median_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
                                           group_by(time_period, lat, long, scenario) %>%
                                           summarise(median_over_model = median(quan_90)) %>%
@@ -159,6 +178,11 @@ produce_data_4_plots <- function(data){
                                           summarise(median_over_model = median(quan_90)) %>%
                                           data.table()
   
+  median_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                          group_by(time_period, lat, long, scenario) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+  
   # quan_per_loc_period_model_jan$time_period = factor(quan_per_loc_period_model_jan$time_period, order=T)
   # mean_quan_per_loc_period_model_jan$time_period = factor(mean_quan_per_loc_period_model_jan$time_period, order=T)
   # median_quan_per_loc_period_model_jan$time_period = factor(median_quan_per_loc_period_model_jan$time_period, order=T)
@@ -167,15 +191,123 @@ produce_data_4_plots <- function(data){
   # mean_quan_per_loc_period_model_feb$time_period = factor(mean_quan_per_loc_period_model_feb$time_period, order=T)
   # median_quan_per_loc_period_model_feb$time_period= factor(median_quan_per_loc_period_model_feb$time_period, order=T)
 
-  return(list(quan_per_loc_period_model_jan, 
-              mean_quan_per_loc_period_model_jan, 
+  return(list(quan_per_loc_period_model_jan,
+              mean_quan_per_loc_period_model_jan,
               median_quan_per_loc_period_model_jan,
-              quan_per_loc_period_model_feb, 
-              mean_quan_per_loc_period_model_feb, 
+              quan_per_loc_period_model_feb,
+              mean_quan_per_loc_period_model_feb,
               median_quan_per_loc_period_model_feb,
-              quan_per_loc_period_model_mar, 
-              mean_quan_per_loc_period_model_mar, 
-              median_quan_per_loc_period_model_mar)
+              quan_per_loc_period_model_mar,
+              mean_quan_per_loc_period_model_mar,
+              median_quan_per_loc_period_model_mar,
+              quan_per_loc_period_model_apr,
+              mean_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr,
+              )
+        )
+}
+
+
+produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
+
+  ################### CLEAN DATA
+  data <- organize_non_over_time_period_two_hist(data)
+
+  ################### GENERATE STATS
+  #######################################################################
+  ##                                                                   ##
+  ##   Find the 90th percentile of the chill units                     ##
+  ##   Grouped by location, model, time_period and rcp                 ##
+  ##   This could be used for box plots, later compute the mean.       ##
+  ##   for maps                                                        ##
+  ##                                                                   ##
+  #######################################################################
+  quan_per_loc_period_model_jan <- data %>% 
+                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   summarise(quan_90 = quantile(sum_J1, probs = 0.1)) %>%
+                                   data.table()
+  
+  quan_per_loc_period_model_feb <- data %>% 
+                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
+                                   data.table()
+
+  quan_per_loc_period_model_mar <- data %>% 
+                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
+                                   data.table()
+
+  quan_per_loc_period_model_apr <- data %>% 
+                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
+                                   data.table()
+
+  # it seems there is a library, perhaps tidyverse, that messes up
+  # the above line, so the two variables above are 1-by-1. 
+  # just close and re-open R Studio
+  ########################################################################
+  #######                                                          #######
+  #######                     Means                              #######
+  #######                                                          #######
+  ########################################################################
+  
+  mean_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
+                                        group_by(time_period, lat, long, scenario, start) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+
+  mean_quan_per_loc_period_model_feb <- quan_per_loc_period_model_feb %>%
+                                        group_by(time_period, lat, long, scenario, start) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+  
+  mean_quan_per_loc_period_model_mar <- quan_per_loc_period_model_mar %>%
+                                        group_by(time_period, lat, long, scenario, start) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+
+  mean_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                        group_by(time_period, lat, long, scenario, start) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+  ########################################################################
+  #######                                                          #######
+  #######                     Medians                              #######
+  #######                                                          #######
+  ########################################################################
+  median_quan_per_loc_period_model_jan <- quan_per_loc_period_model_jan %>%
+                                          group_by(time_period, lat, long, scenario, start) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+
+  median_quan_per_loc_period_model_feb <- quan_per_loc_period_model_feb %>%
+                                          group_by(time_period, lat, long, scenario, start) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+  
+  median_quan_per_loc_period_model_mar <- quan_per_loc_period_model_mar %>%
+                                          group_by(time_period, lat, long, scenario, start) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+  
+  median_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                          group_by(time_period, lat, long, scenario, start) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+
+  return(list(quan_per_loc_period_model_jan,
+              mean_quan_per_loc_period_model_jan,
+              median_quan_per_loc_period_model_jan,
+              quan_per_loc_period_model_feb,
+              mean_quan_per_loc_period_model_feb,
+              median_quan_per_loc_period_model_feb,
+              quan_per_loc_period_model_mar,
+              mean_quan_per_loc_period_model_mar,
+              median_quan_per_loc_period_model_mar,
+              quan_per_loc_period_model_apr,
+              mean_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr
+              )
         )
 }
 
