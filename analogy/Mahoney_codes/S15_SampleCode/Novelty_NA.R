@@ -29,7 +29,7 @@ proxy <- read.csv("grid4nn_NAnaec8.csv")[,1]  # the ICV proxy used for each grid
 
 ## subsample the analog pool to reduce processing time
 subsample <- read.csv("subsample.NAnaec8.csv")[,1]  
-A <- A[subsample,] 
+A <- A[subsample,]
 
 ########################
 ### Calculation of sigma dissimilarity
@@ -41,34 +41,34 @@ trunc.SDs <- 0.1 #truncation
 #initiate the data frame to store the projected sigma dissimilarity of best analogs for each grid cell. 
 NN.sigma <- rep(NA,length(proxy))
 
-for(j in sort(unique(proxy))){       # run the novelty calculation once for each ICV proxy. Takes about 1.5 sec/iteration (1 hour total) on a typical laptop. 
+for(j in sort(unique(proxy))){ # run the novelty calculation once for each ICV proxy. Takes about 1.5 sec/iteration (1 hour total) on a typical laptop. 
   
   ## Select data relevant to ICV proxy j
   Bj <- B[which(proxy==j),]   # select locations for which ICV proxy j is the closest ICV proxy. 
   Cj <- C[which(C.id==j),] # reference period (1951-1990) ICV at ICV proxy j
   
   ## Step 1: express climate data as standardized anomalies of reference period (1951-1990) ICV at ICV proxy j. 
-  Cj.sd <- apply(Cj,2,sd, na.rm=T)  #standard deviation of 1951-1990 interannual variability in each climate variable, ignoring missing years
-  A.prime <- sweep(A,MARGIN=2,Cj.sd,`/`) # standardize the reference ICV    
-  Bj.prime <- sweep(Bj,MARGIN=2,Cj.sd,`/`) # standardize the analog pool    
-  Cj.prime <- sweep(Cj,MARGIN=2,Cj.sd,`/`) # standardize the projected future conditions of grid cells represented by ICV proxy j
+  Cj.sd <- apply(Cj,2, sd, na.rm=T)  # standard deviation of 1951-1990 interannual variability in each climate variable, ignoring missing years
+  A.prime <- sweep(A, MARGIN=2, Cj.sd,`/`) # standardize the reference ICV    
+  Bj.prime <- sweep(Bj, MARGIN=2, Cj.sd,`/`) # standardize the analog pool    
+  Cj.prime <- sweep(Cj, MARGIN=2, Cj.sd,`/`) # standardize the projected future conditions of grid cells represented by ICV proxy j
   
   ## Step 2: Extract the principal components (PCs) of the reference period ICV and project all data onto these PCs
-  PCA <- prcomp(Cj.prime[!is.na(apply(Cj.prime,1,mean)),])   #Principal components analysis. The !is.na(apply(...)) term is there simply to select all years with complete observations in all variables. 
+  PCA <- prcomp(Cj.prime[!is.na(apply(Cj.prime,1,mean)),])   # Principal components analysis. The !is.na(apply(...)) term is there simply to select all years with complete observations in all variables. 
   PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))    # find the number of PCs to retain using the PC truncation rule of eigenvector stdev > the truncation threshold
-  X<- as.data.frame(predict(PCA,A.prime))   #project the analog pool onto the PCs
-  Yj<- as.data.frame(predict(PCA,Bj.prime)) #project the projected future conditions onto the PCs
-  Zj<- as.data.frame(predict(PCA,Cj.prime)) #project the reference ICV onto the PCs
+  X<- as.data.frame(predict(PCA,A.prime))   # project the analog pool onto the PCs
+  Yj<- as.data.frame(predict(PCA,Bj.prime)) # project the projected future conditions onto the PCs
+  Zj<- as.data.frame(predict(PCA,Cj.prime)) # project the reference ICV onto the PCs
   
   ## Step 3a: express PC scores as standardized anomalies of reference interannual variability 
-  Zj.sd <- apply(Zj,2,sd, na.rm=T)     #standard deviation of 1951-1990 interannual variability in each principal component, ignoring missing years
-  X.prime <- sweep(X,MARGIN=2,Zj.sd,`/`) #standardize the analog pool    
-  Yj.prime <- sweep(Yj,MARGIN=2,Zj.sd,`/`) #standardize the projected conditions   
+  Zj.sd <- apply(Zj, 2, sd, na.rm=T)     #standard deviation of 1951-1990 interannual variability in each principal component, ignoring missing years
+  X.prime <- sweep(X, MARGIN=2, Zj.sd,`/`) #standardize the analog pool    
+  Yj.prime <- sweep(Yj, MARGIN=2, Zj.sd,`/`) #standardize the projected conditions   
   
   ## Step 3b: find the sigma dissimilarity of each projected condition with its best analog (Euclidean nearest neighbour) in the observed analog pool. 
-  NN.dist <- as.vector(get.knnx(data=X.prime[,1:PCs],query=Yj.prime[,1:PCs],k=1,algorithm="brute")[[2]]) # Euclidean nearest neighbour distance in the z-standardized PCs of interannual climatic variability, i.e. the Mahalanobian nearest neighbour. 
+  NN.dist <- as.vector(get.knnx(data=X.prime[, 1:PCs], query=Yj.prime[,1:PCs],k=1,algorithm="brute")[[2]]) # Euclidean nearest neighbour distance in the z-standardized PCs of interannual climatic variability, i.e. the Mahalanobian nearest neighbour. 
   NN.chi <- pchi(NN.dist,PCs) # percentile of the nearest neighbour distance on the chi distribution with degrees of freedom equaling the dimensionality of the distance measurement (PCs)
-  NN.sigma[which(proxy==j)] <- qchi(NN.chi,1) # values of the chi percentiles on a standard half-normal distribution (chi distribution with one degree of freedom)
+  NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1) # values of the chi percentiles on a standard half-normal distribution (chi distribution with one degree of freedom)
   
   print(j) 
 }

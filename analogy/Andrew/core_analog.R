@@ -14,8 +14,10 @@
 ##    observed historical is equivalent to 
 ##    having 8 variables, and years 1979-2016
 ##
+
 options(digits=9)
 options(digit=9)
+
 ####################################################################
 ##                                                                ##
 ##                                                                ##
@@ -40,7 +42,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
   if ("treatment" %in% colnames(future_dt)) {future_dt <- within(future_dt, remove(treatment))}
   if ("treatment" %in% colnames(ICV)) {ICV <- within(ICV, remove(treatment))}
 
-  # sort the columns of data tables so they both have the same order, if they do not.
+  # sort the columns of data tables so they both have the same order, if theydo not.
   columns_ord <- c("year", "location", "ClimateScenario",
                    "medianDoY", "NumLarvaGens_Aug", 
                    "mean_escaped_Gen1", "mean_escaped_Gen2",
@@ -70,7 +72,6 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
   numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
                     "mean_escaped_Gen2", "mean_escaped_Gen3", "mean_escaped_Gen4", 
                     "mean_gdd", "mean_precip")
-
   non_numeric_cols = c("year", "location", "ClimateScenario")
 
   NN_dist_tb_new = data.table()
@@ -111,14 +112,14 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
 
     # project the reference ICV onto the PCs which is the same as analog pool:
     X_new <- as.data.frame(predict(PCA_new, A_prime_new))
-    X_new <- cbind(A_prime_new[, non_numeric_cols], X_new)
+    X_new <- cbind(A_prime_new[, 1:3], X_new)
 
     # project the projected future conditions onto the PCs
     Yj_new <- as.data.frame(predict(PCA_new, Bj_prime_new[, numeric_cols]))
-    Yj_new = cbind(Bj_prime_new[, non_numeric_cols], Yj_new)
+    Yj_new = cbind(Bj_prime_new[, 1:3], Yj_new)
 
     Zj_new <- as.data.frame(predict(PCA_new, Cj_prime_new[, numeric_cols]))
-    Zj_new <- cbind(Cj_prime_new[, non_numeric_cols], Zj_new)
+    Zj_new <- cbind(Cj_prime_new[, 1:3], Zj_new)
 
     ## Step 3a: express PC scores as standardized
     #           anomalies of reference interannual variability
@@ -129,11 +130,11 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
 
     # standardize the analog pool   
     X_prime_new <- sweep(X_new[, 4:(PCs_new + 3)], MARGIN=2, Zj_sd_new, FUN = `/`)
-    X_prime_new <- cbind(X_new[, non_numeric_cols], X_prime_new)
+    X_prime_new <- cbind(X_new[, 1:3], X_prime_new)
 
     # standardize the projected conditions
     Yj_prime_new <- sweep(Yj_new[, 4:(PCs_new + 3)], MARGIN=2, Zj_sd_new, FUN = `/`)
-    Yj_prime_new <- cbind(Yj_new[, non_numeric_cols], Yj_prime_new)
+    Yj_prime_new <- cbind(Yj_new[, 1:3], Yj_prime_new)
     
     NN_list_new <- get.knnx(data = X_prime_new[, 4:(PCs_new+3)], 
                             query = Yj_prime_new[, 4:(PCs_new+3)], k=n_neighbors, algorithm="brute")
@@ -167,11 +168,10 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
     # percentile of the nearest neighbour distance on the chi distribution with
     # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
     NN_chi_new <- pchi(as.vector(NN_list_new$nn.dist), PCs_new)
-    
-    # values of the chi percentiles on a standard half-normal distribution
+    # values of the chi percentiles on a 
+    # standard half-normal distribution 
     # (chi distribution with one degree of freedom)
     # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
-
     NN_sigma_new <- qchi(NN_chi_new, 1)
     NN_sigma_df_new <- Reduce(cbind, 
                               split(NN_sigma_new, 

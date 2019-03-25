@@ -54,7 +54,7 @@ all_dt_usa$ClimateScenario = "observed"
 # for three time periods 2026-2050, 2051-2075 and 2076-2095
 #
 ########################################################
-carbon_types =  c("rcp45") # , "rcp85"
+carbon_types =  c("rcp45", "rcp85") #
 for (emission_type in carbon_types){
   ###########################################################################
   # create subdirectory for specific emission types
