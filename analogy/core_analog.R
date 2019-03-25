@@ -43,7 +43,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
   if ("treatment" %in% colnames(ICV)) {ICV <- within(ICV, remove(treatment))}
 
   # sort the columns of data tables so they both have the same order, if theydo not.
-  columns_ord <- c("year", "location","ClimateScenario",
+  columns_ord <- c("year", "location", "ClimateScenario",
                    "medianDoY", "NumLarvaGens_Aug", 
                    "mean_escaped_Gen1", "mean_escaped_Gen2",
                    "mean_escaped_Gen3", "mean_escaped_Gen4",
@@ -99,11 +99,6 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
     Cj_prime_new <- Cj_new
     Cj_prime_new[, numeric_cols] <- sweep(Cj_new[, numeric_cols], MARGIN = 2, STATS = Cj.sd_new, FUN = `/`)
 
-    #################################################################################
-    #
-    # Thigns below were in the following for-loop
-    #
-    #################################################################################
     ## Step 2: Extract the principal components (PCs) of 
     ##         the reference period ICV and project all data onto these PCs
 
@@ -139,10 +134,10 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
 
     # standardize the projected conditions
     Yj_prime_new <- sweep(Yj_new[, 4:(PCs_new + 3)], MARGIN=2, Zj_sd_new, FUN = `/`)
-    Yj_prime_new = cbind(Yj_new[, 1:3], Yj_prime_new)
+    Yj_prime_new <- cbind(Yj_new[, 1:3], Yj_prime_new)
     
     NN_list_new <- get.knnx(data = X_prime_new[, 4:(PCs_new+3)], 
-                        query = Yj_prime_new[, 4:(PCs_new+3)], k=n_neighbors, algorithm="brute")
+                            query = Yj_prime_new[, 4:(PCs_new+3)], k=n_neighbors, algorithm="brute")
 
     NN_idx_new <- NN_list_new$nn.index
     NN_dist_new <- NN_list_new$nn.dist
@@ -155,11 +150,13 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
                         split(NNs_loc_year_new, 
                               rep(1:n_neighbors, each=(nrow(NNs_loc_year_new)/n_neighbors)))) %>%
                         data.table()
-
     # rename columns
     NN_dist_new <- NN_dist_new %>% data.table()
     names(NN_dist_new) <- paste0("NN_", c(1:n_neighbors))
     names(NNs_loc_year_new) <- paste0(names(NNs_loc_year_new), paste0("_NN_", rep(1:n_neighbors, each=2)))
+
+    NN_dist_new <- cbind(Yj_new[, c("year", "location")], NN_dist_new)
+    NNs_loc_year_new <- cbind(Yj_new[, c("year", "location")], NNs_loc_year_new)
 
     ############################################################
     # 
@@ -171,28 +168,55 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
     # percentile of the nearest neighbour distance on the chi distribution with
     # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
     NN_chi_new <- pchi(as.vector(NN_list_new$nn.dist), PCs_new)
-
     # values of the chi percentiles on a 
     # standard half-normal distribution 
     # (chi distribution with one degree of freedom)
     # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
     NN_sigma_new <- qchi(NN_chi_new, 1)
-    NN_sigma_df_new = Reduce(cbind, 
-                          split(NN_sigma_new, 
-                                rep(1:n_neighbors, each=(length(NN_sigma_new)/n_neighbors)))) %>%
-                   data.table()
+    NN_sigma_df_new <- Reduce(cbind, 
+                              split(NN_sigma_new, 
+                              rep(1:n_neighbors, each=(length(NN_sigma_new)/n_neighbors)))) %>%
+                        data.table()
     names(NN_sigma_df_new) <- paste0("sigma_NN_", c(1:n_neighbors))
+    NN_sigma_df_new <- cbind(Yj_new[, c("year", "location")], NN_sigma_df_new)
     
-    NN_dist_tb_new = rbind(NN_dist_tb_new, NN_dist_new)
-    NNs_loc_year_tb_new =  rbind(NNs_loc_year_tb_new, NNs_loc_year_new)
-    NN_sigma_tb_new =  rbind(NN_sigma_tb_new, NN_sigma_df_new)
+    NN_dist_tb_new <- rbind(NN_dist_tb_new, NN_dist_new)
+    NNs_loc_year_tb_new <- rbind(NNs_loc_year_tb_new, NNs_loc_year_new)
+    NN_sigma_tb_new <- rbind(NN_sigma_tb_new, NN_sigma_df_new)
+    print ("from core head(colnames(NN_dist_tb_new)) in the loop is")
+    print (head(colnames(NN_dist_tb_new), 10))
+    
+    print ("from core head(colnames(NNs_loc_year_new)) in the loop is ")
+    print (head(colnames(NNs_loc_year_new), 10))
+
+    rm(NN_dist_new, NNs_loc_year_new, NN_sigma_df_new)
   }
+  # names(NN_dist_tb_new) <- paste0("NN_", c(1:n_neighbors))
+  # names(NNs_loc_year_tb_new) <- paste0(names(NNs_loc_year_tb_new), paste0("_NN_", rep(1:n_neighbors, each=2)))
+  # names(NN_sigma_tb_new) <- paste0("sigma_NN_", c(1:NN_sigma_tb_new))
+  print ("out of core head(colnames(NN_dist_tb_new)) out the loop is")
+  print (head(colnames(NN_dist_tb_new), 10))
 
-  return(list(NN_dist_tb_new, NNs_loc_year_tb_new, NN_sigma_tb_new))
+  print ("from core head(colnames(NNs_loc_year_tb_new)) out the loop is ")
+  print (head(colnames(NNs_loc_year_tb_new), 10))
+
+  return(list(NN_dist_tb_new, NNs_loc_year_tb_new, NN_sigma_tb_new, 
+              colnames(NN_dist_tb_new), colnames(NNs_loc_year_tb_new), colnames(NN_sigma_tb_new)))
 }
-
-
-find_NN_info_W4G <- function(all_dt_usa, local_dt, n_neighbors){
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+####################################################################################
+find_NN_info_W4G_STOPWORKING <- function(all_dt_usa, local_dt, n_neighbors){
   # remove extra columns
   if ("treatment" %in% colnames(all_dt_usa)) {all_dt_usa <- within(all_dt_usa, remove(treatment))}
   if ("treatment" %in% colnames(local_dt)) {local_dt <- within(local_dt, remove(treatment))}
@@ -313,9 +337,7 @@ find_NN_info_W4G <- function(all_dt_usa, local_dt, n_neighbors){
 
     # rename columns 
     NN_dist <- NN_dist %>% data.table()
-    names(NN_dist) <- paste0("NN_", c(1:n_neighbors))
-    names(NNs_loc_year) <- paste0(names(NNs_loc_year), paste0("_NN_", rep(1:n_neighbors, each=2)))
-
+    
     ############################################################
     # 
     # This is for one location, and different years. 
@@ -335,13 +357,16 @@ find_NN_info_W4G <- function(all_dt_usa, local_dt, n_neighbors){
                           split(NN_sigma, 
                                 rep(1:n_neighbors, each=(length(NN_sigma)/n_neighbors)))) %>%
                    data.table()
-    names(NN_sigma_df) <- paste0("sigma_NN_", c(1:n_neighbors))
     
-    NN_dist_tb = rbind(NN_dist_tb, NN_dist)
-    NNs_loc_year_tb =  rbind(NNs_loc_year_tb, NNs_loc_year)
-    NN_sigma_tb =  rbind(NN_sigma_tb, NN_sigma_df)
+    
+    NN_dist_tb <- rbind(NN_dist_tb, NN_dist)
+    NNs_loc_year_tb <- rbind(NNs_loc_year_tb, NNs_loc_year)
+    NN_sigma_tb <-  rbind(NN_sigma_tb, NN_sigma_df)
     rm(NN_sigma_df, NN_sigma, NN_chi, NN_dist, NNs_loc_year)
   }
+  names(NN_dist_tb) <- paste0("NN_", c(1:n_neighbors))
+  names(NNs_loc_year_tb) <- paste0(names(NNs_loc_year_tb), paste0("_NN_", rep(1:n_neighbors, each=2)))
+  names(NN_sigma_tb) <- paste0("sigma_NN_", c(1:n_neighbors))
   return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb))
 }
 
@@ -1062,6 +1087,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     out_dir = "/data/hydro/users/Hossein/analog/local/data_bases/"
     saveRDS(data, paste0(out_dir, "CMPOP_2080_rcp85.rds"))
 }
+
 generate_short_CM_files <- function(in_dir, out_dir){
   ## 
   ## This function just sebsets the useful columns.
