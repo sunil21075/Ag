@@ -46,7 +46,7 @@ local_dt <- data.table(readRDS(paste0(main_local_dir, "feat_", model_type, "_", 
 ###########################################################################
 # create subdirectory for specific emission types
 
-out_dir = file.path(main_out, emission_type)
+out_dir = file.path(main_out, "no_ICV", emission_type)
 if (dir.exists(out_dir) == F) {
   dir.create(path = out_dir, recursive = T)
 }
@@ -58,7 +58,7 @@ if (dir.exists(out_dir) == F) {
 
 n_neighbors = 500
 
-information = find_NN_info_W4G(all_dt_usa, local_dt, n_neighbors=n_neighbors, out_dir=out_dir)
+information = find_NN_info_W4G(all_dt_usa, local_dt, n_neighbors=n_neighbors)
 
 NN_dist_tb = information[[1]]
 NN_loc_year_tb = information[[2]]
@@ -67,6 +67,5 @@ NN_sigma_tb = information[[3]]
 saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", model_type, ".rds"))
 saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", model_type, ".rds"))
 saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", model_type, ".rds"))
-
 
 
