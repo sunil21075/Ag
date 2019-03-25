@@ -1291,14 +1291,10 @@ diapause_map1_prep <- function(input_dir, file_name,
                                "AbsPopNonDiap","AbsPopDiap"))
 
   sub = sub[, .(RelLarvaPop = mean(SumLarva), RelDiap = mean(enterDiap), 
-                                              RelNonDiap = mean(escapeDiap), 
-                                              AbsLarvaPop = mean(AbsPopTotal), 
-                                              AbsDiap = mean(AbsPopDiap), 
-                                              AbsNonDiap = mean(AbsPopNonDiap), 
-                                              CumulativeDDF = mean(CumDDinF)), 
-                                              by = c("ClimateGroup", "CountyGroup", 
-                                                     "latitude", "longitude", 
-                                                     "dayofyear")]
+                RelNonDiap = mean(escapeDiap), AbsLarvaPop = mean(AbsPopTotal), 
+                AbsDiap = mean(AbsPopDiap), AbsNonDiap = mean(AbsPopNonDiap), 
+                CumulativeDDF = mean(CumDDinF)), 
+            by = c("ClimateGroup", "CountyGroup", "latitude", "longitude", "dayofyear")]
   return (sub)
 }
 ###############################################################################################################
