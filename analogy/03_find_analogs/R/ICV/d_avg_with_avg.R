@@ -22,8 +22,8 @@ options(digits=9)
 main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
-main_local_dir <- file.path(main_dir, "local/ready_features/averaged_data/")
-main_out <- file.path(main_dir, "z_R_results/sigma/")
+main_local_dir <- file.path(main_dir, "local/ready_features/one_file_4_all_locations/")
+main_out <- file.path(main_dir, "z_R_results/sigma/avg_vs_avg/")
 ################################################################################
 ################################################################################
 # 
@@ -54,14 +54,14 @@ all_dt_usa$ClimateScenario = "observed"
 # for three time periods 2026-2050, 2051-2075 and 2076-2095
 #
 ########################################################
-carbon_types =  ("rcp45", "rcp85")
+carbon_types =  c("rcp45") # , "rcp85"
 for (emission_type in carbon_types){
   ###########################################################################
   # create subdirectory for specific emission types
   out_dir = file.path(main_out, emission_type)
   if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T)}
 
-  file_name <- paste0("averaged_data_", emission_type, ".rds")
+  file_name <- paste0("data_avgeraged_", emission_type, ".rds")
   local_dt <- data.table(readRDS(paste0(main_local_dir, file_name)))
   
   local_dt_26_50 <- local_dt %>% filter(year<=2050)
@@ -96,9 +96,9 @@ for (emission_type in carbon_types){
   # 
   ################################################################################
   no_nghbrs = 500
-  information_26_50 = find_NN_info_W4G_ICV(ICV=ICV, all_dt_usa=all_dt_usa, local_dt=local_dt_26_50, n_neighbors=no_nghbrs)
-  information_51_75 = find_NN_info_W4G_ICV(ICV=ICV, all_dt_usa=all_dt_usa, local_dt=local_dt_51_75, n_neighbors=no_nghbrs)
-  information_76_95 = find_NN_info_W4G_ICV(ICV=ICV, all_dt_usa=all_dt_usa, local_dt=local_dt_76_95, n_neighbors=no_nghbrs)
+  information_26_50 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_26_50, n_neighbors=no_nghbrs)
+  information_51_75 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_51_75, n_neighbors=no_nghbrs)
+  information_76_95 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_76_95, n_neighbors=no_nghbrs)
 
   ################################################################################
   ############
@@ -133,6 +133,12 @@ for (emission_type in carbon_types){
   saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_avg_76_95.rds"))
   saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_avg_76_95.rds"))
   saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_avg_76_95.rds"))
+  print ("_______________________________________")
+  print ("column name of information[[1]] is")
+  print (head(colnames(NN_dist_tb)))
+  print ("_______________________________________")
+  print ("column name of NN_dist_tb out of core is")
+  print (head((information_76_95[[4]])))
 }
 
 
