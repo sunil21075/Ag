@@ -5,18 +5,19 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N avg_avg_analog
+#PBS -N model_type_emission_type
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=4gb
-#PBS -l walltime=01:00:00
+#PBS -l mem=8gb
+#PBS -l walltime=00:45:00
 #PBS -q hydro
 
+## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/R_codes/Mahoney/error/m_avg_avg.e
-#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/R_codes/Mahoney/error/m_avg_avg.o
+#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/R_codes/error/model_type_emission_type.e
+#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/R_codes/error/model_type_emission_type.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -34,8 +35,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-
-Rscript --vanilla /home/hnoorazar/analog_codes/03_find_analogs/R_codes/Mahoney/d_avg_with_avg.R
+Rscript --vanilla /home/hnoorazar/analog_codes/03_find_analogs/R_codes/d_ICV_no_Gen4.R model_type emission_type
 
 echo
 echo "----- DONE -----"

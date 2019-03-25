@@ -44,19 +44,19 @@ all_dt_usa <- data.table(readRDS(paste0(main_us_dir, "all_data_usa.rds")))
 local_dt <- data.table(readRDS(paste0(main_local_dir, "feat_", model_type, "_", emission_type, ".rds")))
 
 ###########################################################################
-# create subdirectory for specific emission types
-
-out_dir = file.path(main_out, "/ICV/one/",emission_type)
-if (dir.exists(out_dir) == F) {
-  dir.create(path = out_dir, recursive = T)
-}
 ################################################################################
 # 
 #                   Set parameters and run the code
 # 
 ################################################################################
-
 n_nghs = 500
+# create subdirectory for specific emission types
+
+out_dir = file.path(main_out, n_nghs, "/", "/one/", emission_type)
+if (dir.exists(out_dir) == F) {
+  dir.create(path = out_dir, recursive = T)
+}
+
 information = find_NN_info_W4G_ICV(ICV=all_dt_usa, historical_dt=all_dt_usa, 
                                    future_dt=local_dt, n_neighbors=n_nghs)
 
