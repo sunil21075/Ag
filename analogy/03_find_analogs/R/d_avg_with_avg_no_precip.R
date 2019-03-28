@@ -55,13 +55,13 @@ all_dt_usa$ClimateScenario = "observed"
 #
 ########################################################
 carbon_types =  c("rcp45", "rcp85") #
+precip = FALSE
 no_nghbrs = 500
-precip = TRUE
 
 for (emission_type in carbon_types){
   ###########################################################################
   # create subdirectory for specific emission types
-  out_dir = file.path(main_out, "precip", no_nghbrs, emission_type)
+  out_dir = file.path(main_out, "no_precip", no_nghbrs, emission_type)
   if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T)}
 
   file_name <- paste0("data_avgeraged_", emission_type, ".rds")
@@ -97,7 +97,7 @@ for (emission_type in carbon_types){
   # 
   #                   Set parameters and run the code
   # 
-  ################################################################################
+  ################################################################################  
   information_26_50 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_26_50, n_neighbors=no_nghbrs, precipitation=precip)
   information_51_75 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_51_75, n_neighbors=no_nghbrs, precipitation=precip)
   information_76_95 = find_NN_info_W4G_ICV(ICV=ICV, historical_dt=all_dt_usa, future_dt=local_dt_76_95, n_neighbors=no_nghbrs, precipitation=precip)

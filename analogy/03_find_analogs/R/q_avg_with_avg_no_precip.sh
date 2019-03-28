@@ -35,7 +35,7 @@ module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
 
-Rscript --vanilla /home/hnoorazar/analog_codes/03_find_analogs/d_avg_with_avg.R
+Rscript --vanilla /home/hnoorazar/analog_codes/03_find_analogs/d_avg_with_avg_no_precip.R
 
 echo
 echo "----- DONE -----"
