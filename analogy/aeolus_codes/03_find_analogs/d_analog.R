@@ -7,7 +7,8 @@ library(raster)
 library(FNN)
 library(RColorBrewer)
 library(colorRamps)
-library(EnvStats) # pchi and qchi are in there.
+
+library(EnvStats, lib.loc = "/home/hnoorazar/.local/lib/R3.5.1")
 
 source_path = "/home/hnoorazar/analog_codes/core_analog.R"
 source(source_path)
@@ -23,7 +24,7 @@ main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
 main_local_dir <- file.path(main_dir, "local/ready_features/one_file_4_all_locations/")
-main_out <- file.path(main_dir, "z_R_results/sigma/")
+main_out <- file.path(main_dir, "z_R_results/")
 ################################################################################
 ################################################################################
 # 

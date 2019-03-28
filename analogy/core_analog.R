@@ -147,13 +147,13 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
     ############################################################
     # percentile of the nearest neighbour distance on the chi distribution with
     # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
-    NN_chi <- pchi(as.vector(NN_list$nn.dist), PCs)
+    NN_chi <- EnvStats::pchi(as.vector(NN_list$nn.dist), PCs)
     
     # values of the chi percentiles on a standard half-normal distribution
     # (chi distribution with one degree of freedom)
     # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
 
-    NN_sigma <- qchi(NN_chi, 1)
+    NN_sigma <- EnvStats::qchi(NN_chi, 1)
 
     ########################################################################
     #
@@ -219,7 +219,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors){
 ####################################################################################
 ####################################################################################
 
-find_NN_info_W4G_ICV_2Loops_STOPWROKING <- function(ICV, historical_dt, future_dt, n_neighbors=50){
+find_NN_info_W4G_ICV_2Loops <- function(ICV, historical_dt, future_dt, n_neighbors=50){
   # This is modification of find_NN_info_W4G
   # where we add ICV matrix which in our case is 
   # the same as historical_dt, however, when we do averages,
@@ -333,12 +333,12 @@ find_NN_info_W4G_ICV_2Loops_STOPWROKING <- function(ICV, historical_dt, future_d
       # Step 3: find sigma dissimilarities
       # percentile of the nearest neighbour distance on the chi distribution with
       # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
-      NN_chi <- pchi(as.vector(NN_list$nn.dist), PCs)
+      NN_chi <- EnvStats::pchi(as.vector(NN_list$nn.dist), PCs)
       
       # values of the chi percentiles on a standard half-normal distribution
       # (chi distribution with one degree of freedom)
       # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
-      NN_sigma <- qchi(NN_chi, 1)
+      NN_sigma <- EnvStats::qchi(NN_chi, 1)
 
      ########################################################################
      #

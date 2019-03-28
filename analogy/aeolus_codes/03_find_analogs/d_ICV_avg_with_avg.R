@@ -7,7 +7,7 @@ library(raster)
 library(FNN)
 library(RColorBrewer)
 library(colorRamps)
-library(EnvStats)
+library(EnvStats, lib.loc = "/home/hnoorazar/.local/lib/R3.5.1")
 
 source_path = "/home/hnoorazar/analog_codes/core_analog.R"
 source(source_path)
@@ -23,7 +23,7 @@ main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
 main_local_dir <- file.path(main_dir, "local/ready_features/one_file_4_all_locations/")
-main_out <- file.path(main_dir, "z_R_results/sigma/avg_vs_avg/")
+main_out <- file.path(main_dir, "z_R_results/avg_vs_avg/")
 ################################################################################
 ################################################################################
 # 
@@ -54,7 +54,7 @@ all_dt_usa$ClimateScenario = "observed"
 # for three time periods 2026-2050, 2051-2075 and 2076-2095
 #
 ########################################################
-carbon_types =  c("rcp45", "rcp85") #
+carbon_types =  c("rcp45", "rcp85") # , "rcp85"
 for (emission_type in carbon_types){
   ###########################################################################
   # create subdirectory for specific emission types
