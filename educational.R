@@ -65,7 +65,7 @@ colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 
 # initialize data frame data table dataframe datatable
 table = data.frame()
-
+############################################################
 #################### Install packages on aeolus
 
 https://docs.aeolus.wsu.edu/docs_running_applications.html
@@ -85,6 +85,20 @@ your packages live. Create a file called .Renviron
 in your home directory, and specify your library directory:
 R_LIBS_USER=~/.local/lib/R3.5.1
 
-#################### Install packages on aeolus
 
+#################### Install packages on aeolus ^^^^^^^^^^^^
+############################################################
+
+
+
+strsplit vector 
+
+x <- sapply(all_us_locations_cod_moth, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+lat = x[1, ]
+long = x[2, ]
+
+
+
+# not in, opposite of %in%
+D2 = subset(local_locs, !(local_locs %in% local_files))
 

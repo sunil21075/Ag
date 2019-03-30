@@ -14,7 +14,7 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
 options(digits=9)
 options(digit=9)
@@ -64,14 +64,12 @@ if (dir.exists(file.path(main_out, current_dir)) == F) {
 # 2d. Prep list of files for processing
 # get files in current folder
 dir_con <- dir()
-
 # remove filenames that aren't data
 dir_con <- dir_con[grep(pattern = "data_",
                         x = dir_con)]
 
 # choose only files that we're interested in
 dir_con <- dir_con[which(dir_con %in% local_files)]
-
 # 3. Process the data -----------------------------------------------------
 
 # Time the processing of this batch of files
@@ -90,6 +88,10 @@ for(file in dir_con){
 
   # 3b. Clean it up
   # rename needed columns
+
+  data.table::setnames(met_data, old=c("year","month", "day", "tmax", "tmin"), 
+                                 new=c("Year", "Month", "Day", "Tmax", "Tmin"))
+
   met_data <- met_data %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
@@ -98,10 +100,15 @@ for(file in dir_con){
   # generate hourly data
   met_hourly <- stack_hourly_temps(weather = met_data,
                                    latitude = lat)
+
+  print ("line 108 of modeled")
+  print (dim(met_data))
   
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
-
+  data.table::setnames(met_hourly, new=c("year","month", "day", "tmax", "tmin"), 
+                                   old=c("Year", "Month", "Day", "Tmax", "Tmin"))
+  
   # 3d. Run the chill accumulation model and sum up by day
 
   # we want this on a seasonal basis specific to chill
@@ -110,7 +117,7 @@ for(file in dir_con){
   #              Chill season start at Sep.
   #
   #################################################################################
-  met_hourly <- put_chill_season(met_hourly, chill_start)
+  met_hourly <- put_chill_season(met_hourly, "sept")
   
   # sum within a day using NON-cumulative chill portions
   if (model_type == "dynamic"){
@@ -137,7 +144,8 @@ for(file in dir_con){
                                current_dir,
                                paste0("chill_output_",
                                       file,
-                                      ".txt")),
+                                      ".txt")
+                               ),
               row.names = F)
   rm(met_data, met_hourly, met_daily)
 }

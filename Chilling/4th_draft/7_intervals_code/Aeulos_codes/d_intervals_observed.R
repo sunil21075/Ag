@@ -1,8 +1,15 @@
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
-library(chillR, lib.loc="/data/hydro/R_libs35")
-library(tidyverse, lib.loc="/data/hydro/R_libs35")
-library(lubridate, lib.loc="/data/hydro/R_libs35")
+library(chillR)
+library(tidyverse)
+library(lubridate)
+
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
+source(source_path)
+
+options(digit=9)
+options(digits=9)
+
 
 # 1. Prep binary conversion function --------------------------------------
 read_binary_8 <- function(file_name, file_path, hist){
@@ -135,31 +142,29 @@ for(file in dir_con){
   # 3b. Clean it up
   # rename needed columns
   met_data <- met_data %>%
-              rename(Year = year,
-                     Month = month,
-                     Day = day,
-                     Tmax = tmax,
-                     Tmin = tmin) %>%
               select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
               data.frame()
-  # 3c. Get hourly interpolation
 
+  data.table::setnames(met_data, old=c("year","month", "day", "tmax", "tmin"), 
+                                 new=c("Year", "Month", "Day", "Tmax", "Tmin"))
+  
+  # 3c. Get hourly interpolation
   # generate hourly data
   met_hourly <- stack_hourly_temps(weather = met_data,
                                    latitude = lat)
 
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
-
+  print ("line 159 of driver")
+  print (colnames(met_hourly))
+  data.table::setnames(met_hourly, new=c("year","month", "day", "tmax", "tmin"), 
+                                 old=c("Year", "Month", "Day", "Tmax", "Tmin"))
+  rm(met_data)
+  print (colnames(met_hourly))
+  print (dim(met_hourly))
   # 3d. Run the chill accumulation model and sum up by day
   # we want this on a seasonal basis specific to chill
-  met_hourly <- met_hourly %>%
-    mutate(Chill_season = case_when(
-      # If Jan:Aug then part of chill season of prev year - current year
-      Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
-      # If Sept:Dec then part of chill season of current year - next year
-      Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
-    ))
+  met_hourly <- put_chill_season(met_hourly, "sept")
 
   # 3e. Save output
   saveRDS(met_hourly, paste0(main_out, "/met_hourly_", file, ".rds"))

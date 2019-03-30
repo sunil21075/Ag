@@ -15,8 +15,8 @@
 
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/3rd_draft/02/observed_error/obs_utah.e
-#PBS -o /home/hnoorazar/chilling_codes/3rd_draft/02/observed_error/obs_utah.o
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/02/observed_error/obs_utah.e
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/02/observed_error/obs_utah.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -40,7 +40,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
                   
-Rscript --vanilla /home/hnoorazar/chilling_codes/3rd_draft/02/d_observed.R "utah"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/d_observed.R "utah"
 
 echo
 echo "----- DONE -----"
