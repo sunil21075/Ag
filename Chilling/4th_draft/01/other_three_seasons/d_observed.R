@@ -15,7 +15,7 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
 options(digit=9)
 options(digits=9)
@@ -86,7 +86,7 @@ for(file in dir_con){
   # 3d. Run the chill accumulation model and sum up by day
   # we want this on a seasonal basis specific to chill
   
-  chill_seasons = c("mid_sept", "oct", "mid_oct", "nov", "mid_nov") # 
+  chill_seasons = c("mid_sept", "oct", "mid_oct", "nov", "mid_nov") # "sept", 
   for (chill_s in chill_seasons){
     current_out <- file.path(main_out, chill_s, "observed")
     if (dir.exists(current_out) == F) {

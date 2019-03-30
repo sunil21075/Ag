@@ -16,8 +16,8 @@
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/3rd_draft/02/observed_error/obs_dynamic.e
-#PBS -o /home/hnoorazar/chilling_codes/3rd_draft/02/observed_error/obs_dynamic.o
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/02/observed_error/obs_dynamic.e
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/02/observed_error/obs_dynamic.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -41,7 +41,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/3rd_draft/02/d_observed.R "dynamic"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/d_observed.R "dynamic"
 
 echo
 echo "----- DONE -----"

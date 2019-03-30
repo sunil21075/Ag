@@ -42,25 +42,28 @@ for (month in dead_line){
   # The data for 2076-2099 are from RCP 8.5
 
   df_help[, "location"] = c(paste0(month, "_rich_hist"), 
-                paste0(month, "_rich_76_99"), 
-                paste0(month, "_rich_diff"), 
-                paste0(month, "_omak_hist"), 
-                paste0(month, "_omak_76_99"), 
-                paste0(month, "_omak_diff")
-                )
+                            paste0(month, "_rich_76_99"), 
+                            paste0(month, "_rich_diff"), 
+                            paste0(month, "_omak_hist"), 
+                            paste0(month, "_omak_76_99"), 
+                            paste0(month, "_omak_diff")
+                            )
   ##########################################
-  #                    #
-  #     read the data off the disk   #
-  #                    #
+  #                                        #
+  #     read the data off the disk         #
+  #                                        #
   ##########################################
 
-  data = data.table(readRDS(paste0(data_dir, name_pref, month, name_post)))
+  data <- data.table(readRDS(paste0(data_dir, name_pref, month, name_post)))
   data <- data %>% filter(Year <= 2005 | Year > 2075)
   data <- data %>% filter(scenario== "historical" | scenario== "rcp85")
 
   data$CountyGroup = 0L
-  data$CountyGroup[data$location == "48.40625_-119.53125"] = "omak"
-  data$CountyGroup[data$location == "46.28125_-119.34375"] = "rich"
+  data$CountyGroup[data$location == "48.40625_-119.53125"] = "Omak"
+  data$CountyGroup[data$location == "46.28125_-119.34375"] = "Richland"
+  data$CountyGroup[data$location == "47.40625_-120.34375"] = "Wenatchee"
+  data$CountyGroup[data$location == "45.53125_-123.15625"] = "Hilsboro"
+  data$CountyGroup[data$location == "44.09375_-123.34375"] = "Elmira"
 
   data = within(data, remove(model, location, Month))
 
@@ -110,9 +113,9 @@ for (month in dead_line){
   # rm(data_85_2076_2099)
   
   ##########################################
-  #                    #
-  #      populate the table      #
-  #                    #
+  #                                        #
+  #      populate the table                #
+  #                                        #
   ##########################################  
   ################
   #   Richland   #

@@ -16,8 +16,8 @@
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/error/dynam_obs.e
-#PBS -o /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/error/dynam_obs.o
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_obs_5_season.e
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_obs_5_season.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -44,7 +44,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/d_observed.R "dynamic"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/d_observed.R "dynamic"
 
 echo
 echo "----- DONE -----"

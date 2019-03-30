@@ -10,15 +10,15 @@
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
 #PBS -l mem=2gb
-#PBS -l walltime=99:00:00
+#PBS -l walltime=10:00:00
 #PBS -q hydro
 #PBS -t 1-72
 
 ## Define path for output & error logs
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/error/dynam_modeled_E
-#PBS -o /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/error/dynam_modeled_O
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_modeled_E_5_season
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_modeled_O_5_season
 
 ## Define path for reporting
 #PBS -m abe
@@ -58,7 +58,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/4th_draft_new_seasons/01/other_three_seasons/d_modeled.R "dynamic"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/d_modeled.R "dynamic"
 
 echo
 echo "----- DONE -----"

@@ -8,7 +8,7 @@ library(tidyverse)
 options(digit=9)
 options(digits=9)
 
-source_path = "/home/hnoorazar/chilling_codes/4th_draft_new_seasons/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
 
 # Check current folder

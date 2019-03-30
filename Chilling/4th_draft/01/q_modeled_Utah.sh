@@ -17,8 +17,8 @@
 ## Define path for output & error logs
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/3rd_draft/01/error/utah_modeled_E.txt
-#PBS -o /home/hnoorazar/chilling_codes/3rd_draft/01/error/utah_modeled_O.txt
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/01/error/utah_modeled_E.txt
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/01/error/utah_modeled_O.txt
 
 ## Define path for reporting
 #PBS -m abe

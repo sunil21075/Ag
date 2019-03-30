@@ -15,7 +15,7 @@ library(chillR)
 library(tidyverse)
 library(lubridate)
 
-source_path = "/home/hnoorazar/chilling_codes/2_second_draft/chill_core.R"
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
 
 options(digit=9)
@@ -89,6 +89,9 @@ for(file in dir_con){
               select(-c(precip, windspeed, SPH, SRAD, Rmax, Rmin)) %>%
               data.frame()
 
+  data.table::setnames(met_data, old=c("year","month", "day", "tmax", "tmin"), 
+                                 new=c("Year", "Month", "Day", "Tmax", "Tmin"))
+
   # 3c. Get hourly interpolation
   # generate hourly data
   met_hourly <- stack_hourly_temps(weather = met_data,
@@ -96,23 +99,21 @@ for(file in dir_con){
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
 
+  data.table::setnames(met_hourly, new=c("year","month", "day", "tmax", "tmin"), 
+                                   old=c("Year", "Month", "Day", "Tmax", "Tmin"))
+  
+
   # 3d. Run the chill accumulation model and sum up by day
   # we want this on a seasonal basis specific to chill
-  met_hourly <- met_hourly %>%
-                mutate(chill_season = case_when(
-                  # If Jan:Aug then part of chill season of prev year - current year
-                  month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", Year),
-                  # If Sept:Dec then part of chill season of current year - next year
-                  month %in% c(9:12) ~ paste0("chill_", year, "-", (year + 1))
-                ))
+  met_hourly <- put_chill_season(met_hourly, "sept")
 
   # sum within a day using NON-cumulative chill portions
   if (model_type == "dynamic"){
     met_daily <- met_hourly %>%
-               group_by(chill_season) %>% # should maintain correct day, time order
-               mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
-               group_by(chill_season, year, month, day) %>%
-               summarise(daily_portions = sum(chill))
+                 group_by(chill_season) %>% # should maintain correct day, time order
+                 mutate(chill = Dynamic_Model(HourTemp = Temp, summ = F)) %>%
+                 group_by(chill_season, year, month, day) %>%
+                 summarise(daily_portions = sum(chill))
   } else if (model_type== "utah"){
     met_daily <- met_hourly %>%
                  group_by(chill_season) %>% # should maintain correct day, time order

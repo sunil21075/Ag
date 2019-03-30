@@ -17,8 +17,8 @@
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/3rd_draft/02/dyn_non_over_error/m_non.e
-#PBS -o /home/hnoorazar/chilling_codes/3rd_draft/02/dyn_non_over_error/m_non.o
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/02/dyn_non_over_error/m_non.e
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/02/dyn_non_over_error/m_non.o
 
 ## Define path for reporting
 #PBS -m abe
@@ -54,7 +54,7 @@ module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/3rd_draft/02/d_modeled.R "dynamic" "non_overlap"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/d_modeled.R "dynamic" "non_overlap"
 
 echo
 echo "----- DONE -----"

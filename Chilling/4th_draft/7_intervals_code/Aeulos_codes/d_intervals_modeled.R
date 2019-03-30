@@ -1,11 +1,13 @@
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
 library(chillR)
-library(MESS)
-library(xts)
 library(tidyverse)
-devtools::session_info()
+library(lubridate)
 
+source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
+source(source_path)
+
+options(digit=9)
 options(digits=9)
 ################ re-written in the chill_core.
 read_binary_8 <- function(file_name, file_path, hist){
@@ -221,13 +223,12 @@ for(file in dir_con){
 
   # rename needed columns
   met_data <- met_data %>%
-              rename(Year = year,
-                     Month = month,
-                     Day = day,
-                     Tmax = tmax,
-                     Tmin = tmin) %>%
               select(-c(precip, windspeed)) %>%
               data.frame()
+
+  data.table::setnames(met_data, old=c("year","month", "day", "tmax", "tmin"), 
+                                 new=c("Year", "Month", "Day", "Tmax", "Tmin"))
+
   print("line 269")
   # saveRDS(met_data[1:10, ], paste0(main_out, "/met_data", ".rds"))
 
@@ -235,25 +236,20 @@ for(file in dir_con){
   # generate hourly data
   met_hourly <- stack_hourly_temps(weather = met_data,
                                    latitude = lat)
-
+  rm(met_data)
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
+
+  data.table::setnames(met_hourly, new=c("year","month", "day", "tmax", "tmin"), 
+                                   old=c("Year", "Month", "Day", "Tmax", "Tmin"))
 
   # 3d. Run the chill accumulation model and sum up by day
 
   # we want this on a seasonal basis specific to chill
-  met_hourly <- met_hourly %>%
-                mutate(Chill_season = case_when(
-                # If Jan:Aug then part of chill season of prev year - current year
-                Month %in% c(1:8) ~ paste0("chill_", (Year - 1), "-", Year),
-                # If Sept:Dec then part of chill season of current year - next year
-                Month %in% c(9:12) ~ paste0("chill_", Year, "-", (Year + 1))
-                ))
-  # 3e. Save output
+  met_hourly <- put_chill_season(met_hourly, "sept")
   
   saveRDS(met_hourly, paste0(main_out, current_dir, "/met_hourly_", file, ".rds"))
 
-  # Remove objects not needed in future iterations
   rm(met_data, met_hourly)
 }
 
