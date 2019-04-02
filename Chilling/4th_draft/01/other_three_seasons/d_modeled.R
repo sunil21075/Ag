@@ -29,6 +29,8 @@ options(digits=9)
 args = commandArgs(trailingOnly=TRUE)
 model_type = args[1]
 
+chill_seasons = args[2]
+chill_seasons = c(chill_seasons)
 ######################################################################
 # Define main output path
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
@@ -94,13 +96,13 @@ for(file in dir_con){
   # 3d. Run the chill accumulation model and sum up by day
   # we want this on a seasonal basis specific to chill
 
-  chill_seasons = c( "mid_sept", "oct", "mid_oct", "nov", "mid_nov") # "sept",
+  # chill_seasons = c("mid_sept", "oct", "mid_oct", "nov", "mid_nov") # "sept",
   for (chill_s in chill_seasons){
     current_out <- file.path(main_out, chill_s, "modeled", current_dir)
     if (dir.exists(current_out) == F) {
       dir.create(path = current_out, recursive = T)
     }
-    met_hourly <- put_chill_season(met_hourly_dt = met_hourly, chill_start=chill_s)
+    met_hourly <- put_chill_season(met_hourly_dt=met_hourly, chill_start=chill_s)
     
     # sum within a day using NON-cumulative chill portions
     if (model_type == "dynamic"){

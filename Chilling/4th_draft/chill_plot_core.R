@@ -1,5 +1,5 @@
 
-safe_box_plot <- function(data, due){
+safe_box_plot <- function(data, due, chill_start){
   color_ord = c("grey70" , "dodgerblue", "olivedrab4", "red") # 
   categ_lab = c("Historical", "2025-2050", "2051-2075", "2076-2099")
   box_width = 0.25
@@ -52,7 +52,8 @@ safe_box_plot <- function(data, due){
                       position =  position_dodge(.09),
                       vjust = 0.1,
                       hjust=1.8) + 
-            ggtitle(paste0("Safe chill accumulation by ", due, " 1st")) 
+            ggtitle(lab=paste0("Safe chill accumulation by ", due, " 1st"),
+                    subtitle = paste0("chill season started on ", chill_start)) 
   
   return(safe_b)
 }

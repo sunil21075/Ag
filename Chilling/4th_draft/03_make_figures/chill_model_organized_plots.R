@@ -27,6 +27,12 @@ if (model == "dynamic"){
   setwd(write_dir_utah)
   write_dir = write_dir_utah
 }
+#######################################################
+#
+#     Plot settings
+quality = 300
+
+#######################################################
 
 # the_dir <- dir()
 
@@ -255,7 +261,7 @@ thresh_figs <- ggarrange(thresh_future,
                          heights = c(12, 1.1))
 
 ggsave(plot = thresh_figs, filename ="chill_plot_thresholds.png",
-       dpi=400, path=write_dir,
+       dpi=quality, path=write_dir,
        height = 70, width = 18, units = "in", limitsize = FALSE)
 
 ##################################
@@ -343,7 +349,7 @@ J1_figs <- ggarrange(sum_J1_plot,
                      ncol = 1, nrow = 2,
                      heights = c(1.25, 1))
 ggsave(plot = J1_figs, "chill_plot_accum_Jan1.png",
-       dpi=400, path=write_dir,
+       dpi=quality, path=write_dir,
        height = 9, width = 9, units = "in")
 
 
@@ -360,7 +366,7 @@ F1_figs <- ggarrange(sum_F1_plot,
                      ncol = 1, nrow = 2,
                      heights = c(1.25, 1))
 ggsave(plot = F1_figs, "chill_plot_accum_Feb1.png",
-       dpi=400, path=write_dir,
+       dpi=quality, path=write_dir,
        height = 9, width = 9, units = "in")
 
 ############################
@@ -376,7 +382,7 @@ M1_figs <- ggarrange(sum_M1_plot,
                      ncol = 1, nrow = 2,
                      heights = c(1.25, 1))
 ggsave(plot = M1_figs, "chill_plot_accum_Mar1.png",
-       dpi=400, path=write_dir,
+       dpi=quality, path=write_dir,
        height = 9, width = 9, units = "in")
 
 ############################
@@ -393,5 +399,5 @@ A1_figs <- ggarrange(sum_A1_plot,
                      heights = c(1.25, 1))
 
 ggsave(plot = A1_figs, "chill_plot_accum_Apr1.png",
-       dpi=400, path=write_dir,
+       dpi=quality, path=write_dir,
        height = 9, width = 9, units = "in")

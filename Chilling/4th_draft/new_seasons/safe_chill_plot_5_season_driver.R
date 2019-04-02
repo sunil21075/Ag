@@ -22,6 +22,8 @@ files <- dir(pattern = ".rds")
 for (file in files){
   datas = data.table(readRDS(file))
   datas <- datas %>% filter(model != "observed")
+  chill_season_start = unlist(strsplit(file, split='[.]'))[1]
+  if (chill_season_start == )
 
   datas <- pick_up_okanagan_rich(datas) # Pick up okanagan And Richland
   datas <- within(datas, remove(thresh_20, thresh_25, thresh_30, thresh_35,
@@ -30,18 +32,18 @@ for (file in files){
                                 thresh_70, thresh_75, sum))
   information = produce_data_4_plots(datas)
 
-  safe_jan <- safe_box_plot(information[[1]], due="Jan.")
-  safe_feb <- safe_box_plot(information[[4]], due="Feb.")
-  safe_mar <- safe_box_plot(information[[7]], due="Mar.")
+  safe_jan <- safe_box_plot(information[[1]], due="Jan.", chill_start = chill_season_start)
+  safe_feb <- safe_box_plot(information[[4]], due="Feb.", chill_start = chill_season_start)
+  safe_mar <- safe_box_plot(information[[7]], due="Mar.", chill_start = chill_season_start)
 
   # out_dir
-  output_name = paste0("start_", unlist(strsplit(file, split='[.]'))[1], "_Jan_1.png")
+  output_name = paste0("start_", chill_season_start, "_Jan_1.png")
   ggsave(output_name, safe_jan, path="/Users/hn/Desktop/", width=7, height=7, unit="in", dpi=300)
 
-  output_name = paste0("start_", unlist(strsplit(file, split='[.]'))[1], "_Feb_1.png")
+  output_name = paste0("start_", chill_season_start, "_Feb_1.png")
   ggsave(output_name, safe_feb, path="/Users/hn/Desktop/", width=7, height=7, unit="in", dpi=300)
 
-  output_name = paste0("start_", unlist(strsplit(file, split='[.]'))[1], "_Mar_1.png")
+  output_name = paste0("start_", chill_season_start, "_Mar_1.png")
   ggsave(output_name, safe_mar, path="/Users/hn/Desktop/", width=7, height=7, unit="in", dpi=300)
 }
 

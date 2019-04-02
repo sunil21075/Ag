@@ -64,7 +64,7 @@ echo
 echo "----- DONE -----"
 echo
 
-cd /data/hydro/users/Hossein/chill/data_by_core/dynamic/01/modeled
+cd /data/hydro/users/Hossein/chill/7_time_intervals/
 rm -r *incom*
 rm -r MIROC-ESM
 exit 0

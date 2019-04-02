@@ -170,7 +170,7 @@ for(file in dir_con){
   saveRDS(met_hourly, paste0(main_out, "/met_hourly_", file, ".rds"))
 
   # Remove objects not needed in future iterations
-  rm(met_data, met_hourly, met_daily)
+  rm(met_hourly)
 }
 
 # How long did it take?
