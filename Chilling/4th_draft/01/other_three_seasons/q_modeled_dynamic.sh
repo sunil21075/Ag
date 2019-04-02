@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N dynam_modeled
+#PBS -N dynam_modeled_chill_sea
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
@@ -17,8 +17,8 @@
 ## Define path for output & error logs
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_modeled_E_5_season
-#PBS -o /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_modeled_O_5_season
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_mod_E_chill_sea
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/error/dynam_mod_O_chill_sea
 
 ## Define path for reporting
 #PBS -m abe
@@ -58,7 +58,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/d_modeled.R "dynamic"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/01/other_three_seasons/d_modeled.R "dynamic" chill_sea
 
 echo
 echo "----- DONE -----"

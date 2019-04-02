@@ -1,3 +1,7 @@
+
+.libPaths("/data/hydro/R_libs35")
+.libPaths()
+
 rm(list=ls())
 library(data.table)
 library(dplyr)
@@ -5,6 +9,26 @@ library(ggplot2)
 library(ggpubr) # for ggarrange
 
 ############################################################################
+base_in <- "/Users/hn/Desktop/"
+data_dir <- file.path(base_in, "/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/")
+plot_dir <- base_in
+
+
+base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
+data_dir <- file.path(base_in, "RDS_files/")
+plot_dir <- file.path(base_in, "plots/AUC/")
+if (dir.exists(file.path(plot_dir)) == F) {
+  dir.create(path = plot_dir, recursive = T)
+}
+
+
+quality <- 300 # dpi quality
+
+big_pic_width <- 35
+big_pic_height <- 65
+
+small_pic_width <- 8
+small_pic_height <- 8
 
 plot_dens <- function(data, month_name){
     color_ord = c("grey70", "dodgerblue", "olivedrab4", "khaki2")
@@ -28,7 +52,7 @@ plot_dens <- function(data, month_name){
                        axis.ticks = element_line(color = "black", size = .2),
                        axis.title.x = element_text(face = "plain", size=17, 
                                                    margin = margin(t=4, r=0, b=0, l=0)),
-                       axis.text.x = element_text(size = 14, face = "plain", color="black", angle=-30),
+                       axis.text.x = element_text(size = 14, face = "plain", color="black", angle=-90),
                        axis.title.y = element_text(face = "plain", size = 17, 
                                                    margin = margin(t=0, r=6, b=0, l=0)),
                        axis.text.y = element_text(size = 14, face="plain", color="black")
@@ -37,7 +61,7 @@ plot_dens <- function(data, month_name){
                geom_density(alpha=.5, size=.1) + 
                geom_vline(xintercept = iof_breaks, 
                           linetype = "solid", color = "red", size = 0.2) +
-               facet_grid( ~ CountyGroup) +
+               facet_grid( ~ city) +
                xlab("hourly temp.") + 
                ggtitle(label = paste0("The density of hourly temp. in the month of ", month_name, ".")) +
                scale_fill_manual(values=color_ord,
@@ -53,30 +77,49 @@ plot_dens <- function(data, month_name){
 }
 
 ############################################################################
-data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 month_names = c("Jan", "Feb", "Mar", "Sept", "Oct", "Nov", "Dec")
+
+location_coord = c("48.40625_-119.53125", # Omak
+                   "47.40625_-120.34375", # Wenatchee
+                   "46.28125_-119.34375", # Richland
+                   "45.53125_-123.15625", # Hilsboro
+                   "44.09375_-123.34375") # Elmira
+city_names = c("Omak", "Wenatchee", "Richland", "Hilsboro", "Elmira")
 
 for (month in month_names){
     data = data.table(readRDS(paste0(data_dir, month, ".rds")))
     data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
     data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
     data$scenario[data$scenario == "historical"] = "Historical"
-    # data$ClimateGroup[data$Year >= 1950 & data$Year <= 2005] <- "Historical"
-    data$ClimateGroup[data$Year <= 2005] <- "Historical"
-    data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
-    data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
-    data$ClimateGroup[data$Year > 2075] <- "2076-2099"
+    
+    data$ClimateGroup = 0L
+    data$ClimateGroup[data$year <= 2005] <- "Historical"
+    data$ClimateGroup[data$year >= 2025 & data$year <= 2050] <- "2025-2050"
+    data$ClimateGroup[data$year > 2050  & data$year <= 2075] <- "2051-2075"
+    data$ClimateGroup[data$year > 2075] <- "2076-2099"
 
     # There are years between (2006) and 2025 which ... becomes NA
     data = na.omit(data)
+
+    ### rename location by city names
+    data$city = 0L
+    data$city[data$location == "48.40625_-119.53125"] = "Omak"
+    data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+    data$city[data$location == "46.28125_-119.34375"] = "Richland"
+    data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+    data$city[data$location == "44.09375_-123.34375"] = "Elmira"
 
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
                                 levels = c("Historical", "2025-2050",
                                            "2051-2075", "2076-2099"))
-
-    data_45 = data %>% filter(scenario %in% c("historical", "rcp45"))
-    data_85 = data %>% filter(scenario %in% c("historical", "rcp85"))
+    data$city <- factor(data$city, levels = city_names)
+    
+    data_45 = data %>% filter(scenario %in% c("Historical", "RCP 4.5"))
+    data_85 = data %>% filter(scenario %in% c("Historical", "RCP 8.5"))
+    
+    data_45 = na.omit(data_45)
+    data_85 = na.omit(data_85)
 
     assign(x = paste0(month, "_density_plot_", "rcp45"),
            value = {plot_dens(data=data_45,
@@ -84,31 +127,34 @@ for (month in month_names){
     assign(x = paste0(month, "_density_plot_", "rcp85"),
            value = { plot_dens(data=data_85,
                                month_name=month)})
+
 }
 
 #######
 ####### RCP45
 #######
 
-# big_plot_45 <- ggarrange(Sept_density_plot_rcp45, 
-                         # Oct_density_plot_rcp45,
-                         # Nov_density_plot_rcp45,
-                         # Dec_density_plot_rcp45,
-                         # Jan_density_plot_rcp45,
-                         # Feb_density_plot_rcp45,
-                         # Mar_density_plot_rcp45,
-                         # label.x = "hourly temp.",
-                         # label.y = "density",
-                         # ncol = 1, 
-                         # nrow = 7, 
-                         # common.legend = F,
-                         # legend = "bottom")
-# ggsave(filename = "density_45.png", 
-       path = "/Users/hn/Desktop/", 
+big_plot_45 <- ggarrange(Sept_density_plot_rcp45, 
+                         Oct_density_plot_rcp45,
+                         Nov_density_plot_rcp45,
+                         Dec_density_plot_rcp45,
+                         Jan_density_plot_rcp45,
+                         Feb_density_plot_rcp45,
+                         Mar_density_plot_rcp45,
+                         label.x = "hourly temp.",
+                         label.y = "density",
+                         ncol = 1, 
+                         nrow = 7, 
+                         common.legend = F,
+                         legend = "bottom")
+
+ggsave(filename = "density_45.png", 
+       path = plot_dir,
        plot = big_plot_45,
-       width = 15, height = 40, units = "in",
-       dpi=400, 
-       device = "png")
+       width=big_pic_width, height=big_pic_height, units = "in",
+       dpi=quality, 
+       device = "png",
+       limitsize = FALSE)
 
 #######
 ####### RCP85
@@ -128,11 +174,12 @@ big_plot_85 <- ggarrange(Sept_density_plot_rcp85,
                          common.legend = F,
                          legend = "bottom")
 ggsave(filename = "density_85.png", 
-       path = "/Users/hn/Desktop/", 
+       path = plot_dir, 
        plot = big_plot_85,
-       width = 15, height = 40, units = "in",
-       dpi=400, 
-       device = "png")
+       width=big_pic_width, height=big_pic_height, units = "in",
+       dpi=quality, 
+       device = "png",
+       limitsize = FALSE)
 
 #######
 ####### RCP 45 and 85 combined
@@ -151,10 +198,10 @@ ggsave(filename = "density_85.png",
 #                              common.legend = T,
 #                             legend = "bottom")
 # ggsave(filename = "45_and_85_combined.png", 
-#        path = "/Users/hn/Desktop/", 
+#        path = plot_dir, 
 #        plot = big_plot_combined,
 #        width = 15, height = 40, units = "in",
-#        dpi=400, 
+#        dpi=quality, 
 #        device = "png")
 #####################################################
 ###                                               ###
@@ -192,7 +239,7 @@ plot_dens <- function(data, month_name){
                        axis.title.x = element_text(size=12, face = "plain", margin = margin(t=8, r=0, b=0, l=0)),
                        axis.title.y = element_text(size=12, face = "plain", margin = margin(t=0, r=8, b=0, l=0)),
 
-                       axis.text.x = element_text(size = 8, face = "plain", color="black", angle=-30),
+                       axis.text.x = element_text(size = 8, face = "plain", color="black", angle=-90),
                        axis.text.y = element_text(size = 9, face = "plain", color="black")
                        )
     
@@ -205,7 +252,7 @@ plot_dens <- function(data, month_name){
                geom_density(alpha=.5, size=.1) + 
                geom_vline(xintercept = iof_breaks, 
                           linetype = "solid", color = "red", size = 0.2) +
-               facet_grid( ~ CountyGroup) +
+               facet_grid( ~ city) +
                xlab("hourly temp.") + 
                ggtitle(label = gtitle) +
                scale_fill_manual(values=color_ord,
@@ -220,7 +267,6 @@ plot_dens <- function(data, month_name){
     return(obs_plot)
 }
 
-data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 month_names = c("sept_thru_dec_modeled", "sept_thru_jan_modeled") # , 
 
 for (month in month_names){
@@ -229,15 +275,23 @@ for (month in month_names){
     data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
     data$scenario[data$scenario == "historical"] = "Historical"
 
-    data$ClimateGroup[data$Year <= 2005] <- "Historical"
-    data$ClimateGroup[data$Year > 2025 & data$Year <= 2050] <- "2025-2050"
-    data$ClimateGroup[data$Year > 2050 & data$Year <= 2075] <- "2051-2075"
-    data$ClimateGroup[data$Year > 2075] <- "2076-2099"
+    data$ClimateGroup[data$year <= 2005] <- "Historical"
+    data$ClimateGroup[data$year >= 2025 & data$year <= 2050] <- "2025-2050"
+    data$ClimateGroup[data$year > 2050  & data$year <= 2075] <- "2051-2075"
+    data$ClimateGroup[data$year > 2075] <- "2076-2099"
 
     # There are years between (2006) and 2025 which ... becomes NA
     dim(data)
     data = na.omit(data)
     dim(data)
+
+    data$city = 0L
+    data$city[data$location == "48.40625_-119.53125"] = "Omak"
+    data$city[data$location == "46.28125_-119.34375"] = "Richland"
+    data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+    data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+    data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+
     # order the climate groups
     data$ClimateGroup <- factor(data$ClimateGroup, 
                                 levels = c("Historical", "2025-2050", 
@@ -246,6 +300,9 @@ for (month in month_names){
     data_45 = data %>% filter(scenario %in% c("Historical", "RCP 4.5"))
     data_85 = data %>% filter(scenario %in% c("Historical", "RCP 8.5"))
     rm(data)
+    data_45 = na.omit(data_45)
+    data_85 = na.omit(data_85)
+
     assign(x = paste0(month, "_density_", "rcp45"),
            value = {plot_dens(data=data_45,
                               month_name=month)})
@@ -256,30 +313,32 @@ for (month in month_names){
 }
 
 #ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp45.png"), 
-       # path = "/Users/hn/Desktop/",
+       # path = plot_dir,
        # plot = sept_thru_dec_modeled_density_rcp45,
-       # width=8, height=3, units = "in",
-       # dpi=400, 
+       # width=small_pic_width, height=small_pic_height, units = "in",
+       # dpi=quality, 
        # device = "png")
 ggsave(filename = paste0("sept_thru_dec_modeled", "_density_rcp85.png"), 
-       path = "/Users/hn/Desktop/", 
+       path = plot_dir, 
        plot = sept_thru_dec_modeled_density_rcp85,
-       width=8, height=3, units = "in",
-       dpi=400, 
-       device = "png")
+       width=small_pic_width, height=small_pic_height, units = "in",
+       dpi=quality, 
+       device = "png",
+       limitsize = FALSE)
 
 #ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp45.png"), 
-        # path = "/Users/hn/Desktop/",
+        # path = plot_dir,
         # plot = sept_thru_jan_modeled_density_rcp45,
-        # width=8, height=3, units = "in",
-        # dpi=400, 
+        # width=small_pic_width, height=small_pic_height, units = "in",
+        # dpi=quality, 
         # device = "png")
 ggsave(filename = paste0("sept_thru_jan_modeled", "_density_rcp85.png"), 
-        path = "/Users/hn/Desktop/", 
+        path = plot_dir, 
         plot = sept_thru_jan_modeled_density_rcp85,
-        width=8, height=3, units = "in",
-        dpi=400, 
-        device = "png")
+        width=small_pic_width, height=small_pic_height, units = "in",
+        dpi=quality, 
+        device = "png",
+        limitsize = FALSE)
 
 big_plot_85 <- ggarrange(sept_thru_dec_modeled_density_rcp85, 
                          sept_thru_jan_modeled_density_rcp85,
@@ -291,10 +350,11 @@ big_plot_85 <- ggarrange(sept_thru_dec_modeled_density_rcp85,
                          legend = "bottom")
 
 ggsave(filename = "density_thru_dec_sept_85.png", 
-       path = "/Users/hn/Desktop/", 
+       path = plot_dir, 
        plot = big_plot_85,
-       width = 8, height = 6, units = "in",
-       dpi=400, 
-       device = "png")
+       width=small_pic_width, height=small_pic_height, units = "in",
+       dpi=quality, 
+       device = "png",
+       limitsize = FALSE)
 
 

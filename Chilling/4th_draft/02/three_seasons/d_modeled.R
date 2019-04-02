@@ -60,10 +60,11 @@ the_dir <- dir()
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 # Pre-allocate lists to be used
-data_list_hist <- vector(mode = "list", length = 295)
-data_list_F1 <- vector(mode = "list", length = 295)
-data_list_F2 <- vector(mode = "list", length = 295)
-data_list_F3 <- vector(mode = "list", length = 295)
+no_sites <- 645
+data_list_hist <- vector(mode = "list", length = no_sites)
+data_list_F1 <- vector(mode = "list", length = no_sites)
+data_list_F2 <- vector(mode = "list", length = no_sites)
+data_list_F3 <- vector(mode = "list", length = no_sites)
 
 # Check whether historical data or not
 hist <- basename(getwd()) == "historical"

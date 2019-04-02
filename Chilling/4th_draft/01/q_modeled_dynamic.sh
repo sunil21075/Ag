@@ -10,7 +10,7 @@
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1
 #PBS -l mem=2gb
-#PBS -l walltime=10:00:00
+#PBS -l walltime=50:00:00
 #PBS -q hydro
 #PBS -t 1-72
 

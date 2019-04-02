@@ -34,14 +34,29 @@ if (model=="dynamic"){
 #############
 ##############################################################################
 
+location_coord = c("48.40625_-119.53125", # Omak
+                   "47.40625_-120.34375", # Wenatchee
+                   "46.28125_-119.34375", # Richland
+                   "45.53125_-123.15625", # Hilsboro
+                   "44.09375_-123.34375") # Elmira
+
 summary_comp <- data.table(readRDS(paste0(write_dir, "summary_comp.rds")))
 summary_comp$location = paste0(summary_comp$lat, "_", summary_comp$long)
-summary_comp <- summary_comp %>% filter(location %in% c("46.28125_-119.34375", "48.40625_-119.53125"))
+summary_comp <- summary_comp %>% filter(location %in% location_coord)
+
+data$city = 0L
+data$city[data$location == "48.40625_-119.53125"] = "Omak"
+data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+data$city[data$location == "46.28125_-119.34375"] = "Richland"
+data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+data$city <- factor(data$city, levels = city_names)
+
 
 # 3. Plotting -------------------------------------------------------------
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
-                            group_by(climate_type, year, model, scenario) %>%
+                            group_by(city, year, model, scenario) %>%
                             summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>% 
                             data.table()
 
@@ -50,7 +65,6 @@ summary_comp_loc_medians <- summary_comp %>%
 ##      Accumulation plots      ##
 ##                              ##
 ##################################
-write_dir = "/Users/hn/Desktop/"
 accum_plot <- function(data, y_name, due){
   y = eval(parse(text =paste0( "data$", y_name)))
   lab = paste0("Median chill units accumulated by ", due)
@@ -60,7 +74,7 @@ accum_plot <- function(data, y_name, due){
                          alpha = 0.25, shape = 21) +
               geom_smooth(aes(x = year, y = y, color = scenario),
                           method = "lm", size=.8, se = F) +
-              facet_wrap( ~ climate_type) +
+              facet_wrap( ~ city) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +              
@@ -88,7 +102,7 @@ accum_hist_plot <- function(data, y_name, due){
                              shape = 21, fill = "#21908CFF") +
               geom_smooth(aes(x = year, y = y), method = "lm",
                               se = F, size=.5, color = "#21908CFF") +
-              facet_wrap( ~ climate_type) +
+              facet_wrap( ~ city) +
               ylab("Accum. chill units") +
               xlab("Year") +
               scale_x_continuous(limits = c(1950, 2075)) +
@@ -105,7 +119,7 @@ accum_hist_plot <- function(data, y_name, due){
 # Data frame for historical values to be used for these figures
 summary_comp_hist <- summary_comp %>%
                      filter(model == "observed") %>%
-                     group_by(climate_type, year) %>%
+                     group_by(city, year) %>%
                      summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1))
 
 ############################

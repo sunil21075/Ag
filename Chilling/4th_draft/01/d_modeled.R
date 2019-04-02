@@ -103,6 +103,7 @@ for(file in dir_con){
 
   print ("line 108 of modeled")
   print (dim(met_data))
+  rm(met_data)
   
   # save only the necessary list item
   met_hourly <- met_hourly[[1]]
@@ -147,7 +148,7 @@ for(file in dir_con){
                                       ".txt")
                                ),
               row.names = F)
-  rm(met_data, met_hourly, met_daily)
+  rm(met_hourly, met_daily)
 }
 
 # How long did it take?

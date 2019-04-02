@@ -27,10 +27,10 @@ the_table = data.frame(matrix(ncol = 8, nrow = 0))
 
 for (month in dead_line){
   ##########################################
-  #                    #
-  #     initialize the AUC table     #
-  #     to populate          #
-  #                    #
+  #                                        #
+  #     initialize the AUC table           #
+  #     to populate                        #
+  #                                        #
   ##########################################
   df_help <- data.frame(matrix(ncol = 8, nrow = 6))
   colnames(df_help) <- c("location", iof_char)
@@ -74,18 +74,18 @@ for (month in dead_line){
   data$ClimateGroup <- factor(data$ClimateGroup, levels = c("1950-2005", "2076-2099"))
 
   ##########################################
-  #                    #
-  #     separate scenarios       #
-  #                    #
+  #                                        #
+  #     separate scenarios                 #
+  #                                        #
   ##########################################
   data_hist = data %>% filter(scenario %in% c("historical"))
   data_85   = data %>% filter(scenario %in% c("rcp85"))
   # rm(data)
    
   ##########################################
-  #                    #
-  #      pick up proper years      #
-  #                    #
+  #                                        #
+  #      pick up proper years              #
+  #                                        #
   ##########################################
   data_hist <- data_hist %>% 
          filter(Year > 1950 & Year <= 2005,
@@ -100,9 +100,9 @@ for (month in dead_line){
   # rm(data_85)
 
   ##########################################
-  #                    #
-  #      separate warm/cool.       #
-  #                    #
+  #                                        #
+  #      separate warm/cool.               #
+  #                                        #
   ########################################## H
   data_hist_w = data_hist %>% filter(CountyGroup == "rich")
   data_hist_c = data_hist %>% filter(CountyGroup == "omak")
@@ -127,9 +127,9 @@ for (month in dead_line){
   df_help[1, 2:8] <- v$no_hours
 
   v = data_85_2076_2099_w %>% 
-    mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
-    group_by(temp_cat) %>% 
-    summarise(no_hours = n()) %>% data.table()
+      mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
+      group_by(temp_cat) %>% 
+      summarise(no_hours = n()) %>% data.table()
   df_help[2, 2:8] <- v$no_hours
 
   df_help[3, 2:8] = df_help[2, 2:8] - df_help[1, 2:8]
@@ -217,10 +217,10 @@ for (month in months){
          "(16, Inf]")
   iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
   ##########################################
-  #                    #
-  #     initialize the AUC table     #
-  #     to populate          #
-  #                    #
+  #                                        #
+  #     initialize the AUC table           #
+  #     to populate                        #
+  #                                        #
   ##########################################
   the_table = data.frame(matrix(ncol = 8, nrow = 0))
   df_help <- data.frame(matrix(ncol = 8, nrow = 6))
@@ -239,9 +239,9 @@ for (month in months){
                             paste0(unlist(strsplit(month, "[.]"))[1], "_omak_diff")
                             )
   ##########################################
-  #                    #
-  #     read the data off the disk   #
-  #                    #
+  #                                        #
+  #     read the data off the disk         #
+  #                                        #
   ##########################################
 
   data = data.table(readRDS(month))
@@ -261,18 +261,18 @@ for (month in months){
   data$ClimateGroup <- factor(data$ClimateGroup, levels = c("1950-2005", "2076-2099"))
 
   ##########################################
-  #                    #
-  #     separate scenarios       #
-  #                    #
+  #                                        #
+  #     separate scenarios                 #
+  #                                        #
   ##########################################
   data_hist <- data %>% filter(scenario %in% c("historical"))
   data_85   <- data %>% filter(scenario %in% c("rcp85"))
   rm(data)
 
   ##########################################
-  #                    #
-  #      pick up proper years      #
-  #                    #
+  #                                        #
+  #      pick up proper years              #
+  #                                        #
   ##########################################
   data_hist <- data_hist %>% 
          filter(Year > 1950 & Year <= 2005,
@@ -286,9 +286,9 @@ for (month in months){
                 Chill_season != "chill_2099-2100")
   rm(data_85)
   ##########################################
-  #                    #
-  #      separate warm/cool.       #
-  #                    #
+  #                                        #
+  #      separate warm/cool.               #
+  #                                        #
   ########################################## H
   data_hist_w = data_hist %>% filter(CountyGroup == "rich")
   data_hist_c = data_hist %>% filter(CountyGroup == "omak")
@@ -299,9 +299,9 @@ for (month in months){
   rm(data_85_2076_2099)
 
   ##########################################
-  #                    #
-  #      populate the table      #
-  #                    #
+  #                                        #
+  #      populate the table                #
+  #                                        #
   ##########################################  
   ################
   #   Richland   #

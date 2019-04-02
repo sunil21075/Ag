@@ -46,7 +46,8 @@ the_dir <- the_dir[grep(pattern = "chill_output_data",
                         x = the_dir)]
 
 # Pre-allocate lists to be used
-data_list_historical <- vector(mode = "list", length = 295)
+no_sites <- 645
+data_list_historical <- vector(mode = "list", length = no_sites)
 
 # 5. Iterate through files and process ------------------------------------
   

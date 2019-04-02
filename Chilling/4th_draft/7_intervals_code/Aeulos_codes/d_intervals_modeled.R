@@ -250,7 +250,7 @@ for(file in dir_con){
   
   saveRDS(met_hourly, paste0(main_out, current_dir, "/met_hourly_", file, ".rds"))
 
-  rm(met_data, met_hourly)
+  rm(met_hourly)
 }
 
 # How long did it take?
