@@ -125,7 +125,7 @@ pw_larva_2_shift_10_percent <- function(x, shape=params_shift_10_percent[6, "sha
 }
 
 pw_larva_3_shift_10_percent <- function(x, shape=params_shift_10_percent[7, "shape"], 
-                                         scale=params_shift_10_percent[7, "scale"]){
+                                           scale=params_shift_10_percent[7, "scale"]){
   pweibull(x, shape=shape, scale=scale)
 }
 
@@ -164,48 +164,56 @@ pw_larva_4_shift_20_percent <- function(x, shape=params_shift_20_percent[8, "sha
 ########################################################################
 ########################## The Theme
 ##########################
-the_theme = theme(panel.grid.major = element_blank(), 
-                  # panel.grid.minor = element_blank(),
-                  axis.text.x = element_text(size = 9, color="black"),
-                  axis.title.x = element_text(face = "plain", 
-                                              size=12, 
+the_theme = theme(panel.grid.major = element_blank(),
+                  plot.title = element_text(size=18, face="bold"),
+                  plot.subtitle = element_text(size=14, face="bold"),
+                  axis.text.x = element_text(size = 15, color="black", face="bold"),
+                  axis.text.y = element_text(size = 15, angle=0, color="black", face="bold"),
+                  
+                  axis.title.x = element_text(face = "bold", size=17, 
                                               margin = margin(t=10, r=0, b=0, l=0)),
-                  axis.text.y = element_text(size = 9, angle=0, color="black"),
-                  axis.title.y = element_text(face = "plain", 
-                                              size=12, 
+                  axis.title.y = element_text(face = "bold", size=17,
                                               margin = margin(t=0, r=10, b=0, l=0)),
-                  legend.position="bottom"
-            ) + theme_bw()
+                  legend.position="bottom",
+                  legend.key.size = unit(1, "line"),
+                  legend.text=element_text(size=15)
+            )
 
 x_limits = c(-100, 6000)
-y_limits = c(0, 0.004)
+y_limits = c(0, 0.0025)
 
-colorss = c("grey70", "dodgerblue", "olivedrab4", "red", "grey70", "dodgerblue", "olivedrab4", "red")
+colorss = c("black", "dodgerblue", "olivedrab4", "red", "black", "dodgerblue", "olivedrab4", "red")
 labelss = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4", "Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")
 
 larva_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme + 
-			  geom_path(stat="function", fun=dw_larva_Gen1, aes(colour="grey70"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_Gen2, aes(colour="dodgerblue"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_Gen3, aes(colour="olivedrab4"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_Gen4, aes(colour="red"), linetype=1)+
-			  geom_path(stat="function", fun=dw_larva_Gen1_shift_10_percent, aes(colour="grey70"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_Gen2_shift_10_percent, aes(colour="dodgerblue"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=2)+
-			  geom_path(stat="function", fun=dw_larva_Gen4_shift_10_percent, aes(colour="red"), linetype=2)+
-			  scale_x_continuous(name="Degree days", limits=x_limits) + 
-			  scale_y_continuous(name="Weibull density", limits=y_limits, labels = function(x) format(x*1000, scientific=F)) +
-                scale_colour_identity("", guide="legend", 
-                                          labels = labelss, 
-                                          breaks = colorss) +
-                labs(subtitle = expression(10^-3), parse=T)
+                      geom_path(stat="function", fun=dw_larva_Gen1, aes(colour="black"), linetype=1)+
+                      geom_path(stat="function", fun=dw_larva_Gen2, aes(colour="dodgerblue"), linetype=1)+
+                      geom_path(stat="function", fun=dw_larva_Gen3, aes(colour="olivedrab4"), linetype=1)+
+                      geom_path(stat="function", fun=dw_larva_Gen4, aes(colour="red"), linetype=1)+
+                      geom_path(stat="function", fun=dw_larva_Gen1_shift_10_percent, aes(colour="black"), linetype=2)+
+                      geom_path(stat="function", fun=dw_larva_Gen2_shift_10_percent, aes(colour="dodgerblue"), linetype=2)+
+                      geom_path(stat="function", fun=dw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=2)+
+                      geom_path(stat="function", fun=dw_larva_Gen4_shift_10_percent, aes(colour="red"), linetype=2)+
+                      scale_x_continuous(name="Degree days", limits=x_limits) + 
+                      scale_y_continuous(name="density", limits=y_limits, labels = function(x) format(x*1000, scientific=F)) +
+                      scale_colour_identity("", guide="legend", 
+                                                labels = labelss, 
+                                                breaks = colorss) +
+                      # ggtitle(label = "Weibull density corresponding to larva parameters (solid lines) \n and 10% increase of scale (dashed lines)") +
+                      labs(subtitle = expression(10^-3), parse=T, face="bold")
 
-master_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/laptop_codes/weibull_dist_plot/"
+A <- annotate_figure(larva_density,
+                     bottom = text_grob('Weibull density corresponding to larva parameters (solid lines) \n and 10% increase of scale (dashed lines)', color = "black",
+                                         hjust = 1.45, x=1, face="plain", size=12))
+
+# A <- larva_density + annotate("text", x = 0, y =0, 
+#                               label = 'atop(bold("This should be bold"),"this should not")',
+#                               colour = "red", parse = TRUE)
+
+
+master_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/laptop_codes/sensitivity/weibull_dist_plot/"
 plot_path = master_path
-ggsave(filename=paste0("dweibull_larva", ".png"), 
-	   plot=larva_density, 
-	   path=plot_path, 
-	   width=7 ,
-	   height=5 , 
-	   dpi=1000, 
-	   device="png")
+ggsave(filename=paste0("dweibull_larva_0.1", ".png"), 
+       plot=larva_density,  path=plot_path, 
+       width=7 , height=5 , dpi=500, device="png")
 

@@ -8,9 +8,8 @@
 #PBS -N mod_dynamic_nonover
 
 ## Define compute options
-#PBS -l nodes=1:dev:ppn=1
+#PBS -l nodes=1:ppn=1,walltime=10:00:00
 #PBS -l mem=10gb
-#PBS -l walltime=10:00:00
 #PBS -q hydro
 #PBS -t 1-72
 
@@ -54,7 +53,7 @@ module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/d_modeled.R "dynamic" "non_overlap"
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/d_modeled.R "dynamic" "non_overlap" "oct"
 
 echo
 echo "----- DONE -----"

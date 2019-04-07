@@ -137,9 +137,7 @@ file_list = list.files(path = data_dir, pattern = "diapause_abs",
 
 for (file in file_list){
   version = unlist(strsplit(file, "_"))[3]
-  if (version=="rcp45"){ max_y=200
-
-    } else {max_y=250}
+  if (version=="rcp45"){ max_y=200} else { max_y=250}
   ii = substr(unlist(strsplit(file, "_"))[4], 1, 1)
   plot_abs_diapause(input_dir, file, version, plot_path, ii, max_y)
 }

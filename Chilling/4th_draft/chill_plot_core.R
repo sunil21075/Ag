@@ -35,7 +35,7 @@ safe_box_plot <- function(data, due, chill_start){
             geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
             theme_bw() +
             labs(x="", y="safe chill") +
-            facet_grid(~ climate_type ~ scenario ) + 
+            facet_grid(~ scenario ~ climate_type ) + 
             the_theme + 
             scale_fill_manual(values = color_ord,
                       name = "Time\nPeriod", 
@@ -203,11 +203,10 @@ produce_data_4_plots <- function(data){
               median_quan_per_loc_period_model_mar,
               quan_per_loc_period_model_apr,
               mean_quan_per_loc_period_model_apr,
-              median_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr
               )
         )
 }
-
 
 produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
 
@@ -339,13 +338,28 @@ organize_non_over_time_period_two_hist <- function(data){
   return(data)
 }
 
-pick_up_okanagan_rich <- function(dt){
-  okanagan <- dt %>% filter(lat== "48.40625" & long=="-119.53125")
-  okanagan$location = "okanagan"
+pick_single_cities <- function(dt){
+  Omak <- dt %>% filter(lat== "48.40625" & long=="-119.53125")
+  Omak$city = "Omak"
 
-  richland <- dt %>% filter(lat== "46.28125" & long=="-119.34375")
-  richland$location = "richland"
-  
-  dt = rbind(okanagan, richland)
-  return(dt)
+  Richland <- dt %>% filter(lat== "46.28125" & long=="-119.34375")
+  Richland$city <- "Richland"
+
+  Wenatchee <- dt %>% filter(lat== "47.40625" & long=="-120.34375")
+  Wenatchee$city <- "Wenatchee"
+
+  Hilsboro <- dt %>% filter(lat== "45.53125" & long=="-123.15625")
+  Hilsboro$city = "Hilsboro"
+
+  Elmira <- dt %>% filter(lat== "44.09375" & long=="-123.34375")
+  Elmira$city = "Elmira"
+  rm(dt)
+
+  dt <- rbind(Omak, Richland, Wenatchee, Hilsboro, Elmira)
+
+  city_names <- c("Omak", "Wenatchee", "Richland", "Hilsboro", "Elmira")
+  dt$city <- factor(dt$city, levels = city_names)
+  return(data.table(dt))
 }
+
+

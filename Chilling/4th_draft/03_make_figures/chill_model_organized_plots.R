@@ -52,7 +52,7 @@ quality = 300
 # # summary_comp <- summary_comp[-grep(x = summary_comp$model, pattern = "incomplete"),]
 
 # # Combine the data with cold/warm geographic designations
-# param_dir = 
+# param_dir <- 
 # cold_warm <- read.csv(paste0(param_dir, "LocationGroups.csv"))
 
 # summary_comp <- inner_join(x = summary_comp, y = cold_warm,

@@ -1,30 +1,96 @@
 rm(list=ls())
-library(chron)
 library(data.table)
-library(reshape2)
 library(dplyr)
-library(foreach)
-library(iterators)
-library(ggplot2)
+library(ggpubr)
 
-input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/diapause/"
+input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/diapause/"
 plot_path = input_dir
+
 #### Relative
 
-file_name_extension = "diapause_rel_data_rcp85.rds"
-version = "rcp85"
-plot_rel_diapause(input_dir, file_name_extension, version, plot_path)
+plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path){
+  if (version == "rcp45") {plot_title <- "RCP 4.5"} else {plot_title <- "RCP 8.5"}
+  file_name = paste0(input_dir, file_name_extension)
+  data <- data.table(readRDS(file_name))
+  data$CountyGroup = as.character(data$CountyGroup)
+  data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
+  data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+  data <- data[variable =="RelLarvaPop" | variable =="RelNonDiap"]
+  data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+  data$variable <- factor(data$variable)
 
-file_name_extension = "diapause_rel_data_rcp45.rds"
+  pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
+       labs(x = "cumulative degree days(in F)", y = "relative population", color = "relative population") +
+       geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
+       geom_hline(yintercept=c(5, 10, 15, 20), linetype="solid", color ="grey", size=.25) +
+       annotate(geom="text", x=700,  y=18, label="Gen. 1", color="black", angle=30) +
+       annotate(geom="text", x=1700, y=16, label="Gen. 2", color="black", angle=30) + 
+       annotate(geom="text", x=2900, y=14, label="Gen. 3", color="black", angle=30) + 
+       annotate(geom="text", x=3920, y=12, label="Gen. 4", color="black", angle=30) +
+       facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+       scale_fill_manual(labels = c("Total", "Escape diapause"), 
+                         values=c("grey", "orange"), 
+                         name = "relative population") +
+       scale_color_manual(labels = c("Total", "Escape diapause"), 
+                          values=c("grey", "orange"), 
+                          guide = FALSE) +
+       stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+                                   fun.ymin=function(z) { 0 }, 
+                                   fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+       scale_x_continuous(limits = c(0, 5000)) + 
+       scale_y_continuous(limits = c(0, 20)) +
+       theme_bw() + 
+       theme(plot.title = element_text(size=16, face="bold"),
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(),
+             panel.background = element_blank(),
+             strip.text = element_text(size=16, face="bold"),
+             panel.spacing=unit(.5, "cm"),
+             axis.text.x = element_text(face= "bold", size=10, color="black"),
+             axis.text.y = element_text(face= "bold", size=10, color="black"),
+             axis.ticks = element_line(color= "black", size = .2),
+             axis.title.x = element_text(face= "bold", size=16, margin = margin(t=10, r=0, b=0, l=0)),
+             axis.title.y = element_text(face= "bold", size=16, margin = margin(t=0, r=10, b=0, l=0)),
+             legend.position="bottom",
+             legend.spacing.x = unit(.2, 'cm'),
+             legend.text = element_text(size=12),
+             legend.title= element_blank()) +
+       ggtitle(label = plot_title)
+
+  # plot_name = paste0("diapause_rel_", version,".png")
+  return(pp)
+}
+
+file_name_extension = "diapause_rel_rcp85.rds"
+version = "rcp85"
+rel_85 <- plot_rel_diapause(input_dir, file_name_extension, version, plot_path)
+
+file_name_extension = "diapause_rel_rcp45.rds"
 version = "rcp45"
-plot_rel_diapause(input_dir, file_name_extension, version, plot_path)
+rel_45 <- plot_rel_diapause(input_dir, file_name_extension, version, plot_path)
+
+ggsave("rel_45.png", rel_45, device="png", path=plot_path, width=10, height=7, unit="in", dpi=400)
+ggsave("rel_85.png", rel_85, device="png", path=plot_path, width=10, height=7, unit="in", dpi=400)
+
+
+rel <- ggpubr::ggarrange(plotlist = list(rel_45, rel_85),
+                         ncol = 1, nrow = 2,
+                         common.legend = TRUE, legend = "bottom")
+ggsave("rel.png", rel, device="png", path=plot_path, width=10, height=14, unit="in", dpi=400)
+
+# A <- annotate_figure(adult_emerge, 
+#                      top = text_grob("Julian day of adult emergence", color="black", face="bold", size=35)
+#                      # fig.lab = "Julian day of adult emergence", fig.lab.size = 35, fig.lab.face = "bold")
+#                      )
+
+
 
 #### Absolute
-file_name_extension = "diapause_abs_data_rcp85.rds"
+file_name_extension = "diapause_abs_rcp85.rds"
 version = "rcp85"
 plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
 
-file_name_extension = "diapause_abs_data_rcp45.rds"
+file_name_extension = "diapause_abs_rcp45.rds"
 version = "rcp45"
 plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
 

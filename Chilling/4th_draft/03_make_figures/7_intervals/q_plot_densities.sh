@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N obs_dynamic
+#PBS -N plot_densities
 
 ## Define compute options
 #PBS -l nodes=1:dev:ppn=1

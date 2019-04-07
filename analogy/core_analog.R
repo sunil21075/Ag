@@ -976,7 +976,7 @@ merge_precip <- function(main_in_dir, location_type){
 ######                                                   ######
 ######                                                   ######
 ###############################################################
-################################################################################
+
 make_unique <- function(input_dir, param_dir, location_group_name){
     # This fukcing function is created because neither unique, nor !duplicate,
     # could work! So, we first separate the fucking data
@@ -993,7 +993,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data = data %>% filter(ClimateGroup == "2040's")
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1018,7 +1018,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(ClimateGroup == "2060's")
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1042,7 +1042,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1070,7 +1070,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data = data %>% filter(ClimateGroup == "2040's")
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1096,7 +1096,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(ClimateGroup == "2060's")
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD,
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1120,7 +1120,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
-    data <- within(data, remove(CountyGroup, County, 
+    data <- within(data, remove(CountyGroup, 
                                 tmax, tmin, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
@@ -1178,7 +1178,7 @@ generate_CM_files <- function(in_dir, out_dir){
     data <- data %>% filter(year >= 2025)
     data$location = paste0(data$latitude, "_", data$longitude)
     data <- within(data, remove(longitude, latitude))
-    data <- within(data, remove(CountyGroup, County, ClimateGroup))
+    data <- within(data, remove(CountyGroup, ClimateGroup))
     data = unique(data)
     saveRDS(data, paste0(out_dir, file))
     rm(data)
@@ -1290,4 +1290,13 @@ create_ymdvalues <- function(data_start_year, data_end_year){
   colnames(ymd) <- c("year", "month", "day")
   return(ymd)
 }
+
+get_county <- function(input_fill_add){
+  dt <- data.table(readRDS(input_fill_add))
+  dt <- subset(dt, select = c("latitude", "longitude", "County"))
+  return(dt)
+}
+
+
+
 

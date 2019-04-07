@@ -7,7 +7,6 @@
 #PBS -q hydro
 #PBS -e E_bloom_45_2015.txt
 #PBS -o bloom_45_2015.txt
-#PBS -M h.noorazar@yahoo.com
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

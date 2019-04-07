@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=12gb
 #PBS -q hydro
-#PBS -e E_diap_abs_rel_85.txt
-#PBS -o diap_abs_rel_85.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_diap_abs_rel_85.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/diap_abs_rel_85.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

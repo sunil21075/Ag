@@ -1,8 +1,11 @@
-#!/share/apps/R-3.4.3/bin/Rscript
-library(data.table, lib.loc="/home/hnoorazar/R/R_libs")
-library(geepack, lib.loc="/home/hnoorazar/R/R_libs")
-library(MESS, lib.loc="/home/hnoorazar/R/R_libs/")
-library(chron, lib.loc="/home/hnoorazar/R/R_libs/")
+
+.libPaths("/data/hydro/R_libs35")
+.libPaths()
+
+library(data.table)
+library(geepack)
+library(MESS)
+library(chron)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)

@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=15gb
 #PBS -q hydro
-#PBS -e E_gen_85.txt
-#PBS -o gen_85.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_gen_85.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/gen_85.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/generations_driver.R rcp85
+/home/hnoorazar/cleaner_codes/drivers/d_generations.R rcp85
 
 exit 0

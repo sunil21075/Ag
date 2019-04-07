@@ -1,18 +1,14 @@
 rm(list=ls())
-library(chron)
 library(data.table)
-library(ggplot2)
+library(ggpubr)
 library(reshape2)
 library(dplyr)
-library(foreach)
-library(iterators)
 library(cowplot)
 
-
-input_dir <- "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
-plot_path <- "/Users/hn/Documents/GitHub/Kirti/Codling_moth_Code/big_box_plots/3_evolve/"
+input_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
+plot_path <- "/Users/hn/Desktop/"
 versions <- c("rcp45", "rcp85")
-stages <- c("adult", "larva")
+stages <- c("larva") # "adult", 
 for (stage in stages){
   for (version in versions){
     output_name = paste0(stage, "_flight_", version, "_half.png")
