@@ -2,11 +2,11 @@
 #v#!/usr/bin/env Rscript
 
 #PBS -N plot_eggHatch_45
-#PBS -l nodes=1:ppn=1,walltime=99:00:00
+#PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e E_plot_eggHatch_45.txt
-#PBS -o plot_eggHatch_45.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_plt_eggHatch_45.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/O_plt_eggHatch_45.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/plot_cumdd_eggHatch.R rcp45 eggHatch
+/home/hnoorazar/cleaner_codes/drivers/d_cumdd_eggHatch.R rcp45 eggHatch
 
 exit 0

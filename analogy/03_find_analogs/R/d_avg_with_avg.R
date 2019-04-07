@@ -85,7 +85,6 @@ for (emission_type in carbon_types){
   local_dt_51_75$year = "2051_2075"
   local_dt_51_75$ClimateScenario <- "ensembe_mean"
 
-
   local_dt_76_95 <- local_dt_76_95 %>%
                     group_by(location) %>%
                     summarise_at(.funs = funs(mean(., na.rm=TRUE)), vars(medianDoY:mean_gdd))%>% 
@@ -135,12 +134,6 @@ for (emission_type in carbon_types){
   saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_avg_76_95.rds"))
   saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_avg_76_95.rds"))
   saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_avg_76_95.rds"))
-  print ("_______________________________________")
-  print ("column name of information[[1]] is")
-  print (head(colnames(NN_dist_tb)))
-  print ("_______________________________________")
-  print ("column name of NN_dist_tb out of core is")
-  print (head((information_76_95[[4]])))
 }
 
 

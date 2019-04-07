@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=70:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e E_vertdd_45_2015.txt
-#PBS -o vertdd_45_2015_o.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_vertdd_45_2015.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/vertdd_45_2015_o.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

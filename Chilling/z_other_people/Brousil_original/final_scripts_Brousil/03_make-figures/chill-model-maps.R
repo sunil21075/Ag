@@ -136,19 +136,19 @@ model_map <- function(model_name, scenario_name, month_col, min, max) {
 ensemble_map <- function(scenario_name, month_col, min, max) {
   
   stats_comp_ensemble %>%
-    filter(scenario == scenario_name | scenario == "historical") %>%
-    ggplot() +
-    geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
-                 fill = "grey", color = "black") +
-    # aes_string to allow naming of column in function 
-    geom_point(aes_string(x = "long", y = "lat",
-                          color = month_col), alpha = 0.4) +
-    scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
-                          limits = c(min, max),
-                          breaks = pretty_breaks(n = 4)) +
-    coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ year, nrow = 1) +
-    ggtitle("Ensemble means")
+        filter(scenario == scenario_name | scenario == "historical") %>%
+        ggplot() +
+        geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
+                     fill = "grey", color = "black") +
+        # aes_string to allow naming of column in function 
+        geom_point(aes_string(x = "long", y = "lat",
+                              color = month_col), alpha = 0.4) +
+        scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
+                              limits = c(min, max),
+                              breaks = pretty_breaks(n = 4)) +
+        coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+        facet_wrap(~ year, nrow = 1) +
+        ggtitle("Ensemble means")
   
 }
 

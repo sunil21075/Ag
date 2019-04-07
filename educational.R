@@ -65,6 +65,8 @@ colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 
 # initialize data frame data table dataframe datatable
 table = data.frame()
+data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
+data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
 ############################################################
 #################### Install packages on aeolus
 
@@ -75,7 +77,7 @@ qsub -I [job script].sh
 module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 R
-install.packages(c("lattice", "abctools"), lib="~/.local/lib/R3.5.1", repos="https://ftp.osuosl.org/pub/cran")
+install.packages(c("chron", "shinydashboard"), lib="~/.local/lib/R3.5.1", repos="https://ftp.osuosl.org/pub/cran")
 
 Ctrl-d
 exit

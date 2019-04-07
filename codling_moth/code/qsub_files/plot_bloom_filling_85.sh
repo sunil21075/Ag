@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=40gb
 #PBS -q hydro
-#PBS -e E_plt_blm_fill_85.txt
-#PBS -o plt_blm_fill_85.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_plt_blm_fill_85.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/plt_blm_fill_85.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 

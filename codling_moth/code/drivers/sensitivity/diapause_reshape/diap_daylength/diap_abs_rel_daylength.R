@@ -1,12 +1,11 @@
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
-#library(chron)
+
 library(data.table)
-library(ggplot2)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
 
-write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/diap_daylength"
+write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/diap_daylength/"
 input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 param_dir = "/home/hnoorazar/cleaner_codes/parameters/"
 

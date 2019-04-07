@@ -91,7 +91,7 @@ medians <- function(thresh_20, thresh_25, thresh_30,
 #####    the non-overlap is below            #####
 #####                                        #####
 ##################################################
-process_data <- function(file, time_period) {
+process_data <- function(file, time_period) { # this is for overlapping data, which we never will use!
   if (time_period=="2040"){
     processed_data <- file %>%
                       filter(year > 2025 & year <= 2055,
@@ -120,19 +120,25 @@ process_data <- function(file, time_period) {
 process_data_non_overlap <- function(file, time_period) {
   if (time_period == "2025_2050"){
     processed_data <- file %>%
-                      filter(year > 2025 & year <= 2050,
+                      filter(year >= 2025 & year <= 2050,
                              chill_season != "chill_2025-2026" &
                              chill_season != "chill_2050-2051")
-  } else if (time_period == "2051_2075"){
+   } else if (time_period == "2051_2075"){
     processed_data <- file %>%
                       filter(year > 2050 & year <= 2075,
                              chill_season != "chill_2050-2051" &
                              chill_season != "chill_2075-2076")
-  } else if (time_period == "2076_2100") {
+   } else if (time_period == "2076_2100") {
      processed_data <- file %>%
                        filter(year > 2075 & year <= 2099,
                               chill_season != "chill_2075-2076" &
                               chill_season != "chill_2099-2100")
+   
+   } else if (time_period == "2005_2024") {
+    processed_data <- file %>%
+                      filter(year >= 2005 & year <= 2024,
+                             chill_season != "chill_2005-2006" &
+                             chill_season != "chill_2024-2025")
   }
   processed_data <- threshold_func(processed_data, data_type="modeled")
   return(processed_data)
@@ -142,13 +148,11 @@ threshold_func <- function(file, data_type){
   if (data_type=="modeled"){
     data <- file %>%
            # Only want complete seasons of data
-           filter(chill_season != "chill_1949-1950" &
-           chill_season != "chill_2005-2006")
+           filter(chill_season != "chill_1949-1950" & chill_season != "chill_2005-2006")
    } else {
     data <- file %>%
             # Only want complete seasons of data
-            filter(chill_season != "chill_1978-1979" &
-                   chill_season != "chill_2015-2016")
+            filter(chill_season != "chill_1978-1979" & chill_season != "chill_2015-2016")
   } 
   data <- data %>% 
           # Within a season

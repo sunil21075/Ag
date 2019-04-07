@@ -7,6 +7,8 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(ggpubr) # for ggarrange
+options(digit=9)
+options(digits=9)
 ##############################
 ############################## Global variables
 ##############################
@@ -102,13 +104,10 @@ for(month in month_names){
   data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
   data$city[data$location == "44.09375_-123.34375"] = "Elmira"
   data$city <- factor(data$city, levels = city_names)
-  
-  data <- data %>% 
-          mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
-          group_by(chill_season, year, model, month, scenario, temp_cat, city) %>% 
-          summarise(no_hours = n())
-  
+
+  data <- table(cut(data$Temp, breaks = iof_breaks))        
   data$temp_cat = factor(data$temp_cat, order=T)
+
   assign(x = paste0(month, "_plot"),
          value = { plot_intervals(data=data,
                                   month_name=month)})
@@ -124,10 +123,7 @@ for(month in month_names){
   data$city[data$location == "44.09375_-123.34375"] = "Elmira"
   data$city <- factor(data$city, levels = city_names)
 
-  data <- data %>% 
-          mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
-          group_by(chill_season, year, month, scenario, temp_cat, city) %>% 
-          summarise(no_hours = n())
+  data <- table(cut(data$Temp, breaks = iof_breaks))
   data$temp_cat = factor(data$temp_cat, order=T)
   
   assign(x = paste0("observed_", month, "_plot"),
@@ -387,11 +383,7 @@ data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
 data$city[data$location == "44.09375_-123.34375"] = "Elmira"
 data$city <- factor(data$city, levels = city_names)
 
-data <- data %>% 
-          mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
-          group_by(chill_season, year, model, month, scenario, temp_cat, city) %>% 
-          summarise(no_hours = n())
-
+data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_Dec_plot <- plot_intervals(data, month_name="Sept. through Dec.")
 ggsave(plot = sep_Dec_plot,
        filename = "sep_thru_Dec_modeled.png",
@@ -412,11 +404,7 @@ data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
 data$city[data$location == "44.09375_-123.34375"] = "Elmira"
 data$city <- factor(data$city, levels = city_names)
 
-data <- data %>% 
-          mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
-          group_by(chill_season, year, model, month, scenario, temp_cat, city) %>% 
-          summarise(no_hours = n())
-
+data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_Dec_plot <- plot_intervals(data, month_name="Sept. through Dec.")
 ggsave(plot = sep_Dec_plot,
        filename = "sep_thru_Dec_observed.png",
@@ -452,12 +440,9 @@ data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
 data$city[data$location == "44.09375_-123.34375"] = "Elmira"
 data$city <- factor(data$city, levels = city_names)
 
-data <- data %>% 
-          mutate(temp_cat=cut(Temp, breaks = iof_breaks)) %>% 
-          group_by(chill_season, year, model, month, scenario, temp_cat, city) %>% 
-          summarise(no_hours = n())
-
+data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_jan_plot <- plot_intervals(data, month_name = "Sept. through Jan.")
+
 ggsave(plot = sep_jan_plot,
        filename = paste0("sep_thru_jan_modeled", ".png"),
        path = plot_dir,
@@ -476,11 +461,7 @@ data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
 data$city[data$location == "44.09375_-123.34375"] = "Elmira"
 data$city <- factor(data$city, levels = city_names)
 
-data <- data %>% 
-        mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
-        group_by(chill_season, year, model, month, scenario, temp_cat, city) %>% 
-        summarise(no_hours = n())
-
+data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_jan_plot <- plot_intervals(data, month_name="Sept. through Jan.")
 ggsave(plot = sep_jan_plot,
        filename = paste0("sep_thru_jan_observed.png"),

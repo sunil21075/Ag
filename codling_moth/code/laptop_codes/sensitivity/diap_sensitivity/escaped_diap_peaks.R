@@ -12,12 +12,12 @@ escaped_diap_peaks <- function(file_path, file_name){
 	    data <- subset(data, select=c("ClimateGroup", "CountyGroup", 
 		                              "CumulativeDDF", "variable", "value"))
 
-	} else {
+	 } else {
 		data <- data[variable =="RelLarvaPop" | variable =="RelNonDiap"]
         data <- subset(data, select=c("ClimateGroup", "CountyGroup", 
         	                          "CumulativeDDF", "variable", "value"))
 		data = data[data$variable=="RelNonDiap", ]
-          }
+    }
 	
 	data_gen_1 <- data[data$CumulativeDDF >= 213  & data$CumulativeDDF < 1153,]
 	data_gen_2 <- data[data$CumulativeDDF >= 1153 & data$CumulativeDDF < 2313,]

@@ -1,13 +1,7 @@
 #!/bin/bash
-
-## Export all environment variables in the qsub command's environment to the
-## batch job.
 #PBS -V
 
-## Define a job name
 #PBS -N combine_CMPOPS
-
-## Define compute options
 #PBS -l nodes=1:dev:ppn=1
 #PBS -l mem=30gb
 #PBS -l walltime=5:00:00

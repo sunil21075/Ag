@@ -1,7 +1,6 @@
 #!/share/apps/R-3.2.2_gcc/bin/Rscript
-#library(chron)
+
 library(data.table)
-library(ggplot2)
 
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
