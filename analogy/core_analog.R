@@ -19,16 +19,96 @@ options(digit=9)
 ####################################################################
 ##                                                                ##
 ##                                                                ##
-##                         find analogs                           ##
+##                            Analysis                            ##
 ##                                                                ##
 ##                                                                ##
 ####################################################################
 
-########################################################################
+
+
+
+
+
+####################################################################
+##                                                                ##
+##                                                                ##
+##                         find analogs                           ##
+##                                                                ##
+##                                                                ##
+####################################################################
+count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd){
+}
+
+
+count_NNs_per_counties_1_loc <- function(NNs, dists, sigmas, county_list, sigma_bd){
+  # For a given location, i.e. a vector,
+  # find the number of analog (historical)counties 
+  # corresponding to a given target county in the future.
+  #
+  # input: NNs: data frame of nearest neighbors (This is a vector in data frame format. it is in  R^N)
+  #      dists: distances to the location of interest
+  #     sigmas: sigma_dissimilarity between the location of interest and other locations
+  #   sigma_bd: the cut-off point to use for NNs. like neighbros with distance less that sigma_bd
+  # 
+  # output: data frame of county counts
+  #
+
+  county_list <- unique(county_list) # sanity check
+
+  year_of_int <- NNs$year
+  location_of_int <- NNs$location
+  # lat_long_of_int <- c(unlist(strsplit(location_of_int, "_"))[1], 
+  #                    unlist(strsplit(location_of_int, "_"))[2]) %>% 
+  #                     as.numeric()
+  
+  analogs <- NNs[, seq(2, ncol(NNs_int), 2)]
+  
+  analogs <- within(analogs, remove(location))
+  dists <- within(dists, remove(year, location))
+  sigmas <- within(sigmas, remove(year, location))
+
+  x <- sapply(analogs, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+  lat = x[1, ]; long = x[2, ];
+
+  # convert analogs from data frame to vector thing. (list)
+  analogs <- paste0(lat, "_", long)
+  
+  no_of_nns_found <- length(sigmas)
+  close_analogs <- setNames(data.table(matrix(nrow = no_of_nns_found, ncol = 3)), 
+                                              c("location", "distances", "sigmas"))
+  
+  close_analogs$location = as.character(analogs)
+  close_analogs$distances = as.numeric(dists)
+  close_analogs$sigmas = as.numeric(sigmas)
+  
+  ########### add county names to list of NNs.
+  close_analogs <- merge(x=close_analogs, y=county_list, all.x=T)
+  
+  ########### Pick up locations whose distance
+  close_analogs <- close_analogs %>% filter(sigmas <= sigma_bd)
+
+  # kill the non-sxisting counties that are present in data as factor!
+  close_analogs$countyname <- factor(close_analogs$countyname)
+
+  ########### count number of counties showing up
+  NNs_county_count <- as.data.frame(table(close_analogs$countyname))
+  setnames(NNs_county_count, old=c("Var1"), new=c("countyname"))
+
+  close_analogs <- merge(close_analogs, NNs_county_count, all.x=T) %>% data.table
+
+  # just grab unique counties and their frequency
+  close_analogs_unique <- subset(close_analogs, select=c(countyname, Freq)) %>% data.table()
+  setkey(close_analogs_unique, "countyname")
+  close_analogs_unique <- unique(close_analogs_unique)
+
+  return (list(close_analogs, close_analogs_unique))
+}
+
+####################################################################################
 #
 #                                 Mahony Style
 # 
-########################################################################
+####################################################################################
 find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, precipitation=TRUE){
   # This is modification of find_NN_info_W4G
   # where we add ICV matrix which in our case is 
@@ -223,7 +303,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
   return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb, 
               colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
 }
-########################################################################
+####################################################################################
 find_NN_info_W4G_ICV_stop_working <- function(ICV, historical_dt, future_dt, n_neighbors){
   # This is modification of find_NN_info_W4G
   # where we add ICV matrix which in our case is 
@@ -407,8 +487,6 @@ find_NN_info_W4G_ICV_stop_working <- function(ICV, historical_dt, future_dt, n_n
   return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb, 
               colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
 }
-####################################################################################
-####################################################################################
 ####################################################################################
 ####################################################################################
 ####################################################################################
@@ -621,11 +699,7 @@ sort_matchit_out <- function(base, usa, m_method, m_distance, m_ratio, precip){
   return(matched_frame)
 }
 
-list_by_dist_1_to_all <- function(binded, 
-                                  m_method, 
-                                  m_distance = "default", 
-                                  m_ratio = 500, 
-                                  precip = FALSE){
+list_by_dist_1_to_all <- function(binded, m_method, m_distance = "default", m_ratio = 500, precip = FALSE){
   # List the historical locations
   # according to increasing distance 
   # from a given locaion data in a certain year: base

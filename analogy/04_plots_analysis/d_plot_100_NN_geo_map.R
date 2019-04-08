@@ -1,4 +1,4 @@
-rm(list=ls())
+# rm(list=ls())
 library(data.table)
 library(dplyr)
 library(ggmap)
@@ -7,9 +7,20 @@ library(ggpubr)
 options(digits=9)
 options(digit=9)
 
+######################################################################
+#
+#    Set up directories
+#
+######################################################################
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/avg_avg_rcp85_NO_precip/rcp85/"
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/analogy/parameters/"
 
+######################################################################
+#
+#    Set up file names
+#
+######################################################################
 NNs_name <-  "NN_loc_year_tb_avg_26_50.rds"
 dist_name <- "NN_dist_tb_avg_26_50.rds"
 sigma_name <-"NN_sigma_tb_avg_26_50.rds"
@@ -18,9 +29,17 @@ NNs_name <- paste0(in_dir, NNs_name)
 dist_name <- paste0(in_dir, dist_name)
 sigma_name <- paste0(in_dir, sigma_name)
 
+
+######################################################################
+#
+#    read files
+#
+######################################################################
+
 NNs <- data.table(readRDS(NNs_name))
 dists <- data.table(readRDS(dist_name))
 sigmas <- data.table(readRDS(sigma_name))
+county_list <- data.table(read.table(paste0(param_dir, "counties.csv"), header=T, sep=","))
 
 ###########################################################
 # 46.28125_-119.34375 Richland
@@ -30,14 +49,35 @@ sigmas <- data.table(readRDS(sigma_name))
 # 44.09375_-123.34375 Elmira
 ###########################################################
 
-given_locations <- c("46.28125_-119.34375", "48.40625_-119.53125", "47.40625_-120.34375")
+given_locations <- c("46.28125_-119.34375") # , "48.40625_-119.53125", "47.40625_-120.34375"
 
 NNs_int <- NNs %>% filter(location %in% given_locations)
 dist_int <- dists %>% filter(location %in% given_locations)
 sigma_int <- sigmas %>% filter(location %in% given_locations)
 
 
+NNs <- NNs %>% filter(location %in% given_locations)
+dists <- dists %>% filter(location %in% given_locations)
+sigmas <- sigmas %>% filter(location %in% given_locations)
+
+
 plot_100_NN_geo_map
+
+
+
+
+
+###########################################################
+county_list <- data.table(read.table("/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/CropParamCRB.csv", 
+                                      header=T, sep=","))
+
+county_list$location <- paste0(county_list$lat, "_", county_list$long)
+county_list <- subset(county_list, select=c("location", "countyname")) %>% unique()
+
+
+
+
+
 
 
 
