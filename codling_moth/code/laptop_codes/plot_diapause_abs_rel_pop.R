@@ -17,10 +17,17 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
   data <- data[variable =="RelLarvaPop" | variable =="RelNonDiap"]
   data <- subset(data, select=c("ClimateGroup", "CountyGroup", "CumulativeDDF", "variable", "value"))
+  old_ClimateGroup <- c("Historical", "2040's", "2060's", "2080's")
+  new_ClimateGroup <- c("Historical", "2040s", "2060s", "2080s")
+  
+  data[data$ClimateGroup == old_ClimateGroup[2]]$ClimateGroup = new_ClimateGroup[2]
+  data[data$ClimateGroup == old_ClimateGroup[3]]$ClimateGroup = new_ClimateGroup[3]
+  data[data$ClimateGroup == old_ClimateGroup[4]]$ClimateGroup = new_ClimateGroup[4]
+  data$ClimateGroup = factor(data$ClimateGroup, levels=new_ClimateGroup, order=T)
   data$variable <- factor(data$variable)
 
   pp = ggplot(data, aes(x=CumulativeDDF, y=value, color=variable, fill=factor(variable))) + 
-       labs(x = "cumulative degree days(in F)", y = "relative population", color = "relative population") +
+       labs(x = "cumulative degree days (in F)", y = "relative population", color = "relative population") +
        geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
        geom_hline(yintercept=c(5, 10, 15, 20), linetype="solid", color ="grey", size=.25) +
        annotate(geom="text", x=700,  y=18, label="Gen. 1", color="black", angle=30) +
@@ -28,10 +35,10 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
        annotate(geom="text", x=2900, y=14, label="Gen. 3", color="black", angle=30) + 
        annotate(geom="text", x=3920, y=12, label="Gen. 4", color="black", angle=30) +
        facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
-       scale_fill_manual(labels = c("Total", "Escape diapause"), 
+       scale_fill_manual(labels = c("total population", "population escaping diapause"), 
                          values=c("grey", "orange"), 
                          name = "relative population") +
-       scale_color_manual(labels = c("Total", "Escape diapause"), 
+       scale_color_manual(labels = c("total population", "population escaping diapause"), 
                           values=c("grey", "orange"), 
                           guide = FALSE) +
        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
@@ -86,9 +93,9 @@ ggsave("rel.png", rel, device="png", path=plot_path, width=10, height=14, unit="
 
 
 #### Absolute
-file_name_extension = "diapause_abs_rcp85.rds"
-version = "rcp85"
-plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
+# file_name_extension = "diapause_abs_rcp85.rds"
+# version = "rcp85"
+# plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
 
 file_name_extension = "diapause_abs_rcp45.rds"
 version = "rcp45"

@@ -1,53 +1,46 @@
 rm(list=ls())
 library(data.table)
 library(dplyr)
-#library(ggplot2)
 library(ggpubr)
 ################################################################################################
 
 input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
 plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/"
 setwd(input_dir)
-# color_ord <- c("grey47", "dodgerblue", "olivedrab4", "red")
 
-file_name = "combined_CM_rcp45.rds"
-plot_output_name = "adult_emergence_rcp45"
-
-
-emissions <- c("RCP 4.5", "RCP 8.5")
-time_periods <- c("Historical", "2040's","2060's","2080's")
-time_periods_n <- c("Historical", "2026-2050","2051-2075","2076-2095")
-
-color_ord <- c("grey47", "dodgerblue", "olivedrab4", "red")
-plot_dpi <- 350
-box_width = 0.7
 #
 # These plots are produced by combined_CM files.
 #
 
-the_theme <- theme(plot.title = element_text(size=30, face="bold"),
-                   plot.margin = margin(t=1, r = 0.5, b = 0, l=0.1, unit = 'cm'),
-                   panel.grid.minor = element_blank(),
-                   panel.spacing=unit(.5, "cm"),
-                   legend.margin=margin(t=.5, r = 0, b = 0, l = 0, unit = 'cm'),
-                   legend.title = element_blank(),
-                   legend.position="bottom", 
-                   legend.key.size = unit(3, "line"),
-                   legend.spacing.x = unit(.05, 'cm'),
-                   panel.grid.major = element_line(size = 0.1),
-                   axis.ticks = element_line(color="black", size = .2),
-                   strip.text = element_text(size=25, face = "bold"),
-                   legend.text=element_text(size=25),
-                   axis.title.x = element_text(size=25, face = "bold",  margin = margin(t=8, r=0, b=0, l=0)),    
-                   axis.text.x = element_text(size= 20, face = "bold", color="black"),
-                   axis.title.y = element_blank(),
-                   axis.text.y  = element_blank(),
-                   axis.ticks.y = element_blank()
-                  ) 
+plot_adult_emergence <- function(em){
+  the_theme <- theme(plot.title = element_text(size=12, face="bold"),
+                     plot.margin = margin(t=.5, r=0.5, b=0, l=0.1, unit = 'cm'),
+                     panel.grid.major = element_line(size = 0.1),
+                     panel.grid.minor = element_blank(),
+                     panel.spacing=unit(.5, "cm"),
+                     legend.margin=margin(t=.5, r=0, b=0, l=0, unit = 'cm'),
+                     legend.title = element_blank(),
+                     legend.position="bottom", 
+                     legend.key.size = unit(1.5, "line"),
+                     legend.spacing.x = unit(.05, 'cm'),
+                     strip.text = element_text(size=12, face = "bold"),
+                     legend.text=element_text(size=12),
+                     axis.text.x = element_text(size= 10, face = "bold", color="black"),
+                     axis.text.y  = element_blank(),
+                     axis.title.x = element_text(size=12, face = "bold",  margin = margin(t=8, r=0, b=0, l=0)),    
+                     axis.title.y = element_blank(),
+                     axis.ticks.y = element_blank()
+                     ) 
+  old_ClimateGroup <- c("Historical", "2040's", "2060's", "2080's")
+  new_ClimateGroup <- c("Historical", "2040s", "2060s", "2080s")
 
-for (em in c("rcp45", "rcp85")){
-  if (em=="rcp45"){plot_title <- "RCP 4.5"} else {plot_title <- "RCP 8.5"}
+  color_ord <- c("grey47", "dodgerblue", "olivedrab4", "red")
+  plot_dpi <- 700
+  box_width = 0.5
+  if (em=="rcp45") {plot_title <- "RCP 4.5"} else {plot_title <- "RCP 8.5"}
+  print ("line 41")
   data <- data.table(readRDS(paste0("combined_CM_", em, ".rds")))
+  print ("line 43")
   data <- subset(data, select = c("Emergence", "ClimateGroup", 
                                   "ClimateScenario", 
                                   "CountyGroup"))
@@ -56,43 +49,47 @@ for (em in c("rcp45", "rcp85")){
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
 
-  data = data[, .(Emergence = Emergence),
-        by = c("ClimateGroup", "CountyGroup")]
-
+  data = data[, .(Emergence = Emergence), by = c("ClimateGroup", "CountyGroup")]
   data <- subset(data, select = c("ClimateGroup", "CountyGroup", "Emergence"))
 
-  ###### Compute medians of each group to annotate in the plot, if possible!!!
+  data[data$ClimateGroup == old_ClimateGroup[2]]$ClimateGroup = new_ClimateGroup[2]
+  data[data$ClimateGroup == old_ClimateGroup[3]]$ClimateGroup = new_ClimateGroup[3]
+  data[data$ClimateGroup == old_ClimateGroup[4]]$ClimateGroup = new_ClimateGroup[4]
+  data$ClimateGroup = factor(data$ClimateGroup, levels=new_ClimateGroup, order=T)
 
+  ###### Compute medians of each group to annotate in the plot, if possible!!!
   df <- data.frame(data)
   df <- (df %>% group_by(CountyGroup, ClimateGroup))
   medians <- (df %>% summarise(med = median(Emergence)))
-  medians_vec <- medians$med
 
-  p = ggplot(data = data, aes(x=ClimateGroup, y=Emergence, fill=ClimateGroup))+
-      geom_boxplot(outlier.size=-.15, notch=FALSE, width=box_width, lwd=.25) +
-      scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
-      scale_y_continuous(breaks = round(seq(40, 170, by = 20), 1)) +
-      labs(x="Time period", y="Julian day", color = "Climate Group") +
-      facet_wrap(~CountyGroup) +
-      the_theme +
-      scale_fill_manual(values=color_ord, name="Time\nPeriod", labels=time_periods) + 
-      scale_color_manual(values=color_ord, name="Time\nPeriod", limits = color_ord, labels=time_periods) +
-      coord_flip() + 
-      ggtitle(label = plot_title)
-  assign(x = paste0("adult_emerge_", em), value ={p})
+  p <- ggplot(data = data, aes(x=ClimateGroup, y=Emergence, fill=ClimateGroup))+
+       geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25) +
+       scale_x_discrete(expand=c(-.2, 2), limits = levels(data$ClimateGroup[1])) +
+       scale_y_continuous(breaks = round(seq(40, 170, by = 20), 1)) +
+       labs(x="Time period", y="Julian day", color = "Climate Group") +
+       facet_wrap(~CountyGroup) +
+       the_theme +
+       scale_fill_manual(values=color_ord, name="Time\nPeriod", labels=new_ClimateGroup) + 
+       scale_color_manual(values=color_ord, name="Time\nPeriod", limits = color_ord, labels=new_ClimateGroup) +
+       coord_flip() + 
+       geom_text(data = medians, 
+                 aes(label = sprintf("%1.0f", medians$med), y=medians$med),
+                     size= 3.2, vjust = -.8, # hjust = .5,
+                    ) +
+       ggtitle(label = plot_title)
+  return (p)
 }
 
+adult_emerge_rcp45 <- plot_adult_emergence(em="rcp45")
+adult_emerge_rcp85 <- plot_adult_emergence(em="rcp85")
 adult_emerge <- ggpubr::ggarrange(plotlist = list(adult_emerge_rcp45, adult_emerge_rcp85),
                                   ncol = 2, nrow = 1,
-                                  common.legend = TRUE, legend = "bottom")
+                                  common.legend=T, legend = "bottom")
 
 A <- annotate_figure(adult_emerge, 
-                     top = text_grob("Julian day of adult emergence", color="black", face="bold", size=35)
+                     top = text_grob("Julian day of adult emergence", color="black", face="bold", size=15)
                      # fig.lab = "Julian day of adult emergence", fig.lab.size = 35, fig.lab.face = "bold")
                      )
-ggsave("adult_emerge.png", A, path="./", width=20, height=7, unit="in", dpi=plot_dpi)
-
-
-
+ggsave("adult_emerge.png", A, path="./", width=10, height=4, unit="in", dpi=600)
 
 

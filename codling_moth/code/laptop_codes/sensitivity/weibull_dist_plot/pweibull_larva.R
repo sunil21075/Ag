@@ -125,7 +125,7 @@ larva_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme +
                    geom_path(stat="function", fun=pw_larva_2_shift_10_percent, aes(colour="dodgerblue"), linetype=2)+
                    geom_path(stat="function", fun=pw_larva_3_shift_10_percent, aes(colour="olivedrab4"), linetype=2)+
                    geom_path(stat="function", fun=pw_larva_4_shift_10_percent, aes(colour="red"), linetype=2)+
-                   scale_x_continuous(name="Degree days", limits=x_limits) + 
+                   scale_x_continuous(name="degree days (in F)", limits=x_limits) + 
                    scale_y_continuous(name="cumulative distribution", limits=y_limits, labels = function(x) format(x, scientific=F)) +
                    scale_colour_identity("", guide="legend", 
                                              labels = labelss, 

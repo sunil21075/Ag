@@ -39,7 +39,7 @@ adult_DoY_mean <- ggpubr::ggarrange(plotlist = list(adult_DoY_45, adult_DoY_85),
                                     ncol = 2, nrow = 1,
                                     common.legend = TRUE, legend = "bottom")
 
-ggsave("adult_DoY_mean.png", adult_DoY_mean, path=plot_path, dpi=400)
+ggsave("adult_DoY_median.png", adult_DoY_mean, width=11, height=7.5, path=plot_path, dpi=500)
 
 print( Sys.time()- start_time)
 

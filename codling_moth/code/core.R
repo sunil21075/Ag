@@ -24,11 +24,11 @@ produce_CMPOP_local <- function (input_folder, filename,
     temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
   } 
   else {
-    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040s"
     temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
-    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060s"
     temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
-    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080s"
     temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
   }
   rm (temp)
@@ -65,11 +65,11 @@ produce_CM_local <- function(input_folder, filename,
     temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
     } 
   else{             
-    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040s"
     temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
-    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060s"
     temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
-    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080s"
     temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
   }
   options(digits=9)

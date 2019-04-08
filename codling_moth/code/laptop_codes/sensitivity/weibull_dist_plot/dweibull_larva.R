@@ -1,13 +1,7 @@
 ################## Larva dweibull
-library(chron)
-library(EnvStats)
-library(grid)
 library(data.table)
-library(reshape2)
 library(dplyr)
-library(foreach)
-library(iterators)
-library(ggplot2)
+library(ggpubr)
 par(mar=c(1, 1, 1, 1))
 dev.off() 
 
@@ -194,7 +188,7 @@ larva_density = ggplot(data.frame(x=x_limits), aes(x=x)) + the_theme +
                       geom_path(stat="function", fun=dw_larva_Gen2_shift_10_percent, aes(colour="dodgerblue"), linetype=2)+
                       geom_path(stat="function", fun=dw_larva_Gen3_shift_10_percent, aes(colour="olivedrab4"), linetype=2)+
                       geom_path(stat="function", fun=dw_larva_Gen4_shift_10_percent, aes(colour="red"), linetype=2)+
-                      scale_x_continuous(name="Degree days", limits=x_limits) + 
+                      scale_x_continuous(name="degree day (in F)", limits=x_limits) + 
                       scale_y_continuous(name="density", limits=y_limits, labels = function(x) format(x*1000, scientific=F)) +
                       scale_colour_identity("", guide="legend", 
                                                 labels = labelss, 

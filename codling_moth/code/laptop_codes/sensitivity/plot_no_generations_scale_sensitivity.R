@@ -29,10 +29,7 @@ for (file in files){
 
 all_info <- all_info %>% filter(time_period != "historical")
 
-legend_labels = c(paste0("2040's"), paste0("2060's"), paste0("2080's"))
-
-
-
+legend_labels = c("2040s", "2060s", "2080s")
 
 rm(list=ls())
 library(data.table)
@@ -77,10 +74,10 @@ for (weather in weather_type){
     stages = c("_Larva_", "_Adult_")
     for (dead in dead_lines){
       for (stag in stages){
-      	if (dead == "Aug"){d = "Aug. 23"} else {d = "Nov. 5"}
-      	if (model== "45") {m = "RCP 4.5"} else {m = "RCP 8.5"}
-      	if (weather == "_warm") {aa = " (Warmer Areas)"} else {aa= " (Cooler Areas)"}
-      	plot_title <- paste0(m, aa)
+        if (dead == "Aug"){d = "Aug. 23"} else {d = "Nov. 5"}
+        if (model== "45") {m = "RCP 4.5"} else {m = "RCP 8.5"}
+        if (weather == "_warm") {aa = " (Warmer Areas)"} else {aa= " (Cooler Areas)"}
+        plot_title <- paste0(m, aa)
 
         mask_entry = paste0(model, stag, dead, "_")
         mask = c(paste0(mask_entry, "2040"), paste0(mask_entry, "2060"),
@@ -88,7 +85,7 @@ for (weather in weather_type){
       
         curr_data = all_info[all_info$pop_type %in% mask]
       
-        legend_labels = c("2040's", "2060's", "2080's")
+        legend_labels = factor(c("2040s", "2060s", "2080s"), order=T)
       
         h_line_coord = as.numeric(all_info[all_info$pop_type %in% c(paste0(mask_entry, "historical"))][1, 3])
         history_line <- data.frame( x = c(-Inf, Inf), y = h_line_coord, history_line = factor(h_line_coord) )
@@ -99,7 +96,7 @@ for (weather in weather_type){
                   ylim(1, 3.25) + 
                   theme(panel.grid.major = element_line(size = 0.3),
                         panel.grid.minor = element_line(size = 0.2),
-                        plot.margin = unit(c(t=0, r=.2, b=1, l=0), "cm"),
+                        plot.margin = unit(c(t=0.2, r=.2, b=1, l=.2), "cm"),
                         panel.spacing=unit(.5, "cm"),
                         legend.position="bottom",
                         legend.title = element_blank(),
@@ -124,9 +121,6 @@ for (weather in weather_type){
     }
   }
 }
-
-
-
 
 larva <- ggpubr::ggarrange(plotlist = list(rcp45_Larva_Aug_scale_sens_cold, rcp45_Larva_Aug_scale_sens_warm,
                                            rcp85_Larva_Aug_scale_sens_cold, rcp85_Larva_Aug_scale_sens_warm),
