@@ -90,7 +90,8 @@ R_LIBS_USER=~/.local/lib/R3.5.1
 
 #################### Install packages on aeolus ^^^^^^^^^^^^
 ############################################################
-
+# count number of NA in columns
+colSums(is.na(dt)|dt == '')
 
 
 strsplit vector 
