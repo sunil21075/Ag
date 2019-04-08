@@ -23,9 +23,9 @@ needed_cols = c("mdeffect", "ceffectnmd", "ceffectmd",
 data = subset(data, select=needed_cols)
 
 data$ClimateGroup[data$year >= 1979 & data$year <= 2005] <- "Historical"
-data$ClimateGroup[data$year > 2025 & data$year <= 2055] <- "2040's"
-data$ClimateGroup[data$year > 2045 & data$year <= 2075] <- "2060's"
-data$ClimateGroup[data$year > 2065 & data$year <= 2095] <- "2080's"
+data$ClimateGroup[data$year > 2025 & data$year <= 2055] <- "2040s"
+data$ClimateGroup[data$year > 2045 & data$year <= 2075] <- "2060s"
+data$ClimateGroup[data$year > 2065 & data$year <= 2095] <- "2080s"
 
 # There are years between 2006 and 2015 which ... becomes NA
 # The second line is a better approach, it just drops
@@ -57,15 +57,15 @@ data_85 = melt(data_85, id = c("loc", "ClimateGroup"))
 # Fix the order of levels of variables
 data$variable <- factor(data$variable, ordered = TRUE)
 data$ClimateGroup <- factor(data$ClimateGroup, 
-                            levels = c("Historical", "2040's", "2060's", "2080's"))
+                            levels = c("Historical", "2040s", "2060s", "2080s"))
 
 data_45$variable <- factor(data_45$variable, ordered = TRUE)
 data_45$ClimateGroup <- factor(data_45$ClimateGroup, 
-                               levels = c("Historical", "2040's", "2060's", "2080's"))
+                               levels = c("Historical", "2040s", "2060s", "2080s"))
 
 data_85$variable <- factor(data_85$variable, ordered = TRUE)
 data_85$ClimateGroup <- factor(data_85$ClimateGroup, 
-                               levels = c("Historical", "2040's", "2060's", "2080's"))
+                               levels = c("Historical", "2040s", "2060s", "2080s"))
 
 ######
 ###### Plot's cosmetic settings
@@ -97,7 +97,7 @@ the_theme <- theme(plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
 
 vince_box_45_85 <- ggplot(data = data, aes(x=variable, y=value), group = variable) + 
                    geom_boxplot(outlier.size=-.15, notch=FALSE, width=.7, lwd=.25, aes(fill=ClimateGroup), 
-                                position=position_dodge(width=0.5)) + 
+                                position=position_dodge(width=0.8)) + 
                    scale_x_discrete(expand=c(0.2, .1), limits = levels(data$variable[1])) +
                    facet_grid(~loc, scales="free") + 
                    labs(x="control method", 
@@ -107,14 +107,14 @@ vince_box_45_85 <- ggplot(data = data, aes(x=variable, y=value), group = variabl
                    scale_color_manual(values=color_ord,
                                       name="Time\nPeriod", 
                                       limits = color_ord,
-                                      labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                      labels=c("Historical", "2040s", "2060s", "2080s")) +
                    scale_fill_manual(values=color_ord,
                                      name="Time\nPeriod", 
-                                     labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                     labels=c("Historical", "2040s", "2060s", "2080s")) +
                    the_theme
 vince_45 <- ggplot(data = data_45, aes(x=variable, y=value), group = variable) + 
             geom_boxplot(outlier.size=-.15, notch=FALSE, width=.7, lwd=.25, aes(fill=ClimateGroup), 
-                         position=position_dodge(width=0.5)) + 
+                         position=position_dodge(width=0.8)) + 
             scale_x_discrete(expand=c(0.2, .1), limits = levels(data$variable[1])) +
             facet_grid(~loc, scales="free") + 
             labs(x="control method", 
@@ -124,14 +124,14 @@ vince_45 <- ggplot(data = data_45, aes(x=variable, y=value), group = variable) +
             scale_color_manual(values=color_ord,
                                name="Time\nPeriod", 
                                limits = color_ord,
-                               labels=c("Historical", "2040's", "2060's", "2080's")) +
+                               labels=c("Historical", "2040s", "2060s", "2080s")) +
             scale_fill_manual(values=color_ord,
                               name="Time\nPeriod", 
-                              labels=c("Historical", "2040's", "2060's", "2080's")) +
+                              labels=c("Historical", "2040s", "2060s", "2080s")) +
             the_theme
 vince_85 <- ggplot(data = data_85, aes(x=variable, y=value), group = variable) + 
                 geom_boxplot(outlier.size=-.15, notch=FALSE, width=.7, lwd=.25, aes(fill=ClimateGroup), 
-                             position=position_dodge(width=0.5)) + 
+                             position=position_dodge(width=0.8)) + 
                 scale_x_discrete(expand=c(0.2, .1), limits = levels(data$variable[1])) +
                 facet_grid(~loc, scales="free") + 
                 labs(x="control method", 
@@ -141,10 +141,10 @@ vince_85 <- ggplot(data = data_85, aes(x=variable, y=value), group = variable) +
                 scale_color_manual(values=color_ord,
                                    name="Time\nPeriod", 
                                    limits = color_ord,
-                                   labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                   labels=c("Historical", "2040s", "2060s", "2080s")) +
                 scale_fill_manual(values=color_ord,
                                   name="Time\nPeriod", 
-                                  labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                  labels=c("Historical", "2040s", "2060s", "2080s")) +
                 the_theme
 
 big_plot <- ggarrange(vince_box_45_85, vince_45, vince_85,
@@ -245,10 +245,10 @@ facet45_85 <- ggplot(data = data_back, aes(x=variable, y=value), group = variabl
               scale_color_manual(values=color_ord,
                                  name="Time\nPeriod", 
                                  limits = color_ord,
-                                 labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                 labels=c("Historical", "2040s", "2060s", "2080s")) +
               scale_fill_manual(values=color_ord,
                                 name="Time\nPeriod", 
-                                labels=c("Historical", "2040's", "2060's", "2080's")) +
+                                labels=c("Historical", "2040s", "2060s", "2080s")) +
               the_theme
 
 ggsave(filename = "facet45_85.png", 
@@ -297,10 +297,10 @@ MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=var
             scale_color_manual(values=color_ord,
                                name="Time\nPeriod", 
                                limits = color_ord,
-                               labels=c("Historical", "2040's", "2060's", "2080's")) +
+                               labels=c("Historical", "2040s", "2060s", "2080s")) +
             scale_fill_manual(values=color_ord,
                               name="Time\nPeriod", 
-                              labels=c("Historical", "2040's", "2060's", "2080's")) +
+                              labels=c("Historical", "2040s", "2060s", "2080s")) +
             the_theme
 
 ggsave(filename = "MS_Spray.png", 
