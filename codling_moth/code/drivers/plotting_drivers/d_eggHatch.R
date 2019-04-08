@@ -26,11 +26,11 @@ egg_85 <- plot_cumdd_eggHatch(input_dir=data_dir,
                               version="rcp85", 
                               output_dir=plot_path, output_type="eggHatch")
 
-adult_DoY_mean <- ggpubr::ggarrange(plotlist = list(adult_DoY_mean_45, adult_DoY_mean_85),
+adult_DoY_mean <- ggpubr::ggarrange(plotlist = list(egg_45, egg_85),
                                     ncol = 2, nrow = 1,
                                     common.legend = TRUE, legend = "bottom")
 
-ggsave("EggHatch.png", adult_DoY_mean, path=plot_path, dpi=400)
+ggsave("EggHatch.png", adult_DoY_mean, width=11, height=7.5, path=plot_path, dpi=500)
 
 
 print( Sys.time()- start_time)

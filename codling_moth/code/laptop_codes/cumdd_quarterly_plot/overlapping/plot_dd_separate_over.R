@@ -18,15 +18,10 @@ version = c("rcp45", "rcp85")
 setwd(input_dir)
 
 color_ord <- c("grey47", "dodgerblue", "olivedrab4", "red")
-time_periods <- c("Historical", "2040's","2060's","2080's")
 
 for (vers in version){
   print (vers)
-  if (vers == "rcp45"){
-    plot_title <- "RCP 4.5"
-    } else{
-      plot_title <- "RCP 8.5"
-  }
+  if (vers == "rcp45"){ plot_title <- "RCP 4.5"} else{ plot_title <- "RCP 8.5"}
   
   data = readRDS(paste0("./", "cumdd_CMPOP_", vers, ".rds"))
   data = subset(data, select = c("ClimateGroup", "CountyGroup", "dayofyear", "CumDDinF"))
@@ -42,6 +37,14 @@ for (vers in version){
   data = within(data, remove(dayofyear))
   data$season = factor(data$season, levels = c("Qr. 1", "Qr. 2", "Qr. 3", "Qr. 4"))
 
+  old_ClimateGroup <- c("Historical", "2040's", "2060's", "2080's")
+  new_ClimateGroup <- c("Historical", "2040s", "2060s", "2080s")
+  
+  data[data$ClimateGroup == old_ClimateGroup[2]]$ClimateGroup = new_ClimateGroup[2]
+  data[data$ClimateGroup == old_ClimateGroup[3]]$ClimateGroup = new_ClimateGroup[3]
+  data[data$ClimateGroup == old_ClimateGroup[4]]$ClimateGroup = new_ClimateGroup[4]
+  data$ClimateGroup = factor(data$ClimateGroup, levels=new_ClimateGroup, order=T)
+  
   #df <- data.frame(data)
   #df <- (df %>% group_by(CountyGroup, ClimateGroup, season))
   #medians <- (df %>% summarise(med = median(CumDDinF)))
@@ -68,20 +71,16 @@ for (vers in version){
                  panel.grid.minor.x = element_blank(),
                  panel.grid.major.y = element_line(size = 0.1),
                  panel.grid.minor.y = element_line(size = 0.1),
-                 strip.text = element_text(size= 30, face = "bold"),
-                 axis.text.x = element_text(size = 25, face="bold", color="black"), # tick text font size
-                 axis.text.y = element_text(size = 25, face="bold", color="black"),
-                 axis.title.y= element_text(size = 35, face = "bold", 
+                 strip.text = element_text(size=30, face = "bold"),
+                 axis.text.x = element_text(size=25, face="bold", color="black"), # tick text font size
+                 axis.text.y = element_text(size=25, face="bold", color="black"),
+                 axis.title.y= element_text(size=35, face = "bold", 
                                             margin = margin(t=0, r=20, b=0, l=0)) #,
                  # plot.margin = unit(c(t=0.1, r=.7, b=-.1, l=0.3), "cm")
                 ) + 
-           scale_fill_manual(values=color_ord,
-                             name="Time\nPeriod", 
-                             labels = time_periods) + 
-           scale_color_manual(values = color_ord,
-                              name="Time\nPeriod", 
-                              limits = color_ord,
-                              labels = time_periods) +
+           scale_fill_manual(values=color_ord, name="Time\nPeriod", labels = new_ClimateGroup) + 
+           scale_color_manual(values = color_ord, name="Time\nPeriod", limits = color_ord, 
+                              labels = new_ClimateGroup) +
            #scale_x_discrete(breaks = NULL) + 
            ggtitle(label = plot_title)
   
@@ -95,13 +94,13 @@ cumdd_plot_qrt <- ggpubr::ggarrange(plotlist = list(cumdd_plot_rcp45, cumdd_plot
                                     common.legend = TRUE, legend = "bottom")
 
 A <- annotate_figure(cumdd_plot_qrt,
-                     left = text_grob("cumulative degree day", face = "bold", 
-                                      size = 35, color = "black", rot = 90)
+                     left=text_grob("cumulative degree day (in F)", face = "bold", 
+                                      size=35, color="black", rot = 90)
                     )
 
 ggsave("cumdd_qrt_sep_300.png", A, width=30, height=8, unit="in", path="./", dpi=300, device="png")
 ggsave("cumdd_qrt_sep_350.png", A, width=30, height=8, unit="in", path="./", dpi=350, device="png")
-ggsave("cumdd_qrt_sep_400.png", A, width=30, height=8, unit="in", path="./", dpi=400, device="png")
+# ggsave("cumdd_qrt_sep_400.png", A, width=30, height=8, unit="in", path="./", dpi=400, device="png")
 
 print( Sys.time() - start_time)
 
