@@ -1,9 +1,8 @@
 
 
 
-in_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters"
-counties <- data.table(read.table(in_dir, "/CropParamCRB.csv", header = T, sep=","))
-
+in_dir = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/"
+counties <- data.table(read.table(paste0(in_dir, "/CropParamCRB.csv"), header = T, sep=","))
 
 counties <- subset(counties, select=c("lat", "long", "countyname"))
 counties$location <- paste0(counties$lat, "_", counties$long)
