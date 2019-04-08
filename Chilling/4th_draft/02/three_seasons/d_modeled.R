@@ -5,11 +5,12 @@ library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
-options(digit=9)
-options(digits=9)
 
 source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
+
+options(digit=9)
+options(digits=9)
 
 # Check current folder
 print("does this look right?")
@@ -44,8 +45,6 @@ if (overlap_type == "non_overlap" ){
     main_out <- file.path(main_out, "overlap/")
 }
 
-print (paste0( "(", model_type, "," , overlap_type, "," , season_start, ")"))
-print (main_out)
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
   dir.create(path = main_out, recursive = T)
@@ -60,7 +59,11 @@ the_dir <- dir()
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 # Pre-allocate lists to be used
-no_sites <- 645
+param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
+local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
+local_files <- as.vector(local_files$V1)
+no_sites <- length(local_files)
+
 data_list_hist <- vector(mode = "list", length = no_sites)
 data_list_F0 <- vector(mode = "list", length = no_sites) # 2005-2024
 data_list_F1 <- vector(mode = "list", length = no_sites) # 2025-2050
@@ -235,10 +238,10 @@ if(hist){
     summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2051_2075")
     summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2076_2100")
   } else if (overlap_type == "overlap"){
-    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2015's")
-    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2040's")
-    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2060's")
-    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2080's")
+    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2015s")
+    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2040s")
+    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2060s")
+    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2080s")
   }
   
   summary_data_comb <- bind_rows(summary_data_F0,

@@ -1,15 +1,13 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N mod_dyn_nonover_mid_nov
+#PBS -N mod_dyn_mid_nov_nonover
 
-## Define compute options
-#PBS -l nodes=1:ppn=1,walltime=10:00:00
+#PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=10gb
 #PBS -q hydro
 #PBS -t 1-72
 
-## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
 #PBS -e /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/error/m_mid_nov_non.e

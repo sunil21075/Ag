@@ -14,7 +14,7 @@ library(dplyr)
 options(digit=9)
 options(digits=9)
 
-in_pref <- "/data/hydro/users/Hossein/chill/data_by_core/dynamic/02"
+in_pref <- "/data/hydro/users/Hossein/chill/data_by_core/dynamic/02/"
 direcs <- c("mid_nov", "mid_oct", "mid_sept", "nov", "oct", "sept")
 starts <- c("Nov. 15", "Oct. 15", "Sept. 15", "Nov. 1", "Oct. 1", "Sept. 1")
 in_post <- "non_overlap"
