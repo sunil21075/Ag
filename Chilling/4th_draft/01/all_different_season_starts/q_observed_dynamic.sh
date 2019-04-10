@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N dynam_obs_chill_sea
+#PBS -N 01_dyn_obs_chill_sea
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1

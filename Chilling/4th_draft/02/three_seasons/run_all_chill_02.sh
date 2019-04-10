@@ -1,14 +1,9 @@
 #!/bin/bash
 
 cd /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/qsubs/
-for runname in q_model_dyn_mid_nov q_model_dyn_mid_oct q_model_dyn_mid_sept q_model_dyn_nov q_model_dyn_oct q_model_dyn_sept q_obs_dyn_mid_nov q_obs_dyn_mid_oct q_obs_dyn_mid_sept q_obs_dyn_nov q_obs_dyn_oct q_obs_dyn_sept
+
+for runname in sept mid_sept oct mid_oct nov mid_nov
 do
-qsub ./$runname.sh
+qsub ./q_model_dyn_$runname.sh
+qsub ./q_obs_dyn_$runname.sh
 done
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N dyn_mod_chill_sea
+#PBS -N 01_dyn_mod_chill_sea
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1,walltime=10:00:00
@@ -62,7 +62,7 @@ Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/01/other_three_se
 echo
 echo "----- DONE -----"
 echo
-cd /data/hydro/users/Hossein/chill/data_by_core/dynamic/01/modeled
+cd /data/hydro/users/Hossein/chill/data_by_core/dynamic/01/chill_sea/modeled
 rm -r *incom*
 rm -r MIROC-ESM
 exit 0
