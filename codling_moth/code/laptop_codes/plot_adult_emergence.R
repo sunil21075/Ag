@@ -13,8 +13,7 @@ setwd(input_dir)
 #
 
 plot_adult_emergence <- function(em){
-  the_theme <- theme(plot.title = element_text(size=12, face="bold"),
-                     plot.margin = margin(t=.5, r=0.5, b=0, l=0.1, unit = 'cm'),
+  the_theme <- theme(plot.margin = margin(t=.5, r=0.5, b=0, l=0.1, unit = 'cm'),
                      panel.grid.major = element_line(size = 0.1),
                      panel.grid.minor = element_blank(),
                      panel.spacing=unit(.5, "cm"),
@@ -23,11 +22,11 @@ plot_adult_emergence <- function(em){
                      legend.position="bottom", 
                      legend.key.size = unit(1.5, "line"),
                      legend.spacing.x = unit(.05, 'cm'),
-                     strip.text = element_text(size=12, face = "bold"),
                      legend.text=element_text(size=12),
+                     plot.title = element_text(size=12, face="bold"),
+                     strip.text = element_text(size=12, face = "bold"),
                      axis.text.x = element_text(size= 10, face = "bold", color="black"),
-                     axis.text.y  = element_blank(),
-                     axis.title.x = element_text(size=12, face = "bold",  margin = margin(t=8, r=0, b=0, l=0)),    
+                     axis.title.x = element_text(size=12, face = "bold",  margin = margin(t=8, r=0, b=0, l=0)),
                      axis.title.y = element_blank(),
                      axis.ticks.y = element_blank()
                      ) 

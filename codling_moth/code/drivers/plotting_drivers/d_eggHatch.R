@@ -30,7 +30,7 @@ adult_DoY_mean <- ggpubr::ggarrange(plotlist = list(egg_45, egg_85),
                                     ncol = 2, nrow = 1,
                                     common.legend = TRUE, legend = "bottom")
 
-ggsave("EggHatch.png", adult_DoY_mean, width=11, height=7.5, path=plot_path, dpi=500)
+ggsave("EggHatch.png", adult_DoY_mean, width=15, height=7.5, path=plot_path, dpi=350)
 
 
 print( Sys.time()- start_time)
