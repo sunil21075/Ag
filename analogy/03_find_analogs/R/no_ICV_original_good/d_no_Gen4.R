@@ -23,7 +23,7 @@ main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
 main_local_dir <- file.path(main_dir, "local/ready_features/one_file_4_all_locations/")
-main_out <- file.path(main_dir, "z_R_results/sigma/")
+main_out <- file.path(main_dir, "03_analogs/sigma/")
 ################################################################################
 ################################################################################
 # 

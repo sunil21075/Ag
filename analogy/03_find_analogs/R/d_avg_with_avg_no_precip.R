@@ -23,7 +23,7 @@ main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
 main_local_dir <- file.path(main_dir, "local/ready_features/one_file_4_all_locations/")
-main_out <- file.path(main_dir, "z_R_results/avg_vs_avg/")
+main_out <- file.path(main_dir, "03_analogs/no_gen_3/avg_vs_avg/")
 ################################################################################
 ################################################################################
 # 
