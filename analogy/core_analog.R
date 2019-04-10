@@ -25,9 +25,180 @@ options(digit=9)
 ####################################################################
 
 
+count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd=2, novel_thresh=4){
+  # For a given location, i.e. a vector,
+  # find the number of analog (historical)counties 
+  # corresponding to a given target county in the future.
+  #
+  # input: NNs: data frame of nearest neighbors (This is a data table containing all local locations
+  #      dists: distances to the locations of interest
+  #     sigmas: sigma_dissimilarity between the location of interest and other locations
+  #   sigma_bd: the cut-off point to use for NNs. like neighbros with distance less that sigma_bd
+  # 
+  # output: data tables of county counts
+  #
 
+  # set up empty tables to append results to.
 
+  c <- c("query_loc", "query_year", "analog_fips", "Freq", "analog", "st_county", "distance", "sigma")
+  all_close_analogs <- setNames(data.table(matrix(nrow = 0, ncol = 8)), c)
 
+  c <- c("query_loc", "query_year", "analog_fips", "Freq")
+  all_close_analogs_unique <- setNames(data.table(matrix(nrow = 0, ncol = 4)), c)
+
+  local_sites <- unique(NNs$location)
+  future_years <- unique(NNs$year)
+
+  for (a_site in local_sites){
+    for (yr in future_years){
+      NNs_int_yr <- NNs %>% filter(location == a_site & year == yr)
+      dist_int_yr <- dists %>% filter(location == a_site & year == yr)
+      sigma_int_yr <- sigmas %>% filter(location == a_site & year == yr)
+      
+      site_of_int <- NNs_int_yr$location
+      year_of_int <- NNs_int_yr$year
+      
+      if (check_novelty(sigma_int_yr[,-(1:2)], novel_thresh)) {
+        v <- data.frame(query_loc = site_of_int, 
+                        query_year = year_of_int, 
+                        analog_fips=NA, Freq = NA, 
+                        analog="Novel", st_county = NA, 
+                        distance = min(dist_int_yr[,-(1:2)]), 
+                        sigma = min(sigma_int_yr[,-(1:2)]))
+
+        all_close_analogs <- rbind(all_close_analogs, v)
+
+        v <- data.frame(query_loc = site_of_int, 
+                        query_year = year_of_int, 
+                        analog_fips=NA, Freq = NA)
+        all_close_analogs_unique <- rbind(all_close_analogs_unique, v)
+
+       } else if (check_almost_novelty(sigma_int_yr[,-(1:2)], sigma_bd, novel_thresh)){
+          v <- data.frame(query_loc = site_of_int, 
+                          query_year = year_of_int, 
+                          analog_fips=NA, Freq = NA, 
+                          analog="Almost_Novel", st_county = NA, 
+                          distance = NA, 
+                          sigma=min(sigma_int_yr[,-(1:2)]))
+
+          all_close_analogs <- rbind(all_close_analogs, v)
+
+          v <- data.frame(query_loc = site_of_int, 
+                          query_year = year_of_int, 
+                          analog_fips=NA, Freq = NA)
+          all_close_analogs_unique <- rbind(all_close_analogs_unique, v)
+
+       } else {
+        output <- count_NNs_1_per_counties_1_loc(NNs_1 = NNs_int_yr, dists_1 = dist_int_yr, 
+                                                 sigmas_1 = sigma_int_yr, county_list, sigma_bd)
+        
+        all_close_analogs <- rbind(all_close_analogs, output[[1]])
+        all_close_analogs_unique <- rbind(all_close_analogs_unique, output[[2]])
+      }
+    }
+  }
+  return(list(all_close_analogs, all_close_analogs_unique))
+}
+
+count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd){
+  # For a given location, i.e. a vector,
+  # find the number of analog (historical)counties 
+  # corresponding to a given target county in the future.
+  #
+  # input: NNs_1: data frame of nearest neighbors (This is a vector in data frame format. it is in  R^N)
+  #      dists_1: distances to the location of interest
+  #     sigmas_1: sigma_dissimilarity between the location of interest and other locations
+  #   sigma_bd: the cut-off point to use for NNs_1. like neighbros with distance less that sigma_bd
+  # 
+  # output: data frame of county counts
+  #
+  county_list <- unique(county_list) # sanity check
+  year_of_int <- NNs_1$year
+  location_of_int <- NNs_1$location
+  
+  # lat_long_of_int <- c(unlist(strsplit(location_of_int, "_"))[1], 
+  #                      unlist(strsplit(location_of_int, "_"))[2]) %>% 
+  #                      as.numeric()
+  
+  analogs <- NNs_1[, seq(2, ncol(NNs_1), 2)] %>% data.table()
+  
+  # remove the location of interest for whom we have found analogs
+  # so, the location below, is "location" of one site
+  analogs <- within(analogs, remove(location))
+  dists_1 <- within(dists_1, remove(year, location))
+  sigmas_1 <- within(sigmas_1, remove(year, location))
+
+  analogs <- as.list(as.data.table(t(analogs)))[[1]] # convert to matrix, table, list
+  
+  # initiale a data frame to use for listing close analogs
+  no_of_NNs_1_found <- length(sigmas_1)
+  close_analogs <- setNames(data.table(matrix(nrow = no_of_NNs_1_found, ncol = 3)), 
+                                              c("location", "distance", "sigma"))
+  
+  close_analogs$location = analogs
+  close_analogs$distance = as.numeric(dists_1)
+  close_analogs$sigma = as.numeric(sigmas_1)
+  
+  ########### add county names to list of NNs_1.
+  close_analogs <- merge(x=close_analogs, y=county_list, all.x=T)
+  
+  ########### Pick up locations that are similar enough to the query
+  close_analogs <- close_analogs %>% filter(sigma <= sigma_bd)
+
+  # kill the non-sxisting counties that are present in data as factor!
+  close_analogs$st_county <- factor(close_analogs$st_county)
+
+  ########### count number of counties showing up
+  NNs_1_county_count <- as.data.frame(table(close_analogs$fips))
+  setnames(NNs_1_county_count, old=c("Var1"), new=c("fips"))
+
+  close_analogs <- merge(close_analogs, NNs_1_county_count, all.x=T) %>% data.table()
+
+  ## add the year and location of interest to the data table
+  setnames(close_analogs, old=c("fips", "location"), new=c("analog_fips", "analog"))
+  close_analogs$query_loc <- location_of_int
+  close_analogs$query_year <- year_of_int
+
+  # just grab unique counties and their frequency
+  close_analogs_unique <- subset(close_analogs, select=c(analog_fips, Freq, query_loc, query_year)) %>% data.table()
+  setkey(close_analogs_unique, analog_fips)
+  close_analogs_unique <- unique(close_analogs_unique)
+
+  # reorder columns of outputs:
+  c <- c("query_loc", "query_year", "analog_fips", "Freq", "analog", "st_county", "distance", "sigma")
+  setcolorder(close_analogs, c)
+
+  c <- c("query_loc", "query_year", "analog_fips", "Freq")
+  setcolorder(close_analogs_unique, c)
+
+  return (list(close_analogs, close_analogs_unique))
+}
+
+check_almost_novelty <- function(sigma_df, sigma_bd, novelty_threshold){
+  if ((min(sigma_df) < novelty_threshold) & (min(sigma_df) > sigma_bd)) {
+    return (as.character(T))
+  } else {
+    return (as.character(F))
+  }
+}
+
+check_novelty <- function(sigma_df, novelty_threshold){
+  if (min(sigma_df) > novelty_threshold) {
+    return (as.character(T))
+   } else{
+    return (as.character(F))
+  }
+}
+
+filter_needed_geo_info <- function(data_locs, all_locs){
+  ## Lets say we ran the data on some locations
+  ## of interest accross US, the data is given in data_locs,
+  ## with a column named location (= lat_long)
+  ## and all_locs has information about latitude, longitude, VICID.
+  ## here we pick up information of all_locs that we need.
+  needed_location_info <- all_locs %>% subset(location %in%  data_locs$location) %>% data.table()
+  return(needed_location_info)
+}
 
 ####################################################################
 ##                                                                ##
@@ -36,74 +207,6 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
-count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd){
-}
-
-
-count_NNs_per_counties_1_loc <- function(NNs, dists, sigmas, county_list, sigma_bd){
-  # For a given location, i.e. a vector,
-  # find the number of analog (historical)counties 
-  # corresponding to a given target county in the future.
-  #
-  # input: NNs: data frame of nearest neighbors (This is a vector in data frame format. it is in  R^N)
-  #      dists: distances to the location of interest
-  #     sigmas: sigma_dissimilarity between the location of interest and other locations
-  #   sigma_bd: the cut-off point to use for NNs. like neighbros with distance less that sigma_bd
-  # 
-  # output: data frame of county counts
-  #
-
-  county_list <- unique(county_list) # sanity check
-
-  year_of_int <- NNs$year
-  location_of_int <- NNs$location
-  # lat_long_of_int <- c(unlist(strsplit(location_of_int, "_"))[1], 
-  #                    unlist(strsplit(location_of_int, "_"))[2]) %>% 
-  #                     as.numeric()
-  
-  analogs <- NNs[, seq(2, ncol(NNs_int), 2)]
-  
-  analogs <- within(analogs, remove(location))
-  dists <- within(dists, remove(year, location))
-  sigmas <- within(sigmas, remove(year, location))
-
-  x <- sapply(analogs, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
-  lat = x[1, ]; long = x[2, ];
-
-  # convert analogs from data frame to vector thing. (list)
-  analogs <- paste0(lat, "_", long)
-  
-  no_of_nns_found <- length(sigmas)
-  close_analogs <- setNames(data.table(matrix(nrow = no_of_nns_found, ncol = 3)), 
-                                              c("location", "distances", "sigmas"))
-  
-  close_analogs$location = as.character(analogs)
-  close_analogs$distances = as.numeric(dists)
-  close_analogs$sigmas = as.numeric(sigmas)
-  
-  ########### add county names to list of NNs.
-  close_analogs <- merge(x=close_analogs, y=county_list, all.x=T)
-  
-  ########### Pick up locations whose distance
-  close_analogs <- close_analogs %>% filter(sigmas <= sigma_bd)
-
-  # kill the non-sxisting counties that are present in data as factor!
-  close_analogs$countyname <- factor(close_analogs$countyname)
-
-  ########### count number of counties showing up
-  NNs_county_count <- as.data.frame(table(close_analogs$countyname))
-  setnames(NNs_county_count, old=c("Var1"), new=c("countyname"))
-
-  close_analogs <- merge(close_analogs, NNs_county_count, all.x=T) %>% data.table
-
-  # just grab unique counties and their frequency
-  close_analogs_unique <- subset(close_analogs, select=c(countyname, Freq)) %>% data.table()
-  setkey(close_analogs_unique, "countyname")
-  close_analogs_unique <- unique(close_analogs_unique)
-
-  return (list(close_analogs, close_analogs_unique))
-}
-
 ####################################################################################
 #
 #                                 Mahony Style
@@ -150,7 +253,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
 
   if (precipitation==TRUE){
     numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", "mean_escaped_Gen3",
+                      "mean_escaped_Gen2", # "mean_escaped_Gen3",
                       "mean_gdd", "mean_precip") #  "mean_escaped_Gen4",
   } else if (precipitation==FALSE){
 
@@ -158,7 +261,7 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
     future_dt <- within(future_dt, remove(mean_precip))
     ICV <- within(ICV, remove(mean_precip))
     numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", "mean_escaped_Gen3", 
+                      "mean_escaped_Gen2", # "mean_escaped_Gen3", 
                       "mean_gdd") # , "mean_escaped_Gen4", "mean_precip"
   }
   A <- as.data.frame(historical_dt)
@@ -304,375 +407,12 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
               colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
 }
 ####################################################################################
-find_NN_info_W4G_ICV_stop_working <- function(ICV, historical_dt, future_dt, n_neighbors){
-  # This is modification of find_NN_info_W4G
-  # where we add ICV matrix which in our case is 
-  # the same as historical_dt, however, when we do averages,
-  # then SD's will be NA for just one input!
 
-  # remove extra columns
-  if ("treatment" %in% colnames(historical_dt)) {historical_dt <- within(historical_dt, remove(treatment))}
-  if ("treatment" %in% colnames(future_dt)) {future_dt <- within(future_dt, remove(treatment))}
-  if ("treatment" %in% colnames(ICV)) {ICV <- within(ICV, remove(treatment))}
-
-  # sort the columns of data tables so they both have the same order, if they do not.
-  columns_ord <- c("year", "location", "ClimateScenario",
-                   "medianDoY", "NumLarvaGens_Aug", 
-                   "mean_escaped_Gen1", "mean_escaped_Gen2",
-                   "mean_escaped_Gen3",
-                   "mean_gdd", "mean_precip")# , "mean_escaped_Gen4",
-  setcolorder(historical_dt, columns_ord)
-  setcolorder(future_dt, columns_ord)
-  setcolorder(ICV, columns_ord)
-
-  all_us_locs <- unique(historical_dt$location)
-  
-  # 9 local locations are not in the all_us data!!!
-  local_locations <- unique(future_dt$location)
-  local_locations <- local_locations[which(local_locations %in% all_us_locs)] 
-  future_dt <- future_dt %>% filter(location %in% local_locations)
-
-  future_years <- unique(future_dt$year)
-  trunc.SDs <- 0.1 # Principal component truncation rule
-
-  A <- as.data.frame(historical_dt)
-  B <- as.data.frame(future_dt)
-  C <- as.data.frame(ICV)
-  # rm (historical_dt, future_dt, ICV)
-  numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                    "mean_escaped_Gen2", "mean_escaped_Gen3", 
-                    "mean_gdd", "mean_precip") # , "mean_escaped_Gen4", 
-
-  non_numeric_cols <- c("year", "location", "ClimateScenario")
-
-  NN_dist_tb <- data.table()
-  NNs_loc_year_tb <- data.table()
-  NN_sigma_tb <- data.table()
-
-  for (loc in local_locations){
-    # loc = local_locations[1]
-    Bj <- B %>% filter(location==loc)
-    Cj <- C %>% filter(location==loc)
-
-    # standard deviation of 1951-1990 interannual variability in each climate 
-    # variable, ignoring missing years
-    Cj.sd <- apply(Cj[, numeric_cols], MARGIN=2, FUN = sd, na.rm = T)
-    Cj.sd[Cj.sd<(10^-10)] = 1
-
-    A_prime <- A
-    A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`) 
-    
-    # standardize the analog pool
-    Bj_prime <- Bj
-    Bj_prime[, numeric_cols] <- sweep(Bj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
-
-    # standardize the reference ICV
-    Cj_prime <- Cj
-    Cj_prime[, numeric_cols] <- sweep(Cj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
-
-    ## Step 2: Extract the principal components (PCs) of 
-    ##         the reference period ICV and project all data onto these PCs
-
-    # Principal components analysis. The !is.na(apply(...)) 
-    # term is there simply to select all years with complete observations in all variables. 
-    #  ZZ[!is.na(apply(ZZ, 1, mean)) ,] selects the rows whose mean is not NaN
-    PCA <- prcomp(Cj_prime[, numeric_cols][!is.na(apply(Cj_prime[, numeric_cols], 1, mean)) ,])
-
-    # find the number of PCs to retain using the PC truncation
-    # rule of eigenvector stdev > the truncation threshold
-    PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))
-
-    # project the reference ICV onto the PCs which is the same as analog pool:
-    X <- as.data.frame(predict(PCA, A_prime))
-    X <- cbind(A_prime[, non_numeric_cols], X)
-
-    # project the projected future conditions onto the PCs
-    Yj <- as.data.frame(predict(PCA, Bj_prime[, numeric_cols]))
-    Yj <- cbind(Bj_prime[, non_numeric_cols], Yj)
-
-    Zj <- as.data.frame(predict(PCA, Cj_prime[, numeric_cols]))
-    Zj <- cbind(Cj_prime[, non_numeric_cols], Zj)
-
-    ## Step 3a: express PC scores as standardized
-    #           anomalies of reference interannual variability
-      
-    # standard deviation of 1951-1990 interannual 
-    # variability in each principal component, ignoring missing years
-    Zj_sd <- apply(Zj[, 4:(PCs + 3)], MARGIN = 2, FUN = sd, na.rm=T)
-
-    # standardize the analog pool   
-    X_prime <- sweep(X[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
-    X_prime <- cbind(X[, non_numeric_cols], X_prime)
-
-    # standardize the projected conditions
-    Yj_prime <- sweep(Yj[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
-    Yj_prime <- cbind(Yj[, non_numeric_cols], Yj_prime)
-    
-    NN_list <- get.knnx(data = X_prime[, 4:(PCs+3)], 
-                        query= Yj_prime[, 4:(PCs+3)], 
-                        k=n_neighbors, algorithm="brute")
-    #
-    # Step 3: find sigma dissimilarities
-    ############################################################
-    #
-    # This is for one location, and different years. 
-    # So, the location column and ClimateScenario can be dropped.
-    # We already know what they are from loc and the input file.
-    #
-    ############################################################
-    # percentile of the nearest neighbour distance on the chi distribution with
-    # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
-    NN_chi <- EnvStats::pchi(as.vector(NN_list$nn.dist), PCs)
-    
-    # values of the chi percentiles on a standard half-normal distribution
-    # (chi distribution with one degree of freedom)
-    # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
-
-    NN_sigma <- EnvStats::qchi(NN_chi, 1)
-
-    ########################################################################
-    #
-    # extract the rows corresponding to nearest neighbors indices
-    # 
-    ########################################################################
-    NN_idx <- NN_list$nn.index
-    NN_dist <- NN_list$nn.dist %>% data.table()
-    
-    NNs_loc_year <- X_prime[as.vector(NN_idx), c('year', 'location')]
-    #
-    # reshape the long list to wide data table
-    # currenty the data are in vector form, by reshaping
-    # we will have one row of NNs per sample point
-    #
-    NNs_loc_year <- Reduce(cbind, 
-                           split(NNs_loc_year, 
-                                 rep(1:n_neighbors, each=(nrow(NNs_loc_year)/n_neighbors)))) %>% 
-                    data.table()
-
-    NN_sigma <- Reduce(cbind, 
-                       split(NN_sigma, 
-                             rep(1:n_neighbors, each=(length(NN_sigma)/n_neighbors)))) %>% data.table()
-    #
-    # rename columns
-    #
-    names(NN_dist) <- paste0("NN_", c(1:n_neighbors))
-    names(NNs_loc_year) <- paste0(names(NNs_loc_year), paste0("_NN_", rep(1:n_neighbors, each=2)))
-    names(NN_sigma) <- paste0("sigma_NN_", c(1:n_neighbors))
-
-    NN_dist <- cbind(Yj[, c("year", "location")], NN_dist)
-    NNs_loc_year <- cbind(Yj[, c("year", "location")], NNs_loc_year)
-    NN_sigma <- cbind(Yj[, c("year", "location")], NN_sigma)
-    
-    NN_dist_tb <- rbind(NN_dist_tb, NN_dist)
-    NN_sigma_tb <- rbind(NN_sigma_tb, NN_sigma)
-    NNs_loc_year_tb <- rbind(NNs_loc_year_tb, NNs_loc_year)
-    
-    rm(NN_dist, NNs_loc_year, NN_sigma)
-  }
-  ########################################################################
-  # For some bizzare reason, order of columns are random
-  # when I run it on Aeolus. We fix the order of columns here
-  ########################################################################
-  distance_col_names <- c("year", "location", paste0("NN_", c(1:n_neighbors)))
-  LL = (ncol(NNs_loc_year_tb)-2)/2
-  v = rep(c("year_NN_", "location_NN_"), LL); w = rep(1:LL, each = 2);
-  loc_year_col_names <- c("year", "location", paste0(v, w))
-  
-  sigma_df_col_names <- c("year", "location", paste0("sigma_NN_", c(1:n_neighbors)))
-  
-  setcolorder(NN_dist_tb, distance_col_names)
-  setcolorder(NNs_loc_year_tb, loc_year_col_names)
-  setcolorder(NN_sigma_tb, sigma_df_col_names)
-  #############################################
-  return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb, 
-              colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
-}
 ####################################################################################
 ####################################################################################
 ####################################################################################
 ####################################################################################
 
-find_NN_info_W4G_ICV_2Loops <- function(ICV, historical_dt, future_dt, n_neighbors=50){
-  # This is modification of find_NN_info_W4G
-  # where we add ICV matrix which in our case is 
-  # the same as historical_dt, however, when we do averages,
-  # then SD's will be NA for just one input!
-
-  # remove extra columns
-  if ("treatment" %in% colnames(historical_dt)) {historical_dt <- within(historical_dt, remove(treatment))}
-  if ("treatment" %in% colnames(future_dt)) {future_dt <- within(future_dt, remove(treatment))}
-  if ("treatment" %in% colnames(ICV)) {ICV <- within(ICV, remove(treatment))}
-
-  # sort the columns of data tables so they both have the same order, if they do not.
-  columns_ord <- c("year", "location", "ClimateScenario",
-                   "medianDoY", "NumLarvaGens_Aug", 
-                   "mean_escaped_Gen1", "mean_escaped_Gen2",
-                   "mean_escaped_Gen3",
-                   "mean_gdd", "mean_precip") #  "mean_escaped_Gen4",
-  setcolorder(historical_dt, columns_ord)
-  setcolorder(future_dt, columns_ord)
-  setcolorder(ICV, columns_ord)
-
-  all_us_locs <- unique(historical_dt$location)
-  
-  # 9 local locations are not in the all_us data!!!
-  local_locations <- unique(future_dt$location)
-  local_locations <- local_locations[which(local_locations %in% all_us_locs)] 
-  future_dt <- future_dt %>% filter(location %in% local_locations)
-
-  future_years <- unique(future_dt$year)
-
-  trunc.SDs <- 0.1 # Principal component truncation rule
-
-  A <- as.data.frame(historical_dt)
-  B <- as.data.frame(future_dt)
-  C <- as.data.frame(ICV)
-  # rm (historical_dt, future_dt, ICV)
-  numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                    "mean_escaped_Gen2", "mean_escaped_Gen3",
-                    "mean_gdd", "mean_precip") #  "mean_escaped_Gen4",
-
-  non_numeric_cols <- c("year", "location", "ClimateScenario")
-
-  NN_dist_tb <- data.table()
-  NNs_loc_year_tb <- data.table()
-  NN_sigma_tb <- data.table()
-
-  for (loc in local_locations){
-    Bj <- B %>% filter(location==loc)
-    Cj <- C %>% filter(location==loc)
-
-    # standard deviation of 1951-1990 interannual variability in each climate 
-    # variable, ignoring missing years
-    Cj.sd <- apply(Cj[, numeric_cols], MARGIN=2, FUN = sd, na.rm = T)
-    Cj.sd[Cj.sd<(10^-10)] = 1
-
-    A_prime <- A
-    A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`) 
-    
-    # standardize the analog pool
-    Bj_prime <- Bj
-    Bj_prime[, numeric_cols] <- sweep(Bj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
-
-    # standardize the reference ICV
-    Cj_prime <- Cj
-    Cj_prime[, numeric_cols] <- sweep(Cj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
-
-    ## Step 2: Extract the principal components (PCs) of 
-    ##         the reference period ICV and project all data onto these PCs
-
-    # Principal components analysis. The !is.na(apply(...)) 
-    # term is there simply to select all years with complete observations in all variables. 
-    #  ZZ[!is.na(apply(ZZ, 1, mean)) ,] selects the rows whose mean is not NaN
-    PCA <- prcomp(Cj_prime[, numeric_cols][!is.na(apply(Cj_prime[, numeric_cols], 1, mean)) ,])
-
-    # find the number of PCs to retain using the PC truncation
-    # rule of eigenvector stdev > the truncation threshold
-    PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))
-
-    # project the reference ICV onto the PCs which is the same as analog pool:
-    X <- as.data.frame(predict(PCA, A_prime))
-    X <- cbind(A_prime[, non_numeric_cols], X)
-
-    # project the projected future conditions onto the PCs
-    Yj <- as.data.frame(predict(PCA, Bj_prime[, numeric_cols]))
-    Yj <- cbind(Bj_prime[, non_numeric_cols], Yj)
-
-    Zj <- as.data.frame(predict(PCA, Cj_prime[, numeric_cols]))
-    Zj <- cbind(Cj_prime[, non_numeric_cols], Zj)
-
-    ## Step 3a: express PC scores as standardized
-    #           anomalies of reference interannual variability
-      
-    # standard deviation of 1951-1990 interannual 
-    # variability in each principal component, ignoring missing years
-    Zj_sd <- apply(Zj[, 4:(PCs + 3)], MARGIN = 2, FUN = sd, na.rm=T)
-
-    # standardize the analog pool   
-    X_prime <- sweep(X[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
-    X_prime <- cbind(X[, non_numeric_cols], X_prime)
-
-    # standardize the projected conditions
-    Yj_prime <- sweep(Yj[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
-    Yj_prime <- cbind(Yj[, non_numeric_cols], Yj_prime)
-
-    for (yr in future_years){
-      qry <- Yj_prime %>% filter(year == yr)
-
-      NN_list <- get.knnx(data = X_prime[, 4:(PCs+3)], 
-                          query= qry[, 4:(PCs+3)], 
-                          k=n_neighbors, algorithm="brute")
-
-      # Step 3: find sigma dissimilarities
-      # percentile of the nearest neighbour distance on the chi distribution with
-      # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
-      NN_chi <- EnvStats::pchi(as.vector(NN_list$nn.dist), PCs)
-      
-      # values of the chi percentiles on a standard half-normal distribution
-      # (chi distribution with one degree of freedom)
-      # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
-      NN_sigma <- EnvStats::qchi(NN_chi, 1)
-
-     ########################################################################
-     #
-     # extract the rows corresponding to nearest neighbors indices
-     # 
-     ########################################################################
-     NN_idx <- NN_list$nn.index
-     NN_dist <- NN_list$nn.dist %>% data.table()
-    
-     NNs_loc_year <- X_prime[as.vector(NN_idx), c('year', 'location')]
-     #
-     # reshape the long list to wide data table
-     #
-     NNs_loc_year <- Reduce(cbind, split(NNs_loc_year,
-                                         rep(1:n_neighbors, 
-                                         each=(nrow(NNs_loc_year)/n_neighbors)))) %>% data.table()
-
-     NN_sigma <- Reduce(cbind, split(NN_sigma, 
-                                    rep(1:n_neighbors, 
-                                    each=(length(NN_sigma)/n_neighbors)))) %>% data.table()
-     #
-     # rename columns
-     #
-     names(NN_dist) <- paste0("NN_", c(1:n_neighbors))
-     names(NNs_loc_year) <- paste0(names(NNs_loc_year), paste0("_NN_", rep(1:n_neighbors, each=2)))
-     names(NN_sigma) <- paste0("sigma_NN_", c(1:n_neighbors))
-
-     NN_dist <- cbind(yr, loc, NN_dist)
-     NNs_loc_year<- cbind(yr, loc, NNs_loc_year)
-     NN_sigma <- cbind(yr, loc, NN_sigma)
-
-     setnames(NN_dist,      old=c("yr","loc"), new=c("year", "location"))
-     setnames(NNs_loc_year, old=c("yr","loc"), new=c("year", "location"))
-     setnames(NN_sigma,  old=c("yr","loc"), new=c("year", "location"))
-    
-     NN_dist_tb <- rbind(NN_dist_tb, NN_dist)
-     NNs_loc_year_tb <- rbind(NNs_loc_year_tb, NNs_loc_year)
-     NN_sigma_tb <- rbind(NN_sigma_tb, NN_sigma)
-     rm(NN_dist, NNs_loc_year, NN_sigma)
-    }
-  }
-  ########################################################################
-  # For some bizzare reason, order of columns are random
-  # when I run it on Aeolus. We fix the order of columns here
-  ########################################################################
-  
-  # distance_col_names <- c("year", "location", paste0("NN_", c(1:n_neighbors)))
-  
-  # LL = (ncol(NNs_loc_year_tb)-2)/2
-  # v = rep(c("year_NN_", "location_NN_"), LL); w = rep(1:LL, each = 2);
-  # loc_year_col_names <- c("year", "location", paste0(v, w))
-  
-  # sigma_df_col_names <- c("year", "location", paste0("sigma_NN_", c(1:n_neighbors)))
-  
-  # setcolorder(NN_dist_tb, distance_col_names)
-  # setcolorder(NNs_loc_year_tb, loc_year_col_names)
-  # setcolorder(NN_sigma_tb, sigma_df_col_names)
-  #############################################
-  return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb, 
-              colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
-}
 ########################################################################
 #
 #                                 MatchIt
