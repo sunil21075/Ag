@@ -77,7 +77,7 @@ qsub -I [job script].sh
 module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 R
-install.packages(c("chron", "shinydashboard"), lib="~/.local/lib/R3.5.1", repos="https://ftp.osuosl.org/pub/cran")
+install.packages(c("foreign"), lib="~/.local/lib/R3.5.1", repos="https://ftp.osuosl.org/pub/cran")
 
 Ctrl-d
 exit
@@ -104,4 +104,23 @@ long = x[2, ]
 
 # not in, opposite of %in%
 D2 = subset(local_locs, !(local_locs %in% local_files))
+
+
+###### Convert a data table vector to a list:
+unlist(as.list(t(analogs)))
+as.list(as.data.table(t(analogs)))
+x <- sapply(analogs, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+lat = x[1, ]; long = x[2, ];
+analogs <- paste0(lat, "_", long)
+
+
+
+
+Drop the word county: https://stackoverflow.com/questions/55599225/drop-a-word-in-a-column-of-data-table-in-r/55599424#55599424
+counties[, COUNTY := sub("\\s+County$", "", COUNTY)]
+df$county = gsub("county", "", df$county)
+
+
+
+
 

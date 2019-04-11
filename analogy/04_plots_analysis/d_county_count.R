@@ -30,6 +30,8 @@ carbon_type= args[1] # RCP 45 or 85
 precip_type= args[2] # include precip or no_precip
 sigma_bd= args[3]    # sigma cut off for sigma dissimilarity 1 or 2 or 3 or what?
 
+gen3_inclusion= args[4] # options are no_gen_3 and w_gen3
+
 ######################################################################
 ##                                                                  ##
 ##                     set up directories                           ##
@@ -37,10 +39,13 @@ sigma_bd= args[3]    # sigma cut off for sigma dissimilarity 1 or 2 or 3 or what
 ######################################################################
 
 main_in <- file.path("/data/hydro/users/Hossein/analog/03_analogs/")
-dt_dir <- file.path(main_in, precip_type, "500", carbon_type)
+dt_dir <- file.path(main_in, gen3_inclusion, precip_type, "500", carbon_type)
 
 main_out <- file.path("/data/hydro/users/Hossein/analog/04_analysis/")
-out_dir <- file.path(main_out, precip_type, "500/")
+out_dir <- file.path(main_out, gen3_inclusion, precip_type, "500/")
+
+if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
+print (out_dir)
 
 param_dir <- "/home/hnoorazar/analog_codes/parameters/"
 
@@ -78,9 +83,6 @@ for (model_type in all_model_names){
   all_close_analogs <- rbind(all_close_analogs, close_analogs)
   all_close_analogs_unique <- rbind(all_close_analogs_unique, close_analogs_unique)
 }
-
-if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
-print (out_dir)
 
 saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", carbon_type, ".rds"))
 saveRDS(all_close_analogs_unique, paste0(out_dir, "all_close_analogs_unique_", carbon_type, ".rds"))

@@ -5,7 +5,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N cnty_cnt_45_no_precip
+#PBS -N cnty_cnt_45_no_precip_no_gen_3
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/analog_codes/04_analysis/error/cnty_cnt_45_no_precip_E
-#PBS -o /home/hnoorazar/analog_codes/04_analysis/error/cnty_cnt_45_no_precip_O
+#PBS -e /home/hnoorazar/analog_codes/04_analysis/error/cnty_cnt_45_no_precip_no_gen_3_E
+#PBS -o /home/hnoorazar/analog_codes/04_analysis/error/cnty_cnt_45_no_precip_no_gen_3_O
 
 ## Define path for reporting
 #PBS -m abe
@@ -37,7 +37,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/analog_codes/04_analysis/d_county_count.R rcp45 no_precip 2
+Rscript --vanilla /home/hnoorazar/analog_codes/04_analysis/d_county_count.R rcp45 no_precip 2 no_gen_3
 
 echo
 echo "----- DONE -----"

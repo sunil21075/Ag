@@ -27,7 +27,7 @@ while IFS= read -d $'\0' -r file ; do
 dir_list=("${dir_list[@]}" "$file")
 done < <(find /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/ -mindepth 2 -maxdepth 2 -type d ! -path '*bcc*' -print0)
 
-echo dir_list
+echo ${dir_list[@]}
 
 
 

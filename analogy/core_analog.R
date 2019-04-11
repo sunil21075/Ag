@@ -212,7 +212,7 @@ filter_needed_geo_info <- function(data_locs, all_locs){
 #                                 Mahony Style
 # 
 ####################################################################################
-find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, precipitation=TRUE){
+find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, precipitation=TRUE, gen3=TRUE){
   # This is modification of find_NN_info_W4G
   # where we add ICV matrix which in our case is 
   # the same as historical_dt, however, when we do averages,
@@ -252,17 +252,36 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
   NN_sigma_tb <- data.table()
 
   if (precipitation==TRUE){
-    numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", # "mean_escaped_Gen3",
+    if (gen3==TRUE){
+      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
+                      "mean_escaped_Gen2", "mean_escaped_Gen3",
                       "mean_gdd", "mean_precip") #  "mean_escaped_Gen4",
-  } else if (precipitation==FALSE){
-
+      } else {
+        historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
+        future_dt <- within(future_dt, remove(mean_escaped_Gen3))
+        ICV <- within(ICV, remove(mean_escaped_Gen3))
+        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
+                          "mean_escaped_Gen2", 
+                          "mean_gdd", "mean_precip") 
+    }
+    
+   } else if (precipitation==FALSE){
     historical_dt <- within(historical_dt, remove(mean_precip))
     future_dt <- within(future_dt, remove(mean_precip))
     ICV <- within(ICV, remove(mean_precip))
-    numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", # "mean_escaped_Gen3", 
-                      "mean_gdd") # , "mean_escaped_Gen4", "mean_precip"
+    
+    if (gen3==TRUE){
+      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
+                      "mean_escaped_Gen2", "mean_escaped_Gen3",
+                      "mean_gdd", "mean_precip")
+      } else {
+        historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
+        future_dt <- within(future_dt, remove(mean_escaped_Gen3))
+        ICV <- within(ICV, remove(mean_escaped_Gen3))
+        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
+                          "mean_escaped_Gen2", 
+                          "mean_gdd", "mean_precip") 
+    }
   }
   A <- as.data.frame(historical_dt)
   B <- as.data.frame(future_dt)

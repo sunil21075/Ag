@@ -24,7 +24,7 @@
 
 dir_list=()
 while IFS= read -d $'\0' -r file ; do
-dir_list=("${dir_list[@]}" "$file")
+  dir_list=("${dir_list[@]}" "$file")
 done < <(find /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/ -mindepth 2 -maxdepth 2 -type d -print0)
 
 
@@ -38,7 +38,7 @@ do
 done
 dir_list=( "${result[@]}" )
 
-echo dir_list
+echo ${dir_list[@]}
 
 
 
