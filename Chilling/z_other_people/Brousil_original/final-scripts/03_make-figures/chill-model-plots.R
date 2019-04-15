@@ -22,8 +22,7 @@ summary_comp <- lapply(the_dir_summary, read.table, header = T)
 summary_comp <- do.call(bind_rows, summary_comp)
 
 # Remove incomplete model runs
-summary_comp <- summary_comp[-grep(x = summary_comp$model,
-                                   pattern = "incomplete"),]
+summary_comp <- summary_comp[-grep(x = summary_comp$model, pattern = "incomplete"),]
 
 # Combine the data with cold/warm geographic designations
 cold_warm <- read.csv("/home/mbrousil/files/LocationGroups.csv")

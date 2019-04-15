@@ -258,29 +258,52 @@ ggsave(filename = "facet45_85.png",
 ################################################################################
 ################################################################################
 
-# the_theme <- theme(plot.title = element_text(size = 26, face = "bold"), 
-#                    plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
+the_theme <- theme(plot.title = element_text(size = 26, face = "bold"), 
+                   plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
+                   panel.border = element_rect(fill=NA, size=.3),
+                   panel.grid.major = element_line(size = 0.05),
+                   panel.grid.minor = element_blank(),
+                   panel.spacing=unit(.25,"cm"),
+                   legend.position="bottom", 
+                   legend.title = element_blank(),
+                   legend.key.size = unit(2, "line"),
+                   legend.text = element_text(size = 22),
+                   legend.margin=margin(t= .1, r=0, b=.5, l=0, unit = 'cm'),
+                   legend.spacing.x = unit(.05, 'cm'),
+                   strip.text.x = element_text(size = 24, face="bold"),
+                   strip.text.y = element_text(size = 24, face="bold"),
+                   axis.ticks = element_line(color = "black", size = .2),
+                   axis.title.x = element_text(face = "bold", size=20, 
+                                               margin = margin(t=10, r=0, b=0, l=0)),
+                   axis.text.x = element_blank(),
+                   axis.ticks.x = element_blank(),
+                   axis.title.y = element_text(face = "bold", size = 26, 
+                                               margin = margin(t=0, r=15, b=0, l=0)),
+                   axis.text.y = element_text(size = 24, face="bold", color="black")
+                  )
+
+# the_theme <- theme(plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
 #                    panel.border = element_rect(fill=NA, size=.3),
 #                    panel.grid.major = element_line(size = 0.05),
 #                    panel.grid.minor = element_blank(),
-#                    panel.spacing=unit(.25,"cm"),
+#                    panel.spacing = unit(.3,"cm"),
 #                    legend.position="bottom", 
 #                    legend.title = element_blank(),
-#                    legend.key.size = unit(2.5, "line"),
-#                    legend.text = element_text(size = 22),
-#                    legend.margin=margin(t= .1, r=0, b=.5, l=0, unit = 'cm'),
+#                    legend.key.size = unit(3, "line"),
+#                    legend.margin = margin(t= .4, r=0, b=.5, l=0, unit = 'cm'),
 #                    legend.spacing.x = unit(.05, 'cm'),
-#                    strip.text.x = element_text(size = 24, face="bold"),
-#                    strip.text.y = element_text(size = 24, face="bold"),
+#                    plot.title = element_text(size = 28, face = "bold"),
+#                    legend.text = element_text(size = 28),
+#                    strip.text.x = element_text(size = 28, face="bold"),
+#                    strip.text.y = element_text(size = 28, face="bold"),
 #                    axis.ticks = element_line(color = "black", size = .2),
-#                    axis.title.x = element_text(face = "bold", size=20, 
-#                                                margin = margin(t=10, r=0, b=0, l=0)),
-#                    axis.text.x = element_blank(),
+#                    axis.title.x = element_blank(),
+#                    axis.text.x = element_text(size = 25, face = "bold", color="black"),
 #                    axis.ticks.x = element_blank(),
-#                    axis.title.y = element_text(face = "bold", size = 26, 
-#                                                margin = margin(t=0, r=15, b=0, l=0)),
-#                    axis.text.y = element_text(size = 24, face="bold", color="black")
-#                      )
+#                    axis.title.y = element_text(face = "bold", size = 28, 
+#                                                margin = margin(t=0, r=20, b=0, l=0)),
+#                    axis.text.y = element_text(size = 28, face="bold", color="black")
+#                   )
 
 MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=variable, y=value), group = variable) + 
             geom_boxplot(outlier.size=-.15, notch=FALSE, width=.7, lwd=.55, aes(fill=ClimateGroup), 
@@ -303,7 +326,7 @@ MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=var
 ggsave(filename = "MS_Spray.png", 
        path = out_dir, 
        plot = MS_Spray,
-       width = 18, height = 10, units = "in", #width = 14, height = 10
+       width = 14, height = 10, units = "in", # width = 14, height = 10
        dpi=300, 
        device = "png")
 

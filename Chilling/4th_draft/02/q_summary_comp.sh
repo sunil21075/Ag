@@ -8,9 +8,8 @@
 #PBS -N summary_comp
 
 ## Define compute options
-#PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=5gb
-#PBS -l walltime=02:00:00
+#PBS -l nodes=1:ppn=1,walltime=02:00:00
+#PBS -l mem=8gb
 #PBS -q hydro
 
 ## Define path for output & error logs
@@ -26,7 +25,7 @@ echo
 echo We are in the $PWD directory
 echo
 
-cd /home/hnoorazar/chilling_codes/current_draft/02/
+cd /home/hnoorazar/chilling_codes/current_draft/02
 
 echo
 echo We are now in $PWD.

@@ -1,16 +1,15 @@
 
 
-
 library(foreign)
 
-counties <- read.dbf("/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/vic_grid_cover_conus/VICID_CO.DBF")
-setnames(counties, old= colnames(counties), new= tolower(colnames(counties)))
+Min_counties <- read.dbf("/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/vic_grid_cover_conus/VICID_CO.DBF")
+setnames(Min_counties, old= colnames(Min_counties), new= tolower(colnames(Min_counties)))
 
 write.csv(counties, 
           file = "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/us_county_lat_long.csv", 
           row.names=FALSE)
 
-counties_filter <- subset(counties, select= c(fips, state, county, vicclat, vicclon))
+counties_filter <- subset(Min_counties, select= c(fips, state, county, vicclat, vicclon))
 counties_filter$county = gsub("County", "", counties_filter$county)
 
 counties_filter$st_county = paste0(counties_filter$state, "_", counties_filter$county)
