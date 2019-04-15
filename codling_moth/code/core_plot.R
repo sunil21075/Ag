@@ -202,7 +202,11 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                   legend.text = element_text(size=14),
                   legend.position = "bottom",
                   legend.key.size = unit(.65, "cm"), 
+<<<<<<< HEAD
                   strip.text = element_text(size=16, face="bold", color="black"),
+=======
+                  strip.text = element_text(size=16, face="bold"),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                   axis.text = element_text(face="bold", size=14, color="black"),
                   axis.ticks = element_line(color = "black", size = .2),
                   axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),
@@ -507,12 +511,19 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               panel.spacing=unit(.25, "cm"),
+<<<<<<< HEAD
               legend.spacing.x = unit(.2, 'cm'),
+=======
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               legend.title = element_text(face="plain", size=16),
               legend.text = element_text(size=14),
               legend.position = "bottom",
               legend.key.size = unit(.65, "cm"), 
+<<<<<<< HEAD
               strip.text = element_text(size=16, face="bold", color="black"),
+=======
+              strip.text = element_text(size=16, face="bold"),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               axis.text = element_text(face="bold", size=14, color="black"),
               axis.ticks = element_line(color = "black", size = .2),
               axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),
@@ -593,9 +604,14 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
               legend.title = element_text(face="plain", size=16),
               legend.text = element_text(size=14),
               legend.position = "bottom",
+<<<<<<< HEAD
               legend.spacing.x = unit(.2, 'cm'),
               legend.key.size = unit(.65, "cm"), 
               strip.text = element_text(size=16, face="bold", color="black"),
+=======
+              legend.key.size = unit(.65, "cm"), 
+              strip.text = element_text(size=16, face="bold"),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               axis.text = element_text(face="bold", size=14, color="black"),
               axis.ticks = element_line(color = "black", size = .2),
               axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),

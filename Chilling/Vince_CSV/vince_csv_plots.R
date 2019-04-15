@@ -222,13 +222,23 @@ the_theme <- theme(plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
                    strip.text.x = element_text(size = 28, face="bold"),
                    strip.text.y = element_text(size = 28, face="bold"),
                    axis.ticks = element_line(color = "black", size = .2),
+<<<<<<< HEAD
                    axis.title.x = element_blank(),
+=======
+                   #axis.text = element_text(face = "bold", size = 2.5, color="black"),
+                   axis.title.x = element_blank(),
+                   # axis.title.x=element_blank(),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                    axis.text.x = element_text(size = 25, face = "bold", 
                                               color="black", angle=-30),
                    axis.ticks.x = element_blank(),
                    axis.title.y = element_text(face = "bold", size = 28, 
                                                margin = margin(t=0, r=20, b=0, l=0)),
                    axis.text.y = element_text(size = 28, face="bold", color="black")
+<<<<<<< HEAD
+=======
+                   # axis.title.y = element_blank()
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                   )
 
 facet45_85 <- ggplot(data = data_back, aes(x=variable, y=value), group = variable) + 
@@ -266,7 +276,11 @@ the_theme <- theme(plot.title = element_text(size = 26, face = "bold"),
                    panel.spacing=unit(.25,"cm"),
                    legend.position="bottom", 
                    legend.title = element_blank(),
+<<<<<<< HEAD
                    legend.key.size = unit(2, "line"),
+=======
+                   legend.key.size = unit(2.5, "line"),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                    legend.text = element_text(size = 22),
                    legend.margin=margin(t= .1, r=0, b=.5, l=0, unit = 'cm'),
                    legend.spacing.x = unit(.05, 'cm'),
@@ -280,6 +294,7 @@ the_theme <- theme(plot.title = element_text(size = 26, face = "bold"),
                    axis.title.y = element_text(face = "bold", size = 26, 
                                                margin = margin(t=0, r=15, b=0, l=0)),
                    axis.text.y = element_text(size = 24, face="bold", color="black")
+<<<<<<< HEAD
                   )
 
 # the_theme <- theme(plot.margin = unit(c(t=1, r=1, b=.5, l=.5), "cm"),
@@ -304,6 +319,9 @@ the_theme <- theme(plot.title = element_text(size = 26, face = "bold"),
 #                                                margin = margin(t=0, r=20, b=0, l=0)),
 #                    axis.text.y = element_text(size = 28, face="bold", color="black")
 #                   )
+=======
+                     )
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=variable, y=value), group = variable) + 
             geom_boxplot(outlier.size=-.15, notch=FALSE, width=.7, lwd=.55, aes(fill=ClimateGroup), 
@@ -326,8 +344,13 @@ MS_Spray <- ggplot(data = data_back[data_back$variable=="MD_Spray", ], aes(x=var
 ggsave(filename = "MS_Spray.png", 
        path = out_dir, 
        plot = MS_Spray,
+<<<<<<< HEAD
        width = 14, height = 10, units = "in", # width = 14, height = 10
        dpi=300, 
+=======
+       width = 14, height = 10, units = "in",
+       dpi=400, 
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
        device = "png")
 
 

@@ -59,6 +59,7 @@ for (vers in version){
                         position=position_dodge(width=0.7)) + 
            scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 1000)) + 
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+<<<<<<< HEAD
            labs(x="", y="cumulative degree days (in F)", color = "Climate Group") + 
            theme(legend.position="bottom", 
                  legend.margin=margin(t=-.1, r=0, b=.3, l=0, unit = 'cm'),
@@ -170,6 +171,8 @@ for (vers in version){
                         position=position_dodge(width=0.7)) + 
            scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 1000)) + 
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+=======
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
            labs(x="", y="", color = "Climate Group") + 
            theme(plot.title = element_text(size = 35, face="bold"),
                  legend.position="bottom", 
@@ -217,6 +220,7 @@ print( Sys.time() - start_time)
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -224,3 +228,5 @@ print( Sys.time() - start_time)
 
 
 
+=======
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646

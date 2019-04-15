@@ -37,6 +37,7 @@ all_west <- read.table(paste0(in_dir, "lat_long_Grid.csv"), header=TRUE, sep=","
 grids <- read.table(paste0(in_dir, "TreeFruitGrids.csv"), header=TRUE, sep=",")
 setnames(all_west, old=c("vicidgeo"), new = c("vicid"))
 
+<<<<<<< HEAD
 west_0_percent <- merge(all_west, grids) %>% filter(SumTreeFruit > 0)
 west_0_percent <- within(west_0_percent, remove(vicid, SumTreeFruit))
 
@@ -45,6 +46,13 @@ west_1_percent <- within(west_1_percent, remove(vicid, SumTreeFruit))
 
 west_5_percent <- merge(all_west, grids) %>% filter(SumTreeFruit >= .05)
 west_5_percent <- within(west_5_percent, remove(vicid, SumTreeFruit))
+=======
+west_1_percent <- merge(all_west, grids) %>% filter(SumTreeFruit >= 0.01)
+west_1_percent <- within(west_1_percent, remove(vicid, SumTreeFruit))
+
+west_0_percent <- merge(all_west, grids) %>% filter(SumTreeFruit > 0)
+west_0_percent <- within(west_0_percent, remove(vicid, SumTreeFruit))
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 ################################################################################
 ###########                                                          ###########
@@ -52,13 +60,19 @@ west_5_percent <- within(west_5_percent, remove(vicid, SumTreeFruit))
 ###########                                                          ###########
 ################################################################################
 
+<<<<<<< HEAD
 file_list_0_percent <- paste0("data_", west_0_percent$lat, "_", west_0_percent$long)
 file_list_1_percent <- paste0("data_", west_1_percent$lat, "_", west_1_percent$long)
 file_list_5_percent <- paste0("data_", west_5_percent$lat, "_", west_5_percent$long)
+=======
+file_list_1_percent <- paste0("data_", west_1_percent$lat, "_", west_1_percent$long)
+file_list_0_percent <- paste0("data_", west_0_percent$lat, "_", west_0_percent$long)
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 # there are 5 files are in the 295 files that are not in the all west
 # extract them here
 D2 <- paste0("data_", local_295$lat, "_", local_295$long)
+<<<<<<< HEAD
 D2 <- subset(D2, !(D2 %in% file_list_0_percent))
 all_west_locs_0 <- c(D2, file_list_0_percent)
 
@@ -77,13 +91,29 @@ write.table(x = all_west_locs_0,
             file = file.path(main_out, "file_list_0_percent.txt"),
             row.names = F, col.names = F)
 
+=======
+D2 <- subset(D2, !(D2 %in% file_list_1_percent))
+all_west_locs_1 <- c(D2, file_list_1_percent)
+
+
+D2 <- paste0("data_", local_295$lat, "_", local_295$long)
+D2 <- subset(D2, !(D2 %in% file_list_0_percent))
+all_west_locs_0 <- c(D2, file_list_0_percent)
+
+main_out <- "/Users/hn/Documents/GitHub/Kirti/Chilling/parameters/"
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 write.table(x = all_west_locs_1,
             file = file.path(main_out, "file_list_1_percent.txt"),
             row.names = F, col.names = F)
 
+<<<<<<< HEAD
 
 write.table(x = all_west_locs_5,
             file = file.path(main_out, "file_list_5_percent.txt"),
+=======
+write.table(x = all_west_locs_0,
+            file = file.path(main_out, "file_list_0_percent.txt"),
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
             row.names = F, col.names = F)
 
 # test <- read.delim(file = paste0(main_out, "file_list_1_percent.txt"), header = F)
@@ -121,8 +151,13 @@ x <- sapply(all_us_locations, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE
 us_lats = x[1, ]
 us_long = x[2, ]
 all_us_locations <- data.table(us_lats, us_long)
+<<<<<<< HEAD
 all_us_locations$lat = as.numeric(all_us_locations$us_lats)
 all_us_locations$long = as.numeric(all_us_locations$us_long)
+=======
+all_us_locations$lat = as.numeric(all_us_locations$lat)
+all_us_locations$long = as.numeric(all_us_locations$long)
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 #############################################################################
 
@@ -155,12 +190,17 @@ ggsave(filename = "local_295_map.png", plot = local_295_map, device = "png",
        width = 5, height = 3, units = "in", dpi=400, path=plot_dir)
 
 merged_locs_0_percent <- merge(all_west, grids) %>% filter(SumTreeFruit > 0)
+<<<<<<< HEAD
 merged_locs_1_percent <- merge(all_west, grids) %>% filter(SumTreeFruit >= 0.01)
 merged_locs_5_percent <- merge(all_west, grids) %>% filter(SumTreeFruit >= 0.05)
+=======
+merged_locs_1_percent <- merge(all_west, grids) %>% filter(SumTreeFruit>= 0.01)
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 states <- map_data("state")
 states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
 
+<<<<<<< HEAD
 
 
 city_lat <-  as.numeric(c("45.7054", "47.4235", "44.5646", "48.4110", "44.0521", 
@@ -192,11 +232,14 @@ close_city <- c("Omak", "Wenatchee", "Richland" ,
 close_cities <- data.frame(city=close_city, lat=closets_farm_lat, long=closets_farm_long)
 
 
+=======
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 loc_0_percent_map <- merged_locs_0_percent %>%  
                      ggplot() +
                      geom_polygon(data = states_cluster, 
                                   aes(x=long, y=lat, group = group),
                                       fill = "grey", color = "red", size=0.1) +
+<<<<<<< HEAD
                      geom_point(aes_string(x = "long", y = "lat"), alpha = 0.8, size=0.1) +
                      geom_point(data= cities, aes(x=long, y=lat), color = "red", size =1 ) + 
                      geom_point(data= close_cities, aes(x=long, y=lat), color = "blue", size=1 )
@@ -279,4 +322,22 @@ write.table(x = monata_sites,
 
 
 
+=======
+                     geom_point(aes_string(x = "long", y = "lat"), alpha = 0.8, size=0.1)
+
+ggsave(filename = "loc_0_percent.png", plot = loc_0_percent_map, device = "png",
+       width = 5, height = 3, units = "in", dpi=400, path=plot_dir)
+
+loc_1_percent_map <- merged_locs_1_percent %>%  
+                     ggplot() +
+                     geom_polygon(data = states_cluster, 
+                                  aes(x=long, y=lat, group = grosup),
+                                      fill = "grey", color = "red", size=0.1) +
+                     geom_point(aes_string(x = "long", y = "lat"), alpha = 0.8, size=0.1)
+
+ggsave(filename = "loc_1_percent.png", plot = loc_1_percent_map, device = "png",
+       width = 5, height = 3, units = "in", dpi=400, path=plot_dir)
+
+
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 

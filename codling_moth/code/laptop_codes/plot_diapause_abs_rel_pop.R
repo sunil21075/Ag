@@ -4,7 +4,11 @@ library(dplyr)
 library(ggpubr)
 
 input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/diapause/"
+<<<<<<< HEAD
 plot_path = "/Users/hn/Documents/GitHub/Kirti/codling_moth/to_write_paper/FINAL/diapause/"
+=======
+plot_path = input_dir
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 #### Relative
 
@@ -30,6 +34,7 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
        labs(x = "cumulative degree days (in F)", y = "relative population", color = "relative population") +
        geom_vline(xintercept=c(213, 1153, 2313, 3443, 4453), linetype="solid", color ="grey", size=.25) +
        geom_hline(yintercept=c(5, 10, 15, 20), linetype="solid", color ="grey", size=.25) +
+<<<<<<< HEAD
        annotate(geom="text", x=700,  y=16, label="Gen. 1", color="black", angle=30, size = 5) +
        annotate(geom="text", x=1700, y=14, label="Gen. 2", color="black", angle=30, size = 5) +
        annotate(geom="text", x=2900, y=12, label="Gen. 3", color="black", angle=30, size = 5) +
@@ -40,10 +45,23 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
                          name = "relative population") +
        scale_color_manual(labels = c("total population", "population escaping diapause"), 
                           values=c("steelblue4", "orange"), 
+=======
+       annotate(geom="text", x=700,  y=18, label="Gen. 1", color="black", angle=30) +
+       annotate(geom="text", x=1700, y=16, label="Gen. 2", color="black", angle=30) + 
+       annotate(geom="text", x=2900, y=14, label="Gen. 3", color="black", angle=30) + 
+       annotate(geom="text", x=3920, y=12, label="Gen. 4", color="black", angle=30) +
+       facet_grid(. ~ CountyGroup ~ ClimateGroup, scales = "free") +
+       scale_fill_manual(labels = c("total population", "population escaping diapause"), 
+                         values=c("grey", "orange"), 
+                         name = "relative population") +
+       scale_color_manual(labels = c("total population", "population escaping diapause"), 
+                          values=c("grey", "orange"), 
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                           guide = FALSE) +
        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                                    fun.ymin=function(z) { 0 }, 
                                    fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.7)+
+<<<<<<< HEAD
        scale_x_continuous(limits = c(0, 4500)) + 
        scale_y_continuous(limits = c(0, 20)) +
        theme(panel.grid.major = element_blank(),
@@ -61,6 +79,26 @@ plot_rel_diapause <- function(input_dir, file_name_extension, version, plot_path
              axis.title.x = element_text(face="bold", size=20, margin=margin(t=10, r=0, b=0, l=0), color="black"),
              axis.title.y = element_text(face="bold", size=20, margin=margin(t=0, r=10, b=0, l=0), color="black")
               ) +
+=======
+       scale_x_continuous(limits = c(0, 5000)) + 
+       scale_y_continuous(limits = c(0, 20)) +
+       theme_bw() + 
+       theme(plot.title = element_text(size=16, face="bold"),
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(),
+             panel.background = element_blank(),
+             strip.text = element_text(size=16, face="bold"),
+             panel.spacing=unit(.5, "cm"),
+             axis.text.x = element_text(face= "bold", size=10, color="black"),
+             axis.text.y = element_text(face= "bold", size=10, color="black"),
+             axis.ticks = element_line(color= "black", size = .2),
+             axis.title.x = element_text(face= "bold", size=16, margin = margin(t=10, r=0, b=0, l=0)),
+             axis.title.y = element_text(face= "bold", size=16, margin = margin(t=0, r=10, b=0, l=0)),
+             legend.position="bottom",
+             legend.spacing.x = unit(.2, 'cm'),
+             legend.text = element_text(size=12),
+             legend.title= element_blank()) +
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
        ggtitle(label = plot_title)
 
   # plot_name = paste0("diapause_rel_", version,".png")
@@ -80,6 +118,7 @@ ggsave("rel_85.png", rel_85, device="png", path=plot_path, width=10, height=7, u
 
 
 rel <- ggpubr::ggarrange(plotlist = list(rel_45, rel_85),
+<<<<<<< HEAD
                          ncol = 2, nrow = 1,
                          common.legend = TRUE, legend = "bottom")
  ggsave("rel.png", rel, device="png", path=plot_path, width=20, height=8, unit="in", dpi=350)
@@ -100,3 +139,25 @@ rel <- ggpubr::ggarrange(plotlist = list(rel_45, rel_85),
 # version = "rcp45"
 # plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
 
+=======
+                         ncol = 1, nrow = 2,
+                         common.legend = TRUE, legend = "bottom")
+ggsave("rel.png", rel, device="png", path=plot_path, width=10, height=14, unit="in", dpi=400)
+
+# A <- annotate_figure(adult_emerge, 
+#                      top = text_grob("Julian day of adult emergence", color="black", face="bold", size=35)
+#                      # fig.lab = "Julian day of adult emergence", fig.lab.size = 35, fig.lab.face = "bold")
+#                      )
+
+
+
+#### Absolute
+# file_name_extension = "diapause_abs_rcp85.rds"
+# version = "rcp85"
+# plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
+
+file_name_extension = "diapause_abs_rcp45.rds"
+version = "rcp45"
+plot_abs_diapause(input_dir, file_name_extension, version, plot_path)
+
+>>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
