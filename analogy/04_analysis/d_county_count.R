@@ -26,12 +26,14 @@ start_time <- Sys.time()
 ######################################################################
 
 args = commandArgs(trailingOnly=TRUE)
-carbon_type= args[1] # RCP 45 or 85
-precip_type= args[2] # include precip or no_precip
-sigma_bd= args[3]    # sigma cut off for sigma dissimilarity 1 or 2 or 3 or what?
+precip_type = args[1]        # w_precip # no_recip
+gen_3 = args[2]         # w_gen3 # no_gen3
+emission_type = args[3] # rcp45 or rcp85
+time_type = args[4] # 2026_2050 or 2051_2075 or 2076_2095
 
-gen3_inclusion= args[4] # options are no_gen_3 and w_gen3
+sigma_bd = 2
 
+n_nghs = 500
 ######################################################################
 ##                                                                  ##
 ##                     set up directories                           ##
@@ -39,10 +41,10 @@ gen3_inclusion= args[4] # options are no_gen_3 and w_gen3
 ######################################################################
 
 main_in <- file.path("/data/hydro/users/Hossein/analog/03_analogs/")
-dt_dir <- file.path(main_in, gen3_inclusion, precip_type, "500", carbon_type)
+dt_dir <- file.path(main_in, gen_3, precip_type, n_nghs, emission_type)
 
 main_out <- file.path("/data/hydro/users/Hossein/analog/04_analysis/")
-out_dir <- file.path(main_out, gen3_inclusion, precip_type, "500/")
+out_dir <- file.path(main_out, gen_3, precip_type, n_nghs, "/")
 
 if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
 print (out_dir)
@@ -60,9 +62,9 @@ all_close_analogs <- data.table()
 all_close_analogs_unique <- data.table()
 
 for (model_type in all_model_names){
-  NNs_name <- paste0(dt_dir, "/NN_loc_year_tb_", model_type, ".rds")
-  dist_name <- paste0(dt_dir, "/NN_dist_tb_", model_type, ".rds")
-  sigma_name <- paste0(dt_dir, "/NN_sigma_tb_", model_type, ".rds")
+  NNs_name <- paste0(dt_dir, "/NN_loc_year_tb_", model_type, "_", time_type, ".rds")
+  dist_name <- paste0(dt_dir, "/NN_dist_tb_", model_type, "_", time_type, ".rds")
+  sigma_name <- paste0(dt_dir, "/NN_sigma_tb_", model_type, "_", time_type, ".rds")
 
   NNs <- data.table(readRDS(NNs_name))
   dists <- data.table(readRDS(dist_name))
@@ -84,8 +86,11 @@ for (model_type in all_model_names){
   all_close_analogs_unique <- rbind(all_close_analogs_unique, close_analogs_unique)
 }
 
-saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", carbon_type, ".rds"))
-saveRDS(all_close_analogs_unique, paste0(out_dir, "all_close_analogs_unique_", carbon_type, ".rds"))
+saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", 
+                                  time_type, "_", emission_type, ".rds"))
+
+saveRDS(all_close_analogs_unique, paste0(out_dir, "all_close_analogs_unique_", 
+                                         time_type, "_", emission_type, ".rds"))
 
 
 

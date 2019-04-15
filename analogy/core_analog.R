@@ -78,7 +78,7 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
                           query_year = year_of_int, 
                           analog_fips=NA, Freq = NA, 
                           analog="Almost_Novel", st_county = NA, 
-                          distance = NA, 
+                          distance = min(dist_int_yr[,-(1:2)]), 
                           sigma=min(sigma_int_yr[,-(1:2)]))
 
           all_close_analogs <- rbind(all_close_analogs, v)
@@ -100,7 +100,7 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
   return(list(all_close_analogs, all_close_analogs_unique))
 }
 
-count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd){
+count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bds=c(2, 4){
   # For a given location, i.e. a vector,
   # find the number of analog (historical)counties 
   # corresponding to a given target county in the future.
@@ -253,15 +253,15 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
 
   if (precipitation==TRUE){
     if (gen3==TRUE){
-      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", "mean_escaped_Gen3",
-                      "mean_gdd", "mean_precip") #  "mean_escaped_Gen4",
+      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
+                        "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3",
+                        "mean_gdd", "mean_precip")
       } else {
         historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
         future_dt <- within(future_dt, remove(mean_escaped_Gen3))
         ICV <- within(ICV, remove(mean_escaped_Gen3))
-        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                          "mean_escaped_Gen2", 
+        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
+                          "mean_escaped_Gen1", "mean_escaped_Gen2", 
                           "mean_gdd", "mean_precip") 
     }
     
@@ -271,16 +271,16 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
     ICV <- within(ICV, remove(mean_precip))
     
     if (gen3==TRUE){
-      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                      "mean_escaped_Gen2", "mean_escaped_Gen3",
-                      "mean_gdd", "mean_precip")
+      numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
+                        "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3",
+                        "mean_gdd")
       } else {
         historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
         future_dt <- within(future_dt, remove(mean_escaped_Gen3))
         ICV <- within(ICV, remove(mean_escaped_Gen3))
-        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", "mean_escaped_Gen1", 
-                          "mean_escaped_Gen2", 
-                          "mean_gdd", "mean_precip") 
+        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
+                          "mean_escaped_Gen1", "mean_escaped_Gen2", 
+                          "mean_gdd") 
     }
   }
   A <- as.data.frame(historical_dt)
@@ -300,15 +300,15 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
     Cj.sd[Cj.sd<(10^-10)] = 1
 
     A_prime <- A
-    A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`) 
+    A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`) 
     
     # standardize the analog pool
     Bj_prime <- Bj
-    Bj_prime[, numeric_cols] <- sweep(Bj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
+    Bj_prime[, numeric_cols] <-sweep(Bj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
 
     # standardize the reference ICV
     Cj_prime <- Cj
-    Cj_prime[, numeric_cols] <- sweep(Cj_prime[, numeric_cols], MARGIN = 2, STATS = Cj.sd, FUN = `/`)
+    Cj_prime[, numeric_cols] <-sweep(Cj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
 
     ## Step 2: Extract the principal components (PCs) of 
     ##         the reference period ICV and project all data onto these PCs
