@@ -100,7 +100,7 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
   return(list(all_close_analogs, all_close_analogs_unique))
 }
 
-count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd){
+count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd{
   # For a given location, i.e. a vector,
   # find the number of analog (historical)counties 
   # corresponding to a given target county in the future.
@@ -160,7 +160,8 @@ count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list
   close_analogs$query_year <- year_of_int
 
   # just grab unique counties and their frequency
-  close_analogs_unique <- subset(close_analogs, select=c(analog_fips, Freq, query_loc, query_year)) %>% data.table()
+  close_analogs_unique <- subset(close_analogs, select=c(analog_fips, Freq, query_loc, query_year)) %>% 
+                          data.table()
   setkey(close_analogs_unique, analog_fips)
   close_analogs_unique <- unique(close_analogs_unique)
 
