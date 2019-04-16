@@ -122,5 +122,17 @@ df$county = gsub("county", "", df$county)
 
 
 
+######## compute frequency, aggregation
+
+values <- data.frame(query = c("q1", "q1", "q1","q2", "q2"),
+                     NN = c("a", "a", "b", "b", "b"),
+                     freq=c(53, 20, 10, 3, 10),
+                     model = c("m1", "m1", "m1", "m1", "m1"))
+
+nr.of.appearances <- aggregate(x = values, 
+                               by = list(unique.values = values$value), 
+                               FUN = length)
+
+values[, .(var = sum(freq)), by = c("query", "NN", "model")]
 
 
