@@ -116,11 +116,9 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme(panel.grid.major = element_line(size=0.2),
              panel.spacing=unit(.5, "cm"),
-           # axis.title = element_text(face = "plain", size = 16, margin=margin(2)),
              legend.title = element_text(face="plain", size=12),
              legend.text = element_text(size=10),
              legend.position = "bottom",
-           # plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
              strip.text = element_text(size=12, face="plain"),
              axis.ticks = element_line(color = "black", size = .2),
              axis.text = element_text(face="plain", size=10, color="black"),
@@ -201,12 +199,8 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                   legend.title = element_text(face="plain", size=16),
                   legend.text = element_text(size=14),
                   legend.position = "bottom",
-                  legend.key.size = unit(.65, "cm"), 
-<<<<<<< HEAD
+                  legend.key.size = unit(.65, "cm"),
                   strip.text = element_text(size=16, face="bold", color="black"),
-=======
-                  strip.text = element_text(size=16, face="bold"),
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
                   axis.text = element_text(face="bold", size=14, color="black"),
                   axis.ticks = element_line(color = "black", size = .2),
                   axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),
@@ -511,19 +505,12 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               panel.spacing=unit(.25, "cm"),
-<<<<<<< HEAD
               legend.spacing.x = unit(.2, 'cm'),
-=======
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               legend.title = element_text(face="plain", size=16),
               legend.text = element_text(size=14),
               legend.position = "bottom",
-              legend.key.size = unit(.65, "cm"), 
-<<<<<<< HEAD
+              legend.key.size = unit(.65, "cm"),
               strip.text = element_text(size=16, face="bold", color="black"),
-=======
-              strip.text = element_text(size=16, face="bold"),
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               axis.text = element_text(face="bold", size=14, color="black"),
               axis.ticks = element_line(color = "black", size = .2),
               axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),
@@ -604,14 +591,9 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
               legend.title = element_text(face="plain", size=16),
               legend.text = element_text(size=14),
               legend.position = "bottom",
-<<<<<<< HEAD
               legend.spacing.x = unit(.2, 'cm'),
               legend.key.size = unit(.65, "cm"), 
               strip.text = element_text(size=16, face="bold", color="black"),
-=======
-              legend.key.size = unit(.65, "cm"), 
-              strip.text = element_text(size=16, face="bold"),
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
               axis.text = element_text(face="bold", size=14, color="black"),
               axis.ticks = element_line(color = "black", size = .2),
               axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0), color="black"),
