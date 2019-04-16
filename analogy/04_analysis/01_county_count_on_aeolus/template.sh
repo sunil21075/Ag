@@ -16,8 +16,6 @@
 
 #PBS -m abe
 
-cd /data/hydro/users/Hossein/analog/03_analogs/gen_3_type/precip_type/emission_type/
-
 echo
 echo We are in the $PWD directory
 echo
