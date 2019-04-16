@@ -16,7 +16,6 @@ data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_interva
 input_dir<- data_dir
 plot_dir <- "/Users/hn/Desktop/"
 
-
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
 plot_dir <- file.path(base_in, "plots/interval_TS/")
@@ -49,8 +48,7 @@ month_names = c("Jan", "Feb", "Mar",
                 )
 
 plot_intervals <- function(data, month_name){
-  the_theme <- theme_bw() + 
-               theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
+  the_theme <- theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      plot.title = element_text(hjust = 0.5),
                      plot.subtitle = element_text(hjust = 0.5),
@@ -91,18 +89,26 @@ plot_intervals <- function(data, month_name){
   return(obs_plot)
 }
 
-city_names = c("Omak", "Wenatchee", "Richland", "Hilsboro", "Elmira")
+param_dir <- "/home/hnoorazar/chilling_codes/parameters/"
+limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, sep=",")
+
+limited_locations$location = paste0(limited_locations$lat, "_", limited_locations$long)
+city_names <- limited_locations$city
 
 for(month in month_names){
   data = paste0(data_dir, month, ".rds")
   data = data.table(readRDS(data))
+
+  data <- left_join(x=data, y=limited_locations, by="location")
   
-  data$city = 0L
-  data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+  # data$city = 0L
+
+  # data$city[data$location == "48.40625_-119.53125"] = "Omak"
+  # data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+  # data$city[data$location == "46.28125_-119.34375"] = "Richland"
+  # data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+  # data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+  
   data$city <- factor(data$city, levels = city_names)
 
   data <- table(cut(data$Temp, breaks = iof_breaks))        
@@ -115,12 +121,14 @@ for(month in month_names){
   data = paste0(data_dir, "observed_", month, ".rds")
   data = data.table(readRDS(data))
   
-  data$city = 0L
-  data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+  # data$city = 0L
+  # data$city[data$location == "48.40625_-119.53125"] = "Omak"
+  # data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+  # data$city[data$location == "46.28125_-119.34375"] = "Richland"
+  # data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+  # data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+
+  data <- left_join(x=data, y=limited_locations, by="location")
   data$city <- factor(data$city, levels = city_names)
 
   data <- table(cut(data$Temp, breaks = iof_breaks))
@@ -375,12 +383,14 @@ month_names = c("Sept", "Oct", "Nov", "Dec")
 ############
 rm(data)
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_modeled.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+
+# data$city = 0L
+# data$city[data$location == "48.40625_-119.53125"] = "Omak"
+# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+# data$city[data$location == "46.28125_-119.34375"] = "Richland"
+# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+data <- left_join(x=data, y=limited_locations, by="location")
 data$city <- factor(data$city, levels = city_names)
 
 data <- table(cut(data$Temp, breaks = iof_breaks))
@@ -396,12 +406,13 @@ rm(data)
 ############
 
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_observed.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+# data$city = 0L
+# data$city[data$location == "48.40625_-119.53125"] = "Omak"
+# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+# data$city[data$location == "46.28125_-119.34375"] = "Richland"
+# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+data <- left_join(x=data, y=limited_locations, by="location")
 data$city <- factor(data$city, levels = city_names)
 
 data <- table(cut(data$Temp, breaks = iof_breaks))
@@ -432,12 +443,13 @@ month_names = c("Sept", "Oct", "Nov", "Dec", "Jan")
 ############ modeled
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_modeled.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+# data$city = 0L
+# data$city[data$location == "48.40625_-119.53125"] = "Omak"
+# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+# data$city[data$location == "46.28125_-119.34375"] = "Richland"
+# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+data <- left_join(x=data, y=limited_locations, by="location")
 data$city <- factor(data$city, levels = city_names)
 
 data <- table(cut(data$Temp, breaks = iof_breaks))
@@ -453,12 +465,13 @@ rm(data)
 ############ observed
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_observed.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+# data$city = 0L
+# data$city[data$location == "48.40625_-119.53125"] = "Omak"
+# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
+# data$city[data$location == "46.28125_-119.34375"] = "Richland"
+# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
+# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
+data <- left_join(x=data, y=limited_locations, by="location")
 data$city <- factor(data$city, levels = city_names)
 
 data <- table(cut(data$Temp, breaks = iof_breaks))
