@@ -1,5 +1,4 @@
 
-
 library(data.table)
 library(dplyr)
 library(ggmap)
@@ -9,7 +8,7 @@ options(digits=9)
 options(digit=9)
 
 
-
+plot <- function()
 
 plot_100_NN_geo_map <- function(NNs, dists, sigmas, use_sigma=T){
   # For a given location, i.e. a vector,
@@ -47,10 +46,6 @@ plot_100_NN_geo_map <- function(NNs, dists, sigmas, use_sigma=T){
 
   
   states <- map_data("state")
-
-
-
-
 }
 
 
