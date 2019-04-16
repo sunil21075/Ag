@@ -9,8 +9,7 @@ options(digits=9)
 ## And do not load any libraries on the drivers!
 ## Unless you are aware of conflicts between packages.
 ## I spent hours to figrue out what the hell is going on!
-<<<<<<< HEAD
-#####################################################################
+
 count_years_threshs_met <- function(dataT, due){
   h_year_count <- length(unique(dataT[dataT$time_period =="Historical",]$chill_season))
   f1_year_count <- length(unique(dataT[dataT$time_period== "2025_2050",]$chill_season))
@@ -92,9 +91,6 @@ count_years_threshs_met <- function(dataT, due){
   result <- na.omit(result)
   return(result)
 }
-=======
-
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 
 ########################################
 ######
