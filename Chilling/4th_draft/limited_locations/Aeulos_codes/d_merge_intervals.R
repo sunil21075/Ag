@@ -8,10 +8,12 @@ read_dir <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 write_dir<- read_dir
 
 param_dir <- "/home/hnoorazar/chilling_codes/parameters/"
-limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, sep=",")
+limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, sep=",", as.is=T)
 
 file_names = paste0(limited_locations$lat, "_", limited_locations$long)
 city_names <- limited_locations$city
+
+print (file_names)
 
 # file_names = c("48.40625_-119.53125", # Omak
 #                "46.28125_-119.34375", # Richland
@@ -38,7 +40,7 @@ start_time <- Sys.time()
 for (cs in climate_scenarios){
     if (cs == "observed"){
         curr_path = file.path(read_dir, cs)
-        for (count in seq(1, 5)){
+        for (count in seq(1, nrow(limited_locations))){
             f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
             f$climateScenario = "observed"
             f$location = file_names[count]
@@ -49,7 +51,7 @@ for (cs in climate_scenarios){
         for (proj in projection_type){
             curr_path = file.path(read_dir, cs, proj)
 
-            for (count in seq(1, 5)){
+            for (count in seq(1, nrow(limited_locations))){
                 f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
                 f$climateScenario = cs
                 f$location = file_names[count]

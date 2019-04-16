@@ -1,5 +1,16 @@
 options(digits=9)
 options(digits=9)
+
+
+remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
+  if (!("location" %in% colnames(data_dt))){
+    data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
+  }
+  data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
+  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
+  data_dt <- within(data_dt, remove(location))
+  return(data_dt)
+}
 ###################################################################
 #          **********                            **********
 #          **********        WARNING !!!!        **********
