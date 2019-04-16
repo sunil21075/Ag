@@ -10,7 +10,6 @@ safe_box_plot <- function(data, due, chill_start){
   medians_vec <- medians$med
   
   the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
-                    plot.title = element_text(size = 20, face = "bold"),
                     panel.border = element_rect(fill=NA, size=.3),
                     panel.grid.major = element_line(size = 0.05),
                     panel.grid.minor = element_blank(),
@@ -22,13 +21,14 @@ safe_box_plot <- function(data, due, chill_start){
                     legend.text = element_text(size=16),
                     legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
                     legend.title = element_blank(),
-                    strip.text.x = element_text(size=18),
-                    strip.text.y = element_text(size=18),
+                    plot.title = element_text(size = 20, face = "bold"),
+                    strip.text.x = element_text(size=18, face="bold"),
+                    strip.text.y = element_text(size=18, face="bold"),
                     axis.ticks = element_line(size=.1, color="black"),
-                    axis.text.x = element_blank(), # element_text(size=7, face="plain", color="black"),
-                    axis.text.y = element_text(size=14, face="plain", color="black"),
-                    axis.title.x = element_blank(),
-                    axis.title.y = element_text(size=22, face="plain", margin = margin(t=0, r=10, b=0, l=0))
+                    axis.text.y = element_text(size=14, face="bold", color="black"),
+                    axis.title.y = element_text(size=22, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.x = element_blank(),
+                    axis.title.x = element_blank()
                     )
   
   safe_b <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
