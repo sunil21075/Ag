@@ -123,17 +123,12 @@ feb_result = count_years_threshs_met(dataT = feb_data, due="Feb")
 mar_result = count_years_threshs_met(dataT = mar_data, due="Mar")
 
 #################################### FEB
-quan_per_feb <- feb_result %>% 
-                group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
-                data.table()
+quan_per_feb <- feb_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
 data <- quan_per_feb %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
 data <- data[order(time_period, thresh_range), ]
 dattest <- data %>% spread(time_period,quan_25)
-write.table(dattest, file = paste0("/Users/hn/Desktop/", "dattest.csv"), 
-                      row.names = FALSE, 
-                      col.names = TRUE, sep = ",")
+write.table(dattest, file = paste0("/Users/hn/Desktop/", "dattest.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
 
 data <- quan_per_feb %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
 data <- data[order(time_period, thresh_range), ]
