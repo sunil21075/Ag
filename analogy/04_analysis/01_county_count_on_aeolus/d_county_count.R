@@ -26,10 +26,10 @@ start_time <- Sys.time()
 ######################################################################
 
 args = commandArgs(trailingOnly=TRUE)
-precip_type = args[1]        # w_precip # no_recip
+precip_type = args[1]   # w_precip # no_recip
 gen_3 = args[2]         # w_gen3 # no_gen3
 emission_type = args[3] # rcp45 or rcp85
-time_type = args[4] # 2026_2050 or 2051_2075 or 2076_2095
+time_type = args[4]     # 2026_2050 or 2051_2075 or 2076_2095
 
 sigma_bd = 2
 
