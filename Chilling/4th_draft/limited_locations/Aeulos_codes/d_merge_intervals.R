@@ -5,12 +5,21 @@ library(dplyr)
 library(foreach)
 
 read_dir <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
-write_dir <- read_dir
+write_dir<- read_dir
 
 param_dir <- "/home/hnoorazar/chilling_codes/parameters/"
-limited_locations <- read.table(paste0(param_dir, "limited_locations.csv"), header = T, sep=",")
+limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, sep=",")
+
 file_names = paste0(limited_locations$lat, "_", limited_locations$long)
-city_names = limited_locations$city
+city_names <- limited_locations$city
+
+# file_names = c("48.40625_-119.53125", # Omak
+#                "46.28125_-119.34375", # Richland
+#                "47.40625_-120.34375", # Wenatchee
+#                "45.53125_-123.15625", # Hilsboro
+#                "44.09375_-123.34375") # Elmira
+
+# city_names = c("Omak", "Richland", "Wenatchee", "Hilsboro", "Elmira")
 
 climate_scenarios = list.files(read_dir, all.files=F, include.dirs=F)
 print ("__________________________________")
@@ -23,6 +32,8 @@ observed = data.table()
 modeled_hist = data.table()
 rcp45 = data.table()
 rcp85 = data.table()
+
+start_time <- Sys.time()
 
 for (cs in climate_scenarios){
     if (cs == "observed"){
@@ -129,3 +140,4 @@ saveRDS(modeled, paste0(write_dir, "sept_thru_dec_modeled.rds"))
 observed <- observed  %>% filter(month %in% mos)
 saveRDS(observed, paste0(write_dir, "sept_thru_dec_observed.rds"))
 
+print( Sys.time() - start_time)
