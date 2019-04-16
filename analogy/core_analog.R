@@ -23,6 +23,31 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+find_unique_county_to_county_freq <- function(dt, local_county_fips, usa_county_fips){
+
+  setnames(local_county_fips, old=c("location"), new=c("query_loc"))
+  ## add county fips to the data which only has the location of local sites
+  dt <- merge(dt, local_county_fips, all.x=T)
+  dt <- within(dt, remove(query_loc, query_year, st_county))
+
+  setnames(dt, old=c("fips"), new=c("query_fips"))
+  setcolorder(dt, c("query_fips", "analog_fips", "Freq", "ClimateScenario"))
+
+  # some locations at some year may be novel! drop them.
+  print (colSums(is.na(dt)))
+  dt <- na.omit(dt)
+
+  dt_aggregation <- dt[, .(freq = sum(Freq)), by = c("query_fips", "analog_fips", "ClimateScenario")]
+
+  # separate models, perhaps to compare them later:
+  dt_agg_bcc_m <- dt_aggregation %>% filter(ClimateScenario == "bcc-csm1-1-m")
+  dt_agg_BNU <- dt_aggregation %>% filter(ClimateScenario == "BNU-ESM")
+  dt_agg_CanESM2 <- dt_aggregation %>% filter(ClimateScenario == "CanESM2")
+  dt_agg_CNRM_CM5 <- dt_aggregation %>% filter(ClimateScenario == "CNRM-CM5")
+  dt_agg_GFDLG <- dt_aggregation %>% filter(ClimateScenario == "GFDL-ESM2G")
+  dt_agg_GFDLM <- dt_aggregation %>% filter(ClimateScenario == "GFDL-ESM2M")
+  return(list(dt_aggregation, dt_agg_bcc_m, dt_agg_BNU, dt_agg_CanESM2, dt_agg_CNRM_CM5, dt_agg_GFDLG, dt_agg_GFDLM))
+}
 
 
 count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd=2, novel_thresh=4){
