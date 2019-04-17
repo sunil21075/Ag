@@ -19,7 +19,7 @@ direcs <- c("mid_nov", "mid_oct", "mid_sept", "nov", "oct", "sept")
 starts <- c("Nov. 15", "Oct. 15", "Sept. 15", "Nov. 1", "Oct. 1", "Sept. 1")
 in_post <- "non_overlap/"
 
-for (i in 1:6){
+for (i in 1:len(direcs)){
 
   specific_dir <- direcs[i]
   start = starts[i]
