@@ -136,3 +136,10 @@ nr.of.appearances <- aggregate(x = values,
 values[, .(var = sum(freq)), by = c("query", "NN", "model")]
 
 
+# Cartesian paste
+
+model_namess <- c("bcc_csm1_1_m", "BNU_ESM", "CanESM2", "CNRM_CM5", "GFDL_ESM2G", "GFDL_ESM2M")
+local_county_names <- unique(local_cnty_fips$st_county)
+local_county_names <- sapply(local_county_names, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+local_county_names = paste0(tolower(x[2, ]), "_")
+plot_names <- do.call(paste, expand.grid(model_namess, local_county_names, sep='_', stringsAsFactors=FALSE))
