@@ -33,8 +33,6 @@ find_county_name <- function(dt_df, curr_fips){
 
 find_unique_county_to_county_freq <- function(dt, local_county_fips, usa_county_fips){
 
-  setnames(local_county_fips, old=c("location"), new=c("query_loc"))
-
   # some locations at some year may be novel! drop them
   dt <- na.omit(dt)
 
