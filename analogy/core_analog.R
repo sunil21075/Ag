@@ -23,19 +23,27 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+
+find_county_name <- function(dt_df, curr_fips){
+  dt_df <- dt_df %>% filter(fips == curr_fips)
+  county_name <- dt_df$st_county
+  county_name <- tolower(strsplit(as.character(county_name), "_")[[1]][2])
+  return(county_name)
+}
+
 find_unique_county_to_county_freq <- function(dt, local_county_fips, usa_county_fips){
 
   setnames(local_county_fips, old=c("location"), new=c("query_loc"))
+
+  # some locations at some year may be novel! drop them
+  dt <- na.omit(dt)
+
   ## add county fips to the data which only has the location of local sites
   dt <- merge(dt, local_county_fips, all.x=T)
   dt <- within(dt, remove(query_loc, query_year, st_county))
 
   setnames(dt, old=c("fips"), new=c("query_fips"))
   setcolorder(dt, c("query_fips", "analog_fips", "Freq", "ClimateScenario"))
-
-  # some locations at some year may be novel! drop them.
-  print (colSums(is.na(dt)))
-  dt <- na.omit(dt)
 
   dt_aggregation <- dt[, .(freq = sum(Freq)), by = c("query_fips", "analog_fips", "ClimateScenario")]
 
@@ -48,7 +56,6 @@ find_unique_county_to_county_freq <- function(dt, local_county_fips, usa_county_
   dt_agg_GFDLM <- dt_aggregation %>% filter(ClimateScenario == "GFDL-ESM2M")
   return(list(dt_aggregation, dt_agg_bcc_m, dt_agg_BNU, dt_agg_CanESM2, dt_agg_CNRM_CM5, dt_agg_GFDLG, dt_agg_GFDLM))
 }
-
 
 count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd=2, novel_thresh=4){
   # For a given location, i.e. a vector,

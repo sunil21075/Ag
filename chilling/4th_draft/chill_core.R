@@ -186,7 +186,7 @@ medians <- function(thresh_20, thresh_25, thresh_30,
 process_data <- function(file, time_period) { # this is for overlapping data, which we never will use!
   if (time_period=="2040"){
     processed_data <- file %>%
-                      filter(year > 2025 & year <= 2055,
+                      filter(year >= 2025 & year <= 2055,
                              chill_season != "chill_2025-2026" &
                              chill_season != "chill_2055-2056")
   } else if (time_period=="2060"){
