@@ -68,265 +68,268 @@ clean_process <- function(dt){
 main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 out_dir = main_in_dir
 
-begins <- c("mid_sept_summary_comp.rds", "oct_summary_comp.rds", 
-            "mid_oct_summary_comp.rds", "nov_summary_comp.rds", "mid_nov_summary_comp.rds")
+begins <- c("sept", "mid_sept", "oct", "mid_oct", "nov", "mid_nov")
 
 begin = begins[1]
-mdata <- data.table(readRDS(paste0(main_in_dir, begin)))
-mdata <- mdata %>% filter(model != "observed")
+for (begin in begins){
+  out_dir <- file.path(main_in_dir, begin, "/")
+  
 
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
-LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
-                                     header=T, sep=",", as.is=T)
+  mdata <- data.table(readRDS(paste0(main_in_dir, begin, "_summary_comp.rds")))
+  mdata <- mdata %>% filter(model != "observed")
 
-mdata <- remove_montana_add_warm_cold(mdata, LocationGroups_NoMontana)
-information <- clean_process(mdata)
-jan_data = information[[1]] %>% data.table()
-feb_data = information[[2]] %>% data.table()
-mar_data = information[[3]] %>% data.table()
-apr_data = information[[4]] %>% data.table()
-rm(information, mdata)
+  param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+  LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
+                                       header=T, sep=",", as.is=T)
 
-jan_result = count_years_threshs_met_all_locations(dataT = jan_data, due="Jan")
-feb_result = count_years_threshs_met_all_locations(dataT = feb_data, due="Feb")
-mar_result = count_years_threshs_met_all_locations(dataT = mar_data, due="Mar")
-apr_result = count_years_threshs_met_all_locations(dataT = apr_data, due="Apr")
+  mdata <- remove_montana_add_warm_cold(mdata, LocationGroups_NoMontana)
+  information <- clean_process(mdata)
+  jan_data = information[[1]] %>% data.table()
+  feb_data = information[[2]] %>% data.table()
+  mar_data = information[[3]] %>% data.table()
+  apr_data = information[[4]] %>% data.table()
+  rm(information, mdata)
 
-#####################
-#####################              RCP 8.5
-#####################
-######****************************
-################################## JAN
-######****************************
+  jan_result = count_years_threshs_met_all_locations(dataT = jan_data, due="Jan")
+  feb_result = count_years_threshs_met_all_locations(dataT = feb_data, due="Feb")
+  mar_result = count_years_threshs_met_all_locations(dataT = mar_data, due="Mar")
+  apr_result = count_years_threshs_met_all_locations(dataT = apr_data, due="Apr")
 
-quan_per <- jan_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  #####################
+  #####################              RCP 8.5
+  #####################
+  ######****************************
+  ################################## JAN
+  ######****************************
 
-######### COOLER 8.5
+  quan_per <- jan_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
+  ######### COOLER 8.5
 
-write.table(dattest, file = paste0(out_dir, "jan_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "jan_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  write.table(dattest, file = paste0(out_dir, "jan_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######## WARMER
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "jan_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "jan_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARMER
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "jan_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest, quan_per)
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "jan_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######****************************
-################################## FEB
-######****************************
-quan_per_feb <- feb_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                               summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "jan_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest, quan_per)
 
-######## COOLER
+  ######****************************
+  ################################## FEB
+  ######****************************
+  quan_per_feb <- feb_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                                 summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per_feb %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## COOLER
 
-data <- quan_per_feb %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  data <- quan_per_feb %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######## WARMER
+  data <- quan_per_feb %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per_feb %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARMER
 
-data <- quan_per_feb %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest, quan_per_feb)
+  data <- quan_per_feb %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######****************************
-################################## MARCH
-######****************************
+  data <- quan_per_feb %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest, quan_per_feb)
 
-quan_per <- mar_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  ######****************************
+  ################################## MARCH
+  ######****************************
 
-######### COOLER
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period,quan_25)
-write.table(dattest, file = paste0(out_dir, "march_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  quan_per <- mar_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "march_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######### COOLER
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period,quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######## WARM
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "march_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "march_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest, quan_per)
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######****************************
-################################## April
-######****************************
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest, quan_per)
 
-quan_per <- apr_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  ######****************************
+  ################################## April
+  ######****************************
 
-######### COOLER
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period,quan_25)
-write.table(dattest, file = paste0(out_dir, "april_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  quan_per <- apr_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "april_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######### COOLER
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period,quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_cool_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######## WARM
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_cool_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "april_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
-data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "april_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest, quan_per)
+  data <- quan_per %>% filter(scenario == "RCP 8.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_warm_85.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-#####################
-#####################              RCP 4.5
-#####################
-######****************************
-################################## JAN
-######****************************
+  data <- quan_per %>% filter(scenario == "Historical", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_warm_hist.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest, quan_per)
 
-quan_per <- jan_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  #####################
+  #####################              RCP 4.5
+  #####################
+  ######****************************
+  ################################## JAN
+  ######****************************
 
-######### COOLER
+  quan_per <- jan_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type == "Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "jan_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######### COOLER
 
-######## WARM
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type == "Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "jan_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "jan_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
-######****************************
-################################## FEB
-######****************************
-quan_per_feb <- feb_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                               summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "jan_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-######## COOLER
+  ######****************************
+  ################################## FEB
+  ######****************************
+  quan_per_feb <- feb_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                                 summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per_feb %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## COOLER
 
-######## WARM
+  data <- quan_per_feb %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per_feb %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "feb_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
-######****************************
-################################## MARCH
-######****************************
+  data <- quan_per_feb %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "feb_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-quan_per <- mar_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  ######****************************
+  ################################## MARCH
+  ######****************************
 
-######### COOLER
+  quan_per <- mar_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "march_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######### COOLER
 
-######## WARM
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "march_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
-######****************************
-################################## April
-######****************************
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "march_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-quan_per <- apr_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
-                           summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  ######****************************
+  ################################## April
+  ######****************************
 
-######### COOLER
+  quan_per <- apr_result %>% group_by(climate_type, time_period, scenario, thresh_range) %>% 
+                             summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "april_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######### COOLER
 
-######## WARM
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Cooler Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_cool_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
 
-data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
-data <- data[order(time_period, thresh_range), ]
-dattest <- data %>% spread(time_period, quan_25)
-write.table(dattest, file = paste0(out_dir, "april_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
-rm(data, dattest)
+  ######## WARM
 
+  data <- quan_per %>% filter(scenario == "RCP 4.5", climate_type=="Warmer Area") %>% data.table()
+  data <- data[order(time_period, thresh_range), ]
+  dattest <- data %>% spread(time_period, quan_25)
+  write.table(dattest, file = paste0(out_dir, "april_warm_45.csv"), row.names = FALSE, col.names = TRUE, sep = ",")
+  rm(data, dattest)
+}
 
 
 
