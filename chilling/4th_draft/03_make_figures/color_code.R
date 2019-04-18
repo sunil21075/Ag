@@ -1,8 +1,12 @@
 
 rm(list=ls())
-library(tidyverse)
+.libPaths("/data/hydro/R_libs35")
+.libPaths()
+
 library(data.table)
 library(dplyr)
+library(tidyr)
+library(tidyverse)
 
 options(digit=9)
 options(digits=9)
@@ -14,9 +18,9 @@ options(digits=9)
 ##########################################################################################
 define_path <- function(model_name){
   if (model_name == "dynamic"){
-      in_dir <- paste0(main_in_dir, model_specific_dir_name[1])
-      } else if (model == "utah"){
-          in_dir <- paste0(main_in_dir, model_specific_dir_name[2])
+    in_dir <- paste0(main_in_dir, model_specific_dir_name[1])
+    } else if (model == "utah"){
+      in_dir <- paste0(main_in_dir, model_specific_dir_name[2])
   }
 }
 
@@ -24,7 +28,7 @@ clean_process <- function(dt){
 
   dt <- subset(dt, select=c(chill_season,
                             sum_J1, sum_F1, sum_M1, sum_A1, 
-                            lat, long, climate_type,
+                            lat, long, warm_cold,
                             scenario, model, year))
   
   dt <- dt %>% filter(year <= 2005 | year >= 2025)
@@ -41,10 +45,10 @@ clean_process <- function(dt){
   dt$scenario[dt$scenario == "rcp85"] <- "RCP 8.5"
   dt$scenario[dt$scenario == "historical"] <- "Historical"
 
-  jan_data <- subset(dt, select=c(sum_J1, lat, long, climate_type, scenario, model, time_period, chill_season))
-  feb_data <- subset(dt, select=c(sum_F1, lat, long, climate_type, scenario, model, time_period, chill_season))
-  mar_data <- subset(dt, select=c(sum_M1, lat, long, climate_type, scenario, model, time_period, chill_season))
-  apr_data <- subset(dt, select=c(sum_A1, lat, long, climate_type, scenario, model, time_period, chill_season))
+  jan_data <- subset(dt, select=c(sum_J1, lat, long, warm_cold, scenario, model, time_period, chill_season))
+  feb_data <- subset(dt, select=c(sum_F1, lat, long, warm_cold, scenario, model, time_period, chill_season))
+  mar_data <- subset(dt, select=c(sum_M1, lat, long, warm_cold, scenario, model, time_period, chill_season))
+  apr_data <- subset(dt, select=c(sum_A1, lat, long, warm_cold, scenario, model, time_period, chill_season))
   return (list(jan_data, feb_data, mar_data, apr_data))
 }
 
@@ -53,8 +57,6 @@ clean_process <- function(dt){
 ###                 Driver                ###
 ###                                       ###
 #############################################
-out_dir = "/Users/hn/Desktop/tables/"
-
 
 # main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
 # model_names = c("dynamic") # , "utah"
@@ -63,23 +65,32 @@ out_dir = "/Users/hn/Desktop/tables/"
 # mdata <- data.table(readRDS(paste0(main_in_dir, model_specific_dir_name, file_name)))
 # setnames(mdata, old=c("Chill_season"), new=c("chill_season"))
 
-main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/different_chill_start/"
-begins <- c("mid_sept", "oct", "mid_oct", "nov", "mid_nov")
-begin = begins[1]
-mdata <- data.table(readRDS(paste0(main_in_dir, begin, ".rds")))
-mdata <- mdata %>% filter(model != "observed")
-information <- clean_process(mdata)
+main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
+out_dir = main_in_dir
 
-jan_data = information[[1]]
-feb_data = information[[2]]
-mar_data = information[[3]]
-apr_data = information[[4]]
+begins <- c("mid_sept_summary_comp.rds", "oct_summary_comp.rds", 
+            "mid_oct_summary_comp.rds", "nov_summary_comp.rds", "mid_nov_summary_comp.rds")
+
+begin = begins[1]
+mdata <- data.table(readRDS(paste0(main_in_dir, begin)))
+mdata <- mdata %>% filter(model != "observed")
+
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
+                                     header=T, sep=",", as.is=T)
+
+mdata <- remove_montana_add_warm_cold(mdata, LocationGroups_NoMontana)
+information <- clean_process(mdata)
+jan_data = information[[1]] %>% data.table()
+feb_data = information[[2]] %>% data.table()
+mar_data = information[[3]] %>% data.table()
+apr_data = information[[4]] %>% data.table()
 rm(information, mdata)
 
-jan_result = count_years_threshs_met(dataT = jan_data, due="Jan")
-feb_result = count_years_threshs_met(dataT = feb_data, due="Feb")
-mar_result = count_years_threshs_met(dataT = mar_data, due="Mar")
-apr_result = count_years_threshs_met(dataT = apr_data, due="Apr")
+jan_result = count_years_threshs_met_all_locations(dataT = jan_data, due="Jan")
+feb_result = count_years_threshs_met_all_locations(dataT = feb_data, due="Feb")
+mar_result = count_years_threshs_met_all_locations(dataT = mar_data, due="Mar")
+apr_result = count_years_threshs_met_all_locations(dataT = apr_data, due="Apr")
 
 #####################
 #####################              RCP 8.5

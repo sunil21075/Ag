@@ -13,33 +13,40 @@ library(ggplot2)
 # 2. Pull data from current directory -------------------------------------
 
 # main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
-main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
 
-write_dir_utah = paste0(main_in_dir, "utah_model_stats/")
-write_dir_dynamic = paste0(main_in_dir, "dynamic_model_stats/")
 param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 
 model = "dynamic"
-
-if (model == "dynamic"){
-  setwd(write_dir_dynamic)
-  write_dir = write_dir_dynamic
-} else if (model == "utah") {
-  setwd(write_dir_utah)
-  write_dir = write_dir_utah
-}
+# if (model == "dynamic"){
+#   setwd(write_dir_dynamic)
+#   write_dir = write_dir_dynamic
+# } else if (model == "utah") {
+#   setwd(write_dir_utah)
+#   write_dir = write_dir_utah
+# }
 #######################################################
 #
 #                 Plot settings
 #
 #######################################################
 quality = 300
+main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 write_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
-summary_comp <- data.table(readRDS(paste0(write_dir, "sept_summary_comp.rds")))
+summary_comp <- data.table(readRDS(paste0(main_in_dir, "sept_summary_comp.rds")))
 
 # remove montana and add Warm_Cool to it.
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
                                      header=T, sep=",", as.is=T)
+
+remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
+  if (!("location" %in% colnames(data_dt))){
+    data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
+  }
+  data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
+  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
+  data_dt <- within(data_dt, remove(location))
+  return(data_dt)
+}
 
 summary_comp <- remove_montana_add_warm_cold(summary_comp, LocationGroups_NoMontana)
 

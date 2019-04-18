@@ -361,5 +361,3 @@ pick_single_cities <- function(dt){
   dt$city <- factor(dt$city, levels = city_names)
   return(data.table(dt))
 }
-
-
