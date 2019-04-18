@@ -24,36 +24,6 @@ options(digit=9)
 ##                                                                ##
 ####################################################################
 
-find_county_name <- function(dt_df, curr_fips){
-  dt_df <- dt_df %>% filter(fips == curr_fips)
-  county_name <- dt_df$st_county
-  county_name <- tolower(strsplit(as.character(county_name), "_")[[1]][2])
-  return(county_name)
-}
-
-find_unique_county_to_county_freq <- function(dt, local_county_fips, usa_county_fips){
-
-  # some locations at some year may be novel! drop them
-  dt <- na.omit(dt)
-
-  ## add county fips to the data which only has the location of local sites
-  dt <- merge(dt, local_county_fips, all.x=T)
-  dt <- within(dt, remove(query_loc, query_year, st_county))
-
-  setnames(dt, old=c("fips"), new=c("query_fips"))
-  setcolorder(dt, c("query_fips", "analog_fips", "Freq", "ClimateScenario"))
-
-  dt_aggregation <- dt[, .(freq = sum(Freq)), by = c("query_fips", "analog_fips", "ClimateScenario")]
-
-  # separate models, perhaps to compare them later:
-  dt_agg_bcc_m <- dt_aggregation %>% filter(ClimateScenario == "bcc-csm1-1-m")
-  dt_agg_BNU <- dt_aggregation %>% filter(ClimateScenario == "BNU-ESM")
-  dt_agg_CanESM2 <- dt_aggregation %>% filter(ClimateScenario == "CanESM2")
-  dt_agg_CNRM_CM5 <- dt_aggregation %>% filter(ClimateScenario == "CNRM-CM5")
-  dt_agg_GFDLG <- dt_aggregation %>% filter(ClimateScenario == "GFDL-ESM2G")
-  dt_agg_GFDLM <- dt_aggregation %>% filter(ClimateScenario == "GFDL-ESM2M")
-  return(list(dt_aggregation, dt_agg_bcc_m, dt_agg_BNU, dt_agg_CanESM2, dt_agg_CNRM_CM5, dt_agg_GFDLG, dt_agg_GFDLM))
-}
 
 count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd=2, novel_thresh=4){
   # For a given location, i.e. a vector,
@@ -79,20 +49,19 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
   local_sites <- unique(NNs$location)
   future_years <- unique(NNs$year)
 
-  for (a_site in local_sites){
-    for (yr in future_years){
-      NNs_int_yr <- NNs %>% filter(location == a_site & year == yr)
-      dist_int_yr <- dists %>% filter(location == a_site & year == yr)
-      sigma_int_yr <- sigmas %>% filter(location == a_site & year == yr)
-      
-      site_of_int <- NNs_int_yr$location
-      year_of_int <- NNs_int_yr$year
+  for (site_of_int in local_sites){
+    for (year_of_int in future_years){
+      NNs_int_yr <- NNs %>% filter(location == site_of_int & year == year_of_int)
+      dist_int_yr <- dists %>% filter(location == site_of_int & year == year_of_int)
+      sigma_int_yr <- sigmas %>% filter(location == site_of_int & year == year_of_int)
       
       if (check_novelty(sigma_int_yr[,-(1:2)], novel_thresh)) {
+        f = county_list %>% filter(location == NNs_int_yr[1, 4])
+
         v <- data.frame(query_loc = site_of_int, 
                         query_year = year_of_int, 
-                        analog_fips=NA, Freq = NA, 
-                        analog="Novel", st_county = NA, 
+                        analog_fips=f$fips, Freq = NA, 
+                        analog="Novel", st_county = f$st_county, 
                         distance = min(dist_int_yr[,-(1:2)]), 
                         sigma = min(sigma_int_yr[,-(1:2)]))
 
@@ -100,14 +69,15 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
 
         v <- data.frame(query_loc = site_of_int, 
                         query_year = year_of_int, 
-                        analog_fips=NA, Freq = NA)
+                        analog_fips=f$fips, Freq = NA)
         all_close_analogs_unique <- rbind(all_close_analogs_unique, v)
-
+        rm(f)
        } else if (check_almost_novelty(sigma_int_yr[,-(1:2)], sigma_bd, novel_thresh)){
+          f = county_list %>% filter(location == NNs_int_yr[1, 4])
           v <- data.frame(query_loc = site_of_int, 
                           query_year = year_of_int, 
-                          analog_fips=NA, Freq = NA, 
-                          analog="Almost_Novel", st_county = NA, 
+                          analog_fips=f$fips, Freq = NA, 
+                          analog="Almost_Novel", st_county = f$st_county, 
                           distance = min(dist_int_yr[,-(1:2)]), 
                           sigma=min(sigma_int_yr[,-(1:2)]))
 
@@ -115,9 +85,9 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
 
           v <- data.frame(query_loc = site_of_int, 
                           query_year = year_of_int, 
-                          analog_fips=NA, Freq = NA)
+                          analog_fips=f$fips, Freq = NA)
           all_close_analogs_unique <- rbind(all_close_analogs_unique, v)
-
+          rm(f)
        } else {
         output <- count_NNs_1_per_counties_1_loc(NNs_1 = NNs_int_yr, dists_1 = dist_int_yr, 
                                                  sigmas_1 = sigma_int_yr, county_list, sigma_bd)
@@ -130,7 +100,7 @@ count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sig
   return(list(all_close_analogs, all_close_analogs_unique))
 }
 
-count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd{
+count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list, sigma_bd){
   # For a given location, i.e. a vector,
   # find the number of analog (historical)counties 
   # corresponding to a given target county in the future.
@@ -685,7 +655,7 @@ clean_4_FF <- function(dt){
 ######                                                   ######
 ###############################################################
 gen_diap_map1_4_analog_Rel <- function(sub1, param_dir, time_type, CodMothParams_name){
-  CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",")
+  CodMothParams <- read.table(paste0(param_dir, CodMothParams_name), header=TRUE, sep=",", as.is=T)
   group_vec = c("latitude", "longitude", "ClimateScenario", "year")
 
   sub2 = sub1[, .(RelPctDiap=(auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, 

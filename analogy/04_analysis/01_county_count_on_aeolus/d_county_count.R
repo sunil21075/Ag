@@ -32,8 +32,7 @@ emission_type = args[3] # rcp45 or rcp85
 time_type = args[4]     # 2026_2050 or 2051_2075 or 2076_2095
 
 sigma_bd = 2
-
-n_nghs = 500
+n_nghs = 4000
 ######################################################################
 ##                                                                  ##
 ##                     set up directories                           ##
@@ -70,7 +69,8 @@ for (model_type in all_model_names){
   dists <- data.table(readRDS(dist_name))
   sigmas <- data.table(readRDS(sigma_name))
 
-  county_list <- data.table(read.table(paste0(param_dir, "/us_fips_st_county_lat_long.csv"), header=T, sep=","))
+  county_list <- data.table(read.csv(paste0(param_dir, "/all_us_1300_county_fips_locations.csv"), 
+                            header=T, sep=",", as.is=T))
 
   a_model_output <- count_NNs_per_counties_all_locs(NNs=NNs, dists=dists, sigmas=sigmas, 
                                                     county_list=county_list, 
@@ -85,6 +85,11 @@ for (model_type in all_model_names){
   all_close_analogs <- rbind(all_close_analogs, close_analogs)
   all_close_analogs_unique <- rbind(all_close_analogs_unique, close_analogs_unique)
 }
+
+all_close_analogs$query_loc <- as.character(all_close_analogs$query_loc)
+all_close_analogs$analog <-  as.character(all_close_analogs$analog)
+
+all_close_analogs_unique$query_loc <- as.character(all_close_analogs_unique$query_loc)
 
 saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", 
                                   time_type, "_", emission_type, ".rds"))
