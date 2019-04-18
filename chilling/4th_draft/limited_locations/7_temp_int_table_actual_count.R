@@ -61,7 +61,7 @@ for (month in months){
   data[location=="48.40625_-119.53125"]$location <- "Omak"
 
   data[location=="47.40625_-120.34375"]$location <- "Wenatchee"
-  data[location=="45.53125_-123.15625"]$location <- "Hilsboro"
+  data[location=="45.53125_-123.15625"]$location <- "Hillsboro"
   data[location=="44.09375_-123.34375"]$location <- "Elmira"
 
   data = within(data, remove(model, month))
@@ -106,7 +106,7 @@ for (month in months){
   data_hist_omak = data_hist %>% filter(location == "Omak")
   
   data_hist_wenatchee = data_hist %>% filter(location == "Wenatchee")
-  data_hist_hilsboro = data_hist %>% filter(location == "Hilsboro")
+  data_hist_hilsboro = data_hist %>% filter(location == "Hillsboro")
   data_hist_elmira = data_hist %>% filter(location == "Elmira")
   
   rm(data_hist)
@@ -115,7 +115,7 @@ for (month in months){
   data_85_2076_2099_omak = data_85_2076_2099 %>% filter(location == "Omak")
 
   data_85_2076_2099_wenatchee = data_85_2076_2099 %>% filter(location == "Wenatchee")
-  data_85_2076_2099_hilsboro = data_85_2076_2099 %>% filter(location == "Hilsboro")
+  data_85_2076_2099_hilsboro = data_85_2076_2099 %>% filter(location == "Hillsboro")
   data_85_2076_2099_elmira = data_85_2076_2099 %>% filter(location == "Elmira")
   
   rm(data_85_2076_2099)
@@ -153,7 +153,7 @@ for (month in months){
   df_help[9, 2:8] = df_help[8, 2:8] - df_help[7, 2:8]
 
   ##########################################
-  #   Hilsboro    
+  #   Hillsboro    
   ################
   df_help[10, 2:8] = table(cut(data_hist_hilsboro$Temp, breaks = iof_breaks))
   df_help[11, 2:8] = table(cut(data_85_2076_2099_hilsboro$Temp, breaks = iof_breaks))
