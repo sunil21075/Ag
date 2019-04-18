@@ -23,10 +23,10 @@ options(digits=9)
 args = commandArgs(trailingOnly=TRUE)
 
 precip = args[1] # w_precip # no_recip
-gen_3 = args[2]  # w_gen3 # no_gen3
+gen_3 = args[2]  # w_gen3   # no_gen3
 model_type = args[3]
 emission_type = args[4] # 
-n_nghs = 500
+n_nghs = 4000
 
 ################################################################################
 # 
