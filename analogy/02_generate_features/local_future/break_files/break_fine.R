@@ -11,15 +11,10 @@ options(digits=9)
 #########################################################################
 main_in <- "/data/hydro/users/Hossein/analog/local/ready_features/one_file_4_all_locations/"
 main_out <- "/data/hydro/users/Hossein/analog/local/ready_features/broken_down_location_year_level/"
-print ("line 13 main_in:")
-print (main_in)
-print ("________________________")
 
 dirs <- c("averaged_data", "bcc_csm1_1_m", "BNU_ESM", "CanESM2", "CNRM_CM5", "GFDL_ESM2G", "GFDL_ESM2M")
 
 file_list = list.files(path = main_in, pattern=".rds")
-print (file_list)
-print ("________________________")
 
 for (file in file_list){
   curr_file <- data.table(readRDS(paste0(main_in, file)))

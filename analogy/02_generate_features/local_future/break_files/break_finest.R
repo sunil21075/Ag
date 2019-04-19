@@ -30,7 +30,7 @@ for (file in file_list){
     for (yr in all_years){
       curr_loc_year_data <- curr_file %>% filter(location == loc & year == yr)
       
-      curr_out = file.path(main_out, carbon_type, model, paste0("loc_", locname), yr)
+      curr_out = file.path(main_out, carbon_type, model) # paste0("loc_", locname), yr
       if (dir.exists(file.path(curr_out)) == F){
         dir.create(path = curr_out, recursive = T)
       }
