@@ -55,10 +55,10 @@ all_dt_usa <- data.table(readRDS(paste0(main_us_dir, "all_data_usa.rds")))
 local_dt <- data.table(readRDS(paste0(main_local_dir, "feat_", model_type, "_", emission_type, ".rds")))
 
 ################################################################################
-
+start_time <- Sys.time()
 
 # run the model for separate time frames
-time_frames = c("2026_2050", "2051_2075", "2076_2095")
+time_frames = c("2026_2050") #
 
 if (precip== "w_precip") {precip= TRUE} else {precip= FALSE}
 if (gen_3 == "w_gen3")   {gen_3 = TRUE} else {gen_3 = FALSE}
@@ -87,4 +87,7 @@ for (time in time_frames){
   saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", model_type, "_", time,  ".rds"))
   saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", model_type, "_", time,  ".rds"))
 }
+
+end_time <- Sys.time()
+print( end_time - start_time)
 

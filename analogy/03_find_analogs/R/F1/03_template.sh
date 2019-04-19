@@ -3,7 +3,7 @@
 #PBS -V
 
 ## Define a job name
-#PBS -N precip_type_gen_3_type_model_type_emission_type
+#PBS -N F1_precip_type_gen_3_type_model_type_emission_type
 
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=25gb
