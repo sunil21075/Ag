@@ -28,3 +28,12 @@ local_locs <- paste0(local_locs, ".rds")
 write.table(local_locs, file = paste0(param_dir, "file_names.txt"), sep = "\t", row.names = F, col.names = F, quote=F)
 
 write.table(missing_locations, file = paste0(param_dir, "missing_locations.txt"), sep = "\t", row.names = F, col.names = F, quote=F)
+
+
+
+rcp85_wgen3
+
+write.table(rcp85_no_gen3, file = paste0(param_dir, "q_rcp85_nogen3"), sep="\t", row.names=F, col.names=F, quote=F)
+
+
+

@@ -15,7 +15,7 @@ library(tidyverse)
 
 # print to check
 getwd()
-
+setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/matt_data")
 the_dir <- dir()
 
 # remove filenames that aren't data
