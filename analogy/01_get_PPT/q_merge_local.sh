@@ -8,9 +8,8 @@
 #PBS -N merge_local
 
 ## Define compute options
-#PBS -l nodes=1:dev:ppn=1
+#PBS -l nodes=1:dev:ppn=1,walltime=10:00:00
 #PBS -l mem=10gb
-#PBS -l walltime=10:00:00
 #PBS -q hydro
 
 ## Define path for output & error logs

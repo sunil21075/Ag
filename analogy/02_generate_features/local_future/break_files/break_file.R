@@ -33,7 +33,7 @@ for (file in rds_files){
     curr_loc_data <- curr_file %>% filter(location == loc)
 
     locname = gsub(x=gsub(x=loc, pattern = "-", replacement = ""), pattern = '[.]', replacement = '_')
-    curr_out = file.path(main_out, carbon_type, model, paste0("loc_", locname))
+    curr_out = file.path(main_out, carbon_type, model)
     print ("line 37 main_in:")
     print (curr_out)
     print ("________________________")

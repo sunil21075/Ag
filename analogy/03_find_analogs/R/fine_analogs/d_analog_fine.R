@@ -28,7 +28,7 @@ model_ty = args[3] # bcc, BNU stuff
 emission = args[4] # rcp45 or rcp85 
 int_file = args[5] # file of interest that looks like: feat_45_96875_119_34375_2085.rds
 
-n_nghs = 47500
+n_nghs = 35000
 
 ################################################################################
 # 
@@ -40,7 +40,7 @@ main_dir <- "/data/hydro/users/Hossein/analog/"
 
 main_us_dir <- file.path(main_dir, "usa/ready_features/")
 main_local_dir <- file.path(main_dir, "local/ready_features/broken_down_location_year_level/")
-int_local_dir <- file_path(main_local_dir, emission, model_ty)
+int_local_dir <- file.path(main_local_dir, emission, model_ty, "/")
 
 main_out <- file.path(main_dir, "03_analogs/fine_analogs/")
 out_dir = file.path(main_out, gen_3, precip, n_nghs, emission, model_ty)
@@ -65,7 +65,7 @@ if (gen_3 == "w_gen3")   {gen_3 = TRUE} else {gen_3 = FALSE}
 
 information = find_NN_info_W4G_ICV(ICV=all_dt_usa, 
                                    historical_dt=all_dt_usa, 
-                                   future_dt=local_dt_time, 
+                                   future_dt=local_dt, 
                                    n_neighbors=n_nghs, 
                                    precipitation=precip,
                                    gen3 = gen_3)

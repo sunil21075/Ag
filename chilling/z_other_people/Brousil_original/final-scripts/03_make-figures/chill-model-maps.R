@@ -17,7 +17,6 @@ library(tidyverse)
 getwd()
 
 the_dir <- dir()
-
 # remove filenames that aren't data
 the_dir <- the_dir[grep(pattern = "chill-data-summary",
                         x = the_dir)]
@@ -39,9 +38,8 @@ stats_comp %>% select(model, scenario) %>% unique()
 
 stats_comp <- stats_comp %>%
               mutate(year = replace_na(year, "historical"),
-              year = factor(x = year, levels = c("historical", "2040",
-                                                 "2060", "2080"),
-                            ordered = T)) # fill in NA for years
+                     year = factor(x = year, levels = c("historical", "2040", "2060", "2080"),
+                     ordered = T)) # fill in NA for years
 
 str(stats_comp)
 
