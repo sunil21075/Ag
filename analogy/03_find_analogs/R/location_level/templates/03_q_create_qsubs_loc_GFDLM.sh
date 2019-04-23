@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=1,walltime=10:00:00
+#PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -l mem=2gb
 #PBS -q hydro
 

@@ -6,7 +6,7 @@
 #PBS -N precip_type_gen_3_type_GFDLG_emission_type_int_file
 
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
-#PBS -l mem=30gb
+#PBS -l mem=20gb
 #PBS -q hydro
 
 #PBS -k o

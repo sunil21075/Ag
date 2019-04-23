@@ -10,10 +10,9 @@ library(ggpubr) # for ggarrange
 ##############################
 ############################## Global variables
 ##############################
-data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
+data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_int_limit_locs/"
 input_dir<- data_dir
 plot_dir <- "/Users/hn/Desktop/"
-
 
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
@@ -25,7 +24,7 @@ if (dir.exists(file.path(plot_dir)) == F) {
 
 quality <- 300 # dpi quality
 big_pic_width <- 15
-big_pic_height <- 65
+big_pic_height <- 80
 
 small_pic_width <- 6
 small_pic_height <- 8
@@ -42,13 +41,10 @@ iof = c(c(-Inf, -2),
 iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
 
 month_no = c(1, 2, 3, 9, 10, 11, 12)
-month_names = c("Jan", "Feb", "Mar",
-                "Sept", "Oct", "Nov", "Dec"
-                )
+month_names = c("Jan", "Feb", "Mar", "Sept", "Oct", "Nov", "Dec")
 
 plot_intervals <- function(data, month_name){
-  the_theme <- theme_bw() + 
-               theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
+  the_theme <- theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      plot.title = element_text(hjust = 0.5),
                      plot.subtitle = element_text(hjust = 0.5),
@@ -63,19 +59,16 @@ plot_intervals <- function(data, month_name){
                      legend.spacing.x = unit(.05, 'cm'),
                      strip.text.x = element_text(size = 12),
                      axis.ticks = element_line(color = "black", size = .2),
-                     axis.title.x = element_text(face = "bold", size=12, 
-                                                 margin = margin(t=6, r=0, b=0, l=0)),
-                     axis.text.x = element_text(size = 8, color="black", angle=-30),
-                     axis.title.y = element_text(face = "bold", size = 12, 
-                                                 margin = margin(t=0, r=6, b=0, l=0)),
+                     axis.title.x = element_text(face = "bold", size=12, margin = margin(t=6, r=0, b=0, l=0)),
+                     axis.text.x = element_text(size = 8, face = "bold", color="black", angle=-30),
+                     axis.title.y = element_text(face = "bold", size = 12, margin = margin(t=0, r=6, b=0, l=0)),
                      axis.text.y = element_text(size = 8, face="bold", color="black")
                      )
   obs_plot = ggplot(data = data) +
              geom_point(aes(x = year, y = no_hours, fill = factor(scenario)),
-                            alpha = 0.25, shape = 21, size = 1) +
-             geom_smooth(aes(x = year, y = no_hours, color = factor(scenario)),
-                             method = "lm", se = F, size=.4) +
-             facet_grid( ~ city ~ temp_cat) +
+                            alpha = 0.25, shape = 21, size = 2) +
+             geom_smooth(aes(x=year, y=no_hours, method = "lm", se=F, size=.6)) +
+             facet_grid( ~ city ~ temp_cat, scales="free") +
              scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                    name = "Model scenario", 
                                    aesthetics = c("color", "fill")) +
@@ -88,19 +81,12 @@ plot_intervals <- function(data, month_name){
   return(obs_plot)
 }
 
-city_names = c("Omak", "Wenatchee", "Richland", "Hilsboro", "Elmira")
-
 for(month in month_names){
   data = paste0(data_dir, month, ".rds")
   data = data.table(readRDS(data))
-  
-  data$city = 0L
-  data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-  data$city <- factor(data$city, levels = city_names)
+  data$scenario[data$scenario == "historical"] = "Historical"
+  data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+  data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
   
   data <- data %>% 
           mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
@@ -114,15 +100,10 @@ for(month in month_names){
 
   data = paste0(data_dir, "observed_", month, ".rds")
   data = data.table(readRDS(data))
+  data$scenario[data$scenario == "historical"] = "Historical"
+  data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+  data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
   
-  data$city = 0L
-  data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-  data$city <- factor(data$city, levels = city_names)
-
   data <- data %>% 
           mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
           group_by(chill_season, year, month, scenario, temp_cat, city) %>% 
@@ -378,13 +359,9 @@ month_names = c("Sept", "Oct", "Nov", "Dec")
 ############
 rm(data)
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_modeled.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data$city <- factor(data$city, levels = city_names)
+data$scenario[data$scenario == "historical"] = "Historical"
+data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
 
 data <- data %>% 
           mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
@@ -403,13 +380,9 @@ rm(data)
 ############
 
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_observed.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data$city <- factor(data$city, levels = city_names)
+data$scenario[data$scenario == "historical"] = "Historical"
+data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
 
 data <- data %>% 
           mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
@@ -443,13 +416,9 @@ month_names = c("Sept", "Oct", "Nov", "Dec", "Jan")
 ############ modeled
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_modeled.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data$city <- factor(data$city, levels = city_names)
+data$scenario[data$scenario == "historical"] = "Historical"
+data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
 
 data <- data %>% 
           mutate(temp_cat=cut(Temp, breaks = iof_breaks)) %>% 
@@ -467,13 +436,9 @@ rm(data)
 ############ observed
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_observed.rds")))
-data$city = 0L
-data$city[data$location == "48.40625_-119.53125"] = "Omak"
-data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-data$city[data$location == "46.28125_-119.34375"] = "Richland"
-data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data$city <- factor(data$city, levels = city_names)
+data$scenario[data$scenario == "historical"] = "Historical"
+data$scenario[data$scenario == "rcp45"] = "RCP 4.5"
+data$scenario[data$scenario == "rcp85"] = "RCP 8.5"
 
 data <- data %>% 
         mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 

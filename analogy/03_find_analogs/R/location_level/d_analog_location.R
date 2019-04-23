@@ -27,8 +27,14 @@ gen_3 = args[2]  # w_gen3   # no_gen3
 model_ty = args[3]
 emission = args[4] # rcp45 rcp85
 int_file = args[5]
-n_nghs = 45000
+n_nghs = 40000
 
+print (paste0("precip ", precip))
+print (paste0("gen_3 ", gen_3))
+print (paste0("model_ty ", model_ty))
+print (paste0("emission ", emission))
+print (paste0("int_file ", int_file))
+print (paste0("n_nghs ", n_nghs))
 ################################################################################
 # 
 #                     set up proper directories
@@ -88,9 +94,9 @@ for (time in time_frames){
 
   lat_long <- substr(int_file, 6, 23)
 
-  saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", lat_long, model_ty, "_", time,  ".rds"))
-  saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", lat_long, model_ty, "_", time,  ".rds"))
-  saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", lat_long, model_ty, "_", time,  ".rds"))
+  saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
+  saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
+  saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
 }
 
 end_time <- Sys.time()
