@@ -63,6 +63,5 @@ echo
 echo "----- DONE -----"
 echo
 cd /data/hydro/users/Hossein/chill/data_by_core/dynamic/01/chill_sea/modeled
-rm -r *incom*
 rm -r MIROC-ESM
 exit 0

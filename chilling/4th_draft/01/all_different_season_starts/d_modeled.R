@@ -40,11 +40,8 @@ main_out <- file.path(chill_out, model_type, "/01/")
 # 2. Pre-processing prep --------------------------------------------------
 # 2a. Only use files in geographic locations we're interested in
 param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
-<<<<<<< HEAD
+
 local_files <- read.table(file = paste0(param_dir, "file_list.txt"), header = F)
-=======
-local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
->>>>>>> a255bd425a6f23bebc1f80714626251bfb7c2646
 local_files <- as.vector(local_files$V1)
 
 # 2b. Note if working with a directory of historical data
