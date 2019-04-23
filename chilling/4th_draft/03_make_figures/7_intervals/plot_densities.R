@@ -36,9 +36,9 @@ limited_locs <- within(limited_locs, remove(lat, long))
 ###########################################################
 
 quality <- 300 # dpi quality
-big_pic_width <- 45
+big_pic_width <- 60
 big_pic_height <- 65
-small_pic_width <- 30
+small_pic_width <- 40
 small_pic_height <- 6 # 4
 
 #####################################################
@@ -51,23 +51,23 @@ plot_dens <- function(data, month_name){
     x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
     the_theme <- theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),
                        panel.border = element_rect(fill=NA, size=.3),
-                       plot.title = element_text(size=24, face="bold", hjust = 0.5),
-                       plot.subtitle = element_text(hjust = 0.5),
                        panel.grid.major = element_line(size = 0.05),
                        panel.grid.minor = element_blank(),
                        panel.spacing=unit(.3, "cm"),
                        legend.position="bottom", 
                        legend.title = element_blank(),
-                       legend.key.size = unit(.9, "line"),
+                       legend.key.size = unit(3, "line"),
                        legend.text=element_text(size=26),
                        legend.margin=margin(t= -0.1, r=0, b=0, l=0, unit='cm'),
                        legend.spacing.x = unit(.08, 'cm'),
                        strip.text.x = element_text(face="bold", size=30),
+                       strip.text.y = element_text(face="bold", size=30),
                        axis.ticks = element_line(size=.2, color="black"),
-                       axis.title.x = element_text(size=30, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
-                       axis.title.y = element_text(size=30, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
-                       axis.text.x = element_text(size =26, color="black", angle=-90),
-                       axis.text.y = element_text(size =26, face = "bold", color="black")
+                       plot.title = element_text(size=26, face="bold"),
+                       axis.title.x = element_text(size=22, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
+                       axis.title.y = element_text(size=22, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
+                       axis.text.x = element_text(size =20, face="plain", color="black", angle=-90),
+                       axis.text.y = element_text(size =20, face = "plain", color="black")
                        )
     
     if (month == "sept_thru_dec_modeled"){
@@ -195,59 +195,54 @@ if (dir.exists(file.path(plot_dir)) == F) {
   dir.create(path = plot_dir, recursive = T)
 }
 
-print("line 24")
+print("line 199")
 quality <- 300 # dpi quality
-big_pic_width <- 45
+big_pic_width <- 60
 big_pic_height <- 65
-small_pic_width <- 8
+small_pic_width <- 16
 small_pic_height <- 8
 
 plot_dens <- function(data, month_name){
-    color_ord = c("grey47", "dodgerblue", "olivedrab4", "khaki2")
-    iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
-    x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
-    the_theme <- theme_bw() + 
-                 theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),
-                       panel.border = element_rect(fill=NA, size=.3),
-                       plot.title = element_text(face="bold", hjust = 0.5),
-                       plot.subtitle = element_text(hjust = 0.5),
-                       panel.grid.major = element_line(size = 0.05),
-                       panel.grid.minor = element_blank(),
-                       panel.spacing=unit(.3,"cm"),
-                       legend.position="bottom", 
-                       legend.title = element_blank(),
-                       legend.key.size = unit(2, "line"),
-                       legend.text=element_text(size=24),
-                       legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
-                       legend.spacing.x = unit(.08, 'cm'),
-                       strip.text.x = element_text(size = 24),
-                       axis.ticks = element_line(color = "black", size = .2),
-                       axis.title.x = element_text(face = "bold", size=17, 
-                                                   margin = margin(t=4, r=0, b=0, l=0)),
-                       axis.text.x = element_text(size = 24, color="black", angle=-90),
-                       axis.title.y = element_text(face = "bold", size = 17, 
-                                                   margin = margin(t=0, r=6, b=0, l=0)),
-                       axis.text.y = element_text(size = 24, face="bold", color="black")
-                       )
-    obs_plot = ggplot(data, aes(x=Temp, fill=factor(time_period))) + 
-               geom_density(alpha=.5, size=.1) + 
-               geom_vline(xintercept = iof_breaks, 
-                          linetype = "solid", color = "red", size = 0.2) +
-               facet_grid( ~ city) +
-               xlab("hourly temp.") + 
-               ggtitle(label = paste0("The density of hourly temp. in the month of ", month_name, ".")) +
-               scale_fill_manual(values=color_ord,
-                      name="Time\nPeriod", 
-                      labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
-               scale_color_manual(values=color_ord,
-                       name="Time\nPeriod", 
-                       limits = color_ord,
-                       labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
-               scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
-               the_theme
-    return(obs_plot)
+  color_ord = c("grey47", "dodgerblue", "olivedrab4", "khaki2")
+  iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
+  x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
+  the_theme <-theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),
+                    panel.border = element_rect(fill=NA, size=.3),
+                    plot.subtitle = element_text(),
+                    panel.grid.major = element_line(size = 0.05),
+                    panel.grid.minor = element_blank(),
+                    panel.spacing=unit(.3,"cm"),
+                    legend.position="bottom", 
+                    legend.title = element_blank(),
+                    legend.key.size = unit(3, "line"),
+                    legend.text=element_text(size=24),
+                    legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
+                    legend.spacing.x = unit(.08, 'cm'),
+                    plot.title = element_text(face="bold", size=24),
+                    strip.text.x = element_text(face="bold", size = 24),
+                    strip.text.y = element_text(face="bold", size = 24),
+                    axis.ticks = element_line(color = "black", size = .2),
+                    axis.title.x = element_text(face = "bold", size=17, margin = margin(t=4, r=0, b=0, l=0)),
+                    axis.text.x = element_text(size = 24, face="plain", color="black", angle=-90),
+                    axis.title.y = element_text(face = "bold", size = 17, margin = margin(t=0, r=6, b=0, l=0)),
+                    axis.text.y = element_text(size = 24, color="black")
+                    )
+  obs_plot = ggplot(data, aes(x=Temp, fill=factor(time_period))) + 
+             geom_density(alpha=.5, size=.1) + 
+             geom_vline(xintercept = iof_breaks, 
+                        linetype = "solid", color = "red", size = 0.2) +
+             facet_grid( ~ city) +
+             xlab("hourly temp.") + 
+             ggtitle(label = paste0("The density of hourly temp. in the month of ", month_name, ".")) +
+             scale_fill_manual(values=color_ord, name="Time\nPeriod", 
+                               labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
+             scale_color_manual(values=color_ord, name="Time\nPeriod", limits = color_ord,
+                                labels=c("Historical","2025-2050","2051-2075","2076-2099")) + 
+             scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
+             the_theme
+  return(obs_plot)
 }
-print("line 78")
+
 ############################################################################
 month_names = c("Jan", "Feb", "Mar", "Sept", "Oct", "Nov", "Dec")
 
@@ -271,7 +266,6 @@ for (month in month_names){
   data$time_period <- factor(data$time_period, 
                               levels = c("Historical", "2025-2050",
                                          "2051-2075", "2076-2099"))
-  data$city <- factor(data$city, levels = city_names)
   
   data_45 = data %>% filter(scenario %in% c("Historical", "RCP 4.5"))
   data_85 = data %>% filter(scenario %in% c("Historical", "RCP 8.5"))
