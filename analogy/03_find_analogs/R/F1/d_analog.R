@@ -7,8 +7,8 @@ library(raster)
 library(FNN)
 library(RColorBrewer)
 library(colorRamps)
-library(EnvStats, lib.loc = "~/.local/lib/R3.5.1")
 
+library(EnvStats, lib.loc = "~/.local/lib/R3.5.1")
 source_path = "/home/hnoorazar/analog_codes/core_analog.R"
 source(source_path)
 options(digit=9)

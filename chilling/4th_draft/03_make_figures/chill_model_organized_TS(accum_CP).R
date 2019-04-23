@@ -3,18 +3,14 @@
 
 # 1. Load packages --------------------------------------------------------
 rm(list=ls())
-
-library(ggpubr)
-library(plyr)
+library(ggpubr) # library(plyr)
 library(tidyverse)
 library(data.table)
 library(ggplot2)
+options(digits=9)
+options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
-
-# main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
-
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 
 model = "dynamic"
 # if (model == "dynamic"){
@@ -29,7 +25,8 @@ model = "dynamic"
 #                 Plot settings
 #
 #######################################################
-quality = 300
+
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 write_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 summary_comp <- data.table(readRDS(paste0(main_in_dir, "sept_summary_comp.rds")))
@@ -60,6 +57,7 @@ weather <- c("Cooler Areas", "Warmer Areas", "Oregon Areas")
 summary_comp$warm_cold <- factor(summary_comp$warm_cold, order=T, level=weather)
 
 # 3. Plotting -------------------------------------------------------------
+quality = 300
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
                             group_by(warm_cold, year, model, scenario) %>%
@@ -402,4 +400,229 @@ A1_figs <- ggarrange(sum_A1_plot,
 
 ggsave(plot = A1_figs, "chill_plot_accum_Apr1.png",
        dpi=quality, path=write_dir,
+       height = 9, width = 9, units = "in")
+
+
+
+
+
+
+
+
+
+
+##################################################################
+##################################################################
+################################################################## Limited Locations
+##################################################################
+##################################################################
+##################################################################
+
+# Script for creating chill accumulation & threshold plots (not maps).
+# Intended to work with create-model-plots.sh script.
+
+# 1. Load packages --------------------------------------------------------
+rm(list=ls())
+library(ggpubr)
+library(tidyverse)
+library(data.table)
+library(ggplot2)
+options(digits=9)
+options(digit=9)
+
+# 2. Pull data from current directory -------------------------------------
+
+# main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
+# main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
+
+write_dir_utah = paste0(main_in_dir, "utah_model_stats/")
+write_dir_dynamic = paste0(main_in_dir, "dynamic_model_stats/")
+
+model = "dynamic"
+# if (model=="dynamic"){
+#   setwd(write_dir_dynamic)
+#   write_dir = write_dir_dynamic
+# } else {
+#   setwd(write_dir_utah)
+#   write_dir = write_dir_utah
+# }
+
+##############################################################################
+############# 
+#############              ********** start from here **********
+#############
+##############################################################################
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+limited_locs <- read.csv(paste0(param_dir, "limited_locations.csv"), 
+                                header=T, sep=",", as.is=T)
+
+LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
+                                     header=T, sep=",", as.is=T)
+
+write_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
+summary_comp <- data.table(readRDS(paste0(write_dir, "sept_summary_comp.rds")))
+
+summary_comp$location <- paste0(summary_comp$lat, "_", summary_comp$long)
+limited_locs$location <- paste0(limited_locs$lat, "_", limited_locs$long)
+
+summary_comp <- summary_comp %>% filter(location %in% limited_locs$location)
+
+summary_comp <- left_join(summary_comp, limited_locs)
+
+
+# 3. Plotting -------------------------------------------------------------
+##################################
+##                              ##
+##      Accumulation plots      ##
+##                              ##
+##################################
+accum_plot <- function(data, y_name, due){
+  y = eval(parse(text =paste0( "data$", y_name)))
+  lab = paste0("Median chill units accumulated by ", due)
+
+  acc_plot <- ggplot(data = data) +
+              geom_point(aes(x = year, y = y, fill = scenario),
+                         alpha = 0.25, shape = 21) +
+              geom_smooth(aes(x = year, y = y, color = scenario),
+                          method = "lm", size=.8, se = F) +
+              facet_wrap( ~ city) +
+              scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
+                                    name = "Model scenario", 
+                                    aesthetics = c("color", "fill")) +              
+              ylab("median accum. chill units") +
+              xlab("year") +
+              ggtitle(label = lab,
+                      subtitle = "by location, scenario, and model") +
+              theme(plot.title = element_text(size = 14, face="bold", color="black"),
+                    plot.subtitle = element_text(size = 12, face="plain", color="black"),
+                    axis.text.x = element_text(size = 10, face = "bold", color="black"),
+                    axis.text.y = element_text(size = 10, face = "bold", color="black"),
+                    axis.title.x = element_text(size = 12, face = "bold", color="black", 
+                                                margin = margin(t=8, r=0, b=0, l=0)),
+                    axis.title.y = element_text(size = 12, face = "bold", color="black",
+                                                margin = margin(t=0, r=8, b=0, l=0)),
+                    strip.text = element_text(size=14, face = "bold"),
+                    legend.margin=margin(t=.1, r=0, b=0, l=0, unit='cm'),
+                    legend.title = element_blank(),
+                    legend.position="bottom", 
+                    legend.key.size = unit(1.5, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
+                    legend.text=element_text(size=12),
+                    panel.spacing.x =unit(.75, "cm")
+                    )
+  return(acc_plot)
+}
+
+accum_hist_plot <- function(data, y_name, due){
+  y = eval(parse(text =paste0( "data$", y_name)))
+  lab = paste0("Chill units accumulated by ", due, " historically")
+
+  hist_plt <- ggplot(data = data) +
+              geom_point(aes(x = year, y = y), alpha = 0.4,
+                             shape = 21, fill = "#21908CFF") +
+              geom_smooth(aes(x = year, y = y), method = "lm",
+                              se = F, size=.5, color = "#21908CFF") +
+              facet_wrap( ~ city) +
+              ylab("Accum. chill units") +
+              xlab("year") +
+              scale_x_continuous(limits = c(1975, 2020)) +
+              ggtitle(label = lab,
+                      subtitle = "by location") +
+              theme(plot.title = element_text(size = 14, face="bold", color="black"),
+                    plot.subtitle = element_text(size = 12, face="plain", color="black"),
+                    axis.text.x = element_text(size = 10, face = "bold", color="black"),
+                    axis.text.y = element_text(size = 10, face = "bold", color="black"),
+                    axis.title.x = element_text(size = 12, face = "bold", color="black", 
+                                                margin = margin(t=8, r=0, b=0, l=0)),
+                    axis.title.y = element_text(size = 12, face = "bold", color="black",
+                                                margin = margin(t=0, r=8, b=0, l=0)),
+                    strip.text = element_text(size=14, face = "bold"),
+                    legend.margin=margin(t=.1, r=0, b=0, l=0, unit='cm'),
+                    legend.title = element_blank(),
+                    legend.position="bottom", 
+                    legend.key.size = unit(1.5, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
+                    legend.text=element_text(size=12),
+                    panel.spacing.x =unit(.75, "cm")
+                    )
+  return(hist_plt)
+}
+
+summary_comp_loc_medians <- summary_comp %>%
+                            filter(model != "observed") %>%
+                            group_by(city, year, model, scenario) %>%
+                            summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>% 
+                            data.table()
+
+# Data frame for historical values to be used for these figures
+summary_comp_hist <- summary_comp %>%
+                     filter(model == "observed") %>%
+                     group_by(city, year) %>%
+                     summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1))
+
+############################
+##
+##        Jan plot
+##
+############################
+
+sum_J1_plot <- accum_plot(data=summary_comp_loc_medians, y_name="sum_J1_med", due="Jan. 1")
+sum_J1_hist_plot <- accum_hist_plot(data=summary_comp_hist, y_name="sum_J1_med", due="Jan. 1")
+
+J1_figs <- ggarrange(sum_J1_plot,
+                     sum_J1_hist_plot,
+                     ncol = 1, nrow = 2,
+                     heights = c(1.25, 1), widths=c(4, 2))
+ggsave(plot = J1_figs, "chill_plot_accum_Jan1.png",
+       dpi=400, path=write_dir,
+       height = 9, width = 12, units = "in")
+
+
+################################
+##                            ##
+##        Feb. plot.      
+##                            ##
+################################
+
+sum_F1_plot <- accum_plot(data=summary_comp_loc_medians, y_name="sum_F1_med", due="Feb. 1")
+sum_F1_hist_plot <- accum_hist_plot(data=summary_comp_hist, y_name="sum_F1_med", due="Feb. 1")
+F1_figs <- ggarrange(sum_F1_plot,
+                     sum_F1_hist_plot,
+                     ncol = 1, nrow = 2,
+                     heights = c(1.25, 1))
+ggsave(plot = F1_figs, "chill_plot_accum_Feb1.png",
+       dpi=400, path=write_dir,
+       height = 9, width = 12, units = "in")
+
+############################
+##
+##       March plot
+##
+############################
+
+sum_M1_plot <- accum_plot(data=summary_comp_loc_medians, y_name="sum_M1_med", due="Mar. 1")
+sum_M1_hist_plot <- accum_hist_plot(data=summary_comp_hist, y_name="sum_M1_med", due="Mar. 1")
+M1_figs <- ggarrange(sum_M1_plot,
+                     sum_M1_hist_plot,
+                     ncol = 1, nrow = 2,
+                     heights = c(1.25, 1))
+ggsave(plot = M1_figs, "chill_plot_accum_Mar1.png",
+       dpi=400, path=write_dir,
+       height = 9, width = 9, units = "in")
+
+############################
+##
+##       April plot
+##
+############################
+
+sum_A1_plot <- accum_plot(data=summary_comp_loc_medians, y_name="sum_A1_med", due="Apr. 1")
+sum_A1_hist_plot <- accum_hist_plot(data=summary_comp_hist, y_name="sum_A1_med", due="Apr. 1")
+A1_figs <- ggarrange(sum_A1_plot,
+                     sum_A1_hist_plot,
+                     ncol = 1, nrow = 2,
+                     heights = c(1.25, 1))
+
+ggsave(plot = A1_figs, "chill_plot_accum_Apr1.png",
+       dpi=400, path=write_dir,
        height = 9, width = 9, units = "in")
