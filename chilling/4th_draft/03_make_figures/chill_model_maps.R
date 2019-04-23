@@ -5,11 +5,12 @@
 rm(list=ls())
 library(ggmap)
 library(ggpubr)
-library(plyr)
+# library(plyr)
 library(lubridate)
 library(purrr)
 library(scales)
 library(tidyverse)
+#library(data.table)
 options(digits=9)
 options(digit=9)
 
@@ -20,8 +21,8 @@ getwd()
 
 # define the color spectrum so they are consistent
 dynamic_chill_min = 40
-dynamic_chill_max = 129
-dynamic_thresh_min = 52
+dynamic_chill_max = 180
+dynamic_thresh_min = 10
 dynamic_thresh_max = 185
 
 utah_chill_min = -140
@@ -31,55 +32,71 @@ utah_thresh_max = 150
 
 ##### either choose utah or dynamic
 
-model_name = "utah"
+model_name = "dynamic"
 
 if (model_name=="utah"){
-  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/utah_model_stats/")
-  plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/utah_model_stats/"
+  #setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/utah_model_stats/")
+  #plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/utah_model_stats/"
   chill_min = utah_chill_min
   chill_max = utah_chill_max
   thresh_min = utah_thresh_min
   thresh_max = utah_thresh_max
-} else if (model_name=="dynamic"){
-  setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/")
-  plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/"
+ } else if (model_name=="dynamic"){
+  #setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/")
+  #plot_path = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/dynamic_model_stats/"
   chill_min = dynamic_chill_min
   chill_max = dynamic_chill_max
   thresh_min = dynamic_thresh_min
   thresh_max = dynamic_thresh_max
 }
 
+in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/sum_stats_4_maps/sept/"
+setwd(in_dir)
+plot_path <- in_dir
 getwd()
+
 the_dir <- dir()
+the_dir <- the_dir[grep(pattern = ".txt", x = the_dir)] # remove filenames that aren't data
+the_dir_stats <- the_dir[grep(pattern = "summary_stats", x = the_dir)] # Data for maps
 
-# remove filenames that aren't data
-the_dir <- the_dir[grep(pattern = ".txt", x = the_dir)]
-
-# Data for maps
-the_dir_stats <- the_dir[grep(pattern = "summary_stats", x = the_dir)]
-
-# Compile the summary stats files for mapping
-stats_comp <- lapply(the_dir_stats, read.table, header = T)
+stats_comp <- lapply(the_dir_stats, read.table, header = T, as.is=T, stringsAsFactors=FALSE) # Compile the summary stats files for mapping
 stats_comp <- do.call(bind_rows, stats_comp)
 
 # str(stats_comp)
-# print(" ")
-stats_comp %>% select(model, scenario) %>% unique()
+# stats_comp %>% select(model, scenario) %>% unique()
 
-stats_comp <- stats_comp %>%
-              mutate(year = replace_na(year, "historical"),
-              year = factor(x = year, levels = c("historical", "2040",
-                                                 "2060", "2080"),
-                            ordered = T)) # fill in NA for years
+# stats_comp <- stats_comp %>% data.table()
+stats_comp$time_period[is.na(stats_comp$time_period)] <- "Historical"
 
-# str(stats_comp)
-# Remove incomplete model runs
-# stats_comp <- stats_comp[-grep(x = stats_comp$model, pattern = "incomplete"), ]
+stats_comp$time_period <- factor(stats_comp$time_period, 
+                                 levels = c("Historical", "2005_2024", "2025_2050", "2051_2075", "2076_2100"),
+                                 order=T)
+
+# remove time period 2005_2024
+stats_comp <- stats_comp %>% filter(time_period != "2005_2024")
+stats_comp$time_period <- factor(stats_comp$time_period)
+
+remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
+  if (!("location" %in% colnames(data_dt))){
+    data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
+  }
+  data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
+  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
+  data_dt <- within(data_dt, remove(location))
+  return(data_dt)
+}
+
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
+                                     header=T, sep=",", as.is=T)
+
+stats_comp <- remove_montana_add_warm_cold(stats_comp, LocationGroups_NoMontana)
+stats_comp <- within(stats_comp, remove(warm_cold))
 
 # Take a mean across models
 stats_comp_ensemble <- stats_comp %>%
                        filter(model != "observed") %>%
-                       group_by(lat, long, scenario, year) %>%
+                       group_by(lat, long, scenario, time_period) %>%
                        summarize_if(.predicate = is.numeric, mean)
 
 # str(stats_comp_ensemble)
@@ -127,7 +144,12 @@ observed_hist_map <- function(min, max, month_col) {
                           limits = c(min, max),
                           breaks = pretty_breaks(n = 4)) +
     coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ year, nrow = 1) +
+    facet_wrap(~ time_period, nrow = 1) +
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.ticks.y = element_blank(), 
+          axis.ticks.x = element_blank(),
+          strip.text = element_text(size=12, face="bold")) +
     ggtitle("Observed historical")
 }
 
@@ -150,7 +172,12 @@ model_map <- function(model_name, scenario_name, month_col, min, max) {
                           limits = c(min, max),
                           breaks = pretty_breaks(n = 4)) +
     coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ year, nrow = 1) +
+    facet_wrap(~ time_period, nrow = 1) +
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.ticks.y = element_blank(), 
+          axis.ticks.x = element_blank(),
+          strip.text = element_text(size=12, face="bold")) + 
     ggtitle(paste0(model_name))
 }
 
@@ -169,7 +196,12 @@ ensemble_map <- function(scenario_name, month_col, min, max) {
                           limits = c(min, max),
                           breaks = pretty_breaks(n = 4)) +
     coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ year, nrow = 1) +
+    facet_wrap(~ time_period, nrow = 1) +
+    theme(axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.ticks.y = element_blank(), 
+          axis.ticks.x = element_blank(),
+          strip.text = element_text(size=12, face="bold")) + 
     ggtitle("Ensemble means") 
 }
 
@@ -184,14 +216,11 @@ ensemble_map <- function(scenario_name, month_col, min, max) {
 
 df_45 <- filter(stats_comp, scenario == "rcp45" | scenario == "historical")
 
-# str(df_45)
-# head(df_45)
-
 accum_jan45_min <- min(df_45$median_J1)
 accum_jan45_max <- max(df_45$median_J1)
 
-# accum_jan45_min = chill_min
-# accum_jan45_max = chill_max
+accum_jan45_min = chill_min
+accum_jan45_max = chill_max
 
 cat("accum_jan45_min= ", accum_jan45_min, "-- accum_jan45_max= ", accum_jan45_max)
 
@@ -262,8 +291,8 @@ rm(list = ls(pattern = "jan45"))
 accum_feb45_min <- min(df_45$median_F1)
 accum_feb45_max <- max(df_45$median_F1)
 
-# accum_feb45_min <- chill_min
-# accum_feb45_max <- chill_max
+accum_feb45_min <- chill_min
+accum_feb45_max <- chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -322,8 +351,8 @@ rm(list = ls(pattern = "feb45"))
 accum_mar45_min <- min(df_45$median_M1)
 accum_mar45_max <- max(df_45$median_M1)
 
-# accum_mar45_min <- chill_min
-# accum_mar45_min <- chill_max
+accum_mar45_min <- chill_min
+accum_mar45_min <- chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -383,8 +412,8 @@ rm(list = ls(pattern = "mar45"))
 accum_apr45_min <- min(df_45$median_A1)
 accum_apr45_max <- max(df_45$median_A1)
 
-# accum_apr45_min = chill_min
-# accum_apr45_max = chill_max
+accum_apr45_min = chill_min
+accum_apr45_max = chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -448,8 +477,8 @@ df_85 <- filter(stats_comp, scenario == "rcp85" | scenario == "historical")
 accum_jan85_min <- min(df_85$median_J1)
 accum_jan85_max <- max(df_85$median_J1)
 
-# accum_jan85_min = chill_min
-# accum_jan85_max = chill_max
+accum_jan85_min = chill_min
+accum_jan85_max = chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -507,8 +536,8 @@ rm(list = ls(pattern = "jan85"))
 accum_feb85_min <- min(df_85$median_F1)
 accum_feb85_max <- max(df_85$median_F1)
 
-# accum_feb85_min = chill_min
-# accum_feb85_max = chill_max
+accum_feb85_min = chill_min
+accum_feb85_max = chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -561,8 +590,8 @@ rm(list = ls(pattern = "feb85"))
 accum_mar85_min <- min(df_85$median_M1)
 accum_mar85_max <- max(df_85$median_M1)
 
-# accum_mar85_min = chill_min
-# accum_mar85_max = chill_max
+accum_mar85_min = chill_min
+accum_mar85_max = chill_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -615,8 +644,8 @@ rm(list = ls(pattern = "mar85"))
 accum_apr85_min <- min(df_85$median_A1)
 accum_apr85_max <- max(df_85$median_A1)
 
-# accum_apr85_min = chill_min
-# accum_apr85_max = chill_max
+accum_apr85_min = chill_min
+accum_apr85_max = chill_max
 
 for(h in unique(stats_comp$model)) {  
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -682,8 +711,8 @@ rm(list = ls(pattern = "apr85"))
 thresh20_45_min <- min(df_45$median_20)
 thresh20_45_max <- max(df_45$median_20)
 
-# thresh20_45_min = thresh_min
-# thresh20_45_min = thresh_max
+thresh20_45_min = thresh_min
+thresh20_45_min = thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -741,8 +770,8 @@ rm(list = ls(pattern = "thresh20_45"))
 thresh25_45_min <- min(df_45$median_25)
 thresh25_45_max <- max(df_45$median_25)
 
-# thresh25_45_min <- thresh_min
-# thresh25_45_max <- thresh_max
+thresh25_45_min <- thresh_min
+thresh25_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -801,8 +830,8 @@ rm(list = ls(pattern = "thresh25_45"))
 thresh30_45_min <- min(df_45$median_30)
 thresh30_45_max <- max(df_45$median_30)
 
-# thresh30_45_min = thresh_min
-# thresh30_45_max = thresh_max
+thresh30_45_min = thresh_min
+thresh30_45_max = thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -863,8 +892,8 @@ rm(list = ls(pattern = "thresh30_45"))
 thresh35_45_min <- min(df_45$median_35)
 thresh35_45_max <- max(df_45$median_35)
 
-# thresh35_45_min = thresh_min
-# thresh35_45_max = thresh_max
+thresh35_45_min = thresh_min
+thresh35_45_max = thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -925,8 +954,8 @@ rm(list = ls(pattern = "thresh35_45"))
 thresh40_45_min <- min(df_45$median_40)
 thresh40_45_max <- max(df_45$median_40)
 
-# thresh40_45_min = thresh_min
-# thresh40_45_max = thresh_max
+thresh40_45_min = thresh_min
+thresh40_45_max = thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -986,8 +1015,8 @@ rm(list = ls(pattern = "thresh40_45"))
 thresh45_45_min <- min(df_45$median_45)
 thresh45_45_max <- max(df_45$median_45)
 
-# thresh45_45_min = thresh_min
-# thresh45_45_max = thresh_max
+thresh45_45_min = thresh_min
+thresh45_45_max = thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1046,8 +1075,8 @@ rm(list = ls(pattern = "thresh45_45"))
 thresh50_45_min <- min(df_45$median_50)
 thresh50_45_max <- max(df_45$median_50)
 
-# thresh50_45_min <- thresh_min
-# thresh50_45_max <- thresh_max
+thresh50_45_min <- thresh_min
+thresh50_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1108,8 +1137,8 @@ rm(list = ls(pattern = "thresh50_45"))
 thresh55_45_min <- min(df_45$median_55)
 thresh55_45_max <- max(df_45$median_55)
 
-# thresh55_45_min <- thresh_min
-# thresh55_45_max <- thresh_max
+thresh55_45_min <- thresh_min
+thresh55_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1168,8 +1197,8 @@ rm(list = ls(pattern = "thresh55_45"))
 thresh60_45_min <- min(df_45$median_60)
 thresh60_45_max <- max(df_45$median_60)
 
-# thresh60_45_min <- thresh_min
-# thresh60_45_max <- thresh_max
+thresh60_45_min <- thresh_min
+thresh60_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1228,8 +1257,8 @@ rm(list = ls(pattern = "thresh60_45"))
 thresh65_45_min <- min(df_45$median_65)
 thresh65_45_max <- max(df_45$median_65)
 
-# thresh65_45_min <- thresh_min
-# thresh65_45_max <- thresh_max
+thresh65_45_min <- thresh_min
+thresh65_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1288,8 +1317,8 @@ rm(list = ls(pattern = "thresh65_45"))
 thresh70_45_min <- min(df_45$median_70)
 thresh70_45_max <- max(df_45$median_70)
 
-# thresh70_45_min <- thresh_min
-# thresh70_45_max <- thresh_max
+thresh70_45_min <- thresh_min
+thresh70_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1348,8 +1377,8 @@ rm(list = ls(pattern = "thresh70_45"))
 thresh75_45_min <- min(df_45$median_75)
 thresh75_45_max <- max(df_45$median_75)
 
-# thresh75_45_min <- thresh_min
-# thresh75_45_max <- thresh_max
+thresh75_45_min <- thresh_min
+thresh75_45_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1415,8 +1444,8 @@ rm(list = ls(pattern = "thresh75_45"))
 thresh20_85_min <- min(df_85$median_20)
 thresh20_85_max <- max(df_85$median_20)
 
-# thresh20_85_min <- thresh_min
-# thresh20_85_max <- thresh_max
+thresh20_85_min <- thresh_min
+thresh20_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1476,8 +1505,8 @@ rm(list = ls(pattern = "thresh20_85"))
 thresh25_85_min <- min(df_85$median_25)
 thresh25_85_max <- max(df_85$median_25)
 
-# thresh25_85_min <- thresh_min
-# thresh25_85_max <- thresh_max
+thresh25_85_min <- thresh_min
+thresh25_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1536,8 +1565,8 @@ rm(list = ls(pattern = "thresh25_85"))
 thresh30_85_min <- min(df_85$median_30)
 thresh30_85_max <- max(df_85$median_30)
 
-# thresh30_85_min <- thresh_min
-# thresh30_85_max <- thresh_max
+thresh30_85_min <- thresh_min
+thresh30_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1598,8 +1627,8 @@ rm(list = ls(pattern = "thresh30_85"))
 thresh35_85_min <- min(df_85$median_35)
 thresh35_85_max <- max(df_85$median_35)
 
-# thresh35_85_min <- thresh_min
-# thresh35_85_max <- thresh_max
+thresh35_85_min <- thresh_min
+thresh35_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1719,8 +1748,8 @@ rm(list = ls(pattern = "thresh40_85"))
 thresh45_85_min <- min(df_85$median_45)
 thresh45_85_max <- max(df_85$median_45)
 
-# thresh45_85_min <- thresh_min
-# thresh45_85_max <- thresh_max
+thresh45_85_min <- thresh_min
+thresh45_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1779,8 +1808,8 @@ rm(list = ls(pattern = "thresh45_85"))
 thresh50_85_min <- min(df_85$median_50)
 thresh50_85_max <- max(df_85$median_50)
 
-# thresh50_85_min <- thresh_min
-# thresh50_85_max <- thresh_max
+thresh50_85_min <- thresh_min
+thresh50_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1841,8 +1870,8 @@ rm(list = ls(pattern = "thresh50_85"))
 thresh55_85_min <- min(df_85$median_55)
 thresh55_85_max <- max(df_85$median_55)
 
-# thresh55_85_min <- thresh_min
-# thresh55_85_max <- thresh_max
+thresh55_85_min <- thresh_min
+thresh55_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -1901,8 +1930,8 @@ rm(list = ls(pattern = "thresh55_85"))
 thresh60_85_min <- min(df_85$median_60)
 thresh60_85_max <- max(df_85$median_60)
 
-# thresh60_85_min <- thresh_min
-# thresh60_85_max <- thresh_max
+thresh60_85_min <- thresh_min
+thresh60_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -2081,8 +2110,8 @@ rm(list = ls(pattern = "thresh70_85"))
 thresh75_85_min <- min(df_85$median_75)
 thresh75_85_max <- max(df_85$median_75)
 
-# thresh75_85_min <- thresh_min
-# thresh75_85_max <- thresh_max
+thresh75_85_min <- thresh_min
+thresh75_85_max <- thresh_max
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",

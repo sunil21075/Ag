@@ -90,7 +90,6 @@ for (model in model_names){
   modeled_slopes$lat = as.numeric(modeled_slopes$lat)
   modeled_slopes$long = as.numeric(modeled_slopes$long)
 
-
   observed_slopes = within(observed_slopes, remove(location))
   modeled_slopes = within(modeled_slopes, remove(location))
 

@@ -8,6 +8,7 @@ library(tidyverse)
 
 source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
+
 options(digit=9)
 options(digits=9)
 
@@ -36,8 +37,6 @@ main_out <- file.path(chill_out, model_type, "02", season_start, "/")
 if (dir.exists(file.path(main_out)) == F) {
   dir.create(path = main_out, recursive = T)
 }
-print (paste0( "(", model_type, "," , ",", season_start, ")"))
-print (main_out)
 
 # 3. Some set up ----------------------------------------------------------
 
@@ -48,7 +47,11 @@ the_dir <- the_dir[grep(pattern = "chill_output_data",
                         x = the_dir)]
 
 # Pre-allocate lists to be used
-no_sites <- 645
+param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
+local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
+local_files <- as.vector(local_files$V1)
+
+no_sites <- length(local_files)
 data_list_historical <- vector(mode = "list", length = no_sites)
 
 # 5. Iterate through files and process ------------------------------------

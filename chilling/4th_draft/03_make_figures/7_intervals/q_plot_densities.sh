@@ -1,31 +1,19 @@
 #!/bin/bash
 
-## Export all environment variables in the qsub command's environment to the
-## batch job.
 #PBS -V
 
-## Define a job name
-#PBS -N obs_dynamic
+#PBS -N plot_densities
 
-## Define compute options
-#PBS -l nodes=1:dev:ppn=1
+#PBS -l nodes=1:dev:ppn=1,walltime=01:00:00
 #PBS -l mem=5gb
-#PBS -l walltime=01:00:00
 #PBS -q hydro
 
-## Define path for output & error logs
 #PBS -k o
   ##PBS -j oe
 #PBS -e /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/plot_densities.e
 #PBS -o /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/plot_densities.o
 
-## Define path for reporting
 #PBS -m abe
-
-echo
-echo We are in the $PWD directory
-echo
-
 cd /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/
 
 echo

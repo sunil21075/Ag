@@ -10,7 +10,6 @@ safe_box_plot <- function(data, due, chill_start){
   medians_vec <- medians$med
   
   the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
-                    plot.title = element_text(size = 20, face = "bold"),
                     panel.border = element_rect(fill=NA, size=.3),
                     panel.grid.major = element_line(size = 0.05),
                     panel.grid.minor = element_blank(),
@@ -22,20 +21,21 @@ safe_box_plot <- function(data, due, chill_start){
                     legend.text = element_text(size=16),
                     legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
                     legend.title = element_blank(),
-                    strip.text.x = element_text(size=18),
-                    strip.text.y = element_text(size=18),
+                    plot.title = element_text(size = 20, face = "bold"),
+                    strip.text.x = element_text(size=18, face="bold"),
+                    strip.text.y = element_text(size=18, face="bold"),
                     axis.ticks = element_line(size=.1, color="black"),
-                    axis.text.x = element_blank(), # element_text(size=7, face="plain", color="black"),
-                    axis.text.y = element_text(size=14, face="plain", color="black"),
-                    axis.title.x = element_blank(),
-                    axis.title.y = element_text(size=22, face="plain", margin = margin(t=0, r=10, b=0, l=0))
+                    axis.text.y = element_text(size=14, face="bold", color="black"),
+                    axis.title.y = element_text(size=22, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.x = element_blank(),
+                    axis.title.x = element_blank()
                     )
   
   safe_b <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
             geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
             theme_bw() +
             labs(x="", y="safe chill") +
-            facet_grid(~ climate_type ~ scenario ) + 
+            facet_grid(~ scenario ~ climate_type ) + 
             the_theme + 
             scale_fill_manual(values = color_ord,
                       name = "Time\nPeriod", 
@@ -203,11 +203,10 @@ produce_data_4_plots <- function(data){
               median_quan_per_loc_period_model_mar,
               quan_per_loc_period_model_apr,
               mean_quan_per_loc_period_model_apr,
-              median_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr
               )
         )
 }
-
 
 produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
 
@@ -224,22 +223,22 @@ produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
   ##                                                                   ##
   #######################################################################
   quan_per_loc_period_model_jan <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_J1, probs = 0.1)) %>%
                                    data.table()
   
   quan_per_loc_period_model_feb <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_mar <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_apr <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
                                    data.table()
 
@@ -339,13 +338,17 @@ organize_non_over_time_period_two_hist <- function(data){
   return(data)
 }
 
-pick_up_okanagan_rich <- function(dt){
-  okanagan <- dt %>% filter(lat== "48.40625" & long=="-119.53125")
-  okanagan$location = "okanagan"
+pick_single_cities <- function(dt, city_info){
+  city_info$location <- paste0(city_info$lat, "_", city_info$long)
+  dt$location <- paste0(dt$lat, "_", dt$long)
 
-  richland <- dt %>% filter(lat== "46.28125" & long=="-119.34375")
-  richland$location = "richland"
-  
-  dt = rbind(okanagan, richland)
+  dt <- dt %>% filter(location %in% city_info$location) %>%
+        data.table()
   return(dt)
 }
+
+
+
+
+
+

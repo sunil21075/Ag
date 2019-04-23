@@ -5,11 +5,12 @@ library(plyr)
 library(lubridate)
 library(purrr)
 library(tidyverse)
-options(digit=9)
-options(digits=9)
 
 source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
+
+options(digit=9)
+options(digits=9)
 
 # Check current folder
 print("does this look right?")
@@ -44,8 +45,6 @@ if (overlap_type == "non_overlap" ){
     main_out <- file.path(main_out, "overlap/")
 }
 
-print (paste0( "(", model_type, "," , overlap_type, "," , season_start, ")"))
-print (main_out)
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {
   dir.create(path = main_out, recursive = T)
@@ -60,11 +59,17 @@ the_dir <- dir()
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 # Pre-allocate lists to be used
-no_sites <- 645
+param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
+local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
+local_files <- as.vector(local_files$V1)
+no_sites <- length(local_files)
+
 data_list_hist <- vector(mode = "list", length = no_sites)
-data_list_F1 <- vector(mode = "list", length = no_sites)
-data_list_F2 <- vector(mode = "list", length = no_sites)
-data_list_F3 <- vector(mode = "list", length = no_sites)
+data_list_F0 <- vector(mode = "list", length = no_sites) # 2005-2024
+data_list_F1 <- vector(mode = "list", length = no_sites) # 2025-2050
+data_list_F2 <- vector(mode = "list", length = no_sites) # 2051-2075
+data_list_F3 <- vector(mode = "list", length = no_sites) # 2076-2099
+
 
 # Check whether historical data or not
 hist <- basename(getwd()) == "historical"
@@ -143,6 +148,10 @@ if(hist){
                                       "numeric", "numeric"))
 
     if (overlap_type == "overlap"){
+      # 2005-2025
+      data_list_F0[[i]] <- process_data(file, time_period="2015")
+      names(data_list_F0)[i] <- the_dir[i]
+
       # 2040s
       data_list_F1[[i]] <- process_data(file, time_period="2040")
       names(data_list_F1)[i] <- the_dir[i]
@@ -157,15 +166,19 @@ if(hist){
 
       rm(file) 
     } else if (overlap_type == "non_overlap"){
-      # 2025_2050s
+      # 2005_2024
+      data_list_F0[[i]] <- process_data_non_overlap(file, time_period="2005_2024")
+      names(data_list_F0)[i] <- the_dir[i]
+ 
+      # 2025_2050
       data_list_F1[[i]] <- process_data_non_overlap(file, time_period="2025_2050")
       names(data_list_F1)[i] <- the_dir[i]
  
-      # 2051_2075s
+      # 2051_2075
       data_list_F2[[i]] <- process_data_non_overlap(file, time_period="2051_2075")
       names(data_list_F2)[i] <- the_dir[i]
 
-      # 2076_2100s
+      # 2076_2100
       data_list_F3[[i]] <- process_data_non_overlap(file, time_period="2076_2100")
       names(data_list_F3)[i] <- the_dir[i]
 
@@ -176,16 +189,21 @@ if(hist){
   # 5d. Process gathered future data ----------------------------------------
   
   # Apply this function to a list and spit out a dataframe
-  summary_data_F1 <- get_medians(data_list_F1) 
+  summary_data_F0 <- get_medians(data_list_F0)
+  summary_data_F1 <- get_medians(data_list_F1)
   summary_data_F2 <- get_medians(data_list_F2)
   summary_data_F3 <- get_medians(data_list_F3)
   
   # Briefly want to export the raw data from the lists for use in other figs
+  dataF0 <- ldply(data_list_F0, function(x) data.frame(x))
   dataF1 <- ldply(data_list_F1, function(x) data.frame(x))
   dataF2 <- ldply(data_list_F2, function(x) data.frame(x))
   dataF3 <- ldply(data_list_F3, function(x) data.frame(x))
   
-  all_years <- bind_rows(dataF1, dataF2, dataF3)
+  all_years <- bind_rows(dataF0, dataF1, dataF2, dataF3)
+
+  # No longer needed
+  rm(list = c("data_list_F0", "data_list_F1", "data_list_F2", "data_list_F3"))
 
   all_years$year <- as.numeric(substr(x = all_years$chill_season,
                                       start = 12, stop = 15))
@@ -194,10 +212,7 @@ if(hist){
   all_years$lat = as.numeric(substr(x = all_years$.id, start = 19, stop = 26))
   all_years$long = as.numeric(substr(x = all_years$.id, start = 28, stop = 37))
   all_years <- unique(all_years)
-
-  # No longer needed
-  rm(list = c("data_list_F1", "data_list_F2", "data_list_F3"))
-   
+ 
   # .id row contains originating filename of this data
   write.table(x = all_years,
               file = file.path(main_out,
@@ -211,22 +226,26 @@ if(hist){
   rm(all_years)
    
   # Grab lat/long
+  summary_data_F0 <- grab_coord(summary_data_F0)
   summary_data_F1 <- grab_coord(summary_data_F1)
   summary_data_F2 <- grab_coord(summary_data_F2)
   summary_data_F3 <- grab_coord(summary_data_F3)
   
   # Combine dfs for plotting ease
   if (overlap_type == "non_overlap"){
+    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2005_2024")
     summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2025_2050")
     summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2051_2075")
     summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2076_2100")
   } else if (overlap_type == "overlap"){
-    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2040's")
-    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2060's")
-    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2080's")
+    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2015s")
+    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2040s")
+    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2060s")
+    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2080s")
   }
   
-  summary_data_comb <- bind_rows(summary_data_F1,
+  summary_data_comb <- bind_rows(summary_data_F0,
+                                 summary_data_F1,
                                  summary_data_F2,
                                  summary_data_F3)
   
@@ -244,7 +263,6 @@ if(hist){
 }
 # How long did it take?
 end_time <- Sys.time()
-
 print( end_time - start_time)
 
 
