@@ -11,7 +11,7 @@ cd /home/hnoorazar/analog_codes/03_find_analogs/location_level
 ########### w_precip, w_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_w_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_w_gen3_$LINE.sh
 sed -i s/precip_type/w_precip/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_w_gen3_$LINE.sh
 sed -i s/gen_3_type/w_gen3/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_w_gen3_$LINE.sh
 sed -i s/emission_type/rcp45/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_w_gen3_$LINE.sh
@@ -21,7 +21,7 @@ done
 ########### no_precip, w_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_w_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_w_gen3_$LINE.sh
 sed -i s/precip_type/no_precip/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_w_gen3_$LINE.sh
 sed -i s/gen_3_type/w_gen3/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_w_gen3_$LINE.sh
 sed -i s/emission_type/rcp45/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_w_gen3_$LINE.sh
@@ -31,7 +31,7 @@ done
 ########### w_precip, no_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_no_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_no_gen3_$LINE.sh
 sed -i s/precip_type/w_precip/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_no_gen3_$LINE.sh
 sed -i s/gen_3_type/no_gen3/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_no_gen3_$LINE.sh
 sed -i s/emission_type/rcp45/g ./rcp45_qsubs/GFDLM/q_rcp45_w_precip_no_gen3_$LINE.sh
@@ -41,7 +41,7 @@ done
 ########### no_precip, no_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_no_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_no_gen3_$LINE.sh
 sed -i s/precip_type/no_precip/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_no_gen3_$LINE.sh
 sed -i s/gen_3_type/no_gen3/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_no_gen3_$LINE.sh
 sed -i s/emission_type/rcp45/g ./rcp45_qsubs/GFDLM/q_rcp45_no_precip_no_gen3_$LINE.sh
@@ -54,7 +54,7 @@ done
 ########### w_precip, w_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_w_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_w_gen3_$LINE.sh
 sed -i s/precip_type/w_precip/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_w_gen3_$LINE.sh
 sed -i s/gen_3_type/w_gen3/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_w_gen3_$LINE.sh
 sed -i s/emission_type/rcp85/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_w_gen3_$LINE.sh
@@ -64,7 +64,7 @@ done
 ########### no_precip, w_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_w_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_w_gen3_$LINE.sh
 sed -i s/precip_type/no_precip/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_w_gen3_$LINE.sh
 sed -i s/gen_3_type/w_gen3/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_w_gen3_$LINE.sh
 sed -i s/emission_type/rcp85/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_w_gen3_$LINE.sh
@@ -74,7 +74,7 @@ done
 ########### w_precip, no_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_no_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_no_gen3_$LINE.sh
 sed -i s/precip_type/w_precip/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_no_gen3_$LINE.sh
 sed -i s/gen_3_type/no_gen3/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_no_gen3_$LINE.sh
 sed -i s/emission_type/rcp85/g ./rcp85_qsubs/GFDLM/q_rcp85_w_precip_no_gen3_$LINE.sh
@@ -84,7 +84,7 @@ done
 ########### no_precip, no_gen3
 
 cat /home/hnoorazar/analog_codes/parameters/file_names | while read LINE ; do
-cp 03_template_location_level_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_no_gen3_$LINE.sh
+cp 03_template_loc_GFDLM.sh ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_no_gen3_$LINE.sh
 sed -i s/precip_type/no_precip/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_no_gen3_$LINE.sh
 sed -i s/gen_3_type/no_gen3/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_no_gen3_$LINE.sh
 sed -i s/emission_type/rcp85/g ./rcp85_qsubs/GFDLM/q_rcp85_no_precip_no_gen3_$LINE.sh

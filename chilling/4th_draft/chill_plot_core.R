@@ -1,11 +1,11 @@
 
 safe_box_plot <- function(data, due, chill_start){
-  color_ord = c("grey70" , "dodgerblue", "olivedrab4", "red") # 
+  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") # 
   categ_lab = c("Historical", "2025-2050", "2051-2075", "2076-2099")
   box_width = 0.25
   
   df <- data.frame(data)
-  df <- (df %>% group_by(time_period, scenario, climate_type))
+  df <- (df %>% group_by(time_period, scenario, warm_cold))
   medians <- (df %>% summarise(med = median(quan_90)))
   medians_vec <- medians$med
   
@@ -22,6 +22,7 @@ safe_box_plot <- function(data, due, chill_start){
                     legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
                     legend.title = element_blank(),
                     plot.title = element_text(size = 20, face = "bold"),
+                    plot.subtitle = element_text(face = "bold"),
                     strip.text.x = element_text(size=18, face="bold"),
                     strip.text.y = element_text(size=18, face="bold"),
                     axis.ticks = element_line(size=.1, color="black"),
@@ -33,9 +34,8 @@ safe_box_plot <- function(data, due, chill_start){
   
   safe_b <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
             geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
-            theme_bw() +
             labs(x="", y="safe chill") +
-            facet_grid(~ scenario ~ climate_type ) + 
+            facet_grid(~ scenario ~ warm_cold ) + 
             the_theme + 
             scale_fill_manual(values = color_ord,
                       name = "Time\nPeriod", 
@@ -51,7 +51,7 @@ safe_box_plot <- function(data, due, chill_start){
                       size=4.2, 
                       position =  position_dodge(.09),
                       vjust = 0.1,
-                      hjust=1.8) + 
+                      hjust=1.45) + 
             ggtitle(lab=paste0("Safe chill accumulation by ", due, " 1st"),
                     subtitle = paste0("chill season started on ", chill_start)) 
   
@@ -72,7 +72,7 @@ ensemble_map <- function(data, color_col, due) {
   
   data %>% ggplot() +
            geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black") +
+                        fill = "grey", color = "black", size=.3) +
             # aes_string to allow naming of column in function 
             geom_point(aes_string(x = "long", y = "lat",
                        color = color_col), alpha = 0.4, size=.4) +
@@ -94,7 +94,7 @@ ensemble_map <- function(data, color_col, due) {
 
 produce_data_4_plots <- function(data){
   needed_cols = c("chill_season", "sum_J1", "sum_F1", "sum_M1", "sum_A1", "year", "model", 
-                  "scenario", "lat", "long", "climate_type")
+                  "scenario", "lat", "long", "warm_cold")
 
   ################### CLEAN DATA
   data = subset(data, select=needed_cols)
@@ -112,22 +112,22 @@ produce_data_4_plots <- function(data){
   ##                                                                   ##
   #######################################################################
   quan_per_loc_period_model_jan <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                   group_by(time_period, lat, long, scenario, model, warm_cold) %>%
                                    summarise(quan_90 = quantile(sum_J1, probs = 0.1)) %>%
                                    data.table()
   
   quan_per_loc_period_model_feb <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                   group_by(time_period, lat, long, scenario, model, warm_cold) %>%
                                    summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_mar <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                   group_by(time_period, lat, long, scenario, model, warm_cold) %>%
                                    summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_apr <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type) %>%
+                                   group_by(time_period, lat, long, scenario, model, warm_cold) %>%
                                    summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
                                    data.table()
 
