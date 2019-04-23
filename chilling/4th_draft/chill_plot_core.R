@@ -223,22 +223,22 @@ produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
   ##                                                                   ##
   #######################################################################
   quan_per_loc_period_model_jan <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_J1, probs = 0.1)) %>%
                                    data.table()
   
   quan_per_loc_period_model_feb <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_F1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_mar <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_M1, probs = 0.1)) %>%
                                    data.table()
 
   quan_per_loc_period_model_apr <- data %>% 
-                                   group_by(time_period, lat, long, scenario, model, climate_type, start) %>%
+                                   group_by(time_period, lat, long, scenario, model, start) %>%
                                    summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
                                    data.table()
 
@@ -338,26 +338,17 @@ organize_non_over_time_period_two_hist <- function(data){
   return(data)
 }
 
-pick_single_cities <- function(dt){
-  Omak <- dt %>% filter(lat== "48.40625" & long=="-119.53125")
-  Omak$city = "Omak"
+pick_single_cities <- function(dt, city_info){
+  city_info$location <- paste0(city_info$lat, "_", city_info$long)
+  dt$location <- paste0(dt$lat, "_", dt$long)
 
-  Richland <- dt %>% filter(lat== "46.28125" & long=="-119.34375")
-  Richland$city <- "Richland"
-
-  Wenatchee <- dt %>% filter(lat== "47.40625" & long=="-120.34375")
-  Wenatchee$city <- "Wenatchee"
-
-  Hilsboro <- dt %>% filter(lat== "45.53125" & long=="-123.15625")
-  Hilsboro$city = "Hilsboro"
-
-  Elmira <- dt %>% filter(lat== "44.09375" & long=="-123.34375")
-  Elmira$city = "Elmira"
-  rm(dt)
-
-  dt <- rbind(Omak, Richland, Wenatchee, Hilsboro, Elmira)
-
-  city_names <- c("Omak", "Wenatchee", "Richland", "Hilsboro", "Elmira")
-  dt$city <- factor(dt$city, levels = city_names)
-  return(data.table(dt))
+  dt <- dt %>% filter(location %in% city_info$location) %>%
+        data.table()
+  return(dt)
 }
+
+
+
+
+
+
