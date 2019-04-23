@@ -14,9 +14,11 @@ source(source_path)
 ###                                    Driver                                          ###
 ###                                                                                    ###
 ##########################################################################################
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+locations_wanted <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), header=T, as.is=T)
 
-time_types = c("non_overlapping") # , "overlapping"
-model_types = c("dynamic_model_stats") # , "utah_model_stats"
+time_types = c("non_overlapping")     #, "overlapping"
+model_types = c("dynamic_model_stats")#, "utah_model_stats"
 
 main_in = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
 files_name = c("mid_nov_summary_comp.rds", "mid_oct_summary_comp.rds", "mid_sept_summary_comp.rds",
@@ -33,8 +35,11 @@ start = "Sept. 1"
 
 datas <- datas %>% filter(model != "observed")
 
-climate_levels <- c("Cooler Area", "Warmer Area", "Oregon Area")
-datas$climate_type <- factor(datas$climate_type, levels = climate_levels)
+###### Remove Montana, add Warm, Cool, Oregon
+datas <- remove_montana_add_warm_cold(data_dt=datas, LocationGroups_NoMontana=locations_wanted)
+
+climate_levels <- c("Cooler Areas", "Warmer Areas", "Oregon Areas")
+datas$warm_cold <- factor(datas$warm_cold, levels = climate_levels)
 
 information = produce_data_4_plots(datas)
 
@@ -44,8 +49,10 @@ safe_mar <- safe_box_plot(information[[7]], due="Mar.", chill_start = start)
 safe_apr <- safe_box_plot(information[[10]], due="Apr.", chill_start= start)
 
 # out_dir
-box_width = 9
+box_width = 10
 box_height = 8
+
+plot_dir <- "/Users/hn/Desktop/"
 
 output_name = paste0(time_type, "_", unlist(strsplit(model_type, "_"))[1], "_Jan.png")
 ggsave(output_name, safe_jan, path=plot_dir, width=box_width, height=box_height, unit="in", dpi=400)

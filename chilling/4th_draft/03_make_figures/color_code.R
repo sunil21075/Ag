@@ -45,10 +45,11 @@ clean_process <- function(dt){
   dt$scenario[dt$scenario == "rcp85"] <- "RCP 8.5"
   dt$scenario[dt$time_period == "Historical"] <- "Historical"
 
-  jan_data <- subset(dt, select=c(sum_J1, lat, long, warm_cold, scenario, model, time_period, chill_season))
-  feb_data <- subset(dt, select=c(sum_F1, lat, long, warm_cold, scenario, model, time_period, chill_season))
-  mar_data <- subset(dt, select=c(sum_M1, lat, long, warm_cold, scenario, model, time_period, chill_season))
-  apr_data <- subset(dt, select=c(sum_A1, lat, long, warm_cold, scenario, model, time_period, chill_season))
+  dt$location <- paste0(dt$lat, "_", dt$long)
+  jan_data <- subset(dt, select=c(sum_J1, lat, long, warm_cold, scenario, model, time_period, chill_season, location))
+  feb_data <- subset(dt, select=c(sum_F1, lat, long, warm_cold, scenario, model, time_period, chill_season, location))
+  mar_data <- subset(dt, select=c(sum_M1, lat, long, warm_cold, scenario, model, time_period, chill_season, location))
+  apr_data <- subset(dt, select=c(sum_A1, lat, long, warm_cold, scenario, model, time_period, chill_season, location))
   return (list(jan_data, feb_data, mar_data, apr_data))
 }
 
@@ -83,8 +84,10 @@ for (begin in begins){
   param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
   LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
                                        header=T, sep=",", as.is=T)
+  LocationGroups_NoMontana <- within(LocationGroups_NoMontana, remove(lat, long))
 
   mdata <- remove_montana_add_warm_cold(mdata, LocationGroups_NoMontana)
+  
   information <- clean_process(mdata)
   jan_data = information[[1]] %>% data.table()
   feb_data = information[[2]] %>% data.table()
@@ -92,10 +95,10 @@ for (begin in begins){
   apr_data = information[[4]] %>% data.table()
   rm(information, mdata)
 
-  jan_result = count_years_threshs_met_all_locations(dataT = jan_data, due="Jan")
-  feb_result = count_years_threshs_met_all_locations(dataT = feb_data, due="Feb")
-  mar_result = count_years_threshs_met_all_locations(dataT = mar_data, due="Mar")
-  apr_result = count_years_threshs_met_all_locations(dataT = apr_data, due="Apr")
+  jan_result = count_years_threshs_met_all_locations_for_color_code_table(dataT = jan_data, due="Jan")
+  feb_result = count_years_threshs_met_all_locations_for_color_code_table(dataT = feb_data, due="Feb")
+  mar_result = count_years_threshs_met_all_locations_for_color_code_table(dataT = mar_data, due="Mar")
+  apr_result = count_years_threshs_met_all_locations_for_color_code_table(dataT = apr_data, due="Apr")
 
   #####################
   ##################### Add climate type back to data

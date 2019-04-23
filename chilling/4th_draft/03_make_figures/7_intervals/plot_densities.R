@@ -16,9 +16,8 @@ library(ggpubr) # for ggarrange
 options(digit=9)
 options(digits=9)
 
-base_in <- "/Users/hn/Desktop"
-data_dir <- file.path(base_in, "Desktop/Kirti/check_point/chilling/7_temp_interval/")
-plot_dir <- base_in
+# data_dir <- file.path(base_in, "Desktop/Kirti/check_point/chilling/7_temp_int_limit_locs/")
+# plot_dir <- base_in
 
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
@@ -26,19 +25,13 @@ plot_dir <- file.path(base_in, "plots/AUC/")
 if (dir.exists(file.path(plot_dir)) == F) {
   dir.create(path = plot_dir, recursive = T)
 }
-###########################################################
-param_dir <- "/home/hnoorazar/chilling_codes/parameters/"
 
-limited_locs <- read.csv(paste0(param_dir, "limited_locations.csv"), 
-                                header=T, sep=",", as.is=T)
-limited_locs$location <- paste0(limited_locs$lat, "_", limited_locs$long)
-limited_locs <- within(limited_locs, remove(lat, long))
 ###########################################################
 
 quality <- 300 # dpi quality
-big_pic_width <- 60
+big_pic_width <- 70
 big_pic_height <- 65
-small_pic_width <- 40
+small_pic_width <- 50
 small_pic_height <- 6 # 4
 
 #####################################################
@@ -56,18 +49,18 @@ plot_dens <- function(data, month_name){
                        panel.spacing=unit(.3, "cm"),
                        legend.position="bottom", 
                        legend.title = element_blank(),
-                       legend.key.size = unit(3, "line"),
-                       legend.text=element_text(size=26),
+                       legend.key.size = unit(1.3, "line"),
                        legend.margin=margin(t= -0.1, r=0, b=0, l=0, unit='cm'),
                        legend.spacing.x = unit(.08, 'cm'),
                        strip.text.x = element_text(face="bold", size=30),
                        strip.text.y = element_text(face="bold", size=30),
                        axis.ticks = element_line(size=.2, color="black"),
-                       plot.title = element_text(size=26, face="bold"),
-                       axis.title.x = element_text(size=22, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
-                       axis.title.y = element_text(size=22, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
-                       axis.text.x = element_text(size =20, face="plain", color="black", angle=-90),
-                       axis.text.y = element_text(size =20, face = "plain", color="black")
+                       legend.text=element_text(size=24),
+                       plot.title = element_text(size=36, face="bold"),
+                       axis.title.x = element_text(size=28, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
+                       axis.title.y = element_text(size=28, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
+                       axis.text.x = element_text(size =16, face = "plain", color="black", angle=-90),
+                       axis.text.y = element_text(size =22, face = "bold", color="black")
                        )
     
     if (month == "sept_thru_dec_modeled"){
@@ -94,6 +87,8 @@ plot_dens <- function(data, month_name){
     return(obs_plot)
 }
 
+print ("line 90")
+
 month_names = c("sept_thru_dec_modeled", "sept_thru_jan_modeled")
 
 for (month in month_names){
@@ -109,7 +104,6 @@ for (month in month_names){
 
   # There are years between (2006) and 2025 which ... becomes NA
   data = na.omit(data)
-  data <- left_join(data, limited_locs)
   
   # order the climate groups
   data$time_period <- factor(data$time_period, 
@@ -123,11 +117,14 @@ for (month in month_names){
   assign(x = paste0(month, "_density_", "rcp45"),
          value = {plot_dens(data=data_45,
                             month_name=month)})
+
   assign(x = paste0(month, "_density_", "rcp85"),
          value = { plot_dens(data=data_85,
                              month_name=month)})
   rm(data_45, data_85)
 }
+
+print ("line 127")
 
 ggsave(filename = "sept_thru_dec_modeled_dens_rcp85.png",
        path = plot_dir, 
@@ -161,6 +158,7 @@ ggsave(filename = "sept_thru_jan_modeled_dens_rcp45.png",
         device = "png",
         limitsize = FALSE)
 
+print ("line 160")
 
 big_plot_85 <- ggarrange(sept_thru_dec_modeled_density_rcp85, 
                          sept_thru_jan_modeled_density_rcp85,
@@ -178,15 +176,16 @@ ggsave(filename = "sept_thru_dec_and_Jan_modeled_big_85.png",
        device = "png",
        limitsize = FALSE)
 
+print ("line 178")
 
 ############################################################################
 ############################################################################
 ############################################################################
 ############################################################################
 
-base_in <- "/Users/hn/Desktop"
-data_dir <- file.path(base_in, "Desktop/Kirti/check_point/chilling/7_temp_interval/")
-plot_dir <- base_in
+# base_in <- "/Users/hn/Desktop/"
+# data_dir <- file.path(base_in, "Desktop/Kirti/check_point/chilling/7_temp_int_limit_locs/")
+# plot_dir <- base_in
 
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
@@ -195,9 +194,10 @@ if (dir.exists(file.path(plot_dir)) == F) {
   dir.create(path = plot_dir, recursive = T)
 }
 
-print("line 199")
+print("line 197")
+
 quality <- 300 # dpi quality
-big_pic_width <- 60
+big_pic_width <- 70
 big_pic_height <- 65
 small_pic_width <- 16
 small_pic_height <- 8
@@ -208,14 +208,13 @@ plot_dens <- function(data, month_name){
   x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
   the_theme <-theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),
                     panel.border = element_rect(fill=NA, size=.3),
-                    plot.subtitle = element_text(),
                     panel.grid.major = element_line(size = 0.05),
                     panel.grid.minor = element_blank(),
                     panel.spacing=unit(.3,"cm"),
                     legend.position="bottom", 
                     legend.title = element_blank(),
-                    legend.key.size = unit(3, "line"),
-                    legend.text=element_text(size=24),
+                    legend.key.size = unit(1, "line"),
+                    legend.text=element_text(size=14),
                     legend.margin=margin(t= -0.1, r = 0, b = 0, l = 0, unit = 'cm'),
                     legend.spacing.x = unit(.08, 'cm'),
                     plot.title = element_text(face="bold", size=24),
@@ -223,9 +222,9 @@ plot_dens <- function(data, month_name){
                     strip.text.y = element_text(face="bold", size = 24),
                     axis.ticks = element_line(color = "black", size = .2),
                     axis.title.x = element_text(face = "bold", size=17, margin = margin(t=4, r=0, b=0, l=0)),
-                    axis.text.x = element_text(size = 24, face="plain", color="black", angle=-90),
                     axis.title.y = element_text(face = "bold", size = 17, margin = margin(t=0, r=6, b=0, l=0)),
-                    axis.text.y = element_text(size = 24, color="black")
+                    axis.text.x = element_text(size = 16, face="plain", color="black", angle=-90),
+                    axis.text.y = element_text(size = 16, face="plain", color="black")
                     )
   obs_plot = ggplot(data, aes(x=Temp, fill=factor(time_period))) + 
              geom_density(alpha=.5, size=.1) + 
@@ -260,7 +259,6 @@ for (month in month_names){
 
   # There are years between (2006) and 2025 which ... becomes NA
   data = na.omit(data)
-  data <- left_join(data, limited_locs)
 
   # order the climate groups
   data$time_period <- factor(data$time_period, 
@@ -276,20 +274,20 @@ for (month in month_names){
   assign(x = paste0(month, "_density_", "rcp85"),
          value = { plot_dens(data=data_85,
                              month_name=month)})
-
 }
-print ("line 133")
+
+print ("line 278")
+
 #######
 ####### RCP45
 #######
-
-big_plot_45 <- ggarrange(Sept_density_plot_rcp45, 
-                         Oct_density_plot_rcp45,
-                         Nov_density_plot_rcp45,
-                         Dec_density_plot_rcp45,
-                         Jan_density_plot_rcp45,
-                         Feb_density_plot_rcp45,
-                         Mar_density_plot_rcp45,
+big_plot_45 <- ggarrange(Sept_density_rcp45, 
+                         Oct_density_rcp45,
+                         Nov_density_rcp45,
+                         Dec_density_rcp45,
+                         Jan_density_rcp45,
+                         Feb_density_rcp45,
+                         Mar_density_rcp45,
                          label.x = "hourly temp.",
                          label.y = "density",
                          ncol = 1, 
@@ -304,18 +302,19 @@ ggsave(filename = "density_45.png",
        dpi = quality, 
        device = "png",
        limitsize = FALSE)
-print ("line 159")
+
+print ("line 306")
 #######
 ####### RCP85
 #######
 
-big_plot_85 <- ggarrange(Sept_density_plot_rcp85, 
-                         Oct_density_plot_rcp85,
-                         Nov_density_plot_rcp85,
-                         Dec_density_plot_rcp85,
-                         Jan_density_plot_rcp85,
-                         Feb_density_plot_rcp85,
-                         Mar_density_plot_rcp85,
+big_plot_85 <- ggarrange(Sept_density_rcp85, 
+                         Oct_density_rcp85,
+                         Nov_density_rcp85,
+                         Dec_density_rcp85,
+                         Jan_density_rcp85,
+                         Feb_density_rcp85,
+                         Mar_density_rcp85,
                          label.x = "hourly temp.",
                          label.y = "density",
                          ncol = 1, 
@@ -330,29 +329,6 @@ ggsave(filename = "density_85.png",
        dpi = quality, 
        device = "png",
        limitsize = FALSE)
-
-#######
-####### RCP 45 and 85 combined
-#######
-# big_plot_combined <- ggarrange(Sept_density_plot, 
-#                              Oct_density_plot,
-#                              Nov_density_plot,
-#                              Dec_density_plot,
-#                              Jan_density_plot,
-#                              Feb_density_plot,
-#                              Mar_density_plot,
-#                              label.x = "Hourly temp.",
-#                              label.y = "Density",
-#                              ncol = 1, 
-#                              nrow = 7, 
-#                              common.legend = T,
-#                             legend = "bottom")
-# ggsave(filename = "45_and_85_combined.png", 
-#        path = plot_dir, 
-#        plot = big_plot_combined,
-#        width = 15, height = 40, units = "in",
-#        dpi=quality, 
-#        device = "png")
 
 
 
