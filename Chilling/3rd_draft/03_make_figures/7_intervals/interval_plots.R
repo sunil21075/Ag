@@ -1,43 +1,20 @@
-.libPaths("/data/hydro/R_libs35")
-.libPaths()
-
 rm(list=ls())
-
 library(data.table)
 library(dplyr)
 library(ggplot2)
 library(ggpubr) # for ggarrange
-options(digit=9)
-options(digits=9)
 ##############################
 ############################## Global variables
 ##############################
-data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
-input_dir<- data_dir
-plot_dir <- "/Users/hn/Desktop/"
-
-base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
-data_dir <- file.path(base_in, "RDS_files/")
-plot_dir <- file.path(base_in, "plots/interval_TS/")
-
-if (dir.exists(file.path(plot_dir)) == F) {
-  dir.create(path = plot_dir, recursive = T)
-}
-
-quality <- 300 # dpi quality
-big_pic_width <- 15
-big_pic_height <- 65
-
-small_pic_width <- 6
-small_pic_height <- 8
+data_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 
 # iof = interval of interest
-iof = c(c(-Inf, -2),
-        c(-2, 4),
-        c(4, 6),
-        c(6, 8),
-        c(8, 13),
-        c(13, 16),
+iof = c(c(-Inf, -2), 
+        c(-2, 4), 
+        c(4, 6), 
+        c(6, 8), 
+        c(8, 13), 
+        c(13, 16), 
         c(16, Inf))
 
 iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
@@ -46,9 +23,11 @@ month_no = c(1, 2, 3, 9, 10, 11, 12)
 month_names = c("Jan", "Feb", "Mar",
                 "Sept", "Oct", "Nov", "Dec"
                 )
+weather_type = c("Warmer Area", "Cooler Area")
 
 plot_intervals <- function(data, month_name){
-  the_theme <- theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
+  the_theme <- theme_bw() + 
+               theme(plot.margin = unit(c(t=0.1, r=0.1, b=.5, l=0.1), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      plot.title = element_text(hjust = 0.5),
                      plot.subtitle = element_text(hjust = 0.5),
@@ -72,11 +51,11 @@ plot_intervals <- function(data, month_name){
                      axis.text.y = element_text(size = 8, face="plain", color="black")
                      )
   obs_plot = ggplot(data = data) +
-             geom_point(aes(x = year, y = no_hours, fill = factor(scenario)),
+             geom_point(aes(x = Year, y = no_hours, fill = factor(scenario)),
                             alpha = 0.25, shape = 21, size = 1) +
-             geom_smooth(aes(x = year, y = no_hours, color = factor(scenario)),
+             geom_smooth(aes(x = Year, y = no_hours, color = factor(scenario)),
                              method = "lm", se = F, size=.4) +
-             facet_grid( ~ city ~ temp_cat) +
+             facet_grid( ~ CountyGroup ~ temp_cat) +
              scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                    name = "Model scenario", 
                                    aesthetics = c("color", "fill")) +
@@ -89,49 +68,25 @@ plot_intervals <- function(data, month_name){
   return(obs_plot)
 }
 
-param_dir <- "/home/hnoorazar/chilling_codes/parameters/"
-limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, sep=",")
-
-limited_locations$location = paste0(limited_locations$lat, "_", limited_locations$long)
-city_names <- limited_locations$city
-
 for(month in month_names){
   data = paste0(data_dir, month, ".rds")
   data = data.table(readRDS(data))
-
-  data <- left_join(x=data, y=limited_locations, by="location")
+  data <- data %>% 
+          mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
+          group_by(Chill_season, Year, model, Month, scenario, temp_cat, CountyGroup) %>% 
+          summarise(no_hours = n())
   
-  # data$city = 0L
-
-  # data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  # data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  # data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  # data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  # data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-  
-  data$city <- factor(data$city, levels = city_names)
-
-  data <- table(cut(data$Temp, breaks = iof_breaks))        
   data$temp_cat = factor(data$temp_cat, order=T)
-
   assign(x = paste0(month, "_plot"),
          value = { plot_intervals(data=data,
                                   month_name=month)})
 
   data = paste0(data_dir, "observed_", month, ".rds")
   data = data.table(readRDS(data))
-  
-  # data$city = 0L
-  # data$city[data$location == "48.40625_-119.53125"] = "Omak"
-  # data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-  # data$city[data$location == "46.28125_-119.34375"] = "Richland"
-  # data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-  # data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-
-  data <- left_join(x=data, y=limited_locations, by="location")
-  data$city <- factor(data$city, levels = city_names)
-
-  data <- table(cut(data$Temp, breaks = iof_breaks))
+  data <- data %>% 
+          mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
+          group_by(Chill_season, Year, Month, scenario, temp_cat, CountyGroup) %>% 
+          summarise(no_hours = n())
   data$temp_cat = factor(data$temp_cat, order=T)
   
   assign(x = paste0("observed_", month, "_plot"),
@@ -162,61 +117,52 @@ big_plot <- ggarrange(Sept_plot, observed_Sept_plot,
 
 ggsave(plot = big_plot,
        filename = "7_intervals.png",
-       path = plot_dir,
-       width = big_pic_width, height = big_pic_height, units = "in",
-       dpi=quality, 
-       device = "png", 
-       limitsize = FALSE)
+       path = "/Users/hn/Desktop/",
+       width = 15, height = 45, units = "in",
+       dpi=400, 
+       device = "png")
 
 ggsave(plot = Sept_plot, 
        filename = paste0("modeled_Sept", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, 
-       limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Oct_plot, 
        filename = paste0("modeled_Oct", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Nov_plot, 
        filename = paste0("modeled_Nov", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Dec_plot,
        filename = paste0("modeled_Dec", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Jan_plot,
        filename = paste0("modeled_Jan", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Feb_plot,
        filename = paste0("modeled_Feb", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = Mar_plot, 
        filename = paste0("modeled_Mar", ".png"), 
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, 
-       units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ####################################################################
 #################
@@ -226,45 +172,45 @@ ggsave(plot = Mar_plot,
 
 ggsave(plot = observed_Sept_plot,
        filename = paste0("observed_Sept", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Oct_plot,
        filename = paste0("observed_Oct", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Nov_plot,
        filename = paste0("observed_Nov", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Dec_plot, 
        filename = paste0("observed_Dec", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Jan_plot,
        filename = paste0("observed_Jan", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Feb_plot,
        filename = paste0("observed_Feb", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ggsave(plot = observed_Mar_plot,
        filename = paste0("observed_Mar", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 ####################################################################
 #####                                                          #####
@@ -281,9 +227,9 @@ sept_neck <- ggarrange(Sept_plot, observed_Sept_plot,
                        legend = "bottom")
 ggsave(plot = sept_neck,
        filename = paste0("mo_sept", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 oct_neck <- ggarrange(Oct_plot, observed_Oct_plot,
                        label.x = "year",
@@ -294,9 +240,9 @@ oct_neck <- ggarrange(Oct_plot, observed_Oct_plot,
                        legend = "bottom")
 ggsave(plot = oct_neck,
        filename = paste0("mo_oct", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 nov_neck <- ggarrange(Nov_plot, observed_Nov_plot,
                        label.x = "year",
@@ -307,9 +253,9 @@ nov_neck <- ggarrange(Nov_plot, observed_Nov_plot,
                        legend = "bottom")
 ggsave(plot = nov_neck,
        filename = paste0("mo_nov", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 dec_neck <- ggarrange(Dec_plot, observed_Dec_plot,
                        label.x = "year",
@@ -320,9 +266,9 @@ dec_neck <- ggarrange(Dec_plot, observed_Dec_plot,
                        legend = "bottom")
 ggsave(plot = dec_neck,
        filename = paste0("mo_dec", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 jan_neck <- ggarrange(Jan_plot, observed_Jan_plot,
                        label.x = "year",
@@ -333,9 +279,9 @@ jan_neck <- ggarrange(Jan_plot, observed_Jan_plot,
                        legend = "bottom")
 ggsave(plot = jan_neck,
        filename = paste0("mo_jan", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 feb_neck <- ggarrange(Feb_plot, observed_Feb_plot,
                        label.x = "year",
@@ -346,9 +292,9 @@ feb_neck <- ggarrange(Feb_plot, observed_Feb_plot,
                        legend = "bottom")
 ggsave(plot = feb_neck,
        filename = paste0("mo_feb", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
 
 mar_neck <- ggarrange(Mar_plot, observed_Mar_plot,
                        label.x = "year",
@@ -359,9 +305,9 @@ mar_neck <- ggarrange(Mar_plot, observed_Mar_plot,
                        legend = "bottom")
 ggsave(plot = mar_neck,
        filename = paste0("mo_mar", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = 10, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 10, width = 8, units = "in", dpi=400)
                       
 ####################################################################
 #####                                                          #####
@@ -369,6 +315,7 @@ ggsave(plot = mar_neck,
 #####                                                          #####
 ####################################################################
 
+input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 # iof = interval of interest
 iof = c(c(-Inf, -2), c(-2, 4), 
         c(4, 6), c(6, 8), 
@@ -384,44 +331,34 @@ month_names = c("Sept", "Oct", "Nov", "Dec")
 rm(data)
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_modeled.rds")))
 
-# data$city = 0L
-# data$city[data$location == "48.40625_-119.53125"] = "Omak"
-# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-# data$city[data$location == "46.28125_-119.34375"] = "Richland"
-# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data <- left_join(x=data, y=limited_locations, by="location")
-data$city <- factor(data$city, levels = city_names)
+data <- data %>% 
+          mutate(temp_cat = cut(Temp, breaks = iof_breaks)) %>% 
+          group_by(Chill_season, Year, model, Month, scenario, temp_cat, CountyGroup) %>% 
+          summarise(no_hours = n())
 
-data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_Dec_plot <- plot_intervals(data, month_name="Sept. through Dec.")
 ggsave(plot = sep_Dec_plot,
        filename = "sep_thru_Dec_modeled.png",
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 rm(data)
 ############
 ############ observed
 ############
 
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_dec_observed.rds")))
-# data$city = 0L
-# data$city[data$location == "48.40625_-119.53125"] = "Omak"
-# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-# data$city[data$location == "46.28125_-119.34375"] = "Richland"
-# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data <- left_join(x=data, y=limited_locations, by="location")
-data$city <- factor(data$city, levels = city_names)
+data <- data %>% 
+          mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
+          group_by(Chill_season, Year, model, Month, scenario, temp_cat, CountyGroup) %>% 
+          summarise(no_hours = n())
 
-data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_Dec_plot <- plot_intervals(data, month_name="Sept. through Dec.")
 ggsave(plot = sep_Dec_plot,
        filename = "sep_thru_Dec_observed.png",
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 rm(data)
 ####################################################################
 #####                                                          #####
@@ -429,7 +366,7 @@ rm(data)
 #####                                                          #####
 ####################################################################
 
-
+input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_intervals_data/"
 # iof = interval of interest
 iof = c(c(-Inf, -2), c(-2, 4), 
         c(4, 6), c(6, 8), 
@@ -443,43 +380,32 @@ month_names = c("Sept", "Oct", "Nov", "Dec", "Jan")
 ############ modeled
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_modeled.rds")))
-# data$city = 0L
-# data$city[data$location == "48.40625_-119.53125"] = "Omak"
-# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-# data$city[data$location == "46.28125_-119.34375"] = "Richland"
-# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data <- left_join(x=data, y=limited_locations, by="location")
-data$city <- factor(data$city, levels = city_names)
+data <- data %>% 
+          mutate(temp_cat=cut(Temp, breaks = iof_breaks)) %>% 
+          group_by(Chill_season, Year, model, Month, scenario, temp_cat, CountyGroup) %>% 
+          summarise(no_hours = n())
 
-data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_jan_plot <- plot_intervals(data, month_name = "Sept. through Jan.")
-
 ggsave(plot = sep_jan_plot,
        filename = paste0("sep_thru_jan_modeled", ".png"),
-       path = plot_dir,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 rm(data)
 ############
 ############ observed
 ############
 data <- data.table(readRDS(paste0(input_dir, "sept_thru_jan_observed.rds")))
-# data$city = 0L
-# data$city[data$location == "48.40625_-119.53125"] = "Omak"
-# data$city[data$location == "47.40625_-120.34375"] = "Wenatchee"
-# data$city[data$location == "46.28125_-119.34375"] = "Richland"
-# data$city[data$location == "45.53125_-123.15625"] = "Hilsboro"
-# data$city[data$location == "44.09375_-123.34375"] = "Elmira"
-data <- left_join(x=data, y=limited_locations, by="location")
-data$city <- factor(data$city, levels = city_names)
+data <- data %>% 
+        mutate(temp_cat=cut(Temp, breaks=iof_breaks)) %>% 
+        group_by(Chill_season, Year, model, Month, scenario, temp_cat, CountyGroup) %>% 
+        summarise(no_hours = n())
 
-data <- table(cut(data$Temp, breaks = iof_breaks))
 sep_jan_plot <- plot_intervals(data, month_name="Sept. through Jan.")
 ggsave(plot = sep_jan_plot,
        filename = paste0("sep_thru_jan_observed.png"),
-       path = ,
+       path = "/Users/hn/Desktop/",
        device = "png",
-       height = small_pic_height, width = small_pic_width, units = "in", dpi=quality, limitsize = FALSE)
+       height = 5, width = 8, units = "in", dpi=400)
 
 
