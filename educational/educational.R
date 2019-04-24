@@ -67,6 +67,16 @@ colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 table = data.frame()
 data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
 data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
+
+DT = data.table(
+  row_count = c("b","b","b","a","a","c"),
+  a = 1:6,
+  b = 7:12,
+  c = 13:18
+)
+DT = data.table(row_count = 1:130)
+
+start <- data.table(start=rep("start", nrow(something)))
 ############################################################
 #################### Install packages on aeolus
 

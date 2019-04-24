@@ -137,10 +137,10 @@ for (st in starts){
   apr_data = information[[4]]
   rm(information, mdata)
 
-  jan_result = count_years_threshs_met_all_locations_for_safe_plot(dataT = jan_data, due="Jan")
-  feb_result = count_years_threshs_met_all_locations_for_safe_plot(dataT = feb_data, due="Feb")
-  mar_result = count_years_threshs_met_all_locations_for_safe_plot(dataT = mar_data, due="Mar")
-  apr_result = count_years_threshs_met_all_locations_for_safe_plot(dataT = apr_data, due="Apr")
+  jan_result = count_years_threshs_met_all_locations(dataT = jan_data, due="Jan")
+  feb_result = count_years_threshs_met_all_locations(dataT = feb_data, due="Feb")
+  mar_result = count_years_threshs_met_all_locations(dataT = mar_data, due="Mar")
+  apr_result = count_years_threshs_met_all_locations(dataT = apr_data, due="Apr")
   rm(jan_data, feb_data, mar_data)
 
   warm_cold <- subset(LocationGroups_NoMontana, select=c(location, warm_cold))
