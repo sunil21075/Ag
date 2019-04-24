@@ -338,15 +338,6 @@ organize_non_over_time_period_two_hist <- function(data){
   return(data)
 }
 
-pick_single_cities <- function(dt, city_info){
-  city_info$location <- paste0(city_info$lat, "_", city_info$long)
-  dt$location <- paste0(dt$lat, "_", dt$long)
-
-  dt <- dt %>% filter(location %in% city_info$location) %>%
-        data.table()
-  return(dt)
-}
-
 
 
 

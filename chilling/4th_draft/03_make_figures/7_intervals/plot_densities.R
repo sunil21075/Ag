@@ -171,7 +171,7 @@ big_plot_85 <- ggarrange(sept_thru_dec_modeled_density_rcp85,
 ggsave(filename = "sept_thru_dec_and_Jan_modeled_big_85.png", 
        path = plot_dir, 
        plot = big_plot_85,
-       width = small_pic_width, height=small_pic_height, units = "in",
+       width = small_pic_width, height=12, units = "in",
        dpi=quality, 
        device = "png",
        limitsize = FALSE)
