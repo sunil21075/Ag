@@ -76,7 +76,7 @@ for (model_type in model_types){
     output_name = paste0(model_type, "_", time_period_type, "_", "medianDoY_thresh.png")
     plot_path = data_dir
     plot_path = "/Users/hn/Desktop/Desktop/"
-    ggsave(filename = output_name, plot = plot, device="png", path=plot_path, width=5, height=5, unit="in")
+    ggsave(filename=output_name, plot=plot, device="png", path=plot_path, width=5, height=5, unit="in")
 
   }
 }
