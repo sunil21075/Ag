@@ -2,10 +2,11 @@ rm(list=ls())
 library(data.table)
 library(dplyr)
 
-setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_interval/")
+setwd("/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/7_temp_int_limit_locs/")
 months = c("Sept.rds", "Oct.rds", "Nov.rds", "Dec.rds", "Jan.rds",
            "sept_thru_dec_modeled.rds", "sept_thru_jan_modeled.rds")
 
+months <- "Dec.rds"
 iof = list(c(-Inf, -2), 
            c(-2, 4),
            c(4, 6),
@@ -21,6 +22,10 @@ iof_char = c("(-Inf, -2]",
              "(13, 16]",
              "(16, Inf]")
 iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
+
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+limited_locations <- data.table(read.csv(paste0(param_dir, "limited_locations.csv"), header=T, as.is=T))
+city_names <- limited_locations$city
 
 for (month in months){
 
