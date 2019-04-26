@@ -652,7 +652,7 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
     # write.table(CodMothParams, paste0("/data/hydro/users/Hossein/", "test_param", "_5", ".txt"))
     masterdata$PercLarva[masterdata$Cum_dd_F > CodMothParams[i,5] & 
                         masterdata$Cum_dd_F <= CodMothParams[i,6]] <- masterdata[masterdata$Cum_dd_F > CodMothParams[i,5] & 
-                                                                               masterdata$Cum_dd_F <= CodMothParams[i,6], 
+                                                                                 masterdata$Cum_dd_F <= CodMothParams[i,6], 
                                                                                column_no]
   }  
   for (i in 9:12) {
@@ -695,7 +695,7 @@ CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_sh
   for (i in 1:stage_gen_toiterate) {
     relnum <- dweibull(metdata_data.table$Cum_dd_F, 
                        shape=CodMothParams[i, 3], 
-                       scale=CodMothParams[i,4] * (1+scale_shift)) * 10000
+                       scale=CodMothParams[i, 4] * (1+scale_shift)) * 10000
     relnum <- data.frame(relnum)
     colnames(relnum) <- paste(CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, relnum)
@@ -754,15 +754,15 @@ add_dd_cumdd <- function(metdata_data.table, lower, upper) {
   tempdata = data.frame(tmin, tmax, diff, tsum, aveminlt, alpha1, avetemp, theta1, theta2)
   tempdata$heat = 0
 
-  #case 1 tmin >= upper threshold
+  # case 1 tmin >= upper threshold
   tempdata$heat[tempdata$tmin >= upper] = upper - lower
   
-  #case 2 is handled by the default where heat is set to 0 initially it is when tmax<lower threshold
+  # case 2 is handled by the default where heat is set to 0 initially it is when tmax<lower threshold
   
-  #case 3 tmin>= lower threshold and the max <= upper threshold
+  # case 3 tmin>= lower threshold and the max <= upper threshold
   tempdata$heat[tempdata$tmin >= lower & tempdata$tmax <= upper] = tempdata$aveminlt[tempdata$tmin >= lower & tempdata$tmax <= upper]
   
-  #case 4 tmin<lower threshold and tmax>lower and tmax<=upper threshold
+  # case 4 tmin<lower threshold and tmax>lower and tmax<=upper threshold
   tempdata$heat[tempdata$tmin < lower & 
                 tempdata$tmax > lower & tempdata$tmax <= upper] = (((tempdata$aveminlt[tempdata$tmin < lower & 
                                                                     tempdata$tmax > lower & 
@@ -1647,13 +1647,6 @@ constructMap <- function(mapLayerData, layerlist, palColumn, legendVals, title, 
 # addTiles() %>% addProviderTiles(providers$Esri.NatGeoWorldMap, group = "Nat Geo") %>%
 # addTiles() %>% addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite") %>%
 # addProviderTiles(providers$CartoDB.Positron) %>% 
-
-
-
-
-
-
-
 
 
 make_non_overlapping <- function(overlap_dt){

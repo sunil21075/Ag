@@ -820,6 +820,13 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     # loc_grp = data.table(read.csv(paste0(param_dir, location_group_name)))
     # loc_grp$location = paste0(loc_grp$latitude, "_", loc_grp$longitude)
     # loc_grp = within(loc_grp, remove(latitude, longitude))
+    #
+    # 
+    # As of April 4th, the data in /data/hydro/users/Hossein/codling_moth_new/local/processed are
+    # already unique and non overlapping. The overlapping data are in 
+    # /data/hydro/users/Hossein/codling_moth_new/local/processed/overlaping/
+    # So, ... This fucking function would not work on those
+    # because time periods/ClimateGroup is changed to 2025-2050. 
     
     ########## RCP45 - 2040
 
@@ -827,8 +834,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data = data %>% filter(ClimateGroup == "2040's")
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD, 
+    data <- within(data, remove(CountyGroup, DailyDD,
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
@@ -836,7 +842,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
                                 PercLarvaGen3, PercLarvaGen4, PercPupa,
                                 SumAdult, SumEgg, SumPupa, CumDDinC
                                 ))
-
+    print (sort(colnames(data)))
     data$location = paste0(data$latitude, "_", data$longitude)
     # data <- data %>% filter(location %in% loc_grp$location)
     data$latitude = as.numeric(data$latitude)
@@ -852,8 +858,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(ClimateGroup == "2060's")
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD, 
+    data <- within(data, remove(CountyGroup, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
@@ -876,8 +881,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD, 
+    data <- within(data, remove(CountyGroup, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
@@ -904,8 +908,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data = data %>% filter(ClimateGroup == "2040's")
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD, 
+    data <- within(data, remove(CountyGroup, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
@@ -930,8 +933,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     data <- data %>% filter(ClimateGroup == "2060's")
     data <- data %>% filter(year >= 2056 & year <= 2065)
 
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD,
+    data <- within(data, remove(CountyGroup, DailyDD,
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,
@@ -954,8 +956,7 @@ make_unique <- function(input_dir, param_dir, location_group_name){
     file_name = paste0(input_dir, file_n)
     data <- data.table(readRDS(file_name))
     data <- data %>% filter(ClimateGroup == "2080's")
-    data <- within(data, remove(CountyGroup, 
-                                tmax, tmin, DailyDD, 
+    data <- within(data, remove(CountyGroup, DailyDD, 
                                 AdultGen1, AdultGen2, AdultGen3, AdultGen4,
                                 PercAdult, PercAdultGen1, PercAdultGen2,
                                 PercAdultGen3, PercAdultGen4, PercEgg,

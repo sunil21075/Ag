@@ -49,7 +49,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/d_modeled.R dynamic non_overlap chill_sea
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/02_d_modeled.R dynamic non_overlap chill_sea
 
 echo
 echo "----- DONE -----"

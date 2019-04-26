@@ -26,7 +26,7 @@ module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 # module load R
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/hourly_limited_locations/7_temp_int_table_actual_count_no_hard_code.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/hourly_limited_locations/03_7_temp_int_table_actual_count_no_hard_code.R
 
 echo
 echo "----- DONE -----"
