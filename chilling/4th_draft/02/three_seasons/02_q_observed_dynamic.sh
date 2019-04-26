@@ -39,7 +39,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/d_observed.R dynamic chill_sea
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/02/three_seasons/02_d_observed.R dynamic chill_sea
 
 echo
 echo "----- DONE -----"

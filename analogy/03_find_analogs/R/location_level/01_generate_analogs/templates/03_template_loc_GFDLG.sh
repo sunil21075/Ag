@@ -11,8 +11,8 @@
 
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/fine/location_level/precip_type_gen_3_type_GFDLG_emission_type_int_file.e
-#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/fine/location_level/precip_type_gen_3_type_GFDLG_emission_type_int_file.o
+#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_GFDLG_emission_type_int_file.e
+#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_GFDLG_emission_type_int_file.o
 #PBS -m abe
 
 echo

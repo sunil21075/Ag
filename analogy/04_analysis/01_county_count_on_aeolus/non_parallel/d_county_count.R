@@ -18,6 +18,7 @@ print("does this look right?")
 getwd()
 start_time <- Sys.time()
 
+
 ######################################################################
 ##                                                                  ##
 ##                     Terminal arguments                           ##
@@ -25,10 +26,13 @@ start_time <- Sys.time()
 ######################################################################
 
 args = commandArgs(trailingOnly=TRUE)
-carbon_type= args[1] # RCP 45 or 85
-precip_type= args[2] # include precip or no_precip
-sigma_bd= args[3]    # sigma cut off for sigma dissimilarity 1 or 2 or 3 or what?
-all_model_names = args[4]
+precip_type = args[1]   # w_precip # no_recip
+gen_3 = args[2]         # w_gen3 # no_gen3
+emission_type = args[3] # rcp45 or rcp85
+time_type = args[4]     # 2026_2050 or 2051_2075 or 2076_2095
+
+sigma_bd = 2
+n_nghs = 47841
 ######################################################################
 ##                                                                  ##
 ##                     set up directories                           ##
@@ -36,10 +40,10 @@ all_model_names = args[4]
 ######################################################################
 
 main_in <- file.path("/data/hydro/users/Hossein/analog/03_analogs/")
-dt_dir <- file.path(main_in, precip_type, "500", carbon_type)
+dt_dir <- file.path(main_in, gen_3, precip_type, n_nghs, emission_type)
 
 main_out <- file.path("/data/hydro/users/Hossein/analog/04_analysis/")
-out_dir <- file.path(main_out, precip_type, "500/")
+out_dir <- file.path(main_out, gen_3, precip_type, n_nghs, "/")
 
 if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
 print (out_dir)
@@ -51,21 +55,22 @@ param_dir <- "/home/hnoorazar/analog_codes/parameters/"
 ##                          read files                              ##
 ##                                                                  ##
 ######################################################################
-# all_model_names <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
+all_model_names <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
 
 all_close_analogs <- data.table()
 all_close_analogs_unique <- data.table()
 
 for (model_type in all_model_names){
-  NNs_name <- paste0(dt_dir, "/NN_loc_year_tb_", model_type, ".rds")
-  dist_name <- paste0(dt_dir, "/NN_dist_tb_", model_type, ".rds")
-  sigma_name <- paste0(dt_dir, "/NN_sigma_tb_", model_type, ".rds")
+  NNs_name <- paste0(dt_dir, "/NN_loc_year_tb_", model_type, "_", time_type, ".rds")
+  dist_name <- paste0(dt_dir, "/NN_dist_tb_", model_type, "_", time_type, ".rds")
+  sigma_name <- paste0(dt_dir, "/NN_sigma_tb_", model_type, "_", time_type, ".rds")
 
   NNs <- data.table(readRDS(NNs_name))
   dists <- data.table(readRDS(dist_name))
   sigmas <- data.table(readRDS(sigma_name))
 
-  county_list <- data.table(read.table(paste0(param_dir, "/us_fips_st_county_lat_long.csv"), header=T, sep=","))
+  county_list <- data.table(read.csv(paste0(param_dir, "/all_us_1300_county_fips_locations.csv"), 
+                            header=T, sep=",", as.is=T))
 
   a_model_output <- count_NNs_per_counties_all_locs(NNs=NNs, dists=dists, sigmas=sigmas, 
                                                     county_list=county_list, 
@@ -79,15 +84,18 @@ for (model_type in all_model_names){
 
   all_close_analogs <- rbind(all_close_analogs, close_analogs)
   all_close_analogs_unique <- rbind(all_close_analogs_unique, close_analogs_unique)
-
-  saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", model_type, "_", carbon_type, ".rds"))
-  saveRDS(all_close_analogs_unique, paste0(out_dir, "all_close_analogs_unique_", model_type, "_", carbon_type, ".rds"))
-
 }
 
+all_close_analogs$query_loc <- as.character(all_close_analogs$query_loc)
+all_close_analogs$analog <- as.character(all_close_analogs$analog)
 
+all_close_analogs_unique$query_loc <- as.character(all_close_analogs_unique$query_loc)
 
+saveRDS(all_close_analogs, paste0(out_dir, "all_close_analogs_", 
+                                  time_type, "_", emission_type, ".rds"))
 
+saveRDS(all_close_analogs_unique, paste0(out_dir, "all_close_analogs_unique_", 
+                                         time_type, "_", emission_type, ".rds"))
 
 
 
