@@ -41,7 +41,7 @@ main_in <- file.path("/data/hydro/users/Hossein/analog/03_analogs/location_level
 dt_dir <- file.path(main_in, precip_type, n_nghs, carbon_type, "merged/")
 
 main_out <- file.path("/data/hydro/users/Hossein/analog/04_analysis/")
-out_dir <- file.path(main_out, precip_type, n_nghs, "/")
+out_dir <- file.path(main_out, precip_type, n_nghs, "limited_locations", "/")
 
 if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
 print (out_dir)
@@ -58,8 +58,8 @@ param_dir <- "/home/hnoorazar/analog_codes/parameters/"
 all_close_analogs <- data.table()
 all_close_analogs_unique <- data.table()
 
-time_periods <- c("_2026_2050", "_2051_2075", "_2076_2095")
-
+time_periods <- c("_2026_2050", "_2051_2075", "_2076_2095") # 
+st_time <- Sys.time()
 for (model_type in all_model_names){
   for (time in time_periods){
     print (paste0(time, " - ", model_type))
@@ -71,13 +71,25 @@ for (model_type in all_model_names){
     dists <- data.table(readRDS(dist_name))
     sigmas <- data.table(readRDS(sigma_name))
 
+    #
+    param_dir_loc <- "/home/hnoorazar/chilling_codes/parameters/"
+    limited_locations <- data.table(read.csv(paste0(param_dir_loc, "limited_locations.csv"), as.is=T, header=T))
+    limited_locations$location <- paste0(limited_locations$lat, "_", limited_locations$long)
+    
+
+    DT = data.table( city = "Richland_new", lat = "46.21875", long ="-119.46875", location="46.21875_-119.46875")
+    limited_locations <- rbind(limited_locations, DT)
+
+    NNs <- NNs %>% filter(location %in% limited_locations$location)
+    dists <- dists %>% filter(location %in% limited_locations$location)
+    sigmas <- sigmas %>% filter(location %in% limited_locations$location)
+
     print (dim(NNs))
     print (dim(dists))
     print (dim(sigmas))
     
     county_list <- data.table(read.csv(paste0(param_dir, "/Min_fips_st_county_location.csv"), 
-                                       header=T, sep=",", as.is=T)
-                              )
+                                       header=T, sep=",", as.is=T))
     print ("line 76")
     a_model_output <- count_NNs_per_counties_all_locs(NNs=NNs, dists=dists, sigmas=sigmas, 
                                                       county_list=county_list, 
@@ -99,8 +111,7 @@ for (model_type in all_model_names){
 }
 
 
-
-
+print(Sys.time() - st_time)
 
 
 

@@ -4,7 +4,7 @@
 ## batch job.
 #PBS -V
 
-#PBS -N precip_45_all_model_names
+#PBS -N precip_85_all_model_names
 
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=10gb
@@ -12,8 +12,8 @@
 
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/analog_codes/04_analysis/parallel/error/E_precip_45_all_model_names
-#PBS -o /home/hnoorazar/analog_codes/04_analysis/parallel/error/O_precip_45_all_model_names
+#PBS -e /home/hnoorazar/analog_codes/04_analysis/parallel/limited_locations/error/E_precip_85_all_model_names
+#PBS -o /home/hnoorazar/analog_codes/04_analysis/parallel/limited_locations/error/O_precip_85_all_model_names
 
 #PBS -m abe
 
@@ -21,7 +21,7 @@ echo
 echo We are in the $PWD directory
 echo
 
-cd /home/hnoorazar/analog_codes/04_analysis/parallel
+cd /home/hnoorazar/analog_codes/04_analysis/parallel/limited_locations
 
 echo
 echo We are now in $PWD.
@@ -39,7 +39,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla ./d_county_count_parallel.R rcp45 precip 2 all_model_names
+Rscript --vanilla ./d_county_count_parallel_limited.R rcp85 w_precip 2 all_model_names
 
 echo
 echo "----- DONE -----"

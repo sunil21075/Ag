@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/hnoorazar/analog_codes/04_analysis/parallel/qsubs
+cd /home/hnoorazar/analog_codes/04_analysis/parallel/limited_locations/qsubs
 
 for runname in bcc-csm1-1-m BNU-ESM CanESM2 CNRM-CM5 GFDL-ESM2G GFDL-ESM2M
 do

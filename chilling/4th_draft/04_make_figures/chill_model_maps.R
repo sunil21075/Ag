@@ -297,10 +297,8 @@ accum_feb45_max <- chill_max
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
                    "feb45", sep="_"),
-         value = {
-          model_map(model = h, scenario_name = "rcp45", month_col = "median_F1",
-                    min = accum_feb45_min, max = accum_feb45_max)
-          }
+         value = { model_map(model = h, scenario_name = "rcp45", month_col = "median_F1",
+                             min = accum_feb45_min, max = accum_feb45_max)}
           )
 }
 observed_map_feb45 <- observed_hist_map(min = accum_feb45_min, max = accum_feb45_max,
