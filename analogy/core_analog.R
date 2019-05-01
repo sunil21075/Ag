@@ -23,7 +23,138 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+no_locs_in_a_county_and_our_f_model <- function(fips_dt, target_fip){
+  # input: fips_dt: a data table containing county of a given location
+  #                 which includes columns: fips, location, lat, long
+  #                 We have to use a file that on;y contains the locations
+  #                 used in our data.
+  #        target_fips: a given county fips
+  # output: number of locations/grids in a given county
+  counts <- fips_dt %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
+  return(counts[1, 1])
+}
 
+
+no_locs_in_a_county_and_our_hist_model <- function(fips_dt, target_fip){
+  # input: fips_dt: a data table containing county of a given location
+  #                 which includes columns: fips, location, lat, long
+  #                 We have to use a file that on;y contains the locations
+  #                 used in our data.
+  #        target_fips: a given county fips
+  # output: number of locations/grids in a given county
+  counts <- fips_dt %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
+  return(counts[1, 1])
+}
+
+no_locs_in_a_county <- function(Min_fips, target_fip){
+  # input: Min_fips: a data table containing county of a given location
+  #                 which includes columns: fips, location, lat, long
+  #                 Lets just use Min's file. to be consistent.
+  #        target_fips: a given county fips
+  # output: number of locations/grids in a given county
+  counts <- Min_fips %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
+  return(counts[1, 1])
+}
+
+
+count_novel_quick <- function(NNs, sigmas, county_list, novel_bd=4){
+  # NNs: data table of all nearest neighbors of all locations for all years in a given model
+  # county_list: data table of counties' fips and locations (lat_long)
+  # sigma_bd:    cut off point of analogs, real number
+
+  # In this function  we attemp to avoid for-loops
+  # NNs (sigmas) will be data tables which contain
+  # all nearest neighbors of all locations for all years in a given model.
+  # So, it will have 286 locations, each for 20 (or whatever) years in future
+  # We replace the locations whose dissimilarities with a given query is more than
+  # 2-simga with NA in the NNs data table. 
+  # (for this matter the historical years in NNs are not imoportant, hence will be droped.)
+  #
+
+  # Drop the historical year columns
+  NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
+  NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
+  # NNs <- data.table(NNs)
+
+  # convert non analog locations to NA. For the following command to
+  # work, data has to be in data frame class.
+  # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
+
+  # Make a copy, we shall need original data later
+  # NNs_cp <- NNs; sigmas_cp <- sigmas; dists_cp <- dists
+  
+  # set the nearest neighbors whose dissimilarity is less than novel_bd to NA
+  # NNs <- as.data.frame(NNs); 
+  sigmas <- as.data.frame(sigmas)
+  NNs[, -c(1:2)][sigmas[, -c(1:2)] < novel_bd] <- NA
+
+  # replace the fips for coordinates of the nearest neighbors
+  NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$location)])
+  # NNs <- as.data.frame(NNs)
+  NNs <- within(NNs, remove(year))
+
+  novel_counts <- NNs %>% 
+                   gather("key", "NNs", 2:ncol(.)) %>% 
+                   group_by(location, NNs) %>% 
+                   summarize(novel_freq = n()) %>% 
+                   arrange(desc(location), desc(NNs)) %>%
+                   data.table()
+
+ setnames(novel_counts, new=c("query_county", "novel_NNs_county"), old=c("location", "NNs"))
+ novel_counts$novel_NNs_county[is.na(novel_counts$novel_NNs_county)] <- "not_novel"
+
+ return(novel_counts)
+}
+
+count_analogs_counties_quick <- function(NNs, sigmas, county_list, sigma_bd=2){
+  # NNs: data table of all nearest neighbors of all locations for all years in a given model
+  # county_list: data table of counties' fips and locations (lat_long)
+  # sigma_bd:    cut off point of analogs, real number
+
+  # In this function  we attemp to avoid for-loops
+  # NNs (sigmas and dists) will be data tables which contain
+  # all nearest neighbors of all locations for all years in a given model.
+  # So, it will have 286 locations, each for 20 (or whatever) years in future
+  # We replace the locations whose dissimilarities with a given query is more than
+  # 2-simga with NA in the NNs data table. 
+  # (for this matter the historical years in NNs are not imoportant, hence will be droped.)
+  #
+
+  # Drop the historical year columns
+  NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
+  NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
+  
+  
+  # convert non analog locations to NA. For the following command to
+  # work, data has to be in data frame class.
+  # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
+
+  # Make a copy, we shall need original data later
+  # NNs_cp <- NNs; sigmas_cp <- sigmas; dists_cp <- dists
+  
+  # set the nearest neighbors whose dissimilarity is more than sigma_bd to NA
+  # NNs <- as.data.frame(NNs); 
+  
+  sigmas <- as.data.frame(sigmas); # dists <- as.data.frame(dists)
+  NNs[, -c(1:2)][sigmas[, -c(1:2)] > sigma_bd] <- NA
+  
+  # replace the fips for coordinates of the nearest neighbors
+  NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$location)])
+  # NNs <- as.data.frame(NNs)
+  NNs <- within(NNs, remove(year))
+  
+  analog_counts <- NNs %>% 
+                   gather("key", "NNs", 2:ncol(.)) %>% 
+                   group_by(location, NNs) %>% 
+                   summarize(analog_freq = n()) %>% 
+                   arrange(desc(location), desc(NNs)) %>%
+                   data.table()
+  
+  setnames(analog_counts, new=c("query_county", "analog_NNs_county"), old=c("location", "NNs"))
+  analog_counts$analog_NNs_county[is.na(analog_counts$analog_NNs_county)] <- "no_analog"
+
+ return(analog_counts)
+}
 
 count_NNs_per_counties_all_locs <- function(NNs, dists, sigmas, county_list, sigma_bd=2, novel_thresh=4){
   # For a given location, i.e. a vector,
@@ -112,9 +243,20 @@ count_NNs_1_per_counties_1_loc <- function(NNs_1, dists_1, sigmas_1, county_list
   # 
   # output: data frame of county counts
   #
+
   county_list <- unique(county_list) # sanity check
   year_of_int <- NNs_1$year
   location_of_int <- NNs_1$location
+
+  if (length(year_of_int) > 1){
+    print ("You need to check the input of the function --count_NNs_1_per_counties_1_loc--")
+    stop ("There are more than 1 year in this data set.")
+  }
+
+  if (length(location_of_int) > 1){
+    print ("You need to check the input of the function --count_NNs_1_per_counties_1_loc--")
+    stop ("There are more than 1 location in this data set.")
+  }
   
   # lat_long_of_int <- c(unlist(strsplit(location_of_int, "_"))[1], 
   #                      unlist(strsplit(location_of_int, "_"))[2]) %>% 
@@ -626,10 +768,10 @@ generate_mDoY_FF <- function(dt, meann = TRUE){
   mDoY_FF <- clean_4_FF(dt)
   # mDoY_FF <- within(mDoY_FF, remove(ClimateScenario))
   if (meann ==TRUE) {
-  	mDoY_FF = mDoY_FF[, .(medianDoY = as.integer(median(emergence))),
+      mDoY_FF = mDoY_FF[, .(medianDoY = as.integer(median(emergence))),
                           by = c("year", "location")]
    } else {
-   	mDoY_FF = mDoY_FF[, .(medianDoY = as.integer(median(emergence))),
+       mDoY_FF = mDoY_FF[, .(medianDoY = as.integer(median(emergence))),
                         by = c("year", "location", "ClimateScenario")]
   }
   return(mDoY_FF)
@@ -725,7 +867,7 @@ diap_map1_prep_4_analog_Rel <- function(input_dir, file_name, param_dir,  time_t
                                "escapeDiap"))
 
   sub = sub[, .(RelLarvaPop = mean(SumLarva), 
-  	            RelDiap = mean(enterDiap), 
+                  RelDiap = mean(enterDiap), 
                 RelNonDiap = mean(escapeDiap), 
                 CumulativeDDF = mean(CumDDinF)), 
              by = c("ClimateScenario",

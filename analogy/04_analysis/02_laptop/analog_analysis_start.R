@@ -146,7 +146,7 @@ for (time in time_periods){
   # local_county_names <- sapply(local_county_names, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
   # local_county_names = paste0(tolower(x[2, ]), "_")
   # plot_names <- do.call(paste, expand.grid(model_namess, local_county_names, sep='_', stringsAsFactors=FALSE))
-  all_map <- ggarrange(plotlist = list(bcc_csm1_1_m_canyon_ , BNU_ESM_canyon_, CanESM2_canyon_, CNRM_CM5_canyon_, GFDL_ESM2G_canyon_, GFDL_ESM2M_canyon_,
+ all_map <- ggarrange(plotlist = list(bcc_csm1_1_m_canyon_ , BNU_ESM_canyon_, CanESM2_canyon_, CNRM_CM5_canyon_, GFDL_ESM2G_canyon_, GFDL_ESM2M_canyon_,
                                       bcc_csm1_1_m_hood_river_,  BNU_ESM_hood_river_,  CanESM2_hood_river_, CNRM_CM5_hood_river_, GFDL_ESM2G_hood_river_, GFDL_ESM2M_hood_river_, 
                                       bcc_csm1_1_m_klickitat_, BNU_ESM_klickitat_, CanESM2_klickitat_, CNRM_CM5_klickitat_,  GFDL_ESM2G_klickitat_, GFDL_ESM2M_klickitat_, 
                                       bcc_csm1_1_m_gilliam_, BNU_ESM_gilliam_, CanESM2_gilliam_, CNRM_CM5_gilliam_, GFDL_ESM2G_gilliam_, GFDL_ESM2M_gilliam_, 

@@ -63,7 +63,7 @@ myNewDF <- t(df.melted[, 2])
 colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 
 
-# initialize data frame data table dataframe datatable
+# initialize data frame data table dataframe data table
 table = data.frame()
 data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
 data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
@@ -153,3 +153,128 @@ local_county_names <- unique(local_cnty_fips$st_county)
 local_county_names <- sapply(local_county_names, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
 local_county_names = paste0(tolower(x[2, ]), "_")
 plot_names <- do.call(paste, expand.grid(model_namess, local_county_names, sep='_', stringsAsFactors=FALSE))
+
+
+###### mask
+
+
+A_sigma
+year          location    sigma_NN_1 sigma_NN_2 sigma_NN_3
+2076 43.59375_-116.78125  1.4681173   1.664289   1.735974
+2077 43.59375_-116.78125  1.3798515   1.550524   1.551269
+2078 43.59375_-116.78125  0.7934367   1.064248   1.177981
+2079 43.59375_-116.78125  1.8235574   1.991018   2.288402
+2080 43.59375_-116.78125  2.5560329   2.578093   2.589334
+
+
+A_NN
+year            location       location_NN_1      location_NN_2      location_NN_3
+2076 43.59375_-116.78125  41.15625_-90.65625 41.21875_-90.65625 41.15625_-90.65625
+2077 43.59375_-116.78125  43.34375_-78.15625 43.34375_-78.21875 43.28125_-78.15625
+2078 43.59375_-116.78125  41.34375_-90.78125 41.21875_-90.65625 41.53125_-73.96875
+2079 43.59375_-116.78125 43.53125_-116.78125 41.34375_-90.78125 41.71875_-74.15625
+2080 43.59375_-116.78125  41.34375_-90.78125 41.96875_-86.21875 41.21875_-90.65625
+
+
+output
+year            location       location_NN_1      location_NN_2      location_NN_3
+2076 43.59375_-116.78125  41.15625_-90.65625 41.21875_-90.65625 41.15625_-90.65625
+2077 43.59375_-116.78125  43.34375_-78.15625 43.34375_-78.21875 43.28125_-78.15625
+2078 43.59375_-116.78125  41.34375_-90.78125 41.21875_-90.65625 41.53125_-73.96875
+2079 43.59375_-116.78125 43.53125_-116.78125 41.34375_-90.78125                 NA
+2080 43.59375_-116.78125                  NA                 NA                 NA
+
+
+nm1 <- grep("sigma", names(A_sigma), value = TRUE)
+i1 <- setDT(A_sigma)[, Reduce(`&`, lapply(.SD, <, 2)), .SDcols = nm1]
+setDT(A_NN)[i1] 
+
+A_NN A_sigma
+A_NN[, -c(1:2)][A_sigma[, -c(1:2)] >= 2] <- NA
+
+dfb[-c(1,2)][!(dfa[-c(1,2)] < 2)] <- NA
+dfb[-c(1:2)][dfa[-c(1:2)] >= 2] <- NA
+
+nm1 <- grep("sigma", names(A), value = TRUE)
+i1 <- setDT(A)[, Reduce(`&`, lapply(.SD, `<`, 2)), .SDcols = nm1]
+setDT(B)[i1] 
+
+
+nm2 <- grep("sigma", names(A))
+B[, (nm2) := Map(function(x, y) replace(x, y >= 2, NA_character_),
+        .SD, A[, nm2, with = FALSE]), .SDcols = nm2][]
+
+
+df
+year            location       location_NN_1      location_NN_2      location_NN_3
+2076 43.59375_-116.78125  41.15625_-90.65625  41.21875_-90.65625 41.15625_-90.65625
+2077 43.59375_-116.78125  43.34375_-78.15625  43.34375_-78.21875 43.28125_-78.15625
+2078 43.59375_-116.78125  41.34375_-90.78125  41.21875_-90.65625 41.53125_-73.96875
+2079 43.59375_-116.78125  43.53125_-116.78125 41.34375_-90.78125               <NA>
+2080 43.59375_-116.78125                <NA>               <NA>                <NA>
+
+
+counties
+fips   location
+36073  43.34375_-78.15625
+17161  41.34375_-90.78125
+
+output = 
+year            location       location_NN_1      location_NN_2      location_NN_3
+2076 43.59375_-116.78125               17131             so_on             so_on
+2077 43.59375_-116.78125               36073             so_on             so_on
+2078 43.59375_-116.78125               17161             so_on             so_on
+2079 43.59375_-116.78125      so_on, so_forth            so_on               <NA>
+2080 43.59375_-116.78125                <NA>               <NA>              <NA>
+
+
+dataframe[, seq(3, ncol(dataframe))] <- mapvalues(dataframe[, seq(3, ncol(dataframe))], 
+                                        from = counties$location, to = counties$fips)
+
+df_A_NN[3:5] <- lapply(df_A_NN[3:5], function(x) counties$fips[match(x, counties$location)])
+
+
+
+
+df
+location   NN_1    NN_2   NN_3
+    NYC    17      17      17
+    NYC    17      16      1
+    LA     1        1      10
+    LA     16      10      1
+
+output
+location   NNs  freq
+    NYC    17      4
+    NYC    16      1
+    NYC     1      1
+    LA      1      3
+    LA      16     1
+    LA      10     2
+
+df.groupby('location').count()
+
+############################################################
+df <- structure(list(location = c("NYC", "NYC", "LA", "LA"), 
+                     NN_1 = c(17, 17, 1, 16), 
+                     NN_2 = c(17, 16, 1, 10), 
+                     NN_3 = c(17, 1, 10, 1)),
+                     class = "data.frame", 
+                     row.names = c(NA, -4L))
+
+df %>% 
+tidyr::gather("key", "NNs", 2:ncol(.)) %>% 
+group_by(location, NNs) %>% 
+summarize(freq = n()) %>% 
+arrange(desc(location), desc(NNs))
+
+as.data.frame(table(cbind(df[1], NNs=unlist(df[-1]))))
+
+################################################################
+
+# count number of unique elements in a column after filtering
+
+a %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
+a  %>% filter(fips == target_fip) %>% distinct(location) %>% count()
+
+setDT(dt)[year == 2026, .(count = uniqueN(location))]
