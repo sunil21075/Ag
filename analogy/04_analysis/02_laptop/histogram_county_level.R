@@ -19,9 +19,9 @@ options(digits=9)
 ####
 ######################################################################
 
-produce_dt_for_hist <- function(analog_dt, novel_dt){
-  analog_dt <- analog_dt %>% filter(query_county == target_fip)
-  novel_dt <- novel_dt %>% filter(query_county == target_fip)
+produce_dt_for_hist <- function(analog_dt, novel_dt, tgt_fip){
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
 
   analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
   novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "had_analog"
@@ -32,8 +32,8 @@ produce_dt_for_hist <- function(analog_dt, novel_dt){
   novel_dt <- novel_dt[novel_dt$novel_NNs_county != "had_analog"]
   novel_cnt <- sum(novel_dt$novel_freq)
 
-  if (target_fip %in% analog_dt$analog_NNs_county){
-     self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==target_fip, 'analog_freq']$analog_freq
+  if (tgt_fip %in% analog_dt$analog_NNs_county){
+     self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
      } else {self_similarity_count <- 0
     }
 
@@ -100,7 +100,6 @@ local_cnty_fips <- data.table(read.csv(paste0(param_dir, local_cnty_fips), heade
 usa_cnty_fips <- data.table(read.csv(paste0(param_dir, usa_cnty_fips), header=T, sep=",", as.is=T))
 local_fip_cnty_name_map <- data.table(read.csv(paste0(param_dir, local_fip_cnty_name_map), 
                                                header=T, sep=",", as.is=T))
-local_fip_cnty_name_map$fips <-
 
 local_fips <- unique(local_cnty_fips$fips)
 
@@ -124,7 +123,7 @@ for (time_p in time_periods){
       analog_dat <- data.table(readRDS(paste0(data_dir, analog_file_name, ".rds")))
       novel_dat <- data.table(readRDS(paste0(data_dir, novel_file_name, ".rds")))
 
-      DT <- produce_dt_for_hist(analog_dat, novel_dat)
+      DT <- produce_dt_for_hist(analog_dat, novel_dat, target_fip)
 
       target_cnty_name <- local_fip_cnty_name_map$st_county[local_fip_cnty_name_map$fips==target_fip]
       target_cnty_name <- paste(unlist(strsplit(target_cnty_name, "_"))[2], 
