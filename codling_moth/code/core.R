@@ -988,7 +988,7 @@ generate_vertdd <- function(input_dir,
 }
 ###############################################################################################################
 ###############################################################################################################
-bloom <- function(data){
+bloom <- function(data, bloom_cut_off){
   data = subset(data, select = c("ClimateGroup", 
                                  "latitude", "longitude", 
                                  "County", "ClimateScenario", 
@@ -1000,8 +1000,8 @@ bloom <- function(data){
                     variable.name = "apple_type")
   # The following should be taken from .5 and .95
   # data = data[value >= 1.000000e+00,]
-  # data = data[value >= 0.5,]
-  data = data[value >= 0.95,]
+  data = data[value >= bloom_cut_off,]
+  
   data = data[, head(.SD, 1), by = c("ClimateGroup","latitude", "longitude","County","ClimateScenario","year", "apple_type")]
   data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup","latitude", "longitude","County", "apple_type")]
   return (data)
