@@ -125,7 +125,7 @@ for (time in time_periods){
       curr_plot <- ggplot(cnty2_one_county_one_model, aes(long, lat, group = group)) + 
                    geom_polygon(data = cnty2, fill="lightgrey") + 
                    geom_polygon(aes(fill = freq), colour = rgb(1, 1, 1, 0.2))  +
-                   geom_text(data=target_annotation, aes(long, lat, label = subregion), size=2, fontface="bold", color="red") + 
+                   # geom_text(data=target_annotation, aes(long, lat, label = subregion), size=2, fontface="bold", color="red") + 
                    coord_quickmap() + 
                    theme(legend.title = element_blank(),
                          axis.text.x = element_blank(),
@@ -136,6 +136,7 @@ for (time in time_periods){
                          axis.title.y = element_blank()
                         ) + 
                      ggtitle(paste(cnty_name, ",",gsub("-", "_", model_name), ",", emission, sep=" "))
+                     
       subplot_name <- paste0(gsub("-", "_", model_name), "_", gsub(" ", "_", cnty_name) , "_")
       assign(x = paste(subplot_name), value = {curr_plot})
       rm(target_annotation)

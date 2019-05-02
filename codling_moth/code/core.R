@@ -738,6 +738,7 @@ CodlingMothRelPopulation <- function(CodMothParams, metdata_data.table, scale_sh
 add_dd_cumdd <- function(metdata_data.table, lower, upper) {
   twopi  = 2*pi
   pihalf = pi/2
+  
   diff = metdata_data.table$tmax - metdata_data.table$tmin # column diff
   tsum = metdata_data.table$tmax + metdata_data.table$tmin # column tsum
   
@@ -943,7 +944,7 @@ generate_vertdd <- function(input_dir,
   twopi = 2 * pi
   pihlf = 0.5 * pi
 
-  data$summ = data$tmin + data$tmax
+  data$summ = data$tmin + data$tmax 
   data$diff = data$tmax - data$tmin
   data$diffsq = data$diff * data$diff
 
@@ -974,9 +975,15 @@ generate_vertdd <- function(input_dir,
   data = data[, vert_Cum_dd := cumsum(vertdd), by=list(latitude, longitude, ClimateScenario, ClimateGroup, year)]
   data$vert_Cum_dd_F = data$vert_Cum_dd * 1.8
 
-  data$cripps_pink = pnorm(data$vert_Cum_dd_F, mean = 495.51, sd = 42.58, lower.tail = TRUE)
-  data$gala = pnorm(data$vert_Cum_dd_F, mean = 528.56, sd = 41.95, lower.tail = TRUE)
-  data$red_deli = pnorm(data$vert_Cum_dd_F, mean = 522.74, sd = 42.79, lower.tail = TRUE)
+  # data$cripps_pink = pnorm(data$vert_Cum_dd_F, mean = 495.51, sd = 42.58, lower.tail = TRUE)
+  # data$gala = pnorm(data$vert_Cum_dd_F, mean = 528.56, sd = 41.95, lower.tail = TRUE)
+  # data$red_deli = pnorm(data$vert_Cum_dd_F, mean = 522.74, sd = 42.79, lower.tail = TRUE)
+  
+  # the following is updated from new word document of Vince
+  data$cripps_pink = pnorm(data$vert_Cum_dd_F, mean = 436.61, sd = 52.58, lower.tail = TRUE)
+  data$gala = pnorm(data$vert_Cum_dd_F, mean = 468.99, sd = 49.49, lower.tail = TRUE)
+  data$red_deli = pnorm(data$vert_Cum_dd_F, mean = 465.90, sd = 53.87, lower.tail = TRUE)
+
   return(data)
 }
 ###############################################################################################################
@@ -991,8 +998,10 @@ bloom <- function(data){
   data = melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
                                 "County", "ClimateScenario", "year", "month", "day", "dayofyear"), 
                     variable.name = "apple_type")
-  
-  data = data[value >= 1.000000e+00,]
+  # The following should be taken from .5 and .95
+  # data = data[value >= 1.000000e+00,]
+  # data = data[value >= 0.5,]
+  data = data[value >= 0.95,]
   data = data[, head(.SD, 1), by = c("ClimateGroup","latitude", "longitude","County","ClimateScenario","year", "apple_type")]
   data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup","latitude", "longitude","County", "apple_type")]
   return (data)
@@ -1177,7 +1186,10 @@ generate_diapause_map1 <- function(input_dir, file_name,
   
   group_vec = c("ClimateGroup", "CountyGroup", "latitude", "longitude")
 
-  sub2 = sub1[, .(RelPctDiap=(auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, RelPctNonDiap = (auc(CumulativeDDF, RelNonDiap)/auc(CumulativeDDF, RelLarvaPop))*100,AbsPctDiap=(auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100, AbsPctNonDiap=(auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by=group_vec]
+  sub2 = sub1[, .(RelPctDiap=(auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF,RelLarvaPop))*100, 
+                  RelPctNonDiap = (auc(CumulativeDDF, RelNonDiap)/auc(CumulativeDDF, RelLarvaPop))*100, 
+                  AbsPctDiap=(auc(CumulativeDDF,AbsDiap)/auc(CumulativeDDF,AbsLarvaPop))*100, 
+                  AbsPctNonDiap=(auc(CumulativeDDF,AbsNonDiap)/auc(CumulativeDDF,AbsLarvaPop))*100), by=group_vec]
   
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[5,5] & CumulativeDDF < CodMothParams[5,6], .(RelPctDiapGen1 = (auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF, RelLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)
   sub2 = merge(sub2, sub1[CumulativeDDF >= CodMothParams[6,5] & CumulativeDDF < CodMothParams[6,6], .(RelPctDiapGen2 = (auc(CumulativeDDF, RelDiap)/auc(CumulativeDDF, RelLarvaPop))*100), by = group_vec], by = group_vec, all.x = TRUE)

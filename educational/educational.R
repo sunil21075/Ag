@@ -278,3 +278,8 @@ a %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
 a  %>% filter(fips == target_fip) %>% distinct(location) %>% count()
 
 setDT(dt)[year == 2026, .(count = uniqueN(location))]
+
+
+# summary summerize summerise summarize summarise
+ddply(us_feat, ~ fips, summarise, mean=mean(age), sd=sd(age))
+dt[,list(mean=mean(age),sd=sd(age)),by=group]
