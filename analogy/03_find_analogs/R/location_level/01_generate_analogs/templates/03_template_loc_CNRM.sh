@@ -5,15 +5,15 @@
 ## Define a job name
 #PBS -N precip_type_gen_3_type_CNRM_emission_type_int_file
 
-#PBS -l nodes=1:ppn=1,walltime=2:00:00
+#PBS -l nodes=1:ppn=1,walltime=6:00:00
 #PBS -l mem=10gb
-##PBS -q hydro
+#PBS -q hydro
 ##PBS -q fast
 
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/location_level/precip_type_gen_3_type_CNRM_emission_type_int_file.e
-#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/location_level/precip_type_gen_3_type_CNRM_emission_type_int_file.o
+#PBS -e /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_CNRM_emission_type_int_file.e
+#PBS -o /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_CNRM_emission_type_int_file.o
 #PBS -m abe
 
 echo

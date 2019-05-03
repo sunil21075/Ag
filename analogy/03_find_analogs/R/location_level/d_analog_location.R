@@ -50,6 +50,8 @@ int_local_dir <- file.path(main_local_dir, emission, model_ty, "/")
 main_out <- file.path(main_dir, "03_analogs/location_level")
 
 out_dir = file.path(main_out, gen_3, precip, n_nghs, emission)
+
+print (paste0("out_dir is : ",  out_dir))
 if (dir.exists(out_dir) == F) {
   dir.create(path = out_dir, recursive = T)
 }

@@ -2,7 +2,7 @@
 
 #PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -l mem=2gb
-#PBS -q hydro
+#PBS -q fast
 
 cd /home/hnoorazar/analog_codes/03_find_analogs/location_level
 ###########
