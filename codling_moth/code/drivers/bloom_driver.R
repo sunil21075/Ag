@@ -8,16 +8,20 @@ library(doParallel)
 source_path = "/home/hnoorazar/cleaner_codes/core.R"
 source(source_path)
              
+args = commandArgs(trailingOnly=TRUE)
+version = args[1]
+bloom_cut_off = args[2]
+
+
+
 data_dir  = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 write_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 
-args = commandArgs(trailingOnly=TRUE)
-version = args[1]
 
 filename <- paste0(data_dir, "vertdd_combined_CMPOP_", version, ".rds")
 
 data <- data.table(readRDS(filename))
 
-data = bloom(data)
+data = bloom(data, bloom_cut_off)
 
-saveRDS(data, paste0(write_dir, "bloom_", version, ".rds"))
+saveRDS(data, paste0(write_dir, "bloom_", version, "_", bloom_cut_off, ".rds"))

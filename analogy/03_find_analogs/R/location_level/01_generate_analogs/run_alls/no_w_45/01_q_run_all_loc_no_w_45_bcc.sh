@@ -1,4 +1,8 @@
 #!/bin/bash
+#PBS -l nodes=1:ppn=1,walltime=2:00:00
+#PBS -l mem=2gb
+#PBS -q hydro
+
 
 # BNU Can CNRM GFDLG GFDLM
 for runname in bcc 

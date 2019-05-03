@@ -336,6 +336,7 @@ unique_fips <- unique(unique_fips)
 bcc_summary_F1 <- left_join(bcc_summary_F1, unique_fips)
 bcc_summary_F2 <- left_join(bcc_summary_F2, unique_fips)
 bcc_summary_F3 <- left_join(bcc_summary_F3, unique_fips)
+historical_summary <- left_join(historical_summary, unique_fips)
 
 new_col_names_1 <- paste0(colnames(bcc_summary_F1), "_F_1")
 new_col_names_2 <- paste0(colnames(bcc_summary_F2), "_F_2")
@@ -351,7 +352,33 @@ helper <- setNames(data.table(matrix(nrow = (nrow(historical_summary) - nrow(bcc
                                      ncol =  ncol(bcc_summary))), colnames(bcc_summary))
 
 bcc_summary <- rbind(bcc_summary, helper)
+
 historical_future_bcc_summary <- cbind(historical_summary, bcc_summary)
+
+
+new_col_order <- c("fips", "county", "medianDoY", "NumLarvaGens_Aug", 
+                    "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3", 
+                    "mean_precip", "mean_gdd",
+                    "fips_F_1", "county_F_1", 
+                    "medianDoY_F_1", 
+                    "NumLarvaGens_Aug_F_1",
+                    "mean_escaped_Gen1_F_1", "mean_escaped_Gen2_F_1", "mean_escaped_Gen3_F_1",
+                    "mean_precip_F_1", 
+                    "mean_gdd_F_1", 
+                    "fips_F_2", "county_F_2",
+                    "medianDoY_F_2",    
+                    "NumLarvaGens_Aug_F_2", 
+                    "mean_escaped_Gen1_F_2", "mean_escaped_Gen2_F_2", "mean_escaped_Gen3_F_2",
+                    "mean_precip_F_2", "mean_gdd_F_2", 
+                    "fips_F_3", "county_F_3", 
+                    "medianDoY_F_3", 
+                    "NumLarvaGens_Aug_F_3", 
+                    "mean_escaped_Gen1_F_3", "mean_escaped_Gen2_F_3", "mean_escaped_Gen3_F_3", 
+                    "mean_precip_F_3", "mean_gdd_F_3")
+
+setcolorder(historical_future_bcc_summary, new_col_order)
+
+ 
 
 write.csv(historical_future_bcc_summary, file = "/Users/hn/Desktop/historical_future_bcc_summary.csv", 
           row.names=FALSE, na="")

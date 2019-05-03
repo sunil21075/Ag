@@ -5,8 +5,8 @@
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=20gb
 #PBS -q hydro
-#PBS -e E_bloom_45_2015.txt
-#PBS -o bloom_45_2015.txt
+#PBS -e /home/hnoorazar/cleaner_codes/qsub_files/error/E_bloom_45_2015.txt
+#PBS -o /home/hnoorazar/cleaner_codes/qsub_files/error/bloom_45_2015.txt
 #PBS -m abe
 cd $PBS_O_WORKDIR
 
@@ -16,6 +16,6 @@ module purge
 # Load modules (if needed)
 module load R/R-3.2.2_gcc
 
-/home/hnoorazar/cleaner_codes/drivers/bloom_driver.R rcp45
+/home/hnoorazar/cleaner_codes/drivers/bloom_driver.R rcp45 0.5
 
 exit 0
