@@ -742,8 +742,8 @@ add_dd_cumdd <- function(metdata_data.table, lower, upper) {
   diff = metdata_data.table$tmax - metdata_data.table$tmin # column diff
   tsum = metdata_data.table$tmax + metdata_data.table$tmin # column tsum
   
-  aveminlt = (tsum/2) - lower
-  alpha1 = diff / 2
+  aveminlt= (tsum/2) - lower
+  alpha1  = diff / 2
   avetemp = tsum / 2
   
   theta1 = asin((lower - avetemp) / alpha1)
@@ -975,6 +975,7 @@ generate_vertdd <- function(input_dir,
   data = data[, vert_Cum_dd := cumsum(vertdd), by=list(latitude, longitude, ClimateScenario, ClimateGroup, year)]
   data$vert_Cum_dd_F = data$vert_Cum_dd * 1.8
 
+  # The following three lines are from old parameters from Vince to Girid
   # data$cripps_pink = pnorm(data$vert_Cum_dd_F, mean = 495.51, sd = 42.58, lower.tail = TRUE)
   # data$gala = pnorm(data$vert_Cum_dd_F, mean = 528.56, sd = 41.95, lower.tail = TRUE)
   # data$red_deli = pnorm(data$vert_Cum_dd_F, mean = 522.74, sd = 42.79, lower.tail = TRUE)
@@ -989,21 +990,21 @@ generate_vertdd <- function(input_dir,
 ###############################################################################################################
 ###############################################################################################################
 bloom <- function(data, bloom_cut_off){
-  data = subset(data, select = c("ClimateGroup", 
-                                 "latitude", "longitude", 
-                                 "County", "ClimateScenario", 
-                                 "year", "month", "day", "dayofyear", 
-                                 "cripps_pink", "gala", "red_deli"))
+  print (paste0("bloom_cut_off: ", bloom_cut_off))
 
-  data = melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
-                                "County", "ClimateScenario", "year", "month", "day", "dayofyear"), 
-                    variable.name = "apple_type")
-  # The following should be taken from .5 and .95
-  # data = data[value >= 1.000000e+00,]
-  data = data[value >= bloom_cut_off,]
+  data = subset(data, select = c("ClimateGroup", "latitude", "longitude", 
+                                 "County", "ClimateScenario", "year", "month", 
+                                 "day", "dayofyear", "cripps_pink", "gala", "red_deli"))
   
-  data = data[, head(.SD, 1), by = c("ClimateGroup","latitude", "longitude","County","ClimateScenario","year", "apple_type")]
-  data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup","latitude", "longitude","County", "apple_type")]
+  data = melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
+                                "County", "ClimateScenario", "year", 
+                                "month", "day", "dayofyear"), variable.name = "apple_type")
+  
+  # data = data[value >= 1.000000e+00,]
+  print (paste0("line 1004 of bloom dim(data) = ", dim(data)))
+  data = data[value >= bloom_cut_off, ]
+  data = data[, head(.SD, 1), by = c("ClimateGroup", "latitude", "longitude", "County", "ClimateScenario", "year", "apple_type")]
+  data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup", "latitude", "longitude", "County", "apple_type")]
   return (data)
 }
 ###############################################################################################################

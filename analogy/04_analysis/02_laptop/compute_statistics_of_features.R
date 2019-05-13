@@ -206,10 +206,6 @@ gfm_summary_F3 <- gfm_F3 %>%
                data.table()
 
 
-
-
-
-
 bcc_F1 <- bcc %>% filter(year <= 2050)
 bnu_F1 <- bnu %>% filter(year <= 2050)
 can_F1 <- can %>% filter(year <= 2050)

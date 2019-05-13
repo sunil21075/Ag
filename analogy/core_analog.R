@@ -23,6 +23,12 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+all_possible_ss <- function(future_fips_dt, hist_fips_dt, target_fips, f_yrs, h_yrs){
+  f_locs <- no_locs_in_a_county_and_our_f_model(future_fips_dt, target_fips)
+  h_locs <- no_locs_in_a_county_and_our_hist_model(hist_fips_dt, target_fips)
+  return(f_locs * h_locs * f_yrs * h_yrs)
+}
+
 no_locs_in_a_county_and_our_f_model <- function(fips_dt, target_fip){
   # input: fips_dt: a data table containing county of a given location
   #                 which includes columns: fips, location, lat, long
@@ -33,7 +39,6 @@ no_locs_in_a_county_and_our_f_model <- function(fips_dt, target_fip){
   counts <- fips_dt %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
   return(counts[1, 1])
 }
-
 
 no_locs_in_a_county_and_our_hist_model <- function(fips_dt, target_fip){
   # input: fips_dt: a data table containing county of a given location
@@ -366,12 +371,15 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
   if ("treatment" %in% colnames(future_dt)) {future_dt <- within(future_dt, remove(treatment))}
   if ("treatment" %in% colnames(ICV)) {ICV <- within(ICV, remove(treatment))}
 
+  if ("mean_escaped_Gen4" %in% colnames(historical_dt)) {historical_dt <- within(historical_dt, remove(mean_escaped_Gen4))}
+  if ("mean_escaped_Gen4" %in% colnames(future_dt)) {future_dt <- within(future_dt, remove(mean_escaped_Gen4))}
+  if ("mean_escaped_Gen4" %in% colnames(ICV)) {ICV <- within(ICV, remove(mean_escaped_Gen4))}
+
   # sort the columns of data tables so they both have the same order, if they do not.
   columns_ord <- c("year", "location", "ClimateScenario",
                    "medianDoY", "NumLarvaGens_Aug", 
-                   "mean_escaped_Gen1", "mean_escaped_Gen2",
-                   "mean_escaped_Gen3", "mean_escaped_Gen4",
-                   "mean_gdd", "mean_precip")# 
+                   "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3",
+                   "mean_gdd", "mean_precip")
   
   setcolorder(historical_dt, columns_ord)
   setcolorder(future_dt, columns_ord)
@@ -400,11 +408,10 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
                         "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3",
                         "mean_gdd", "mean_precip")
       } else {
-        historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
-        future_dt <- within(future_dt, remove(mean_escaped_Gen3))
-        ICV <- within(ICV, remove(mean_escaped_Gen3))
+        historical_dt <- within(historical_dt, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
+        future_dt <- within(future_dt, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
+        ICV <- within(ICV, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
         numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
-                          "mean_escaped_Gen1", "mean_escaped_Gen2", 
                           "mean_gdd", "mean_precip") 
     }
     
@@ -418,14 +425,25 @@ find_NN_info_W4G_ICV <- function(ICV, historical_dt, future_dt, n_neighbors, pre
                         "mean_escaped_Gen1", "mean_escaped_Gen2", "mean_escaped_Gen3",
                         "mean_gdd")
       } else {
-        historical_dt <- within(historical_dt, remove(mean_escaped_Gen3))
-        future_dt <- within(future_dt, remove(mean_escaped_Gen3))
-        ICV <- within(ICV, remove(mean_escaped_Gen3))
-        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug", 
-                          "mean_escaped_Gen1", "mean_escaped_Gen2", 
+        historical_dt <- within(historical_dt, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
+        future_dt <- within(future_dt, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
+        ICV <- within(ICV, remove(mean_escaped_Gen1, mean_escaped_Gen2, mean_escaped_Gen3))
+        numeric_cols <- c("medianDoY", "NumLarvaGens_Aug",
                           "mean_gdd") 
     }
   }
+  print ("line 429 of core, find_NN_info_W4G_ICV - Start")
+  print (paste0("(gen3, precipitation) = (", gen3, ", ", precipitation, ")" ))
+  print(paste0("colnames(ICV):"))
+  print(colnames(ICV))
+  print("____________________________________________")
+  print("colnames(future_dt):")
+  print(colnames(future_dt))
+  print("____________________________________________")
+  print("colnames(historical_dt):")
+  print(colnames(historical_dt))
+  print("____________________________________________")
+  print ("line 429 of core, find_NN_info_W4G_ICV - End")
   A <- as.data.frame(historical_dt)
   B <- as.data.frame(future_dt)
   C <- as.data.frame(ICV)

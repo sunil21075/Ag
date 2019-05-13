@@ -28,8 +28,8 @@ emission = args[4] # rcp45 rcp85
 n_nghs = 47841
 
 main_in <- file.path("/data/hydro/users/Hossein/analog/03_analogs/location_level/")
-in_dir <- file.path(main_in, gen_3, precip, n_nghs, emission, "/")
-out_dir <- file.path(in_dir, "merged/")
+in_dir <- paste0(main_in, precip, "_", gen_3, "_", emission, "/")
+out_dir <- paste0(in_dir, "merged/")
 if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
 
 setwd(in_dir)
@@ -54,9 +54,9 @@ for (time_p in time_periods){
   
   print (NN_sigma_tb_list_int)
   print (time_p)
-  print()
+  print("")
   print ("__________________________")
-  print()
+  print("")
   NN_dist_tb <- data.table()
   NN_loc_year_tb <- data.table()
   NN_sigma_tb <- data.table()

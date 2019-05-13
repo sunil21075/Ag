@@ -1,6 +1,32 @@
 options(digits=9)
 options(digits=9)
 
+add_time_periods_model <- function(dt){
+  time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2099")
+  dt$time_period <- 0L
+  dt$time_period[dt$year <= 2005] <- time_periods[1]
+  dt$time_period[dt$year >= 2006 & dt$year <= 2025] <- time_periods[2]
+  dt$time_period[dt$year >= 2026 & dt$year <= 2050] <- time_periods[3]
+  dt$time_period[dt$year >= 2051 & dt$year <= 2075] <- time_periods[4]
+  dt$time_period[dt$year >= 2076] <- time_periods[5]
+  return(dt)
+}
+
+add_time_periods_observed <- function(dt){
+  time_periods <- c("1979-2016")
+  dt$time_period <- time_periods[1]
+  return(dt)
+}
+
+kth_smallest_in_group <- function(dt, target_column, k){
+  result <- dt %>% 
+            group_by(location, year, model) %>%
+            arrange(get(target_column)) %>%
+            slice(k) %>%
+            data.table()
+  return(result)
+}
+
 
 pick_single_cities <- function(dt, city_info){
   city_info$location <- paste0(city_info$lat, "_", city_info$long)
@@ -11,14 +37,20 @@ pick_single_cities <- function(dt, city_info){
   return(dt)
 }
 
-remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
+# remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
+#   data_dt <- remove_montana(data_dt, LocationGroups_NoMontana)
+#   data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
+#   return(data_dt)
+# }
+
+remove_montana <- function(data_dt, LocationGroups_NoMontana){
   if (!("location" %in% colnames(data_dt))){
     data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
   }
   data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
-  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
   return(data_dt)
 }
+
 ###################################################################
 #          **********                            **********
 #          **********        WARNING !!!!        **********
@@ -580,8 +612,7 @@ read_binary_addmdy_4var <- function(filename, ymd) {
 
     AllData <- cbind(ymd, dataM)
     # calculate daily GDD  ...what? There doesn't appear to be any GDD work?
-    colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin",
-                           "windspeed")
+    colnames(AllData) <- c("year", "month", "day", "precip", "tmax", "tmin", "windspeed")
     close(fileCon)
     return(AllData)
 }

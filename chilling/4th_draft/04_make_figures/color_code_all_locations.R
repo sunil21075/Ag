@@ -86,7 +86,7 @@ for (begin in begins){
                                        header=T, sep=",", as.is=T)
   LocationGroups_NoMontana <- within(LocationGroups_NoMontana, remove(lat, long))
 
-  mdata <- remove_montana_add_warm_cold(mdata, LocationGroups_NoMontana)
+  mdata <- remove_montana(mdata, LocationGroups_NoMontana)
   
   information <- clean_process(mdata)
  
@@ -117,7 +117,7 @@ for (begin in begins){
   ################################## JAN
   ######****************************
 
-  quan_per <- jan_result %>% group_by(warm_cold, time_period, scenario, thresh_range) %>% 
+  quan_per <- jan_result %>% group_by(time_period, scenario, thresh_range ) %>% # warm_cold, 
                              summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                              data.table()
 
