@@ -1,3 +1,5 @@
+.libPaths("/data/hydro/R_libs35")
+.libPaths()
 
 library(data.table)
 library(dplyr)
@@ -20,7 +22,7 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
                                x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
-
+  print ("line 25, plot_bloom_filling")
   data <- data.table(readRDS(filename))
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
@@ -36,13 +38,13 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
                        "CountyGroup", "ClimateGroup", "ClimateScenario", 
                        "year", "month", "day", "dayofyear", 
                        "vert_Cum_dd_F"))
-
+  print ("line 41, plot_bloom_filling")
   d1[variable == "red_deli"]$variable = "Red Delicious"
   d1[variable == "gala"]$variable = "Gala"
   d1[variable == "cripps_pink"]$variable = "Cripps Pink"
-
+  print ("line 45, plot_bloom_filling")
   p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
-       labs(x = "Julian day", y = "Proportion full bloom completed", fill = "Climate Group") +
+       labs(x = "Julian day", y = "proportion full bloom completed", fill = "Climate Group") +
        guides(fill=guide_legend(title="Time period")) + 
        facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
@@ -66,14 +68,14 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme(panel.grid.major = element_line(size=0.2),
              panel.spacing=unit(.5, "cm"),
-             legend.title = element_text(face="plain", size=12),
+             legend.title = element_blank(),
+             strip.text = element_text(face="bold", size=16, color="black"),
              legend.text = element_text(size=10),
              legend.position = "bottom",
-             strip.text = element_text(size=12, face="plain"),
              axis.text = element_text(face="plain", size=10, color="black"),
              axis.ticks = element_line(color = "black", size = .2),
-             axis.title.x = element_text(face= "plain", size=16, margin = margin(t=10, r=0, b=0, l=0)),
-             axis.title.y = element_text(face="plain", size=16, margin = margin(t=0, r=10, b=0, l=0))
+             axis.title.x = element_text(face= "bold", size=16, margin = margin(t=10, r=0, b=0, l=0)),
+             axis.title.y = element_text(face="bold", size=16, margin = margin(t=0, r=10, b=0, l=0))
              )
   ggsave(output_name, p1, path=plot_path, width=7, height=7, unit="in", dpi=400)
 }
@@ -82,12 +84,12 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
                        plot_path, output_name, x_limits = c(45, 150)){
   output_name = paste0(output_name, "_", version, ".png")
   filename <- paste0(data_dir, file_name, version, ".rds")
-  
+  print ("line 87, plot_bloom")
   data <- data.table(readRDS(filename))
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
-
+  print ("line 92, plot_bloom")
   d1 = subset(data, select = c("latitude", "longitude", 
                                "CountyGroup", "ClimateGroup", "ClimateScenario", 
                                "year", "month", "day", "dayofyear", 
@@ -98,13 +100,13 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
                        "CountyGroup", "ClimateGroup", "ClimateScenario", 
                        "year", "month", "day", "dayofyear", 
                        "vert_Cum_dd_F"))
-
+  print ("line 103, plot_bloom")
   d1[variable == "red_deli"]$variable = "Red Delicious"
   d1[variable == "gala"]$variable = "Gala"
   d1[variable == "cripps_pink"]$variable = "Cripps Pink"
-
+  print ("line 107, plot_bloom")
   p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
-       labs(x = "Julian day", y = "Proportion completing full bloom", color = "Climate Group") +
+       labs(x = "Julian day", y = "proportion completing full bloom", color = "Climate Group") +
        guides(fill=guide_legend(title="Time period")) + 
      # stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
      # stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
@@ -116,14 +118,14 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme(panel.grid.major = element_line(size=0.2),
              panel.spacing=unit(.5, "cm"),
-             legend.title = element_text(face="plain", size=12),
+             legend.title = element_blank(),
+             strip.text = element_text(face="bold", size=16, color="black"),
              legend.text = element_text(size=10),
              legend.position = "bottom",
-             strip.text = element_text(size=12, face="plain"),
              axis.ticks = element_line(color = "black", size = .2),
              axis.text = element_text(face="plain", size=10, color="black"),
-             axis.title.x = element_text(face="plain", size=16, margin=margin(t=10, r=0, b=0, l=0)),
-             axis.title.y = element_text(face="plain", size=16, margin=margin(t=0, r=10, b=0, l=0))
+             axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+             axis.title.y = element_text(face="bold", size=16, margin=margin(t=0, r=10, b=0, l=0))
             )
   ggsave(output_name, p1, path=plot_path, dpi=500)
 }

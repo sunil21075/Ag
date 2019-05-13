@@ -76,16 +76,6 @@ stats_comp$time_period <- factor(stats_comp$time_period,
 stats_comp <- stats_comp %>% filter(time_period != "2005_2024")
 stats_comp$time_period <- factor(stats_comp$time_period)
 
-remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
-  if (!("location" %in% colnames(data_dt))){
-    data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
-  }
-  data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
-  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
-  data_dt <- within(data_dt, remove(location))
-  return(data_dt)
-}
-
 param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
                                      header=T, sep=",", as.is=T)

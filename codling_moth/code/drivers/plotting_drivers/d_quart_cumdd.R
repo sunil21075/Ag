@@ -12,5 +12,8 @@ version = args[1]
 
 data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/plots/"
+if (dir.exists(file.path(plot_path)) == F) {
+  dir.create(path = plot_path, recursive = T)
+}
 
 cumulative_qrt_boxplot(input_dir=data_dir, file_name ="combined_CMPOP_", version, output_dir=plot_path)

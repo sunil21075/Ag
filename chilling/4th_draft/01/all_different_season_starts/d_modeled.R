@@ -56,12 +56,9 @@ current_dir <- gsub(x = getwd(),
 # get files in current folder
 dir_con <- dir()
 
-# remove filenames that aren't data
-dir_con <- dir_con[grep(pattern = "data_",
-                        x = dir_con)]
+dir_con <- dir_con[grep(pattern = "data_", x = dir_con)]
 
-# choose only files that we're interested in
-dir_con <- dir_con[which(dir_con %in% local_files)]
+dir_con <- dir_con[which(dir_con %in% local_files)] # choose files that we're interested in
 
 # 3. Process the data -----------------------------------------------------
 

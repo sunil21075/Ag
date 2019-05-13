@@ -16,6 +16,10 @@ start_time <- Sys.time()
 data_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/overlaping/"
 plot_path = "/data/hydro/users/Hossein/codling_moth_new/local/processed/overlaping/plots/"
 
+if (dir.exists(file.path(plot_path)) == F) {
+  dir.create(path = plot_path, recursive = T)
+}
+
 egg_45 <- plot_cumdd_eggHatch(input_dir=data_dir, 
                               file_name ="combined_CMPOP_", 
                               version="rcp45", 

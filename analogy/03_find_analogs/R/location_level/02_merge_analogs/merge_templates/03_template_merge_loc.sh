@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N precip_type_gen_3_type_emission_type_model_type
+#PBS -N merge_precip_type_gen_3_type_emission_type_model_type
 
 #PBS -l nodes=1:ppn=1,walltime=99:00:00
 #PBS -l mem=40gb

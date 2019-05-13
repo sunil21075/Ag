@@ -24,32 +24,30 @@ produce_dt_for_hist <- function(analog_dt, novel_dt, tgt_fip){
   novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
 
   analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
-  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "had_analog"
+  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
 
   analog_dt <- data.table(analog_dt)
   novel_dt <- data.table(novel_dt)
 
-  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "had_analog"]
+  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
   novel_cnt <- sum(novel_dt$novel_freq)
 
   if (tgt_fip %in% analog_dt$analog_NNs_county){
-     self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
-     } else {self_similarity_count <- 0
-    }
+    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
+    } else {
+     self_similarity_count <- 0
+  }
 
   no_analog_cnt <- analog_dt[analog_dt$analog_NNs_county=="no_analog", 'analog_freq' ]$analog_freq
   non_self_simil_cnt <- sum(analog_dt$analog_freq) - no_analog_cnt - self_similarity_count
 
   almost_novel_cnt <-  no_analog_cnt - novel_cnt
 
-  DT = data.table(variables = c("self similarity", 
-                                "similarity to other cnty.",
-                                "almost novel", "novel"),
+  vvv <- c("self similarity", "similarity to other cnty.", "almost novel", "novel")
+  DT = data.table(variables = vvv,
                   counts = c(self_similarity_count, non_self_simil_cnt, almost_novel_cnt, novel_cnt))
  
-  DT$variables <- factor(DT$variables, order=T, levels=c("self similarity", 
-                                                         "similarity to other cnty.",
-                                                         "almost novel", "novel"))
+  DT$variables <- factor(DT$variables, order=T, levels=vvv)
   return (DT)
 }
 
@@ -84,7 +82,11 @@ plot_hist <- function(DT, title){
 ####
 ######################################################################
 
-data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/w_gen_w_prec/48000/quick/"
+data_sub_dirs <- c("no_no_85/", "no_w_85/", "w_no_85/", "w_w_85/", 
+                   "no_no_45/", "no_w_45/", "w_no_45/", "w_w_45/")
+
+data_dir <- paste0("/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/", data_sub_dirs[1])
+
 param_dir <- "/Users/hn/Documents/GitHub/Kirti/analogy/parameters/"
 
 ######################################################################
@@ -151,7 +153,8 @@ for (time_p in time_periods){
                             ncol = 1, nrow = 17, common.legend = TRUE)})
 }
 
-master_path <- "/Users/hn/Desktop/"
+master_path <- paste0(data_dir, "/histograms/")
+if (dir.exists(master_path) == F) { dir.create(path = master_path, recursive = T)}
 
 ggsave("plot_2026_2050.png", plot_2026_2050, 
        path=master_path, device="png",

@@ -6,11 +6,8 @@
 #PBS -l nodes=1:ppn=1,walltime=02:00:00
 #PBS -l mem=40gb
 #PBS -q hydro
-#PBS -k o
 #PBS -e /home/hnoorazar/cleaner_codes/drivers/error/fill_mean_E.txt
 #PBS -o /home/hnoorazar/cleaner_codes/drivers/error/fill_mean_O.txt
-
-## Define path for reporting
 #PBS -m abe
 
 echo

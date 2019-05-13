@@ -18,17 +18,18 @@ options(digits=9)
 ####
 ##########################################################################
 produce_dt_for_map <- function(b_dt){
-  data(county.fips) # Load the county.fips dataset for plotting
+  data(county.fips)        # Load the county.fips dataset for plotting
   ct <- map_data("county") # Load the county data from the maps package
   cnty3 <- ct %>%
            mutate(polyname = paste(region, subregion, sep=",")) %>%
            left_join(county.fips, by="polyname")
 
- DT <- left_join(analog_dat, cnty3, by=c("analog_NNs_county" = "fips"))
+ DT <- left_join(b_dt, cnty3, by=c("analog_NNs_county" = "fips"))
  return(DT)
 }
 
 plot_the_map <- function(a_dt, county2, title_p){
+
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
                geom_polygon(data = county2, fill="lightgrey") +
                geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, 1, 0.2))  +
@@ -39,8 +40,7 @@ plot_the_map <- function(a_dt, county2, title_p){
                      axis.ticks.x = element_blank(),
                      axis.ticks.y = element_blank(),
                      axis.title.x = element_blank(),
-                     axis.title.y = element_blank()
-                     ) + 
+                     axis.title.y = element_blank()) + 
                ggtitle(title_p)
    return(curr_plot) 
 }
@@ -51,7 +51,10 @@ plot_the_map <- function(a_dt, county2, title_p){
 ####
 ######################################################################
 
-data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/w_gen_w_prec/48000/quick/"
+data_sub_dirs <- c("no_no_85/", "no_w_85/", "w_no_85/", "w_w_85/", 
+                   "no_no_45/", "no_w_45/", "w_no_45/", "w_w_45/")
+
+data_dir <- paste0("/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/", data_sub_dirs[1])
 param_dir <- "/Users/hn/Documents/GitHub/Kirti/analogy/parameters/"
 
 ######################################################################
@@ -86,9 +89,15 @@ for (time_p in time_periods){
         analog_file_name <- paste("analog", model_n, emission, time_p, sep="_")
         analog_dat <- data.table(readRDS(paste0(data_dir, analog_file_name, ".rds")))
 
-        analog_dat <- na.omit(analog_dat)
-        analog_dat <- analog_dat %>% filter(query_county == target_fip)
+        # replace no analogs with na to be able to omit them
+        analog_dat$analog_NNs_county[analog_dat$analog_NNs_county == "no_analog"] <- NA
+        analog_dat$analog_NNs_county <- as.integer(analog_dat$analog_NNs_county)
+        analog_dat$query_county <- as.integer(analog_dat$query_county)
 
+        analog_dat <- na.omit(analog_dat)
+
+
+        analog_dat <- analog_dat %>% filter(query_county == target_fip)
 
         cnty2_one_county_one_model <- produce_dt_for_map(analog_dat)
 
@@ -102,14 +111,14 @@ for (time_p in time_periods){
 
         target_cnty_name <- local_fip_cnty_name_map$st_county[local_fip_cnty_name_map$fips==target_fip]
         target_cnty_name <- paste(unlist(strsplit(target_cnty_name, "_"))[2], 
-                      unlist(strsplit(target_cnty_name, "_"))[1], sep= ", ")
+                                  unlist(strsplit(target_cnty_name, "_"))[1], sep= ", ")
         titlem <- paste0(target_cnty_name, " (", 
                          paste(unlist(strsplit(time_p, "_"))[1], 
                                unlist(strsplit(time_p, "_"))[2], sep="-"),
                          ", ", model_n, ")" )
 
         cnty_name <- target_cnty_name
-        the_title <- paste(target_cnty_name, "," ,gsub("-", "_", model_n), ",", emission, sep=" ")
+        the_title <- paste(target_cnty_name, ",", gsub("-", "_", model_n), ",", emission, sep=" ")
 
       assign(x = gsub("-", "_", model_n), 
              value = {plot_the_map(cnty2_one_county_one_model, cnty2, the_title)})
@@ -131,7 +140,8 @@ for (time_p in time_periods){
 }
 
 
-master_path <- "/Users/hn/Desktop/"
+master_path <- paste0(data_dir, "/maps/")
+if (dir.exists(master_path) == F) { dir.create(path = master_path, recursive = T)}
 
 ggsave("map_2026_2050.png", map_2026_2050, 
        path=master_path, device="png",

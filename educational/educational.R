@@ -76,6 +76,22 @@ DT = data.table(
 )
 DT = data.table(row_count = 1:130)
 
+dtr <- structure(list(location = c("NYC", "NYC", "NYC","NYC", "NYC", 
+                                   "LA", "LA", "LA", "LA", "LA"), 
+                 year = c(2026, 2026, 2026, 2026, 2026,
+                          2026, 2026, 2026, 2026, 2026),
+                 value = c(1, 2, 3, 4, 5,
+                           6, 7, 8, 9, 10)),
+                 class = "data.table", 
+                 row.names = c(NA, -10L))
+
+dtr <- structure(list(location = c("NYC", "LA"), 
+                 year = c(2026, 2026),
+                 value = c(2, 7)),
+                 class = "data.table", 
+                 row.names = c(NA, -10L))
+
+
 start <- data.table(start=rep("start", nrow(something)))
 ############################################################
 #################### Install packages on aeolus
@@ -283,3 +299,8 @@ setDT(dt)[year == 2026, .(count = uniqueN(location))]
 # summary summerize summerise summarize summarise
 ddply(us_feat, ~ fips, summarise, mean=mean(age), sd=sd(age))
 dt[,list(mean=mean(age),sd=sd(age)),by=group]
+
+
+
+kth smallest element in group by
+https://stackoverflow.com/questions/56084877/k-th-smallest-element-per-group-in-r/56085151#56085151
