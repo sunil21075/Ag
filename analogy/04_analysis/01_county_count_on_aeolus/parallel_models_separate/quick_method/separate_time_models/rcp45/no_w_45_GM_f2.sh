@@ -3,10 +3,9 @@
 
 #PBS -N no_w_GM_F2_45
 
-#PBS -l nodes=1:ppn=1,walltime=6:00:00
-#PBS -l mem=10gb
-##PBS -q hydro
-
+#PBS -l nodes=1:ppn=1,walltime=2:00:00
+#PBS -l mem=40gb
+#PBS -q fast
 #PBS -k o
 ##PBS -j oe
 #PBS -e /home/hnoorazar/analog_codes/04_analysis/parallel/quick/error/E_no_w_GM_F2_45

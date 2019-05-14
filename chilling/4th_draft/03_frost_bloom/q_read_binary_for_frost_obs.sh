@@ -1,10 +1,8 @@
 #!/bin/bash
 
 #PBS -V
-
 #PBS -N read_hist_binary_4_frost
 
-## Define compute options
 #PBS -l nodes=1:ppn=1,walltime=6:00:00
 #PBS -l mem=30gb
 ##PBS -q hydro
@@ -12,7 +10,6 @@
 #PBS -k o
 #PBS -e /home/hnoorazar/chilling_codes/current_draft/03_frost_bloom/error/read_obs_binary_for_frost.e
 #PBS -o /home/hnoorazar/chilling_codes/current_draft/03_frost_bloom/error/read_obs_binary_for_frost.o
-
 #PBS -m abe
 
 echo

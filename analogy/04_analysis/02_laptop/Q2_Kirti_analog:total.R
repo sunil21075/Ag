@@ -12,74 +12,6 @@ library(ggpubr)
 options(digit=9)
 options(digits=9)
 
-
-######################################################################
-####
-####         functions here
-####
-######################################################################
-produce_dt_for_pie <- function(analog_dt, novel_dt, tgt_fip, f_fips, h_fips){
-  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
-  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
-
-  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
-  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
-
-  analog_dt <- data.table(analog_dt)
-  novel_dt <- data.table(novel_dt)
-
-  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
-  novel_cnt <- sum(novel_dt$novel_freq)
-
-  if (tgt_fip %in% analog_dt$analog_NNs_county){
-    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
-    } else {
-     self_similarity_count <- 0
-  }
-
-  no_analog_cnt <- analog_dt[analog_dt$analog_NNs_county=="no_analog", 'analog_freq' ]$analog_freq
-  non_self_simil_cnt <- sum(analog_dt$analog_freq) - no_analog_cnt - self_similarity_count
-
-  almost_novel_cnt <-  no_analog_cnt - novel_cnt
-
-  analog_count <- self_similarity_count + non_self_simil_cnt
-  total_comparisons <- no_analog_cnt + analog_count
-
-  vvv <- c("analog count", "no-analog count")
-  DT = data.table(category = vvv,
-                  counts = c(analog_count, no_analog_cnt),
-                  fraction= c((analog_count/total_comparisons), (no_analog_cnt/total_comparisons)))
-
-  DT = DT[order(DT$fraction), ]
- 
-  DT$category <- factor(DT$category, order=T, levels=vvv)
-
-  DT$ymax = cumsum(DT$fraction)
-  DT$ymin = c(0, head(DT$ymax, n=-1))
-
-  return (DT)
-}
-
-plot_the_pie <- function(dat, titl){
-  pp <- ggplot(DT, aes(fill=category, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
-        geom_rect(colour="grey30") +
-        coord_polar(theta="y") +
-        xlim(c(0, 4)) +
-        theme(plot.title = element_text(size=16, face="bold"), 
-              panel.grid=element_blank(),
-              axis.text = element_blank(),
-              axis.ticks = element_blank(),
-              legend.spacing.x = unit(.2, 'cm'),
-              legend.title = element_blank(),
-              legend.position = "bottom",
-              legend.key.size = unit(1.6, "line"),
-              legend.text = element_text(size=26)) +
-        labs(title=titl) + 
-        annotate("text", x = 0, y = 0, 
-                 label = paste(as.integer(DT[1,2]), as.integer(DT[1,2] + DT[2,2]), sep="/")) 
-  return(pp)
-}
-
 ######################################################################
 ####
 ####         Set up directories
@@ -114,7 +46,6 @@ model_names <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G",
 time_periods <- c("2026_2050", "2051_2075", "2076_2095")
 emissions <- c("rcp45", "rcp85")
 
-
 # target_fip <- local_fips[1]
 # model_n <- model_names[1]
 # time_p <- time_periods[1]
@@ -129,8 +60,8 @@ for (time_p in time_periods){
       analog_dat <- data.table(readRDS(paste0(data_dir, analog_file_name, ".rds")))
       novel_dat <- data.table(readRDS(paste0(data_dir, novel_file_name, ".rds")))
 
-      DT <- produce_dt_for_pie(analog_dt=analog_dat, novel_dt=novel_dat, tgt_fip=target_fip, 
-                               f_fips=local_cnty_fips, h_fips=usa_cnty_fips)
+      DT <- produce_dt_for_pie_Q2(analog_dt=analog_dat, novel_dt=novel_dat, tgt_fip=target_fip, 
+                                  f_fips=local_cnty_fips, h_fips=usa_cnty_fips)
 
       target_cnty_name <- local_fip_cnty_name_map$st_county[local_fip_cnty_name_map$fips==target_fip]
       target_cnty_name <- paste(unlist(strsplit(target_cnty_name, "_"))[2], 
@@ -141,7 +72,7 @@ for (time_p in time_periods){
                             unlist(strsplit(time_p, "_"))[2], sep="-"),
                       ", ", model_n, ")" )
 
-      assign(x = gsub("-", "_", model_n), value = {plot_the_pie(DT, titlem)})
+      assign(x = gsub("-", "_", model_n), value = {plot_the_pie_Q2(DT, titlem)})
     }
     assign(x = paste0("plot_", target_fip) , 
            value={ggarrange(plotlist = list(bcc_csm1_1_m, BNU_ESM, CanESM2,
