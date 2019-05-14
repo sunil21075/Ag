@@ -23,6 +23,185 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+produce_dt_for_map <- function(b_dt){
+  data(county.fips)        # Load the county.fips dataset for plotting
+  ct <- map_data("county") # Load the county data from the maps package
+  cnty3 <- ct %>%
+           mutate(polyname = paste(region, subregion, sep=",")) %>%
+           left_join(county.fips, by="polyname")
+
+ DT <- left_join(b_dt, cnty3, by=c("analog_NNs_county" = "fips"))
+ return(DT)
+}
+
+produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, f_fips, h_fips, f_years, h_years=37){
+
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  
+  # find most similar analog county
+  # filter the data that are analog 
+  # i.e. (exclude the row with "no_analog" in analog_NNs_county column)
+
+  just_analogs <- analog_dt %>% filter(analog_NNs_county != "no_analog")
+
+  hist_target_row <- just_analogs[which.max(just_analogs$analog_freq),]
+  hist_target_fip <- hist_target_row$analog_NNs_county
+  inter_county_analog_count <- hist_target_row$analog_freq
+  
+  # count number of inter-county (grind, year) pairs ((grid_f_i, f_y_1), (grid_h_i, f_h_1))
+  all_possible_analog_cnt <- all_possible_inter_county_similarity(future_fips_dt = f_fips, 
+                                                                  hist_fips_dt = h_fips, 
+                                                                  future_target_fip = tgt_fip,
+                                                                  hist_target_fips = hist_target_fip, 
+                                                                  f_yrs=f_years, 
+                                                                  h_yrs=h_years)
+
+  analog_dt <- data.table(analog_dt)
+  inter_county_analog_count_complement <- all_possible_analog_cnt - inter_county_analog_count
+
+  vvv <- c("inter county analog count", "inter county pairwise count")
+  DT = data.table(category = vvv,
+                  counts = c(inter_county_analog_count, inter_county_analog_count_complement),
+                  fraction= c((inter_county_analog_count/all_possible_analog_cnt), 
+                              (inter_county_analog_count_complement/all_possible_analog_cnt)))
+
+  DT = DT[order(DT$fraction), ]
+ 
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (list(DT, hist_target_fip))
+}
+
+produce_dt_for_pie_Q3 <- function(analog_dt, novel_dt, tgt_fip){
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
+
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
+
+  analog_dt <- data.table(analog_dt)
+  novel_dt <- data.table(novel_dt)
+
+  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
+  novel_cnt <- sum(novel_dt$novel_freq)
+
+  if (tgt_fip %in% analog_dt$analog_NNs_county){
+    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
+    } else {
+     self_similarity_count <- 0
+  }
+  no_analog_cnt <- analog_dt[analog_dt$analog_NNs_county=="no_analog", 'analog_freq' ]$analog_freq
+  non_self_simil_cnt <- sum(analog_dt$analog_freq) - no_analog_cnt - self_similarity_count
+
+  denom <- self_similarity_count + non_self_simil_cnt
+  vvv <- c("self-similarity", "non self-similarity")
+  DT = data.table(category = vvv,
+                  counts = c(self_similarity_count, non_self_simil_cnt),
+                  fraction= c((self_similarity_count/denom), (non_self_simil_cnt/denom)))
+
+  DT = DT[order(DT$fraction), ]
+ 
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (DT)
+}
+
+produce_dt_for_pie_Q2 <- function(analog_dt, novel_dt, tgt_fip, f_fips, h_fips){
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
+
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
+
+  analog_dt <- data.table(analog_dt)
+  novel_dt <- data.table(novel_dt)
+
+  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
+  novel_cnt <- sum(novel_dt$novel_freq)
+
+  if (tgt_fip %in% analog_dt$analog_NNs_county){
+    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
+    } else {
+     self_similarity_count <- 0
+  }
+
+  no_analog_cnt <- analog_dt[analog_dt$analog_NNs_county=="no_analog", 'analog_freq' ]$analog_freq
+  non_self_simil_cnt <- sum(analog_dt$analog_freq) - no_analog_cnt - self_similarity_count
+
+  almost_novel_cnt <-  no_analog_cnt - novel_cnt
+
+  analog_count <- self_similarity_count + non_self_simil_cnt
+  total_comparisons <- no_analog_cnt + analog_count
+
+  vvv <- c("analog count", "no-analog count")
+  DT = data.table(category = vvv,
+                  counts = c(analog_count, no_analog_cnt),
+                  fraction= c((analog_count/total_comparisons), (no_analog_cnt/total_comparisons)))
+
+  DT = DT[order(DT$fraction), ]
+ 
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (DT)
+}
+
+produce_dt_for_pie_all_possible <- function(analog_dt, novel_dt, tgt_fip, f_fips, h_fips, f_years, h_years=37){
+
+  all_possible_ss_cnt <- all_possible_ss(f_fips, h_fips, tgt_fip, f_yrs=f_years, h_yrs=h_years)
+
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
+
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
+
+  analog_dt <- data.table(analog_dt)
+  novel_dt <- data.table(novel_dt)
+
+  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
+  novel_cnt <- sum(novel_dt$novel_freq)
+
+  if (tgt_fip %in% analog_dt$analog_NNs_county){
+    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
+    } else {
+     self_similarity_count <- 0
+  }
+  not_ss <- all_possible_ss_cnt - self_similarity_count
+
+  vvv <- c("self similarity", "all_ss - self similarity")
+  DT = data.table(category = vvv,
+                  counts = c(self_similarity_count, not_ss),
+                  fraction= c((self_similarity_count/all_possible_ss_cnt), (not_ss/all_possible_ss_cnt)))
+
+  DT = DT[order(DT$fraction), ]
+ 
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (DT)
+}
+
+all_possible_inter_county_similarity <- function(future_fips_dt, hist_fips_dt, 
+                                                 future_target_fips, hist_target_fips,
+                                                 f_yrs, h_yrs){
+  
+  f_locs <- no_locs_in_a_county_and_our_f_model(future_fips_dt, future_target_fips)
+  h_locs <- no_locs_in_a_county_and_our_hist_model(hist_fips_dt, hist_target_fips)
+  return(f_locs * h_locs * f_yrs * h_yrs)
+}
+
 all_possible_ss <- function(future_fips_dt, hist_fips_dt, target_fips, f_yrs, h_yrs){
   f_locs <- no_locs_in_a_county_and_our_f_model(future_fips_dt, target_fips)
   h_locs <- no_locs_in_a_county_and_our_hist_model(hist_fips_dt, target_fips)
@@ -32,7 +211,7 @@ all_possible_ss <- function(future_fips_dt, hist_fips_dt, target_fips, f_yrs, h_
 no_locs_in_a_county_and_our_f_model <- function(fips_dt, target_fip){
   # input: fips_dt: a data table containing county of a given location
   #                 which includes columns: fips, location, lat, long
-  #                 We have to use a file that on;y contains the locations
+  #                 We have to use a file that only contains the locations
   #                 used in our data.
   #        target_fips: a given county fips
   # output: number of locations/grids in a given county
@@ -128,8 +307,7 @@ count_analogs_counties_quick <- function(NNs, sigmas, county_list, sigma_bd=2){
   # Drop the historical year columns
   NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
   NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
-  
-  
+  print ("line 131 of core")
   # convert non analog locations to NA. For the following command to
   # work, data has to be in data frame class.
   # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
@@ -142,19 +320,19 @@ count_analogs_counties_quick <- function(NNs, sigmas, county_list, sigma_bd=2){
   
   sigmas <- as.data.frame(sigmas); # dists <- as.data.frame(dists)
   NNs[, -c(1:2)][sigmas[, -c(1:2)] > sigma_bd] <- NA
-  
+  print ("line 144 of core")
   # replace the fips for coordinates of the nearest neighbors
   NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$location)])
   # NNs <- as.data.frame(NNs)
   NNs <- within(NNs, remove(year))
-  
+  print ("line 149 of core")
   analog_counts <- NNs %>% 
                    gather("key", "NNs", 2:ncol(.)) %>% 
                    group_by(location, NNs) %>% 
                    summarize(analog_freq = n()) %>% 
                    arrange(desc(location), desc(NNs)) %>%
                    data.table()
-  
+  print ("line 156 of core")
   setnames(analog_counts, new=c("query_county", "analog_NNs_county"), old=c("location", "NNs"))
   analog_counts$analog_NNs_county[is.na(analog_counts$analog_NNs_county)] <- "no_analog"
 

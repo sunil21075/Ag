@@ -1,11 +1,10 @@
 #!/bin/bash
 #PBS -V
-
 #PBS -N w_w_bnu_F1_45
 
-#PBS -l nodes=1:ppn=1,walltime=6:00:00
-#PBS -l mem=10gb
-##PBS -q hydro
+#PBS -l nodes=1:ppn=1,walltime=2:00:00
+#PBS -l mem=40gb
+#PBS -q fast
 
 #PBS -k o
 ##PBS -j oe

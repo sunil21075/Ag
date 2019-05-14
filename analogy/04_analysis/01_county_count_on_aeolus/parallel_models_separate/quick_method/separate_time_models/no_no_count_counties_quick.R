@@ -47,8 +47,10 @@ main_out <- file.path("/data/hydro/users/Hossein/analog/04_analysis/")
 out_dir <- paste0(main_out, sigma_bd, "_sigma/", precip_type, "_", gen_type, "_", carbon_type, "/")
 
 if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
+print ("__________________________")
+print ("out_dir:")
 print (out_dir)
-
+print ("__________________________")
 param_dir <- "/home/hnoorazar/analog_codes/parameters/"
 
 ######################################################################
@@ -74,9 +76,14 @@ for (model_type in all_model_names){
     county_list <- data.table(read.csv(paste0(param_dir, "/Min_fips_st_county_location.csv"), 
                                        header=T, sep=",", as.is=T))
     print ("line 76")
+    print (paste0("dim(NNs) is ", dim(NNs)))
+    print (paste0("dim(sigmas) is ", dim(sigmas)))
+    print (paste0("dim(county_list) is ", dim(county_list)))
+    print (paste0("sigma_bd is ", sigma_bd))
     a_model_analog_output <- count_analogs_counties_quick(NNs, sigmas, county_list, sigma_bd=sigma_bd)
+    print ("line 80")
     a_model_novel_output <- count_novel_quick(NNs, sigmas, county_list, novel_bd=4)
-
+    print ("line 82")
 
     a_model_analog_output$model <- model_type
     a_model_novel_output$model <- model_type
