@@ -13,7 +13,7 @@ add_time_periods_model <- function(dt){
 }
 
 add_time_periods_observed <- function(dt){
-  time_periods <- c("1979-2016")
+  time_periods <- c("1979-2015")
   dt$time_period <- time_periods[1]
   return(dt)
 }
@@ -27,13 +27,20 @@ kth_smallest_in_group <- function(dt, target_column, k){
   return(result)
 }
 
+pick_single_cities_by_location <- function(dt, city_info){
+  if (!("location" %in% colnames(city_info))){
+    city_info$location <- paste0(city_info$lat, "_", city_info$long)
+    city_info <- within(city_info, remove(lat, long))
+  }
 
-pick_single_cities <- function(dt, city_info){
-  city_info$location <- paste0(city_info$lat, "_", city_info$long)
-  dt$location <- paste0(dt$lat, "_", dt$long)
-
-  dt <- dt %>% filter(location %in% city_info$location) %>%
+  if (!("location" %in% colnames(dt))){
+    dt$location <- paste0(dt$lat, "_", dt$long)
+    dt <- within(dt, remove(lat, long))
+  }
+  dt <- dt %>% 
+        filter(location %in% city_info$location) %>%
         data.table()
+  dt <- merge(dt, city_info)
   return(dt)
 }
 
@@ -647,3 +654,5 @@ create_ymdvalues <- function(data_start_year, data_end_year){
     colnames(ymd) <- c("year", "month", "day")
     return(ymd)
 }
+
+

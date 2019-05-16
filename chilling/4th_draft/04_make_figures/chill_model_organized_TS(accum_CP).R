@@ -40,7 +40,7 @@ remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
     data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
   }
   data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
-  data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
+  # data_dt <- left_join(x=data_dt, y=LocationGroups_NoMontana)
   data_dt <- within(data_dt, remove(location))
   return(data_dt)
 }
@@ -53,14 +53,14 @@ summary_comp$scenario[summary_comp$scenario=="rcp85"] = "RCP 8.5"
 summary_comp <- summary_comp %>% filter(year!=2025)
 # summary_comp <- summary_comp %>% filter(year<=2096)
 
-weather <- c("Cooler Areas", "Warmer Areas", "Oregon Areas")
-summary_comp$warm_cold <- factor(summary_comp$warm_cold, order=T, level=weather)
+# weather <- c("Cooler Areas", "Warmer Areas", "Oregon Areas")
+# summary_comp$warm_cold <- factor(summary_comp$warm_cold, order=T, level=weather)
 
 # 3. Plotting -------------------------------------------------------------
 quality = 300
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
-                            group_by(warm_cold, year, model, scenario) %>%
+                            group_by(year, model, scenario) %>%
                             summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>% 
                             data.table()
 
@@ -77,7 +77,7 @@ thresh_new_plot <- function(data, percentile){
                              alpha = 0.25, shape = 21, size = .25) +
               geom_smooth(aes(x = year, y = y, color = scenario),
                               method = "lm", size=1, se=F) +
-              facet_wrap( ~ warm_cold) +
+              # facet_wrap( ~ warm_cold) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +
@@ -121,7 +121,7 @@ thresh_75_all_plot <- thresh_new_plot(data = summary_comp_loc_medians, percentil
 hist_sm_sz = 1
 thresh_hist_plot <- summary_comp %>%
                     filter(model == "observed") %>%
-                    group_by(warm_cold, year) %>%
+                    group_by(year) %>% # warm_cold
                     summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>%
                     ggplot() +
                     geom_point(aes(x = year, y = thresh_75_med, fill = "75 units"), 
@@ -200,7 +200,7 @@ thresh_hist_plot <- summary_comp %>%
                     scale_color_manual(name = "Threshold", values = seq(1:12)) +
                     scale_fill_manual(name = "Threshold", values = seq(1:12)) +
                     scale_y_continuous(breaks=c(0, 50, 100, 75, 122, 137, 150, 200, 250, 300)) + 
-                    facet_wrap( ~ warm_cold) +
+                    # facet_wrap( ~ warm_cold) +
                     ylab("days") +
                     xlab("year") +
                     scale_x_continuous(limits = c(1975, 2020)) +
@@ -267,7 +267,7 @@ accum_plot <- function(data, y_name, due){
                          alpha = 0.25, shape = 21) +
               geom_smooth(aes(x = year, y = y, color = scenario),
                           method = "lm", size=1.2, se = F) +
-              facet_wrap( ~ warm_cold) +
+              # facet_wrap( ~ warm_cold) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +              
@@ -304,7 +304,7 @@ accum_hist_plot <- function(data, y_name, due){
                              shape = 21, fill = "#21908CFF") +
               geom_smooth(aes(x = year, y = y), method = "lm",
                               se = F, size=.5, color = "#21908CFF") +
-              facet_wrap( ~ warm_cold) +
+              # facet_wrap( ~ warm_cold) +
               ylab("Accum. chill units") +
               xlab("year") +
               scale_x_continuous(limits = c(1975, 2020)) +
@@ -332,7 +332,7 @@ accum_hist_plot <- function(data, y_name, due){
 # Data frame for historical values to be used for these figures
 summary_comp_hist <- summary_comp %>%
                      filter(model == "observed") %>%
-                     group_by(warm_cold, year) %>%
+                     group_by(year) %>% # warm_cold
                      summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1))
 
 ############################

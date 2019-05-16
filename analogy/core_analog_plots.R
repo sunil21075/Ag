@@ -16,7 +16,7 @@ plot_the_map <- function(a_dt, county2, title_p,
                          most_similar_cnty_map_info){
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
                geom_polygon(data = county2, fill="lightgrey") +
-               geom_polygon(data = most_similar_cnty_F1_map_info, color="red", size = 1) +
+               geom_polygon(data = most_similar_cnty_map_info, color="red", size = 1) +
                geom_polygon(data = target_county_map_info, color="yellow", size = 1) +
                geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01)+
                coord_quickmap() + 
@@ -52,7 +52,6 @@ plot_the_pie <- function(DT, titl, subtitle){
                          "most similar to ", subtitle)) 
   return(pp)
 }
-
 
 plot_the_pie_all_possible <- function(dat, titl){
   pp <- ggplot(DT, aes(fill=category, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +

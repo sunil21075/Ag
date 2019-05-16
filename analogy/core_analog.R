@@ -240,7 +240,6 @@ no_locs_in_a_county <- function(Min_fips, target_fip){
   return(counts[1, 1])
 }
 
-
 count_novel_quick <- function(NNs, sigmas, county_list, novel_bd=4){
   # NNs: data table of all nearest neighbors of all locations for all years in a given model
   # county_list: data table of counties' fips and locations (lat_long)
