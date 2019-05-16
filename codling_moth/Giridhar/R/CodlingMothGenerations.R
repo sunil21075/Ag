@@ -237,10 +237,10 @@ calcPopulation <- function(filename, input_folder, output_folder)
   outfile <- paste0(output_folder, paste0("CM", strsplit(filename, "data")[[1]][2]))
   print(outfile)  
   #start time in the met data
-  data_start_year<-1979  
-  data_start_month<-1
-  data_start_day<-1
-  data_end_year<-2015 #end time in the data
+  data_start_year <- 1979  
+  data_start_month <- 1
+  data_start_day <- 1
+  data_end_year <- 2015 # end time in the data
   
   # get number of records and number years, indices of variables 
   ## indices just denote the fact that, given n variables, a new day's data starts every nth read 

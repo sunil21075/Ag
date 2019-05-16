@@ -1,5 +1,5 @@
 ######################################################################
-rm(list=ls())
+# rm(list=ls())
 
 library(lubridate)
 library(purrr)
@@ -17,21 +17,10 @@ options(digits=9)
 
 ######################################################################
 ####
-####         Set up directories
-####
-######################################################################
-
-data_sub_dirs <- c("no_no_85/", "no_w_85/", "w_no_85/", "w_w_85/", 
-                   "no_no_45/", "no_w_45/", "w_no_45/", "w_w_45/")
-
-data_dir <- paste0("/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/", sigma_bd , "_sigma/",data_sub_dirs[1])
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/analogy/parameters/"
-sigma_bd <- 2
-######################################################################
-####
 ####           global Files
 ####
 ######################################################################
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/analogy/parameters/"
 local_cnty_fips <- "local_county_fips.csv"
 usa_cnty_fips <- "all_us_1300_county_fips_locations.csv"
 local_fip_cnty_name_map <- "17_counties_fips_unique.csv"
@@ -58,12 +47,26 @@ time_p <- c("2026_2050", "2051_2075", "2076_2095")
 emissions <- c("rcp45", "rcp85")
 
 ######################################################################
+####
+####         Set up directories
+####
+######################################################################
+sigma_bd <- 1
+data_sub_dirs <- c("no_precip_no_gen3_rcp85/", "w_precip_no_gen3_rcp85/",
+                   "no_precip_no_gen3_rcp45/", "w_precip_no_gen3_rcp45/",
+                   "no_precip_w_gen3_rcp85/", "no_precip_w_gen3_rcp45/",
+                   "w_precip_w_gen3_rcp85/", "w_precip_w_gen3_rcp45/")
+
+sub_dir <- data_sub_dirs[4]
+data_dir <- paste0("/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/", sigma_bd, "_sigma/", sub_dir)
+
+######################################################################
 ######################################################################
 target_fip <- local_fips[1]
 model_n <- model_names[1]
-emission <- emissions[2]
+emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
 
-target_fip= 53077
+# target_fip= 53077
 
 for (target_fip in local_fips){
   for(model_n in model_names){
@@ -175,6 +178,7 @@ for (target_fip in local_fips){
                              unlist(strsplit(most_similar_cnty_F3, "_"))[1], sep= ", ")
 
     # Plot the donuts
+    paste0(c(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3))
     assign(x = paste0("pie_", gsub("-", "_", model_n), "_F1"), 
                       value = {plot_the_pie(one_mod_pie_info_F1, titlem_F1, most_similar_cnty_F1)})
     
@@ -185,16 +189,17 @@ for (target_fip in local_fips){
                       value = {plot_the_pie(one_mod_pie_info_F3, titlem_F3, most_similar_cnty_F3)})
     
     # plot geographical maps:
-    target_county_map_info <- cnty2 %>% filter(fips == target_fip)
-    most_similar_cnty_F1_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F1_fip)
-    most_similar_cnty_F2_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F2_fip)
-    most_similar_cnty_F3_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
     
     data(county.fips) # Load the county.fips dataset for plotting
     cnty <- map_data("county") # Load the county data from the maps package
     cnty2 <- cnty %>%
              mutate(polyname = paste(region, subregion, sep=",")) %>%
              left_join(county.fips, by="polyname")
+
+    target_county_map_info <- cnty2 %>% filter(fips == target_fip)
+    most_similar_cnty_F1_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F1_fip)
+    most_similar_cnty_F2_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F2_fip)
+    most_similar_cnty_F3_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
     
     assign(x = paste0("map_", gsub("-", "_", model_n), "_F1"), 
            value = {plot_the_map(one_mod_map_info_F1, cnty2, titlem_F1, 
@@ -207,6 +212,12 @@ for (target_fip in local_fips){
     assign(x = paste0("map_", gsub("-", "_", model_n), "_F3"), 
            value = {plot_the_map(one_mod_map_info_F3, cnty2, titlem_F3,
            	                     target_county_map_info, most_similar_cnty_F3_map_info)})
+
+    # rm(most_similar_cnty_F1_map_info, most_similar_cnty_F2_map_info, most_similar_cnty_F3_map_info)
+    # rm(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3)
+    # rm(most_similar_cnty_F1_fip, most_similar_cnty_F2_fip, most_similar_cnty_F3_fip)
+    # rm(titlem_F1, titlem_F2, titlem_F3)
+    # rm(one_mod_pie_info_F1, one_mod_pie_info_F3, one_mod_pie_info_F3)
   }
   assign(x = paste0("plot_", target_fip) , 
          value={ggarrange(plotlist = list(map_bcc_csm1_1_m_F1, map_bcc_csm1_1_m_F2, map_bcc_csm1_1_m_F3,
@@ -227,12 +238,10 @@ for (target_fip in local_fips){
                                           map_GFDL_ESM2M_F1, map_GFDL_ESM2M_F2, map_GFDL_ESM2M_F3,
                                           pie_GFDL_ESM2M_F1, pie_GFDL_ESM2M_F2, pie_GFDL_ESM2M_F3),
                           ncol = 3, nrow = 12, common.legend = TRUE)})
-
 }
 
 master_path <- paste0(data_dir, "/plots/")
 if (dir.exists(master_path) == F) { dir.create(path = master_path, recursive = T)}
-
 
 ggsave("plot_16027_ID_Canyon.png", plot_16027, 
        path=master_path, device="png",
@@ -246,11 +255,9 @@ ggsave("plot_41027_OR_Hood_River.png", plot_41027,
        path=master_path, device="png",
        dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
 
- 
 ggsave("plot_41049_OR_Morrow.png", plot_41049, 
        path=master_path, device="png",
        dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
-
 
 ggsave("plot_41059_OR_Umatilla.png", plot_41059, 
        path=master_path, device="png",
@@ -259,7 +266,6 @@ ggsave("plot_41059_OR_Umatilla.png", plot_41059,
 ggsave("plot_53001_WA_Adams.png", plot_53001, 
        path=master_path, device="png",
        dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
-
 
 ggsave("plot_53005_WA_Benton.png", plot_53005, 
        path=master_path, device="png",

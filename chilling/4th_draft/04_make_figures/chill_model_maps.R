@@ -259,7 +259,7 @@ accum_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45,
                               common.legend = TRUE)
 
 accum_jan45_figs <- annotate_figure(p = accum_jan45_figs,
-                                   top = text_grob(label = "Median accumulated chill units by Jan. 1 under RCP 4.5",
+                                    top = text_grob(label = "Median accumulated chill units by Jan. 1 under RCP 4.5",
                                                    face = "bold", size = 18))
 
 ggsave(filename = "accum_jan45.png", plot = accum_jan45_figs, device = "png",

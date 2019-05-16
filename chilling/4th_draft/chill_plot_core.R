@@ -1,5 +1,3 @@
-plot_frost <- function()
-
 
 safe_box_plot <- function(data, due, chill_start){
   color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") # 

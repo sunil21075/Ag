@@ -819,7 +819,7 @@ provide_time_stuff <- function(start_year, end_year){
   isLeapYear <- leap.year(seq(start_year, end_year))
   countLeapYears <- length(isLeapYear[isLeapYear== TRUE])
   nYears <- length(seq(start_year, end_year))
-  Nrecords <- 366*countLeapYears + 365 * (nYears - countLeapYears ) #33603
+  Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
   Nofvariables <- 4 # number of varaibles or column in the forcing data file
   Years <- seq(start_year, end_year)
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
