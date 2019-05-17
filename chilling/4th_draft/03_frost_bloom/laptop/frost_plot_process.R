@@ -9,13 +9,41 @@ options(digits=9)
 options(digit=9)
 
 ##########################################################################################
-plot_frost_TS <- function(dt){
+plot_frost_TS_model_medians <- function(dt, colname){
   p <- ggplot(data=dt) + 
-       geom_point(aes(x = year, y = dayofyear, fill = model),
+       geom_point(aes(x = year, y = get(colname)),
                       alpha = 0.25, shape = 21, size = 1) + 
-       geom_line(aes(x = year, y = dayofyear, color = model)) +
+       geom_line(aes(x = year, y = get(colname))) +
+       geom_smooth(aes(x = year, y = get(colname)),
+                       method = "lm", size=1, se=F) +
        facet_grid(~ emission ~ city ~ model) +
-       geom_smooth(aes(x = year, y = dayofyear),
+       theme(plot.title = element_text(size=13, face="bold"),
+             plot.margin = margin(1, 1, 1, 1, "cm"),
+             panel.grid.minor = element_blank(),
+             legend.position = "none",
+             panel.spacing = unit(.5, "cm"),
+             panel.grid.major = element_line(size = 0.1),
+             axis.ticks = element_line(color = "black", size = .2),
+             strip.text.x = element_text(size = 14, face = "bold"),
+             strip.text.y = element_text(size = 14, face = "bold"),
+             axis.text.x = element_text(size = 12, face = "bold", color="black", angle=-30),
+             axis.text.y = element_text(size = 12, face = "bold", color="black"),
+             axis.title.x = element_text(size = 12, face = "bold", 
+                                         margin = margin(t=12, r=0, b=0, l=0)),    
+             axis.title.y = element_text(size = 12, face = "bold", 
+                                         margin = margin(t=0, r=12, b=0, l=0)),
+             axis.ticks.y = element_blank()) + 
+        labs(y = "day of year")
+  return (p)
+}
+
+plot_frost_TS <- function(dt, colname){
+  p <- ggplot(data=dt) + 
+       geom_point(aes(x = year, y = get(colname), fill = model),
+                      alpha = 0.25, shape = 21, size = 1) + 
+       geom_line(aes(x = year, y = get(colname), color = model)) +
+       facet_grid(~ emission ~ city ~ model) +
+       geom_smooth(aes(x = year, y = get(colname)),
                        method = "lm", size=1, se=F) + 
        theme(plot.title = element_text(size=13, face="bold"),
              plot.margin = margin(1, 1, 1, 1, "cm"),
@@ -32,7 +60,8 @@ plot_frost_TS <- function(dt){
                                          margin = margin(t=12, r=0, b=0, l=0)),    
              axis.title.y = element_text(size = 28, face = "bold", 
                                          margin = margin(t=0, r=12, b=0, l=0)),
-             axis.ticks.y = element_blank())
+             axis.ticks.y = element_blank()) + 
+       labs(y = "day of year")
   return (p)
 }
 

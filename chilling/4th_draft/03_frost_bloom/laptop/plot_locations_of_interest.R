@@ -106,8 +106,8 @@ fifth_frost_double_limited <- fifth_frost_limited %>% filter(model %in% subset_o
 first_frost_double_limited <- rbind(first_frost_double_limited, first_frost_limited_obs)
 fifth_frost_double_limited <- rbind(fifth_frost_double_limited, fifth_frost_limited_obs)
 
-first_frost_limited_loc_mod_TS <- plot_frost_TS(first_frost_double_limited)
-fifth_frost_limited_loc_mod_TS <- plot_frost_TS(fifth_frost_double_limited)
+first_frost_limited_loc_mod_TS <- plot_frost_TS(first_frost_double_limited, colname="dayofyear")
+fifth_frost_limited_loc_mod_TS <- plot_frost_TS(fifth_frost_double_limited, colname="dayofyear")
 
 ggsave(plot = first_frost_limited_loc_mod_TS, 
        filename = "first_frost_limited_loc_mod_TS.png", 
@@ -126,10 +126,63 @@ ggsave(plot = fifth_frost_limited_loc_mod_TS,
 #         Take Median accross models so we have one model per location
 #
 ###################################################################################
+#
+# group by time period, location, emission and year and take medians
+# This way just models are killed per year, and time series can be plotted.
+#
+first_frost_limited_obs <- first_frost_limited  %>% filter(model == "Observed")
+fifth_frost_limited_obs <- fifth_frost_limited  %>% filter(model == "Observed")
 
-# group by time period and location and take medians
+needed_cols <- c("time_period", "city", "emission", "year", "dayofyear", "model")
+first_frost_limited_obs <- subset(first_frost_limited_obs, select=needed_cols)
+fifth_frost_limited_obs <- subset(fifth_frost_limited_obs, select=needed_cols)
 
-first_frost_double_limited <- first_frost_double_limited %>%
-                              group_by(time_period, city, emission)
+##### modeled
+# subset
 
+first_frost_double_limited <- first_frost_limited %>% filter(model != "Observed")
+fifth_frost_double_limited <- fifth_frost_limited %>% filter(model != "Observed")
+
+# get medians
+first_frost_double_limited_M <- first_frost_double_limited %>%
+                                group_by(time_period, city, emission, year) %>%
+                                summarise(dayofyear = median(dayofyear)) %>%
+                                data.table()
+
+fifth_frost_double_limited_M <- first_frost_double_limited %>%
+                                group_by(time_period, city, emission, year) %>%
+                                summarise(dayofyear = median(dayofyear)) %>%
+                                data.table()
+
+first_frost_double_limited_M$model <- "median_of_19_models"
+fifth_frost_double_limited_M$model <- "median_of_19_models"
+
+first_frost_double_limited_M <- rbind(first_frost_double_limited_M, first_frost_limited_obs)
+fifth_frost_double_limited_M <- rbind(fifth_frost_double_limited_M, fifth_frost_limited_obs)
+
+first_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=first_frost_double_limited_M, colname="dayofyear")
+fifth_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=fifth_frost_double_limited_M, colname="dayofyear")
+
+ggsave(plot = first_frost_double_limited_M_TS, 
+       filename = "first_frost_limited_loc_median_TS.png", 
+       width = 12, height = 40, units = "in", 
+       dpi = 400, device = "png",
+       path = data_dir)
+
+ggsave(plot = fifth_frost_double_limited_M_TS, 
+       filename = "fifth_frost_limited_loc_median_TS.png", 
+       width = 12, height = 40, units = "in", 
+       dpi = 400, device = "png",
+       path = data_dir)
+
+
+
+###################################################################################
+#
+#          Median accross models for box plots
+#
+###################################################################################
+
+first_frost_limited
+fifth_frost_limited
 
