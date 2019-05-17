@@ -20,7 +20,13 @@ plot_the_map <- function(a_dt, county2, title_p,
                geom_polygon(data = target_county_map_info, color="yellow", size = 1) +
                geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01)+
                coord_quickmap() + 
-               theme(legend.title = element_blank(),
+               theme(plot.title = element_text(size=16, face="bold"),
+                     plot.margin = unit(c(t=.5, r=0.1, b= -2, l=0.1), "cm"),
+                     legend.title = element_blank(),
+                     legend.position = "bottom",
+                     legend.key.size = unit(10, "line"),
+                     legend.text = element_text(size=30, face="bold"),
+                     legend.margin = margin(t=.5, r=0, b=1, l=0, unit = 'cm'),
                      axis.text.x = element_blank(),
                      axis.text.y = element_blank(),
                      axis.ticks.x = element_blank(),
@@ -37,6 +43,7 @@ plot_the_pie <- function(DT, titl, subtitle){
         coord_polar(theta="y") +
         xlim(c(0, 4)) +
         theme(plot.title = element_text(size=16, face="bold"), 
+              plot.margin = unit(c(t=-2, r=0, b=.5, l=0), "cm"),
               panel.grid=element_blank(),
               axis.text = element_blank(),
               axis.ticks = element_blank(),

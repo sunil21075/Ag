@@ -140,8 +140,6 @@ lat = x[1, ]; long = x[2, ];
 analogs <- paste0(lat, "_", long)
 
 
-
-
 Drop the word county: https://stackoverflow.com/questions/55599225/drop-a-word-in-a-column-of-data-table-in-r/55599424#55599424
 counties[, COUNTY := sub("\\s+County$", "", COUNTY)]
 df$county = gsub("county", "", df$county)
