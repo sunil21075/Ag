@@ -15,8 +15,11 @@ options(digit=9)
                          ##############################
 
 #######################################################################################
+dues <- c("Dec", "Jan", "Feb")
+due <- dues[2]
 
 data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/frost_bloom/"
+data_dir <- paste0(data_dir, due, "/")
 param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 
 #######################################################################################
@@ -26,8 +29,8 @@ LOI <- data.table(read.csv(paste0(param_dir, "limited_locations.csv"), as.is=T))
 #######################################################################################
 
 # Read Data
-first_frost <- data.table(readRDS(paste0(data_dir, "first_frost.rds")))
-fifth_frost <- data.table(readRDS(paste0(data_dir, "fifth_frost.rds")))
+first_frost <- data.table(readRDS(paste0(data_dir, "first_frost_till_", due, ".rds")))
+fifth_frost <- data.table(readRDS(paste0(data_dir, "fifth_frost_till_", due, ".rds")))
 
 #######################################################################################
                          #                            #
@@ -49,11 +52,11 @@ assembeled <- annotate_figure(assembeled,
                                                color = "black", face = "bold", 
                                                size = 12, hjust = 1.05))
 
-ggsave(plot = assembeled, 
+ggsave(path = data_dir, 
+       plot = assembeled, 
        filename = "frost_all_locs.png", 
        width = 10, height = 8, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+       dpi = 400, device = "png")
 
 ########################################################
 #

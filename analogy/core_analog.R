@@ -23,6 +23,52 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+filter_pure_analogs <- function(analog_dt){
+  #     SANITY Check
+  # find most similar analog county
+  # filter the data that are analog 
+  # i.e. (exclude the row with "no_analog" in analog_NNs_county column)
+
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  analog_dt <- analog_dt %>% filter(analog_NNs_county != "no_analog")
+  analog_dt$analog_NNs_county <- as.integer(analog_dt$analog_NNs_county)
+  return(analog_dt)
+}
+
+standardize_by_all_pairs <- function(analog_dt, 
+                                     f_fips_dt, h_fips_dt, 
+                                     f_years, h_years){
+  # inputs: analog_dt. It contains 4 columns: 
+  #                    "query_county", "analog_NNs_county", "analog_freq", "model"
+  #                     a) query_county: will be future_target_fips input of 
+  #                                   all_inter_cnty_pair_count(.)
+  #                     b) analog_NNs_county: will be the column we iterate through
+  #                        to count number of grids in each fips.
+  #                     c) analog_freq: the column to standerdize.
+  #         f_fips_dt: data table containing locations, fips, st_county
+  #         h_fips_dt: data table containing locations, fips, st_county
+  #
+  analog_dt <- filter_pure_analogs(analog_dt)
+  f_tgt_fips <- unique(analog_dt$query_county)
+  h_fips_vec <- analog_dt$analog_NNs_county
+
+  for (h_tgt_fip in h_fips_vec){
+    denom <- all_inter_cnty_pair_count(future_fips_dt = f_fips_dt, 
+                                       hist_fips_dt = h_fips_dt, 
+                                       future_target_fips = f_tgt_fips, 
+                                       hist_target_fips = h_tgt_fip,
+                                       f_yrs=f_years, h_yrs=h_years)
+
+    numer <- analog_dt$analog_freq[analog_dt$analog_NNs_county == h_tgt_fip]
+    analog_dt$analog_freq[analog_dt$analog_NNs_county == h_tgt_fip] = numer/denom
+
+  }
+  hist_target_row <- analog_dt[which.max(analog_dt$analog_freq),]
+  hist_target_fip <- hist_target_row$analog_NNs_county
+  
+  return(list(data.table(analog_dt), hist_target_fip))
+}
+
 produce_dt_for_map <- function(b_dt){
   data(county.fips)        # Load the county.fips dataset for plotting
   ct <- map_data("county") # Load the county data from the maps package
@@ -36,26 +82,25 @@ produce_dt_for_map <- function(b_dt){
 
 produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, f_fips, h_fips, f_years, h_years=37){
 
+
   analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+
   analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
   
   # find most similar analog county
   # filter the data that are analog 
   # i.e. (exclude the row with "no_analog" in analog_NNs_county column)
-
   just_analogs <- analog_dt %>% filter(analog_NNs_county != "no_analog")
-
   hist_target_row <- just_analogs[which.max(just_analogs$analog_freq),]
   hist_target_fip <- hist_target_row$analog_NNs_county
   inter_county_analog_count <- hist_target_row$analog_freq
   
   # count number of inter-county (grind, year) pairs ((grid_f_i, f_y_1), (grid_h_i, f_h_1))
-  all_possible_analog_cnt <- all_possible_inter_county_similarity(future_fips_dt = f_fips, 
-                                                                  hist_fips_dt = h_fips, 
-                                                                  future_target_fip = tgt_fip,
-                                                                  hist_target_fips = hist_target_fip, 
-                                                                  f_yrs=f_years, 
-                                                                  h_yrs=h_years)
+  all_possible_analog_cnt <- all_inter_cnty_pair_count(future_fips_dt = f_fips, 
+                                                       hist_fips_dt = h_fips, 
+                                                       future_target_fip = tgt_fip,
+                                                       hist_target_fips = hist_target_fip, 
+                                                       f_yrs = f_years, h_yrs = h_years)
 
   analog_dt <- data.table(analog_dt)
   inter_county_analog_count_complement <- all_possible_analog_cnt - inter_county_analog_count
@@ -73,7 +118,7 @@ produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, f_fips, h_fips, f_years, h
   DT$ymax = cumsum(DT$fraction)
   DT$ymin = c(0, head(DT$ymax, n=-1))
 
-  return (list(DT, hist_target_fip))
+  return (DT)
 }
 
 produce_dt_for_pie_Q3 <- function(analog_dt, novel_dt, tgt_fip){
@@ -104,9 +149,7 @@ produce_dt_for_pie_Q3 <- function(analog_dt, novel_dt, tgt_fip){
                   fraction= c((self_similarity_count/denom), (non_self_simil_cnt/denom)))
 
   DT = DT[order(DT$fraction), ]
- 
   DT$category <- factor(DT$category, order=T, levels=vvv)
-
   DT$ymax = cumsum(DT$fraction)
   DT$ymin = c(0, head(DT$ymax, n=-1))
 
@@ -193,50 +236,31 @@ produce_dt_for_pie_all_possible <- function(analog_dt, novel_dt, tgt_fip, f_fips
   return (DT)
 }
 
-all_possible_inter_county_similarity <- function(future_fips_dt, hist_fips_dt, 
-                                                 future_target_fips, hist_target_fips,
-                                                 f_yrs, h_yrs){
+all_inter_cnty_pair_count <- function(future_fips_dt, hist_fips_dt, 
+                                      future_target_fips, hist_target_fips,
+                                      f_yrs, h_yrs){
   
-  f_locs <- no_locs_in_a_county_and_our_f_model(future_fips_dt, future_target_fips)
-  h_locs <- no_locs_in_a_county_and_our_hist_model(hist_fips_dt, hist_target_fips)
+  f_locs <- no_locs_in_a_county(future_fips_dt, future_target_fips)
+  h_locs <- no_locs_in_a_county(hist_fips_dt, hist_target_fips)
   return(f_locs * h_locs * f_yrs * h_yrs)
 }
 
 all_possible_ss <- function(future_fips_dt, hist_fips_dt, target_fips, f_yrs, h_yrs){
-  f_locs <- no_locs_in_a_county_and_our_f_model(future_fips_dt, target_fips)
-  h_locs <- no_locs_in_a_county_and_our_hist_model(hist_fips_dt, target_fips)
+  f_locs <- no_locs_in_a_county(future_fips_dt, target_fips)
+  h_locs <- no_locs_in_a_county(hist_fips_dt, target_fips)
   return(f_locs * h_locs * f_yrs * h_yrs)
 }
 
-no_locs_in_a_county_and_our_f_model <- function(fips_dt, target_fip){
+no_locs_in_a_county <- function(fips_dt, target_fip){
   # input: fips_dt: a data table containing county of a given location
   #                 which includes columns: fips, location, lat, long
   #                 We have to use a file that only contains the locations
   #                 used in our data.
   #        target_fips: a given county fips
   # output: number of locations/grids in a given county
-  counts <- fips_dt %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
-  return(counts[1, 1])
-}
-
-no_locs_in_a_county_and_our_hist_model <- function(fips_dt, target_fip){
-  # input: fips_dt: a data table containing county of a given location
-  #                 which includes columns: fips, location, lat, long
-  #                 We have to use a file that on;y contains the locations
-  #                 used in our data.
-  #        target_fips: a given county fips
-  # output: number of locations/grids in a given county
-  counts <- fips_dt %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
-  return(counts[1, 1])
-}
-
-no_locs_in_a_county <- function(Min_fips, target_fip){
-  # input: Min_fips: a data table containing county of a given location
-  #                 which includes columns: fips, location, lat, long
-  #                 Lets just use Min's file. to be consistent.
-  #        target_fips: a given county fips
-  # output: number of locations/grids in a given county
-  counts <- Min_fips %>% filter(fips == target_fip) %>% summarise(count = n_distinct(location))
+  counts <- fips_dt %>% 
+            filter(fips == target_fip) %>% 
+            summarise(count = n_distinct(location))
   return(counts[1, 1])
 }
 

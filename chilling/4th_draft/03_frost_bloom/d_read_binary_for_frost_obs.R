@@ -76,14 +76,40 @@ for(file in dir_con){
   observed_dt <- rbind(observed_dt, met_data)
 }
 
-
-observed_dt <- observed_dt %>% filter(month %in% c(9, 10, 11, 12))
-observed_dt <- observed_dt %>% filter(tmin <= 0)
 observed_dt <- remove_montana(observed_dt, LocationGroups_NoMontana)
-observed_dt <- add_time_periods_observed(observed_dt)
+observed_dt <- observed_dt %>% filter(tmin <= 0)
 
-observed_dt <- within(observed_dt, remove(dum, lat, long))
-saveRDS(observed_dt, paste0(frost_out, "observed_dt.rds"))
+observed_dt_till_Dec <- observed_dt %>% filter(month %in% c(9, 10, 11, 12))
+observed_dt_till_Jan <- observed_dt %>% filter(month %in% c(9, 10, 11, 12, 1))
+observed_dt_till_Feb <- observed_dt %>% filter(month %in% c(9, 10, 11, 12, 1, 2))
+
+rm(observed_dt)
+
+######## Reduce the year of the Jan and Feb so they are in the right chill season
+observed_dt_till_Jan$year[observed_dt_till_Jan$month ==1 ] = observed_dt_till_Jan$year[observed_dt_till_Jan$month ==1] - 1
+
+observed_dt_till_Feb$year[observed_dt_till_Feb$month ==1 ] = observed_dt_till_Feb$year[observed_dt_till_Feb$month ==1] - 1
+observed_dt_till_Feb$year[observed_dt_till_Feb$month ==2 ] = observed_dt_till_Feb$year[observed_dt_till_Feb$month ==2] - 1
+
+################################################################
+
+observed_dt_till_Dec <- add_time_periods_observed(observed_dt_till_Dec)
+observed_dt_till_Jan <- add_time_periods_observed(observed_dt_till_Jan)
+observed_dt_till_Feb <- add_time_periods_observed(observed_dt_till_Feb)
+
+######## Jan  of 1950 is in the data, which belongs to chill season 1949,
+######## which we do not have it in the data, so, time period for them will be 
+######## NA, so we drop them.
+observed_dt_till_Jan <- na.omit(observed_dt_till_Jan)
+observed_dt_till_Feb <- na.omit(observed_dt_till_Feb)
+
+observed_dt_till_Dec <- within(observed_dt_till_Dec, remove(dum, lat, long))
+observed_dt_till_Jan <- within(observed_dt_till_Jan, remove(dum, lat, long))
+observed_dt_till_Feb <- within(observed_dt_till_Feb, remove(dum, lat, long))
+
+saveRDS(observed_dt_till_Dec, paste0(frost_out, "observed_dt_till_Dec.rds"))
+saveRDS(observed_dt_till_Jan, paste0(frost_out, "observed_dt_till_Jan.rds"))
+saveRDS(observed_dt_till_Feb, paste0(frost_out, "observed_dt_till_Feb.rds"))
 
 
 end_time <- Sys.time()

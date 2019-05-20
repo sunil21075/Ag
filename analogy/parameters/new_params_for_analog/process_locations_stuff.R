@@ -64,9 +64,32 @@ hist_grid_count <- read.csv(paste0(param_dir, "cod_moth_hist_grid_count_within_c
                             header=T, as.is=T)  %>%
                             data.table()
 
-hist_grid_count <- hist_grid_count %>% 
-                   filter(grid_count >= 10)
+hist_grid_count_10 <- hist_grid_count %>% 
+                      filter(grid_count >= 10) %>%
+                      data.table()
 
-write.table(hist_grid_count, file = paste0(param_dir, "hist_counties_with_more_10.csv"), 
+hist_grid_count_5 <- hist_grid_count %>% 
+                     filter(grid_count >= 5) %>%
+                     data.table()
+
+hist_grid_count_7 <- hist_grid_count %>% 
+                     filter(grid_count >= 7) %>%
+                     data.table()
+
+hist_grid_count_9 <- hist_grid_count %>% 
+                     filter(grid_count >= 9) %>%
+                     data.table()
+
+write.table(hist_grid_count_10, file = paste0(param_dir, "hist_counties_with_more_10.csv"), 
+            row.names=FALSE, na="", col.names=T, sep=",")
+
+
+write.table(hist_grid_count_5, file = paste0(param_dir, "hist_counties_with_more_5.csv"), 
+            row.names=FALSE, na="", col.names=T, sep=",")
+
+write.table(hist_grid_count_7, file = paste0(param_dir, "hist_counties_with_more_7.csv"), 
+            row.names=FALSE, na="", col.names=T, sep=",")
+
+write.table(hist_grid_count_9, file = paste0(param_dir, "hist_counties_with_more_9.csv"), 
             row.names=FALSE, na="", col.names=T, sep=",")
 

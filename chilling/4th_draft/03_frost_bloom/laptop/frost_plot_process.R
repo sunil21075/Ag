@@ -258,53 +258,53 @@ time_periods <- c("1979-2016", "1950-2005", "2006-2025", "2026-2050", "2051-2075
 #################### 5th
 ####################
 
-fifth_frost_45 <- data.table(readRDS(paste0(in_dir, "fifth_frost_45.rds")))
-fifth_frost_85 <- data.table(readRDS(paste0(in_dir, "fifth_frost_85.rds")))
-fifth_frost <- rbind(fifth_frost_45, fifth_frost_85)
-rm(fifth_frost_45, fifth_frost_85)
+# fifth_frost_45 <- data.table(readRDS(paste0(in_dir, "fifth_frost_45.rds")))
+# fifth_frost_85 <- data.table(readRDS(paste0(in_dir, "fifth_frost_85.rds")))
+# fifth_frost <- rbind(fifth_frost_45, fifth_frost_85)
+# rm(fifth_frost_45, fifth_frost_85)
 
-fifth_frost$time_period <- factor(fifth_frost$time_period, order=T, levels=time_periods)
-fifth_frost_box <- boxplot_frost_dayofyear(fifth_frost, kth_day=5)
+# fifth_frost$time_period <- factor(fifth_frost$time_period, order=T, levels=time_periods)
+# fifth_frost_box <- boxplot_frost_dayofyear(fifth_frost, kth_day=5)
 
-ggsave(filename = "fifth_frost_box.png",
-       path = in_dir, 
-       plot = fifth_frost_box,
-       width = 10, height = 10, units = "in",
-       dpi = 300, 
-       device = "png",
-       limitsize = FALSE)
+# ggsave(filename = "fifth_frost_box.png",
+#        path = in_dir, 
+#        plot = fifth_frost_box,
+#        width = 10, height = 10, units = "in",
+#        dpi = 300, 
+#        device = "png",
+#        limitsize = FALSE)
 
-fifth_frost_TS <- TS_frost_dayofyear(fifth_frost)
-ggsave(filename = "fifth_frost_TS.png",
-       path = in_dir, 
-       plot = fifth_frost_TS,
-       width = 10, height = 10, units = "in",
-       dpi = 300, 
-       device = "png",
-       limitsize = FALSE)
+# fifth_frost_TS <- TS_frost_dayofyear(fifth_frost)
+# ggsave(filename = "fifth_frost_TS.png",
+#        path = in_dir, 
+#        plot = fifth_frost_TS,
+#        width = 10, height = 10, units = "in",
+#        dpi = 300, 
+#        device = "png",
+#        limitsize = FALSE)
 
-rm(fifth_frost, fifth_frost_box)
+# rm(fifth_frost, fifth_frost_box)
 
 
 ####################
 #################### 1st
 ####################
 
-first_frost_45 <- data.table(readRDS(paste0(in_dir, "first_frost_45.rds")))
-first_frost_85 <- data.table(readRDS(paste0(in_dir, "first_frost_85.rds")))
-first_frost <- rbind(first_frost_45, first_frost_85)
-rm(first_frost_45, first_frost_85)
+# first_frost_45 <- data.table(readRDS(paste0(in_dir, "first_frost_45.rds")))
+# first_frost_85 <- data.table(readRDS(paste0(in_dir, "first_frost_85.rds")))
+# first_frost <- rbind(first_frost_45, first_frost_85)
+# rm(first_frost_45, first_frost_85)
 
-first_frost$time_period <- factor(first_frost$time_period, order=T, levels=time_periods)
-first_frost_box <- boxplot_frost_dayofyear(first_frost, kth_day=1)
+# first_frost$time_period <- factor(first_frost$time_period, order=T, levels=time_periods)
+# first_frost_box <- boxplot_frost_dayofyear(first_frost, kth_day=1)
 
-ggsave(filename = "first_frost_box.png",
-       path = in_dir, 
-       plot = first_frost_box,
-       width = 10, height = 10, units = "in",
-       dpi = 300, 
-       device = "png",
-       limitsize = FALSE)
+# ggsave(filename = "first_frost_box.png",
+#        path = in_dir, 
+#        plot = first_frost_box,
+#        width = 10, height = 10, units = "in",
+#        dpi = 300, 
+#        device = "png",
+#        limitsize = FALSE)
 
 
 first_frost_TS <- TS_frost_dayofyear(first_frost)
