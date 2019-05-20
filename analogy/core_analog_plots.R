@@ -45,18 +45,20 @@ plot_the_pie <- function(DT, titl, subtitle){
         theme(plot.title = element_text(size=16, face="bold"), 
               plot.margin = unit(c(t=-2, r=0, b=.5, l=0), "cm"),
               panel.grid=element_blank(),
-              axis.text = element_blank(),
-              axis.ticks = element_blank(),
               legend.spacing.x = unit(.2, 'cm'),
               legend.title = element_blank(),
               legend.position = "bottom",
               legend.key.size = unit(1.6, "line"),
               legend.text = element_text(size=26)) +
+        theme(axis.text=element_blank()) + 
+        theme(axis.title=element_blank()) + 
+        theme(axis.ticks = element_blank()) +
         labs(title=titl) + 
-        annotate("text", x = 0, y = 0, 
+        annotate("text", x = 0, y = 0, colour = "red", size = 6,
                  label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]), 
                          "\n",
-                         "most similar to ", subtitle)) 
+                         "most similar to ", "\n", 
+                         subtitle)) 
   return(pp)
 }
 

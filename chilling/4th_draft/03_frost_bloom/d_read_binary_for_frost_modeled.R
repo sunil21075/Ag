@@ -81,13 +81,34 @@ for(file in dir_con){
 
 }
 
-data <- data %>% filter(month %in% c(9, 10, 11, 12))
 data <- data %>% filter(tmin <= 0)
 data <- remove_montana(data, LocationGroups_NoMontana)
-data <- add_time_periods_model(data)
-data <- within(data, remove(dum, lat, long))
 
-saveRDS(data, paste0(current_out, "_data.rds"))
+data_till_Dec <- data %>% filter(month %in% c(9, 10, 11, 12))
+data_till_Jan <- data %>% filter(month %in% c(9, 10, 11, 12, 1))
+data_till_Feb <- data %>% filter(month %in% c(9, 10, 11, 12, 1, 2))
+rm(data)
+
+######## Reduce the year of the Jan and Feb so they are in the right chill season
+
+data_till_Jan$year[data_till_Jan$month ==1 ] = data_till_Jan$year[data_till_Jan$month ==1] - 1
+
+data_till_Feb$year[data_till_Feb$month ==1 ] = data_till_Feb$year[data_till_Feb$month ==1] - 1
+data_till_Feb$year[data_till_Feb$month ==2 ] = data_till_Feb$year[data_till_Feb$month ==2] - 1
+################################
+data_till_Dec <- add_time_periods_model(data_till_Dec)
+data_till_Jan <- add_time_periods_model(data_till_Jan)
+data_till_Feb <- add_time_periods_model(data_till_Feb)
+
+################################
+
+data_till_Dec <- within(data_till_Dec, remove(dum, lat, long))
+data_till_Jan <- within(data_till_Jan, remove(dum, lat, long))
+data_till_Feb <- within(data_till_Feb, remove(dum, lat, long))
+
+saveRDS(data_till_Dec, paste0(current_out, "_data_till_Dec.rds"))
+saveRDS(data_till_Jan, paste0(current_out, "_data_till_Jan.rds"))
+saveRDS(data_till_Feb, paste0(current_out, "_data_till_Feb.rds"))
 
 end_time <- Sys.time()
 print( end_time - start_time)
