@@ -19,8 +19,9 @@ historical <- data.table()
 rcp45 <- data.table()
 rcp85 <- data.table()
 
-main_in <- "/data/hydro/users/Hossein/chill/frost_bloom_initian_database/modeled/"
-out_dir <- "/data/hydro/users/Hossein/chill/frost_bloom_initian_database/frost_RDS/"
+main_in <- "/data/hydro/users/Hossein/chill/frost_bloom_initial_database/modeled/"
+out_dir <- "/data/hydro/users/Hossein/chill/frost_bloom_initial_database/frost_RDS/"
+if (dir.exists(out_dir) == F) { dir.create(path = out_dir, recursive = T) }
 
 models <- c("bcc-csm1-1", "bcc-csm1-1-m", "BNU-ESM", "CanESM2", 
             "CCSM4", "CNRM-CM5", "CSIRO-Mk3-6-0", "GFDL-ESM2G", 
@@ -42,32 +43,12 @@ for (model in models){
 
   curr_45$emission <- "RCP 4.5"
   curr_85$emission <- "RCP 8.5"
-  print (paste("dimensions curr_hist are "))
-  print (dim(curr_hist))
-  print ("__________________")
-  print (paste("dimensions curr_45 are "))
-  print (dim(curr_45))
-  print ("__________________")
-  print (paste("dimensions curr_85 are "))
-  print (dim(curr_85))
-  print ("__________________")
   
   historical <- rbind(historical, curr_hist)
   rcp45 <- rbind(rcp45, curr_45)
   rcp85 <- rbind(rcp85, curr_85)
   
   model_counter = model_counter + 1
-  print (paste0("model_counter = ", model_counter))
-  print ("__________________")
-  print (paste("dimensions historical are "))
-  print (dim(historical))
-  print ("__________________")
-  print (paste("dimensions rcp45 are "))
-  print (dim(rcp45))
-  print ("__________________")
-  print (paste("dimensions rcp85 are "))
-  print (dim(rcp85))
-
 }
 
 historical_45 <- historical
@@ -77,11 +58,8 @@ historical_45$emission <- "RCP 4.5"
 historical_85$emission <- "RCP 8.5"
 rm(historical)
 
-main_in_obs <- "/data/hydro/users/Hossein/chill/frost_bloom_initian_database/"
-observed <- data.table(readRDS(paste0(main_in_obs, "observed_dt.rds")))
-print ("dim observed is:")
-print (dim(observed))
-print ("line 71")
+main_in_obs <- "/data/hydro/users/Hossein/chill/frost_bloom_initial_database/"
+observed <- data.table(readRDS(paste0(main_in_obs, "observed_dt_till_Dec.rds")))
 observed_45 <- observed
 observed_85 <- observed
 
@@ -96,24 +74,25 @@ rm(historical_45, historical_85, observed_45, observed_85)
 saveRDS(rcp45, paste0(out_dir, "/rcp45_till_Dec.rds"))
 saveRDS(rcp85, paste0(out_dir, "/rcp85_till_Dec.rds"))
 print ("line 85")
+
 # ###################################################################
 # #
 # #     Compute first and fifth frost day of year
 # #
 # ###################################################################
-in_n_out <- "/data/hydro/users/Hossein/chill/frost_bloom_initian_database/frost_RDS/"
+in_n_out <- "/data/hydro/users/Hossein/chill/frost_bloom_initial_database/frost_RDS/"
 # rcp45 <- data.table(readRDS(paste0(in_n_out, "rcp45_till_Dec.rds")))
 # rcp85 <- data.table(readRDS(paste0(in_n_out, "rcp85_till_Dec.rds")))
 
-first_frost_45 <- kth_smallest_in_group(rcp45, target_column = "dayofyear", k=1)
-first_frost_85 <- kth_smallest_in_group(rcp85, target_column = "dayofyear", k=1)
+first_frost_45 <- kth_smallest_in_group(rcp45, target_column = "chill_dayofyear", k=1)
+first_frost_85 <- kth_smallest_in_group(rcp85, target_column = "chill_dayofyear", k=1)
 first_frost <- rbind(first_frost_45, first_frost_85)
 saveRDS(first_frost, paste0(out_dir, "first_frost_till_Dec.rds"))
 rm(first_frost_45, first_frost_85, first_frost)
 
 print ("line 101")
-fifth_frost_45 <- kth_smallest_in_group(rcp45, target_column = "dayofyear", k=5)
-fifth_frost_85 <- kth_smallest_in_group(rcp85, target_column = "dayofyear", k=5)
+fifth_frost_45 <- kth_smallest_in_group(rcp45, target_column = "chill_dayofyear", k=5)
+fifth_frost_85 <- kth_smallest_in_group(rcp85, target_column = "chill_dayofyear", k=5)
 fifth_frost <- rbind(fifth_frost_45, fifth_frost_85)
 saveRDS(fifth_frost, paste0(out_dir, "fifth_frost_till_Dec.rds"))
 
@@ -123,7 +102,7 @@ rm(fifth_frost_45, fifth_frost_85, fifth_frost)
 #      Compute medians
 #
 ####################################################################
-in_n_out <- "/data/hydro/users/Hossein/chill/frost_bloom_initian_database/frost_RDS/"
+in_n_out <- "/data/hydro/users/Hossein/chill/frost_bloom_initial_database/frost_RDS/"
 
 #######################################
 ####################################### FIRST frost median (1 st)
@@ -134,7 +113,7 @@ first_frost <- data.table(readRDS(paste0(in_n_out, "first_frost_till_Dec.rds")))
 print ("line 122")
 first_frost_medians <- first_frost %>%
                        group_by(time_period, model, location, emission) %>%
-                       summarise(median = median(dayofyear)) %>%
+                       summarise(median = median(chill_dayofyear)) %>%
                        data.table()
 
 saveRDS(first_frost_medians, paste0(out_dir, "first_frost_medians_till_Dec.rds"))
@@ -147,7 +126,7 @@ fifth_frost <- data.table(readRDS(paste0(in_n_out, "fifth_frost_till_Dec.rds")))
 
 fifth_frost_medians <- fifth_frost %>%
                        group_by(time_period, model, location, emission) %>%
-                       summarise(median = median(dayofyear)) %>%
+                       summarise(median = median(chill_dayofyear)) %>%
                        data.table()
 
 saveRDS(fifth_frost_medians, paste0(out_dir, "fifth_frost_medians_till_Dec.rds"))

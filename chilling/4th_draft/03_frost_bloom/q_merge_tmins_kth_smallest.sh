@@ -26,6 +26,8 @@ module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
 Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/03_frost_bloom/d_merge_till_Jan.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/03_frost_bloom/d_merge_till_Feb.R
+Rscript --vanilla /home/hnoorazar/chilling_codes/current_draft/03_frost_bloom/d_merge_till_Dec.R
 
 echo
 echo "----- DONE -----"

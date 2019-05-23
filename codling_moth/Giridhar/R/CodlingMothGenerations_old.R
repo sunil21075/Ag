@@ -72,10 +72,10 @@ CodlingMothPercentPopulation<-function(CodMothParams,metdata_data.table) {
   return(allrelnum)
 }
 
-CodlingMothRelPopulation<-function(CodMothParams,metdata_data.table) {
+CodlingMothRelPopulation<-function(CodMothParams, metdata_data.table) {
   stage_gen_toiterate<-length(CodMothParams[,1])
   masterdata<-data.frame(metdata_data.table$dayofyear,metdata_data.table$year, metdata_data.table$month, metdata_data.table$Cum_dd_F)
-  colnames(masterdata)<-c("dayofyear","year","month","CumddF")
+  colnames(masterdata) <- c("dayofyear","year","month","CumddF")
   for (i in 1:stage_gen_toiterate) {
     relnum<-dweibull(metdata_data.table$Cum_dd_F, shape=CodMothParams[i,3], scale=CodMothParams[i,4]) * 10000
     relnum<-data.frame(relnum)

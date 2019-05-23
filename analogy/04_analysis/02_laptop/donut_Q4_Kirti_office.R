@@ -93,12 +93,13 @@ data_sub_dirs <- c("no_precip_no_gen3_rcp85/", "w_precip_no_gen3_rcp85/",
 
 sub_dir <- data_sub_dirs[4]
 
-for (sub_dir in data_sub_dirs[1:3]){
+for (sub_dir in data_sub_dirs[1:4]){
+  emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
   plot_name_extension <- paste0("_", 
                                 strsplit(sub_dir, "_")[[1]][1], 
-                                "_", strsplit(sub_dir, "_")[[1]][3])
+                                "_", strsplit(sub_dir, "_")[[1]][3], 
+                                "_", emission)
 
-  emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
   sigma_bds <- c(1, 2)
 
   ######################################################################

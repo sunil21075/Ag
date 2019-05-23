@@ -26,3 +26,5 @@ data = bloom(data, bloom_cut_off)
 
 saveRDS(data, paste0(write_dir, "bloom_", version, "_", bloom_cut_off, "_new.rds"))
 print(  Sys.time() - st_time )
+
+

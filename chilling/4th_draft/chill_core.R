@@ -1,5 +1,73 @@
+
 options(digits=9)
 options(digits=9)
+
+form_chill_season_day_of_year_observed <- function(data){
+  ################################
+  ####
+  #### Remove out-of-boundary years
+  ####
+  #
+  # Toss unwanted data
+  #
+  data <- data.table(data)
+  data <- data %>% filter(month %in% c(9, 10, 11, 12, 1, 2))
+  data <- data %>% filter(!(year == 1979 & month %in% c(1, 2)))
+  data <- data %>% filter(!(year == 2016 & month %in% c(9, 10, 11, 12)))
+  
+  # Set January and Feb. to 13th and 14th month of the year
+  # so, we can sort the months, and compute day of year, beginning
+  # Sept.
+  data$month[data$month == 1] = 13
+  data$month[data$month == 2] = 14
+
+  ######## Reduce the year of the Jan and Feb so they are in the right chill season
+  data$year[data$month == 13] = data$year[data$month == 13] - 1
+  data$year[data$month == 14] = data$year[data$month == 14] - 1
+
+  # keycol <- c("year", "month", "day")
+  # setorderv(data, keycol)
+  data <- data.table(data)
+  data$chill_dayofyear <- 1 # dummy
+  data[, chill_dayofyear := cumsum(chill_dayofyear), by=list(year)]
+  data <- data.table(data)
+  return(data)
+}
+
+form_chill_season_day_of_year_modeled <- function(data){
+  ################################
+  ####
+  #### Remove out-of-boundary years
+  ####
+  #
+  # Toss unwanted data
+  #
+  data <- data.table(data)
+  data <- data %>% filter(month %in% c(9, 10, 11, 12, 1, 2))
+  data <- data %>% filter(!(year == 1950 & month %in% c(1, 2)))
+  data <- data %>% filter(!(year == 2005 & month %in% c(9, 10, 11, 12)))
+  data <- data %>% filter(!(year == 2006 & month %in% c(1, 2)))
+  data <- data %>% filter(!(year == 2099 & month %in% c(9, 10, 11, 12)))
+
+
+  # Set January and Feb. to 13th and 14th month of the year
+  # so, we can sort the months, and compute day of year, beginning
+  # Sept.
+  data$month[data$month == 1] = 13
+  data$month[data$month == 2] = 14
+
+  ######## Reduce the year of the Jan and Feb so they are in the right chill season
+  data$year[data$month == 13] = data$year[data$month == 13] - 1
+  data$year[data$month == 14] = data$year[data$month == 14] - 1
+
+  # keycol <- c("year", "month", "day")
+  # setorderv(data, keycol)
+  data <- data.table(data)
+  data$chill_dayofyear <- 1 # dummy
+  data[, chill_dayofyear := cumsum(chill_dayofyear), by=list(year)]
+  data <- data.table(data)
+  return(data)
+}
 
 add_time_periods_model <- function(dt){
   time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2099")
