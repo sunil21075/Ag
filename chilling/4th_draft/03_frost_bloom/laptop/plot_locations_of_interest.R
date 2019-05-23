@@ -1,4 +1,4 @@
-
+rm(list=ls())
 library(data.table)
 library(dplyr)
 library(tidyverse)
@@ -16,176 +16,196 @@ options(digit=9)
 
 #######################################################################################
 dues <- c("Dec", "Jan", "Feb")
-due <- dues[2]
+due <- dues[3]
 
-data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/frost_bloom/"
-data_dir <- paste0(data_dir, due, "/")
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+for (due in dues){
+  data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/frost_bloom/"
+  data_dir <- paste0(data_dir, due, "/")
+  param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
 
-#######################################################################################
+  #######################################################################################
 
-LOI <- data.table(read.csv(paste0(param_dir, "limited_locations.csv"), as.is=T))
+  LOI <- data.table(read.csv(paste0(param_dir, "limited_locations.csv"), as.is=T))
 
-#######################################################################################
+  #######################################################################################
 
-# Read Data
-first_frost <- data.table(readRDS(paste0(data_dir, "first_frost_till_", due, ".rds")))
-fifth_frost <- data.table(readRDS(paste0(data_dir, "fifth_frost_till_", due, ".rds")))
+  # Read Data
+  first_frost <- data.table(readRDS(paste0(data_dir, "first_frost_till_", due, ".rds")))
+  fifth_frost <- data.table(readRDS(paste0(data_dir, "fifth_frost_till_", due, ".rds")))
 
-#######################################################################################
-                         #                            #
-                         #    box plot of all locs    #
-                         #                            #
-                         ##############################
+  # first_frost <- first_frost %>% filter(year != 1949)
+  # fifth_frost <- fifth_frost %>% filter(year != 1949)
+  # saveRDS(first_frost, paste0(data_dir, "first_frost_till_", due, ".rds"))
+  # saveRDS(fifth_frost, paste0(data_dir, "fifth_frost_till_", due, ".rds"))
 
-first_frost_all_locs_box <- boxplot_frost_dayofyear(dt=first_frost, kth_day=1)
-fifth_frost_all_locs_box <- boxplot_frost_dayofyear(dt=fifth_frost, kth_day=5)
+  # write.table(x = first_frost, 
+  #             file =paste0(data_dir, "first_frost_till_", due, ".rds"),
+  #             row.names=F, na="", col.names=T, sep=",")
 
-assembeled <- ggarrange(plotlist = list(first_frost_all_locs_box, fifth_frost_all_locs_box), 
-                        ncol = 1, nrow = 2, 
-                        widths = c(1, 2.3) , heights = 1,
-                        common.legend = TRUE, legend = "bottom")
+  # write.table(x = fifth_frost, 
+  #             file =paste0(data_dir, "fifth_frost_till_", due, ".rds"),
+  #             row.names=F, na="", col.names=T, sep=",")
+  
+  #######################################################################################
+                           #                            #
+                           #    box plot of all locs    #
+                           #                            #
+                           ##############################
 
-annot_text <- "All locations (2358) and 19 models are included here."
-assembeled <- annotate_figure(assembeled,
-                              top = text_grob(annot_text, 
-                                               color = "black", face = "bold", 
-                                               size = 12, hjust = 1.05))
+  annot_text <- "All locations (2358) and 19 models are included here."
+  first_frost_all_locs_box <- boxplot_frost_dayofyear(dt=first_frost, 
+                                                      kth_day=1, 
+                                                      sub_title=annot_text)
+  fifth_frost_all_locs_box <- boxplot_frost_dayofyear(dt=fifth_frost, 
+                                                      kth_day=5, 
+                                                      sub_title=annot_text)
 
-ggsave(path = data_dir, 
-       plot = assembeled, 
-       filename = "frost_all_locs.png", 
-       width = 10, height = 8, units = "in", 
-       dpi = 400, device = "png")
+  assembeled <- ggarrange(plotlist = list(first_frost_all_locs_box, fifth_frost_all_locs_box), 
+                          ncol = 1, nrow = 2, 
+                          widths = c(1, 2.3) , heights = 1,
+                          common.legend = TRUE, legend = "bottom")
 
-########################################################
-#
-#          Filter locations of interest data
-#
+  ggsave(path = data_dir, 
+         plot = assembeled, 
+         filename = paste0(due, "_frost_all_locs.png"), 
+         width = 10, height = 8, units = "in", 
+         dpi = 400, device = "png")
 
-first_frost_limited <- pick_single_cities_by_location(dt=first_frost, city_info=LOI)
-fifth_frost_limited <- pick_single_cities_by_location(dt=fifth_frost, city_info=LOI)
+  ########################################################
+  #
+  #          Filter locations of interest data
+  #
 
-#
-#   Box plot of locations of interest
-#
-first_frost_select_locs_box <- boxplot_frost_dayofyear(dt=first_frost_limited, kth_day=1)
-fifth_frost_select_locs_box <- boxplot_frost_dayofyear(dt=fifth_frost_limited, kth_day=5)
+  first_frost_limited <- pick_single_cities_by_location(dt=first_frost, city_info=LOI)
+  fifth_frost_limited <- pick_single_cities_by_location(dt=fifth_frost, city_info=LOI)
+  #########################################################################################
+  #######################################################################################
+                           #                                       #
+                           #  Box plot of locations of interest    #
+                           #                                       #
+                           #########################################
 
-assembeled_limited <- ggarrange(plotlist = list(first_frost_select_locs_box, 
-                                                fifth_frost_select_locs_box), 
-                                                ncol = 1, nrow = 2, 
-                                                widths = c(1, 2.3) , heights = 1,
-                                                common.legend = TRUE, legend = "bottom")
+  annot_text <- "Selected locations (10) and 19 models are included here."
+  first_frost_select_locs_box <- boxplot_frost_dayofyear(dt=first_frost_limited, 
+                                                         kth_day=1, 
+                                                         sub_title=annot_text)
 
-annot_text <- "Selected locations (10) and 19 models are included here."
-assembeled_limited <- annotate_figure(assembeled_limited,
-                                      top = text_grob(annot_text, 
-                                                      color = "black", face = "bold", 
-                                                       size = 12, hjust = 1))
-ggsave(plot = assembeled_limited, 
-       filename = "frost_selected_locs.png", 
-       width = 10, height = 8, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+  fifth_frost_select_locs_box <- boxplot_frost_dayofyear(dt=fifth_frost_limited, 
+                                                         kth_day=5, 
+                                                         sub_title=annot_text)
 
-###################################################################################
-#
-#         Time Series of limited locations and limited models
-#
-###################################################################################
+  assembeled_limited <- ggarrange(plotlist = list(first_frost_select_locs_box, 
+                                                  fifth_frost_select_locs_box), 
+                                                  ncol = 1, nrow = 2, 
+                                                  widths = c(1, 2.3) , heights = 1,
+                                                  common.legend = TRUE, legend = "bottom")
+  ggsave(plot = assembeled_limited, 
+         filename = paste0(due, "_frost_selected_locs.png"), 
+         width = 10, height = 8, units = "in", 
+         dpi = 400, device = "png",
+         path = data_dir)
 
-subset_of_models <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", 
-                      "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
-##### observed
-first_frost_limited_obs <- first_frost_limited  %>% filter(model == "Observed")
-fifth_frost_limited_obs <- fifth_frost_limited  %>% filter(model == "Observed")
+  ###################################################################################
+  #
+  #         Time Series of limited locations and limited models
+  #
+  ###################################################################################
 
-##### modeled
+  subset_of_models <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", 
+                        "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
+  ##### observed
+  first_frost_limited_obs <- first_frost_limited  %>% filter(model == "Observed")
+  fifth_frost_limited_obs <- fifth_frost_limited  %>% filter(model == "Observed")
 
-first_frost_double_limited <- first_frost_limited %>% filter(model %in% subset_of_models)
-fifth_frost_double_limited <- fifth_frost_limited %>% filter(model %in% subset_of_models)
+  ##### modeled
 
-first_frost_double_limited <- rbind(first_frost_double_limited, first_frost_limited_obs)
-fifth_frost_double_limited <- rbind(fifth_frost_double_limited, fifth_frost_limited_obs)
+  first_frost_double_limited <- first_frost_limited %>% filter(model %in% subset_of_models)
+  fifth_frost_double_limited <- fifth_frost_limited %>% filter(model %in% subset_of_models)
 
-first_frost_limited_loc_mod_TS <- plot_frost_TS(first_frost_double_limited, colname="dayofyear")
-fifth_frost_limited_loc_mod_TS <- plot_frost_TS(fifth_frost_double_limited, colname="dayofyear")
+  first_frost_double_limited <- rbind(first_frost_double_limited, first_frost_limited_obs)
+  fifth_frost_double_limited <- rbind(fifth_frost_double_limited, fifth_frost_limited_obs)
 
-ggsave(plot = first_frost_limited_loc_mod_TS, 
-       filename = "first_frost_limited_loc_mod_TS.png", 
-       width = 21, height = 40, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+  first_frost_limited_loc_mod_TS <- plot_frost_TS(first_frost_double_limited, 
+                                                  colname="chill_dayofyear")
+  fifth_frost_limited_loc_mod_TS <- plot_frost_TS(fifth_frost_double_limited, 
+                                                  colname="chill_dayofyear")
 
-ggsave(plot = fifth_frost_limited_loc_mod_TS, 
-       filename = "fifth_frost_limited_loc_mod_TS.png", 
-       width = 21, height = 40, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+  ggsave(plot = first_frost_limited_loc_mod_TS, 
+         filename = paste0(due, "_first_frost_limited_loc_mod_TS.png"), 
+         width = 21, height = 40, units = "in", 
+         dpi = 400, device = "png",
+         path = data_dir)
 
-###################################################################################
-#
-#         Take Median accross models so we have one model per location
-#
-###################################################################################
-#
-# group by time period, location, emission and year and take medians
-# This way just models are killed per year, and time series can be plotted.
-#
-first_frost_limited_obs <- first_frost_limited  %>% filter(model == "Observed")
-fifth_frost_limited_obs <- fifth_frost_limited  %>% filter(model == "Observed")
+  ggsave(plot = fifth_frost_limited_loc_mod_TS, 
+         filename = paste0(due, "_fifth_frost_limited_loc_mod_TS.png"),
+         width = 21, height = 40, units = "in", 
+         dpi = 400, device = "png",
+         path = data_dir)
 
-needed_cols <- c("time_period", "city", "emission", "year", "dayofyear", "model")
-first_frost_limited_obs <- subset(first_frost_limited_obs, select=needed_cols)
-fifth_frost_limited_obs <- subset(fifth_frost_limited_obs, select=needed_cols)
+  ###################################################################################
+  #
+  #         Take Median accross models so we have one model per location
+  #
+  ###################################################################################
+  #
+  # group by time period, location, emission and year and take medians
+  # This way just models are killed per year, and time series can be plotted.
+  #
 
-##### modeled
-# subset
+  first_frost_limited_obs <- first_frost_limited  %>% filter(model == "Observed")
+  fifth_frost_limited_obs <- fifth_frost_limited  %>% filter(model == "Observed")
 
-first_frost_double_limited <- first_frost_limited %>% filter(model != "Observed")
-fifth_frost_double_limited <- fifth_frost_limited %>% filter(model != "Observed")
+  needed_cols <- c("time_period", "city", "emission", "year", "chill_dayofyear", "model")
+  first_frost_limited_obs <- subset(first_frost_limited_obs, select=needed_cols)
+  fifth_frost_limited_obs <- subset(fifth_frost_limited_obs, select=needed_cols)
 
-# get medians
-first_frost_double_limited_M <- first_frost_double_limited %>%
-                                group_by(time_period, city, emission, year) %>%
-                                summarise(dayofyear = median(dayofyear)) %>%
-                                data.table()
+  ##### modeled
+  # subset
 
-fifth_frost_double_limited_M <- first_frost_double_limited %>%
-                                group_by(time_period, city, emission, year) %>%
-                                summarise(dayofyear = median(dayofyear)) %>%
-                                data.table()
+  first_frost_double_limited <- first_frost_limited %>% filter(model != "Observed")
+  fifth_frost_double_limited <- fifth_frost_limited %>% filter(model != "Observed")
 
-first_frost_double_limited_M$model <- "median_of_19_models"
-fifth_frost_double_limited_M$model <- "median_of_19_models"
+  # get medians
+  first_frost_double_limited_M <- first_frost_double_limited %>%
+                                  group_by(time_period, city, emission, year) %>%
+                                  summarise(chill_dayofyear = median(chill_dayofyear)) %>%
+                                  data.table()
 
-first_frost_double_limited_M <- rbind(first_frost_double_limited_M, first_frost_limited_obs)
-fifth_frost_double_limited_M <- rbind(fifth_frost_double_limited_M, fifth_frost_limited_obs)
+  fifth_frost_double_limited_M <- first_frost_double_limited %>%
+                                  group_by(time_period, city, emission, year) %>%
+                                  summarise(chill_dayofyear = median(chill_dayofyear)) %>%
+                                  data.table()
 
-first_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=first_frost_double_limited_M, colname="dayofyear")
-fifth_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=fifth_frost_double_limited_M, colname="dayofyear")
+  first_frost_double_limited_M$model <- "median_of_19_models"
+  fifth_frost_double_limited_M$model <- "median_of_19_models"
 
-ggsave(plot = first_frost_double_limited_M_TS, 
-       filename = "first_frost_limited_loc_median_TS.png", 
-       width = 12, height = 40, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+  first_frost_double_limited_M <- rbind(first_frost_double_limited_M, first_frost_limited_obs)
+  fifth_frost_double_limited_M <- rbind(fifth_frost_double_limited_M, fifth_frost_limited_obs)
 
-ggsave(plot = fifth_frost_double_limited_M_TS, 
-       filename = "fifth_frost_limited_loc_median_TS.png", 
-       width = 12, height = 40, units = "in", 
-       dpi = 400, device = "png",
-       path = data_dir)
+  first_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=first_frost_double_limited_M, 
+                                                                 colname="chill_dayofyear")
+  
+  fifth_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=fifth_frost_double_limited_M, 
+                                                                 colname="chill_dayofyear")
 
+  ggsave(plot = first_frost_double_limited_M_TS, 
+         filename = paste0(due, "_first_frost_limited_loc_median_TS.png"), 
+         width = 12, height = 40, units = "in", 
+         dpi = 400, device = "png",
+         path = data_dir)
 
-
+  ggsave(plot = fifth_frost_double_limited_M_TS, 
+         filename = paste0(due, "_fifth_frost_limited_loc_median_TS.png"),
+         width = 12, height = 40, units = "in", 
+         dpi = 400, device = "png",
+         path = data_dir)
+}
 ###################################################################################
 #
 #          Median accross models for box plots
 #
 ###################################################################################
 
-first_frost_limited
-fifth_frost_limited
+# first_frost_limited
+# fifth_frost_limited
 

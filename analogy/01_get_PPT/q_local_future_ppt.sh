@@ -1,15 +1,8 @@
 #!/bin/bash
-
-## Export all environment variables in the qsub command's environment to the
-## batch job.
 #PBS -V
-
-## Define a job name
 #PBS -N get_local_PPT
 
-## Define compute options
-#PBS -l nodes=1:dev:ppn=1
-#PBS -l mem=2gb
+#PBS -l nodes=1:ppn=1,mem=2gb
 #PBS -l walltime=01:45:00
 #PBS -q hydro
 #PBS -t 1-72

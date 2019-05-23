@@ -29,7 +29,7 @@ B <- B %>%
 ######## 
 # Chnage name of a columns
 colnames(data)[colnames(data)=="old_name"] <- "new_name"
-setnames(data, old=c("old_name","another_old_name"), new=c("new_name", "another_new_name"))
+setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another_new_name"))
 
 # order a data by a/multiple column. Adding a negative would make the ordering reverse
 A <- A[order(location), ]
@@ -68,13 +68,26 @@ table = data.frame()
 data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
 data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
 
-DT = data.table(
-  row_count = c("b","b","b","a","a","c"),
-  a = 1:6,
-  b = 7:12,
-  c = 13:18
-)
-DT = data.table(row_count = 1:130)
+data <- setNames(data.table(matrix(nrow = 3, ncol = 6)), 
+                 c("future_fip",  "model", "time_period", 
+                   "top_1_fip", "top_2_fip", "top_3_fip"))
+
+data = data.table(future_fip = c(target_fip, target_fip, target_fip),
+                  model = c(model_n, model_n, model_n),
+                  time_period = c("F1", "F2", "F3"),
+                  emission = c(emission, emission, emission),
+                  top_1_fip = c("NA", "NA", "NA"),
+                  top_2_fip = c("NA", "NA", "NA"),
+                  top_3_fip = c("NA", "NA", "NA")
+                  )
+
+
+DT = data.table(row_count = c("b","b","b","a","a","c"),
+                a = 1:6,
+                b = 7:12,
+                c = 13:18)
+
+DT = data.table(row_count = 1:3)
 
 dtr <- structure(list(location = c("NYC", "NYC", "NYC","NYC", "NYC", 
                                    "LA", "LA", "LA", "LA", "LA"), 
@@ -302,3 +315,44 @@ dt[,list(mean=mean(age),sd=sd(age)),by=group]
 
 kth smallest element in group by
 https://stackoverflow.com/questions/56084877/k-th-smallest-element-per-group-in-r/56085151#56085151
+
+
+
+data = data.table(year = c(2005, 2006, 2006, 2006, 2006),
+                  month = c(1, 1, 1, 2, 10),
+                  day = c(10, 20, 30, 40, 50))
+
+data = data.table(city = c("NYC", "NYC", "NYC", "LA", "LA", "LA", "LA"),
+                  year = c(2000, 2000, 2000, 2000, 2000, 2000, 2000),
+                  target = c(0, 1, 1, 0, 0, 1, 1))
+
+data = data.table(city = c("NYC", "NYC", "NYC", "LA", "LA", "LA", "LA"),
+                  year = c(2000, 2000, 2000, 2000, 2000, 2000, 2000),
+                  target = c(0, 666, 1, 0, 0, 666, 1))
+
+
+# replace the first nonzero with another thing after group_by:
+
+data %>%
+group_by(city, year) %>%
+mutate(target = replace(target, which.max(target != 0), 666))
+
+OR 
+i1 <- data[, .I[target != 0][1], .(city, year)]$V1
+data[i1, target := 666][]
+
+
+OR (not tested)
+library(tidyverse)
+data %>%
+   group_by(city, year) %>% 
+   mutate(target = replace(target, which(target != 0)[1], 666))
+
+OR (not tested)
+data %>% 
+   group_by(city, year) %>%
+   mutate(target = replace(target, match(1, target), 666))
+
+   
+
+

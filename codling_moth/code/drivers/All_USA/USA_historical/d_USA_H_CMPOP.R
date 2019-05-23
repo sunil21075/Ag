@@ -45,11 +45,11 @@ for( category in categories) {
       temp_data <- rbind(temp_data, temp[temp$year >= 1979 & temp$year <= 2015, ])
     }
     else {
-      temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+      temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040s"
       temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
-      temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+      temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060s"
       temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
-      temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+      temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080s"
       temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
     }
     loc = tstrsplit(location, "_")

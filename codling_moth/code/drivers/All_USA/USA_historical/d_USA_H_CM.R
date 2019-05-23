@@ -14,7 +14,7 @@ write_dir = "/data/hydro/users/Hossein/codling_moth_new/all_USA/processed/histor
 param_dir  = "/home/hnoorazar/cleaner_codes/parameters/"
 
 file_prefix = "data_"
-ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
+ClimateGroup = list("Historical", "2040s", "2060s", "2080s")
 cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
 args = commandArgs(trailingOnly=TRUE)
@@ -47,11 +47,11 @@ for(location in locations) {
     temp_data <- rbind(temp_data, temp[temp$year >= start_year & temp$year <= end_year, ])
   }
   else {
-    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040's"
+    temp$ClimateGroup[temp$year > 2025 & temp$year <= 2055] <- "2040s"
     temp_data <- rbind(temp_data, temp[temp$year > 2025 & temp$year <= 2055, ])
-    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060's"
+    temp$ClimateGroup[temp$year > 2045 & temp$year <= 2075] <- "2060s"
     temp_data <- rbind(temp_data, temp[temp$year > 2045 & temp$year <= 2075, ])
-    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080's"
+    temp$ClimateGroup[temp$year > 2065 & temp$year <= 2095] <- "2080s"
     temp_data <- rbind(temp_data, temp[temp$year > 2065 & temp$year <= 2095, ])
   }
   loc = tstrsplit(location, "_")

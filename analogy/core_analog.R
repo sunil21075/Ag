@@ -61,11 +61,11 @@ standardize_by_all_pairs <- function(analog_dt,
 
     numer <- analog_dt$analog_freq[analog_dt$analog_NNs_county == h_tgt_fip]
     analog_dt$analog_freq[analog_dt$analog_NNs_county == h_tgt_fip] = numer/denom
-
   }
   hist_target_row <- analog_dt[which.max(analog_dt$analog_freq),]
   hist_target_fip <- hist_target_row$analog_NNs_county
-  
+  analog_dt <- data.table(analog_dt)
+  analog_dt <- analog_dt[order(-analog_freq), ]
   return(list(data.table(analog_dt), hist_target_fip))
 }
 
