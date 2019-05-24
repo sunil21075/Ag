@@ -19,33 +19,24 @@ dues <- c("Dec", "Jan", "Feb")
 due <- dues[3]
 
 for (due in dues){
-  data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/frost_bloom/"
-  data_dir <- paste0(data_dir, due, "/")
-  param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
-
   #######################################################################################
-
+  param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
   LOI <- data.table(read.csv(paste0(param_dir, "limited_locations.csv"), as.is=T))
 
   #######################################################################################
-
   # Read Data
+  
+  data_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/frost_bloom/"
+  data_dir <- paste0(data_dir, due, "/")
+
   first_frost <- data.table(readRDS(paste0(data_dir, "first_frost_till_", due, ".rds")))
   fifth_frost <- data.table(readRDS(paste0(data_dir, "fifth_frost_till_", due, ".rds")))
 
-  # first_frost <- first_frost %>% filter(year != 1949)
-  # fifth_frost <- fifth_frost %>% filter(year != 1949)
-  # saveRDS(first_frost, paste0(data_dir, "first_frost_till_", due, ".rds"))
-  # saveRDS(fifth_frost, paste0(data_dir, "fifth_frost_till_", due, ".rds"))
-
-  # write.table(x = first_frost, 
-  #             file =paste0(data_dir, "first_frost_till_", due, ".rds"),
-  #             row.names=F, na="", col.names=T, sep=",")
-
-  # write.table(x = fifth_frost, 
-  #             file =paste0(data_dir, "fifth_frost_till_", due, ".rds"),
-  #             row.names=F, na="", col.names=T, sep=",")
+  first_frost <- first_frost %>% filter(year != 1949) %>% data.table()
+  fifth_frost <- fifth_frost %>% filter(year != 1949) %>% data.table()
   
+  saveRDS(first_frost, paste0(data_dir, "first_frost_till_", due, ".rds"))
+  saveRDS(fifth_frost, paste0(data_dir, "fifth_frost_till_", due, ".rds"))
   #######################################################################################
                            #                            #
                            #    box plot of all locs    #
@@ -86,11 +77,13 @@ for (due in dues){
                            #########################################
 
   annot_text <- "Selected locations (10) and 19 models are included here."
-  first_frost_select_locs_box <- boxplot_frost_dayofyear(dt=first_frost_limited, 
+  first_frost_select_locs_box <- boxplot_frost_dayofyear(dt=first_frost_limited,
+                                                         colname = "chill_dayofyear",
                                                          kth_day=1, 
                                                          sub_title=annot_text)
 
   fifth_frost_select_locs_box <- boxplot_frost_dayofyear(dt=fifth_frost_limited, 
+                                                         colname = "chill_dayofyear",
                                                          kth_day=5, 
                                                          sub_title=annot_text)
 
@@ -182,11 +175,11 @@ for (due in dues){
   first_frost_double_limited_M <- rbind(first_frost_double_limited_M, first_frost_limited_obs)
   fifth_frost_double_limited_M <- rbind(fifth_frost_double_limited_M, fifth_frost_limited_obs)
 
-  first_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=first_frost_double_limited_M, 
-                                                                 colname="chill_dayofyear")
+  first_frost_double_limited_M_TS <- plot_frost_TS(dt=first_frost_double_limited_M, 
+                                                   colname="chill_dayofyear")
   
-  fifth_frost_double_limited_M_TS <- plot_frost_TS_model_medians(dt=fifth_frost_double_limited_M, 
-                                                                 colname="chill_dayofyear")
+  fifth_frost_double_limited_M_TS <- plot_frost_TS(dt=fifth_frost_double_limited_M, 
+                                                   colname="chill_dayofyear")
 
   ggsave(plot = first_frost_double_limited_M_TS, 
          filename = paste0(due, "_first_frost_limited_loc_median_TS.png"), 
