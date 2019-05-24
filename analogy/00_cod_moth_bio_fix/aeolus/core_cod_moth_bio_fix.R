@@ -42,27 +42,31 @@ prepareData_CMPOP_biofix <- function(bad_CMPOP, cod_param, biofix_param,
                          mutate(biofix = replace(biofix, which.max(biofix != 0), 97)) %>%
                          ungroup() %>%
                          data.table()
+  
+  bad_CMPOP_non_local[, Cum_dd_in_C := cumsum(biofix), by = list(location, year)]
 
-  # i1 <- bad_CMPOP_non_local[, .I[biofix != 0][1], .(location, year)]$V1
-  # bad_CMPOP_non_local[i1, biofix := 97][];
-
+  ## Do we need to do this? Does 0 or 97 matter? 
+  ## This is suspicious.
+  bad_CMPOP_non_local$biofix[bad_CMPOP_non_local$biofix < 97] <- 97
+  bad_CMPOP_non_local$CumDDinC <- bad_CMPOP_non_local$biofix
+  bad_CMPOP_non_local <- within(bad_CMPOP_non_local, remove(biofix))
   
   # 3- Fix the fucking non_local CumDDinC ($CumDDinC)
 
+  bad_CMPOP_non_local$CumDDinF = bad_CMPOP_non_local$CumDDinC * 1.8
 
-
-  metdata_data.table$Cum_dd_F = metdata_data.table$Cum_dd * 1.8
+  bad_CMPOP <- rbind(bad_CMPOP_local, bad_CMPOP_non_local)
+  rm(bad_CMPOP_local, bad_CMPOP_non_local)
   
-  CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=TRUE, sep=",")
+  # rename the column so, it is usable by "CodlingMothRelPopulation" function
+  setnames(bad_CMPOP, old=c("CumDDinF"), new=c("Cum_dd_F"))
+  print (sort(colnames(bad_CMPOP)))
+
+  CodMothParams <- read.table(paste0(param_dir, cod_moth_param_name), header=T, sep=",")
   
   # Generate Relative Population
-  relpopulation <- CodlingMothRelPopulation(CodMothParams, metdata_data.table, scale_shift)
+  relpopulation <- CodlingMothRelPopulation(CodMothParams, bad_CMPOP, scale_shift)
   
-  data <- cbind(metdata_data.table$tmax, metdata_data.table$tmin, 
-                metdata_data.table$dd, metdata_data.table$Cum_dd, 
-                metdata_data.table$Cum_dd_F, relpopulation, 
-                metdata_data.table$day )
-
   rel_col_names <- colnames(relpopulation)[1:8]
   colnames(data) <- c("tmax", "tmin", "DailyDD", "CumDDinC", "CumDDinF", 
                       rel_col_names, 
@@ -71,7 +75,7 @@ prepareData_CMPOP_biofix <- function(bad_CMPOP, cod_param, biofix_param,
                       "year", "month", "day")
   rm (relpopulation)
   # Generate Percent Population
-  percpopulation <- CodlingMothPercentPopulation(CodMothParams, metdata_data.table, scale_shift)
+  percpopulation <- CodlingMothPercentPopulation(CodMothParams, bad_CMPOP, scale_shift)
   
   data <- cbind(percpopulation[, 1:12], data)
   colnames(data) <- c(colnames(percpopulation)[1:8], "PercEgg", 
@@ -543,10 +547,10 @@ prepareData_CM <- function(filename, input_folder, param_dir, cod_moth_param_nam
 ###############################################################################################################
 ###############################################################################################################
 CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scale_shift=0) {
-  # Number of stages which is 16: egg_1   thorugh egg_4,
-  #                               Larva_1 thorugh Larva_4
-  #                               Pupa_1  thorugh Pupa_4
-  #                               Adult_1 thorugh Adult_4
+  # Number of stages which is 16: egg_1   -- thorugh -- egg_4,
+  #                               Larva_1 -- thorugh -- Larva_4
+  #                               Pupa_1  -- thorugh -- Pupa_4
+  #                               Adult_1 -- thorugh -- Adult_4
   stage_gen_toiterate <- length(CodMothParams[, 1])
   
   # store relative numbers
@@ -559,8 +563,8 @@ CodlingMothPercentPopulation <- function(CodMothParams, metdata_data.table, scal
   
   for (i in 1:stage_gen_toiterate) {
     perc_num <- pweibull(metdata_data.table$Cum_dd_F, 
-                         shape=CodMothParams[i,3], 
-                         scale=CodMothParams[i,4] * (1 + scale_shift))
+                         shape=CodMothParams[i, 3], 
+                         scale=CodMothParams[i, 4] * (1 + scale_shift))
     perc_num <- data.frame(perc_num)
     colnames(perc_num) <- paste("Perc", CodMothParams[i, 1], "Gen", CodMothParams[i, 2], sep="")
     masterdata <- cbind(masterdata, perc_num)

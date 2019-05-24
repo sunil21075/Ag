@@ -316,6 +316,9 @@ dt[,list(mean=mean(age),sd=sd(age)),by=group]
 kth smallest element in group by
 https://stackoverflow.com/questions/56084877/k-th-smallest-element-per-group-in-r/56085151#56085151
 
+# Replace values in column ifelse quick, short
+https://mgimond.github.io/ES218/Week03a.html
+dat.overwrite <- mutate(dat, Country = ifelse(Country == "Canada", "CAN", "USA"))
 
 
 data = data.table(year = c(2005, 2006, 2006, 2006, 2006),
@@ -353,6 +356,6 @@ data %>%
    group_by(city, year) %>%
    mutate(target = replace(target, match(1, target), 666))
 
-   
+
 
 
