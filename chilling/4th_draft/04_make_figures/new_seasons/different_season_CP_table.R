@@ -33,6 +33,9 @@ for (st in start_season){
            group_by(city, scenario, time_period) %>%
            summarise_at(.funs = funs(means = mean), vars(sum_J1:sum_A1)) %>% 
            data.table()
+  
+  means <- as.data.frame(means)
+  medians <- as.data.frame(medians)
 
   mean_medians <- merge(means, medians)
   rm(means, medians)

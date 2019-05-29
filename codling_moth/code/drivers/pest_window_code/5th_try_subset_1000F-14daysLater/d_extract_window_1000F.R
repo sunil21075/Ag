@@ -37,7 +37,8 @@ for (model in models){
     colnames(end_1000)[colnames(end_1000)=="CumDDinF"] <- "CumDDinF_end"
     colnames(end_1000)[colnames(end_1000)=="dayofyear"] <- "dayofyear_end"
 
-    start_1000 <- data.table(start_1000)
+    start_1000 <- as.data.frame(start_1000)
+    end_1000 <- as.data.frame(end_1000)
     start_end <- merge(start_1000, end_1000, by=c("ClimateScenario", "ClimateGroup", 
                                                   "CountyGroup", "year", 
                                                   "latitude", "longitude"))

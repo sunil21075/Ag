@@ -43,7 +43,7 @@ h_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, h_loc_fips_st_cnty),
 
 f_loc_fips_st_cnty <- f_loc_fips_st_cnty %>% 
                       filter(location %in% h_loc_fips_st_cnty$location) %>% 
-                      data.tabale()
+                      data.table()
 
 local_fips <- unique(f_loc_fips_st_cnty$fips)
  
@@ -84,20 +84,26 @@ emissions <- c("rcp45", "rcp85")
 ####
 ######################################################################
 
+# main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
+# data_sub_dirs <- c("no_precip_no_gen3_rcp85/", "w_precip_no_gen3_rcp85/",
+#                    "no_precip_no_gen3_rcp45/", "w_precip_no_gen3_rcp45/",
+#                    "no_precip_w_gen3_rcp85/", "no_precip_w_gen3_rcp45/",
+#                    "w_precip_w_gen3_rcp85/", "w_precip_w_gen3_rcp45/")
+
 main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
-data_sub_dirs <- c("no_precip_no_gen3_rcp85/", "w_precip_no_gen3_rcp85/",
-                   "no_precip_no_gen3_rcp45/", "w_precip_no_gen3_rcp45/",
-                   "no_precip_w_gen3_rcp85/", "no_precip_w_gen3_rcp45/",
-                   "w_precip_w_gen3_rcp85/", "w_precip_w_gen3_rcp45/")
+data_sub_dirs <- c("w_precip_rcp45/", "w_precip_rcp85/")
 
+sub_dir <- data_sub_dirs[1]
 
-sub_dir <- data_sub_dirs[4]
-
-for (sub_dir in data_sub_dirs[1:4]){
-  emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
+for (sub_dir in data_sub_dirs){
+  # emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
+  emission <- substr(unlist(strsplit(sub_dir, "_"))[3], 1, 5)
+  # plot_name_extension <- paste0("_", 
+  #                               strsplit(sub_dir, "_")[[1]][1], 
+  #                               "_", strsplit(sub_dir, "_")[[1]][3], 
+  #                               "_", emission)
   plot_name_extension <- paste0("_", 
                                 strsplit(sub_dir, "_")[[1]][1], 
-                                "_", strsplit(sub_dir, "_")[[1]][3], 
                                 "_", emission)
 
   sigma_bds <- c(1, 2)
