@@ -41,9 +41,7 @@ h_loc_fips_st_cnty <- "all_us_1300_county_fips_locations.csv"
 f_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, f_loc_fips_st_cnty), header=T, sep=",", as.is=T))
 h_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, h_loc_fips_st_cnty), header=T, sep=",", as.is=T))
 
-f_loc_fips_st_cnty <- f_loc_fips_st_cnty %>% 
-                      filter(location %in% h_loc_fips_st_cnty$location) %>% 
-                      data.table()
+f_loc_fips_st_cnty <- get_286_locs(f_loc_fips_st_cnty, h_loc_fips_st_cnty)
 
 local_fips <- unique(f_loc_fips_st_cnty$fips)
  
@@ -104,6 +102,7 @@ for (sub_dir in data_sub_dirs){
   #                               "_", emission)
   plot_name_extension <- paste0("_", 
                                 strsplit(sub_dir, "_")[[1]][1], 
+                                "_", strsplit(sub_dir, "_")[[1]][2], 
                                 "_", emission)
 
   sigma_bds <- c(1, 2)
