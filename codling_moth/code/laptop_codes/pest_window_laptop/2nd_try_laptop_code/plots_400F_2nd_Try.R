@@ -294,6 +294,9 @@ for (model in models){
 
   colnames(data_end)[colnames(data_end)=="PercLarvaGen1"] <- "pop_3rd"
 
+  data_start <- as.data.frame(data_start)
+  data_end <- as.data.frame(data_end)
+
   data <- merge(data_start, data_end, by=c("ClimateScenario", "ClimateGroup", 
                                            "CountyGroup", "year", "location"))
 

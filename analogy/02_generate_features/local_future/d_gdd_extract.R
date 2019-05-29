@@ -26,7 +26,6 @@ if (time_type == "future"){
     version = "observed"
 }
 
-
 gdd_45 <- extract_gdd(in_dir=input_dir, file_name = "CMPOP_rcp45.rds")
 saveRDS(gdd_45, paste0(write_dir, "gdd_rcp45.rds"))
 rm(gdd_45)

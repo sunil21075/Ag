@@ -5,7 +5,7 @@ library(plyr)
 library(tidyverse)
 library(data.table)
 
-main_in <- "/data/hydro/users/Hossein/chill/data_by_core/dynamic/02"
+main_in <- "/data/hydro/users/Hossein/chill/data_by_core/dynamic/02/"
 
 start_season <- c("mid_sept", 
                   "oct", "mid_oct",
@@ -68,6 +68,8 @@ for (st in start_season){
            group_by(location, scenario, time_period) %>%
            summarise_at(.funs = funs(means = mean), vars(sum_J1:sum_A1)) %>% 
            data.table()
+  means <- as.data.frame(means)
+  medians <- as.data.frame(medians)
   mean_medians <- merge(means, medians)
   rm(means, medians)
   write.table(x = mean_medians, row.names=F, col.names = T, sep=",",

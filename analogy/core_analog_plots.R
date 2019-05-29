@@ -17,15 +17,15 @@ plot_the_map <- function(a_dt, county2, title_p,
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
                geom_polygon(data = county2, fill="lightgrey") +
                geom_polygon(data = most_similar_cnty_map_info, color="red", size = 1) +
-               geom_polygon(data = target_county_map_info, color="yellow", size = 1) +
+               geom_polygon(data = target_county_map_info, color="yellow", size = .75) +
                geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01)+
                coord_quickmap() + 
                theme(plot.title = element_text(size=16, face="bold"),
                      plot.margin = unit(c(t=.5, r=0.1, b= -2, l=0.1), "cm"),
                      legend.title = element_blank(),
                      legend.position = "bottom",
-                     legend.key.size = unit(10, "line"),
-                     legend.text = element_text(size=30, face="bold"),
+                     legend.key.size = unit(3.3, "line"),
+                     legend.text = element_text(size=10, face="bold"),
                      legend.margin = margin(t=.5, r=0, b=1, l=0, unit = 'cm'),
                      axis.text.x = element_blank(),
                      axis.text.y = element_blank(),

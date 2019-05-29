@@ -68,7 +68,7 @@ if (hist == FALSE){
       met_data <- aggregate(met_data$precip, by=list(year=met_data$year), FUN=sum) 
       
       # rename the new column generated
-      colnames(met_data)[colnames(met_data)=="x"] <- "precip"
+      colnames(met_data)[colnames(met_data)=="x"] <- "yearly_precip"
 
       saveRDS(met_data, paste0(main_out, current_dir, "/", file, ".rds"))
       rm(met_data, lat, long)

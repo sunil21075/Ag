@@ -41,7 +41,6 @@ for (file in rds_files){
     if (dir.exists(file.path(curr_out)) == F){
       dir.create(path = curr_out, recursive = T)
     }
-
     saveRDS(curr_loc_data, paste0(curr_out, "/", paste0("feat_", locname), ".rds"))
   }
 

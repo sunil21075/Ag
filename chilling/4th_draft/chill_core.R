@@ -49,7 +49,6 @@ form_chill_season_day_of_year_modeled <- function(data){
   data <- data %>% filter(!(year == 2006 & month %in% c(1, 2)))
   data <- data %>% filter(!(year == 2099 & month %in% c(9, 10, 11, 12)))
 
-
   # Set January and Feb. to 13th and 14th month of the year
   # so, we can sort the months, and compute day of year, beginning
   # Sept.
