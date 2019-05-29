@@ -23,6 +23,13 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+get_286_locs <- function(f_loc_fips_st_cnty, h_loc_fips_st_cnty){
+  f_loc_fips_st_cnty <- f_loc_fips_st_cnty %>% 
+                      filter(location %in% h_loc_fips_st_cnty$location) %>% 
+                      data.table()
+  return(f_loc_fips_st_cnty)
+}
+
 filter_pure_analogs <- function(analog_dt){
   #     SANITY Check
   # find most similar analog county

@@ -1,5 +1,5 @@
 ######################################################################
-# rm(list=ls())
+#rm(list=ls())
 
 library(lubridate)
 library(purrr)
@@ -66,7 +66,8 @@ h_loc_fips_st_cnty <- h_loc_fips_st_cnty %>% filter(fips %in% hist_grid_count$fi
 # To extract names of counties associated with each unique fips
 # 
 
-Min_fips_st_county <- data.table(read.csv(paste0(param_dir, "Min_fips_st_county_location.csv"), header=T, sep=",", as.is=T)) 
+Min_fips_st_county <- data.table(read.csv(paste0(param_dir, "Min_fips_st_county_location.csv"), 
+                                          header=T, sep=",", as.is=T)) 
 Min_fips_st_county <- within(Min_fips_st_county, remove(location))
 Min_fips_st_county <- unique(Min_fips_st_county)
 
@@ -85,18 +86,17 @@ emissions <- c("rcp45", "rcp85")
 ######################################################################
 
 main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
-data_sub_dirs <- c("no_precip_no_gen3_rcp85/", "w_precip_no_gen3_rcp85/",
-                   "no_precip_no_gen3_rcp45/", "w_precip_no_gen3_rcp45/",
-                   "no_precip_w_gen3_rcp85/", "no_precip_w_gen3_rcp45/",
-                   "w_precip_w_gen3_rcp85/", "w_precip_w_gen3_rcp45/")
+data_sub_dirs <- c("w_precip_rcp45/", "w_precip_rcp85/")
 
+sub_dir <- data_sub_dirs[1]
 
-sub_dir <- data_sub_dirs[4]
-
-for (sub_dir in data_sub_dirs[1:4]){
-  emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
+for (sub_dir in data_sub_dirs){
+  emission <- substr(unlist(strsplit(sub_dir, "_"))[3], 1, 5)
+  # name_extension <- paste0(strsplit(sub_dir, "_")[[1]][1], 
+  #                          "_", strsplit(sub_dir, "_")[[1]][3], 
+  #                          "_", emission)
   name_extension <- paste0(strsplit(sub_dir, "_")[[1]][1], 
-                           "_", strsplit(sub_dir, "_")[[1]][3], 
+                           "_", strsplit(sub_dir, "_")[[1]][2], 
                            "_", emission)
   sigma_bds <- c(1, 2)
 
@@ -107,7 +107,7 @@ for (sub_dir in data_sub_dirs[1:4]){
 
   for (sigma_bd in sigma_bds){
     data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
-    print(data_dir)
+    # print(data_dir)
     top_3_dt <- data.table()
 
     for (target_fip in local_fips){
@@ -204,8 +204,10 @@ for (sub_dir in data_sub_dirs[1:4]){
         top_3_dt <- rbind(top_3_dt, top_m_dt)
       }
     }
-    master_path <- paste0(data_dir, "/top_3/")
+    master_path <- paste0(data_dir, "top_3/")
     if (dir.exists(master_path) == F) { dir.create(path = master_path, recursive = T)}
-    saveRDS(top_3_dt, paste0(master_path, name_extension,  "_top_3_dt.rds"))
+    write.table(top_3_dt, 
+                file = paste0(master_path, name_extension,  "_top_3.csv"), 
+                row.names=FALSE, na="", col.names=TRUE, sep=",")
   }
 }
