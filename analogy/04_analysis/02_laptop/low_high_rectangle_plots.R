@@ -75,7 +75,7 @@ Min_fips_st_county <- unique(Min_fips_st_county)
 ######################################################
 
 model_names <- c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
-time_p <- c("2026_2050", "2051_2075", "2076_2095")
+time_p <- c("2026-2050", "2051-2075", "2076-2095")
 emissions <- c("rcp45", "rcp85")
 precip_inclusions <- c("w_precip") #, "no_precip"
 sigmas <- c("1_sigma", "2_sigma")
@@ -102,12 +102,29 @@ CDD_precip_rcp45 <- data.table(readRDS(paste0(feat_dir, "CDD_precip_rcp45.rds"))
 CDD_precip_rcp85 <- data.table(readRDS(paste0(feat_dir, "CDD_precip_rcp85.rds")))
 hist_CDD_precip <- data.table(readRDS(paste0(feat_dir, "hist_CDD_precip.rds")))
 
+add_time_periods_model <- function(dt){
+  time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2095")
+  dt$time_period <- 0L
+  dt$time_period[dt$year <= 2005] <- time_periods[1]
+  dt$time_period[dt$year >= 2006 & dt$year <= 2025] <- time_periods[2]
+  dt$time_period[dt$year >= 2026 & dt$year <= 2050] <- time_periods[3]
+  dt$time_period[dt$year >= 2051 & dt$year <= 2075] <- time_periods[4]
+  dt$time_period[dt$year >= 2076] <- time_periods[5]
+  return(dt)
+}
+
+CDD_precip_rcp45 <- add_time_periods_model(CDD_precip_rcp45)
+CDD_precip_rcp85 <- add_time_periods_model(CDD_precip_rcp85)
+
+
 #######
 ####### Add fips to the features
 #######
 CDD_precip_rcp45 <- merge(CDD_precip_rcp45, f_loc_fips_st_cnty, by="location", all.x=TRUE)
 CDD_precip_rcp85 <- merge(CDD_precip_rcp85, f_loc_fips_st_cnty, by="location", all.x=TRUE)
 hist_CDD_precip <- merge(hist_CDD_precip, h_loc_fips_st_cnty, by="location", all.x=TRUE)
+
+hist_CDD_precip$time_period <- "1979-2015"
 
 # some counties have had less than min_grid grids in them, those
 # are not in h_loc_fips_st_cnty, hence NA is produced, drop them:
@@ -117,16 +134,35 @@ for (precip_stat in precip_inclusions){
   for (emission in emissions){
     for (sigma in sigmas){
       pe <- paste0(precip_stat, "_", emission)
-      t3_name <- paste0(main_in, sigma, "/", pe, "/top_3/", pe, "_top_3.csv")
+      pe_path <- paste0(main_in, sigma, "/", pe, "/top_3/")
+      t3_name <- paste0(pe_path, pe, "_top_3.csv")
       top_3 <- data.table(read.csv(t3_name, as.is=T, header=T, sep=","))
-      for (f_fip in future_fips){
-      	if (emission == "rcp45"){
-          curr_dt <- CDD_precip_rcp45
-      	 } else {
-      	   curr_dt <- CDD_precip_rcp85
-      	}
+      for (f_fip in local_fips){
+        if (emission == "rcp45"){ curr_dt <- CDD_precip_rcp45 } else { curr_dt <- CDD_precip_rcp85}
+        curr_top_3 <- top_3 %>% filter(future_fip == f_fip)
+        curr_top_3_f1 <- curr_top_3 %>% filter(time_period == "F1") %>% data.table()
+        curr_top_3_f2 <- curr_top_3 %>% filter(time_period == "F2") %>% data.table()
+        curr_top_3_f3 <- curr_top_3 %>% filter(time_period == "F3") %>% data.table()
+
         curr_fip_data <- curr_dt %>% filter(fips == f_fip)
-        
+        curr_future_fip_data_f1 <- curr_fip_data %>% filter(time_period == time_p[1]) %>% data.table()
+        curr_future_fip_data_f2 <- curr_fip_data %>% filter(time_period == time_p[2]) %>% data.table()
+        curr_future_fip_data_f3 <- curr_fip_data %>% filter(time_period == time_p[3]) %>% data.table()
+
+        pp_f1 <- plot_f_h_2_features_all_models(curr_future_fip_data_f1, curr_top_3_f1, hist_CDD_precip)
+        pp_f2 <- plot_f_h_2_features_all_models(curr_future_fip_data_f2, curr_top_3_f2, hist_CDD_precip)
+        pp_f3 <- plot_f_h_2_features_all_models(curr_future_fip_data_f3, curr_top_3_f3, hist_CDD_precip)
+
+        assign(x = "plot", 
+               value={ggarrange(plotlist = list(pp_f1, pp_f2, pp_f3),
+                                ncol = 3, nrow = 1,
+                                common.legend = TRUE, 
+                                legend = "bottom")})
+
+        ggsave(filename = paste0(unique(curr_fip_data$st_county), ".png"), 
+               plot = plot, 
+               path = pe_path, device="png",
+               dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
       }
     }
   }

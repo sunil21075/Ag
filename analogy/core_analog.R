@@ -102,7 +102,7 @@ produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, f_fips, h_fips, f_years, h
   hist_target_fip <- hist_target_row$analog_NNs_county
   inter_county_analog_count <- hist_target_row$analog_freq
   
-  # count number of inter-county (grind, year) pairs ((grid_f_i, f_y_1), (grid_h_i, f_h_1))
+  # count number of inter-county (grid, year) pairs ((grid_f_i, f_y_1), (grid_h_i, f_h_1))
   all_possible_analog_cnt <- all_inter_cnty_pair_count(future_fips_dt = f_fips, 
                                                        hist_fips_dt = h_fips, 
                                                        future_target_fip = tgt_fip,
@@ -569,13 +569,186 @@ filter_needed_geo_info <- function(data_locs, all_locs){
 #                                 Mahony Style
 # 
 ####################################################################################
+find_NN_info_biofix_county_avgs <- function(ICV, historical_dt, future_dt, n_neighbors, 
+                                            numeric_cols, non_numeric_cols){
+
+  historical_dt <- subset(historical_dt, select=c(non_numeric_cols, numeric_cols))
+  future_dt <- subset(future_dt, select=c(non_numeric_cols, numeric_cols))
+  ICV <- subset(ICV, select=c(non_numeric_cols, numeric_cols))
+  print ("line 578 of core")
+  
+  all_us_locs <- unique(historical_dt$fips)
+  local_locations <- unique(future_dt$fips)
+  future_years <- unique(future_dt$year)
+  
+  trunc.SDs <- 0.1 # Principal component truncation rule
+
+  # initiate empty outputs (to be generated!)
+  NN_dist_tb <- data.table()
+  NNs_loc_year_tb <- data.table()
+  NN_sigma_tb <- data.table()
+
+  A <- as.data.frame(historical_dt)
+  B <- as.data.frame(future_dt)
+  C <- as.data.frame(ICV)
+
+  rm (historical_dt, future_dt, ICV)
+
+  for (loc in local_locations){
+    # loc = local_locations[1]
+    Bj <- B %>% filter(fips==loc)
+    Cj <- C %>% filter(fips==loc)
+
+    # standard deviation of 1951-1990 interannual variability in each climate 
+    # variable, ignoring missing years
+    print ("line 607 of core")
+    print (dim(Cj))
+    Cj.sd <- apply(Cj[, numeric_cols, drop=F], MARGIN=2, FUN = sd, na.rm = T)
+    Cj.sd[Cj.sd<(10^-10)] = 1
+
+    A_prime <- A
+    print ("line 606")
+    print (dim(A_prime))
+    print (class(Cj.sd))
+    print (length(Cj.sd))
+    A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`) 
+    print ("line 618 of core")
+    # standardize the analog pool
+    Bj_prime <- Bj
+    Bj_prime[, numeric_cols] <-sweep(Bj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
+    print ("line 622 of core")
+    # standardize the reference ICV
+    Cj_prime <- Cj
+    Cj_prime[, numeric_cols] <-sweep(Cj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
+    print ("line 626 of core")
+    ## Step 2: Extract the principal components (PCs) of 
+    ##         the reference period ICV and project all data onto these PCs
+
+    # Principal components analysis. The !is.na(apply(...)) 
+    # term is there simply to select all years with complete observations in all variables. 
+    #  ZZ[!is.na(apply(ZZ, 1, mean)) ,] selects the rows whose mean is not NaN
+    PCA <- prcomp(Cj_prime[, numeric_cols][!is.na(apply(Cj_prime[, numeric_cols], 1, mean)) ,])
+    print ("line 634 of core")
+    # find the number of PCs to retain using the PC truncation
+    # rule of eigenvector stdev > the truncation threshold
+    PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))
+   
+    # project the reference ICV onto the PCs which is the same as analog pool:
+    X <- as.data.frame(predict(PCA, A_prime))
+    X <- cbind(A_prime[, non_numeric_cols], X)
+
+    # project the projected future conditions onto the PCs
+    Yj <- as.data.frame(predict(PCA, Bj_prime[, numeric_cols]))
+    Yj <- cbind(Bj_prime[, non_numeric_cols], Yj)
+
+    Zj <- as.data.frame(predict(PCA, Cj_prime[, numeric_cols]))
+    Zj <- cbind(Cj_prime[, non_numeric_cols], Zj)
+
+    ## Step 3a: express PC scores as standardized
+    #           anomalies of reference interannual variability
+      
+    # standard deviation of 1951-1990 interannual 
+    # variability in each principal component, ignoring missing years
+    Zj_sd <- apply(Zj[, 4:(PCs + 3), drop=F], MARGIN = 2, FUN = sd, na.rm=T)
+    print ("line 656 of core")
+    print (colnames(X))
+    print (colnames(X[, 4:(PCs + 3)]))
+    # standardize the analog pool   
+    X_prime <- sweep(X[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
+    X_prime <- cbind(X[, non_numeric_cols], X_prime)
+    print ("line 659 of core")
+    # standardize the projected conditions
+    Yj_prime <- sweep(Yj[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
+    Yj_prime <- cbind(Yj[, non_numeric_cols], Yj_prime)
+    
+    NN_list <- get.knnx(data = X_prime[, 4:(PCs+3)], 
+                        query= Yj_prime[, 4:(PCs+3)], 
+                        k=n_neighbors, algorithm="brute")
+    #
+    # Step 3: find sigma dissimilarities
+    ############################################################
+    #
+    # This is for one location, and different years. 
+    # So, the location column and ClimateScenario can be dropped.
+    # We already know what they are from loc and the input file.
+    #
+    ############################################################
+    # percentile of the nearest neighbour distance on the chi distribution with
+    # degrees of freedom equaling the dimensionality of the distance measurement (PCs)
+    NN_chi <- EnvStats::pchi(as.vector(NN_list$nn.dist), PCs)
+    print ("line 679 of core")
+    # values of the chi percentiles on a standard half-normal distribution
+    # (chi distribution with one degree of freedom)
+    # NN.sigma[which(proxy==j)] <- qchi(NN.chi, 1)
+
+    NN_sigma <- EnvStats::qchi(NN_chi, 1)
+
+    ########################################################################
+    #
+    # extract the rows corresponding to nearest neighbors indices
+    # 
+    ########################################################################
+    NN_idx <- NN_list$nn.index
+    NN_dist <- NN_list$nn.dist %>% data.table()
+    
+    NNs_loc_year <- X_prime[as.vector(NN_idx), c('year', 'fips')]
+    #
+    # reshape the long list to wide data table
+    # currenty the data are in vector form, by reshaping
+    # we will have one row of NNs per sample point
+    #
+    NNs_loc_year <- Reduce(cbind, 
+                           split(NNs_loc_year, 
+                                 rep(1:n_neighbors, each=(nrow(NNs_loc_year)/n_neighbors)))) %>% 
+                    data.table()
+    
+    NN_sigma <- Reduce(cbind, 
+                       split(NN_sigma, 
+                             rep(1:n_neighbors, each=(length(NN_sigma)/n_neighbors)))) %>% 
+                data.table()
+    print ("line 709 of core")
+    # rename columns
+    names(NN_dist) <- paste0("NN_", c(1:n_neighbors))
+    names(NNs_loc_year) <- paste0(names(NNs_loc_year), paste0("_NN_", rep(1:n_neighbors, each=2)))
+    names(NN_sigma) <- paste0("sigma_NN_", c(1:n_neighbors))
+
+    NN_dist <- cbind(Yj[, c("year", "fips")], NN_dist)
+    NNs_loc_year <- cbind(Yj[, c("year", "fips")], NNs_loc_year)
+    NN_sigma <- cbind(Yj[, c("year", "fips")], NN_sigma)
+    
+    NN_dist_tb <- rbind(NN_dist_tb, NN_dist)
+    NN_sigma_tb <- rbind(NN_sigma_tb, NN_sigma)
+    NNs_loc_year_tb <- rbind(NNs_loc_year_tb, NNs_loc_year)
+    print ("line 722 of core")
+    rm(NN_dist, NNs_loc_year, NN_sigma)
+  }
+  ########################################################################
+  # For some bizzare reason, order of columns are random
+  # when I run it on Aeolus. We fix the order of columns here
+  ########################################################################
+  distance_col_names <- c("year", "fips", paste0("NN_", c(1:n_neighbors)))
+  LL = (ncol(NNs_loc_year_tb)-2)/2
+  v = rep(c("year_NN_", "fips_NN_"), LL); w = rep(1:LL, each = 2);
+  loc_year_col_names <- c("year", "fips", paste0(v, w))
+  
+  sigma_df_col_names <- c("year", "fips", paste0("sigma_NN_", c(1:n_neighbors)))
+  
+  setcolorder(NN_dist_tb, distance_col_names)
+  setcolorder(NNs_loc_year_tb, loc_year_col_names)
+  setcolorder(NN_sigma_tb, sigma_df_col_names)
+  #############################################
+  return(list(NN_dist_tb, NNs_loc_year_tb, NN_sigma_tb, 
+              colnames(NN_dist_tb), colnames(NNs_loc_year_tb), colnames(NN_sigma_tb)))
+}
+
+
 find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors, 
                                 numeric_cols, non_numeric_cols){
 
   historical_dt <- subset(historical_dt, select=c(non_numeric_cols, numeric_cols))
   future_dt <- subset(future_dt, select=c(non_numeric_cols, numeric_cols))
   ICV <- subset(ICV, select=c(non_numeric_cols, numeric_cols))
-
+  print ("line 578 of core")
   all_us_locs <- unique(historical_dt$location)
     
   # 9 local locations are not in the all_us data!!!
