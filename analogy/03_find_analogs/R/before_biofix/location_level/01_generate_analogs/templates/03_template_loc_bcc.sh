@@ -14,7 +14,6 @@
 #PBS -q fast
 
 #PBS -k o
-  ##PBS -j oe
 #PBS -e /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_bccm_emission_type_int_file.e.txt
 #PBS -o /home/hnoorazar/analog_codes/03_find_analogs/location_level/error/precip_type_gen_3_type_bccm_emission_type_int_file.o.txt
 #PBS -m abe

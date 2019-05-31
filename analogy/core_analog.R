@@ -87,38 +87,40 @@ produce_dt_for_map <- function(b_dt){
  return(DT)
 }
 
-produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, f_fips, h_fips, f_years, h_years=37){
-
+produce_dt_for_pie_Q4 <- function(analog_dt, tgt_fip, hist_target_fip, f_fips, h_fips, f_years, h_years=37){
 
   analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
-
   analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
   
   # find most similar analog county
   # filter the data that are analog 
   # i.e. (exclude the row with "no_analog" in analog_NNs_county column)
   just_analogs <- analog_dt %>% filter(analog_NNs_county != "no_analog")
-  hist_target_row <- just_analogs[which.max(just_analogs$analog_freq),]
-  hist_target_fip <- hist_target_row$analog_NNs_county
-  inter_county_analog_count <- hist_target_row$analog_freq
+
+  # hist_target_row <- just_analogs[which.max(just_analogs$analog_freq),]
+  # hist_target_fip <- hist_target_row$analog_NNs_county
+  # inter_county_analog_count <- hist_target_row$analog_freq
+  just_analogs <- just_analogs %>% filter( analog_NNs_county == hist_target_fip)
+  inter_county_analog_count <- just_analogs$analog_freq
   
   # count number of inter-county (grid, year) pairs ((grid_f_i, f_y_1), (grid_h_i, f_h_1))
   all_possible_analog_cnt <- all_inter_cnty_pair_count(future_fips_dt = f_fips, 
                                                        hist_fips_dt = h_fips, 
-                                                       future_target_fip = tgt_fip,
+                                                       future_target_fips = tgt_fip,
                                                        hist_target_fips = hist_target_fip, 
-                                                       f_yrs = f_years, h_yrs = h_years)
+                                                       f_yrs = f_years, 
+                                                       h_yrs = h_years)
 
   analog_dt <- data.table(analog_dt)
   inter_county_analog_count_complement <- all_possible_analog_cnt - inter_county_analog_count
 
-  vvv <- c("inter county analog count", "inter county pairwise count")
+  vvv <- c("inter county analog count", "inter county analog count complement")
   DT = data.table(category = vvv,
                   counts = c(inter_county_analog_count, inter_county_analog_count_complement),
                   fraction= c((inter_county_analog_count/all_possible_analog_cnt), 
                               (inter_county_analog_count_complement/all_possible_analog_cnt)))
 
-  DT = DT[order(DT$fraction), ]
+  # DT = DT[order(DT$fraction), ]
  
   DT$category <- factor(DT$category, order=T, levels=vvv)
 
@@ -243,8 +245,10 @@ produce_dt_for_pie_all_possible <- function(analog_dt, novel_dt, tgt_fip, f_fips
   return (DT)
 }
 
-all_inter_cnty_pair_count <- function(future_fips_dt, hist_fips_dt, 
-                                      future_target_fips, hist_target_fips,
+all_inter_cnty_pair_count <- function(future_fips_dt, 
+                                      hist_fips_dt, 
+                                      future_target_fips, 
+                                      hist_target_fips,
                                       f_yrs, h_yrs){
   
   f_locs <- no_locs_in_a_county(future_fips_dt, future_target_fips)
@@ -270,6 +274,56 @@ no_locs_in_a_county <- function(fips_dt, target_fip){
             summarise(count = n_distinct(location))
   return(counts[1, 1])
 }
+
+count_novel_quick_cnty_avgs <- function(NNs, sigmas, county_list, novel_bd=4){
+  # NNs: data table of all nearest neighbors of all locations for all years in a given model
+  # county_list: data table of counties' fips and locations (lat_long)
+  # sigma_bd:    cut off point of analogs, real number
+
+  # In this function  we attemp to avoid for-loops
+  # NNs (sigmas) will be data tables which contain
+  # all nearest neighbors of all locations for all years in a given model.
+  # So, it will have 286 locations, each for 20 (or whatever) years in future
+  # We replace the locations whose dissimilarities with a given query is more than
+  # 2-simga with NA in the NNs data table. 
+  # (for this matter the historical years in NNs are not imoportant, hence will be droped.)
+  #
+
+  # Drop the historical year columns
+  NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
+  NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
+  # NNs <- data.table(NNs)
+
+  # convert non analog locations to NA. For the following command to
+  # work, data has to be in data frame class.
+  # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
+
+  # Make a copy, we shall need original data later
+  # NNs_cp <- NNs; sigmas_cp <- sigmas; dists_cp <- dists
+  
+  # set the nearest neighbors whose dissimilarity is less than novel_bd to NA
+  # NNs <- as.data.frame(NNs); 
+  sigmas <- as.data.frame(sigmas)
+  NNs[, -c(1:2)][sigmas[, -c(1:2)] < novel_bd] <- NA
+
+  # replace the fips for coordinates of the nearest neighbors
+  NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$fips)])
+  # NNs <- as.data.frame(NNs)
+  NNs <- within(NNs, remove(year))
+
+  novel_counts <- NNs %>% 
+                   gather("key", "NNs", 2:ncol(.)) %>% 
+                   group_by(fips, NNs) %>% 
+                   summarize(novel_freq = n()) %>% 
+                   arrange(desc(fips), desc(NNs)) %>%
+                   data.table()
+
+ setnames(novel_counts, new=c("query_county", "novel_NNs_county"), old=c("fips", "NNs"))
+ novel_counts$novel_NNs_county[is.na(novel_counts$novel_NNs_county)] <- "not_novel"
+
+ return(novel_counts)
+}
+
 
 count_novel_quick <- function(NNs, sigmas, county_list, novel_bd=4){
   # NNs: data table of all nearest neighbors of all locations for all years in a given model
@@ -318,6 +372,54 @@ count_novel_quick <- function(NNs, sigmas, county_list, novel_bd=4){
  novel_counts$novel_NNs_county[is.na(novel_counts$novel_NNs_county)] <- "not_novel"
 
  return(novel_counts)
+}
+
+count_analogs_counties_quick_cnty_avgs <- function(NNs, sigmas, county_list, sigma_bd=2){
+  # NNs: data table of all nearest neighbors of all locations for all years in a given model
+  # county_list: data table of counties' fips and locations (lat_long)
+  # sigma_bd:    cut off point of analogs, real number
+
+  # In this function  we attemp to avoid for-loops
+  # NNs (sigmas and dists) will be data tables which contain
+  # all nearest neighbors of all locations for all years in a given model.
+  # So, it will have 286 locations, each for 20 (or whatever) years in future
+  # We replace the locations whose dissimilarities with a given query is more than
+  # 2-simga with NA in the NNs data table. 
+  # (for this matter the historical years in NNs are not imoportant, hence will be droped.)
+  #
+
+  # Drop the historical year columns
+  NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
+  NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
+  # convert non analog locations to NA. For the following command to
+  # work, data has to be in data frame class.
+  # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
+
+  # Make a copy, we shall need original data later
+  # NNs_cp <- NNs; sigmas_cp <- sigmas; dists_cp <- dists
+  
+  # set the nearest neighbors whose dissimilarity is more than sigma_bd to NA
+  # NNs <- as.data.frame(NNs); 
+  
+  sigmas <- as.data.frame(sigmas); # dists <- as.data.frame(dists)
+  NNs[, -c(1:2)][sigmas[, -c(1:2)] > sigma_bd] <- NA
+  print ("line 144 of core")
+  # replace the fips for coordinates of the nearest neighbors
+  NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$fips)])
+  # NNs <- as.data.frame(NNs)
+  NNs <- within(NNs, remove(year))
+  print ("line 149 of core")
+  analog_counts <- NNs %>% 
+                   gather("key", "NNs", 2:ncol(.)) %>% 
+                   group_by(fips, NNs) %>% 
+                   summarize(analog_freq = n()) %>% 
+                   arrange(desc(fips), desc(NNs)) %>%
+                   data.table()
+  print ("line 156 of core")
+  setnames(analog_counts, new=c("query_county", "analog_NNs_county"), old=c("fips", "NNs"))
+  analog_counts$analog_NNs_county[is.na(analog_counts$analog_NNs_county)] <- "no_analog"
+
+ return(analog_counts)
 }
 
 count_analogs_counties_quick <- function(NNs, sigmas, county_list, sigma_bd=2){
