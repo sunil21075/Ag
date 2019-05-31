@@ -11,6 +11,92 @@ options(digit=9)
 #################    Donut functions
 #################
 ########################################################################################################
+plot_f_h_2_features_all_models <- function(future_dt, top3_data, hist_dt){
+  # input: future_dt: future features for one fip (target county), one time period, all models
+  #        top3_data: data table including top three similar analogs of given county.
+  #        hist_dt: all historical data
+  # output: scatter plot of both of these in the same plot
+  all_models <- sort(unique(future_dt$model))
+
+  for (a_model in all_models){
+
+    ## pick up a model, and its corresponding analog
+    # future
+    future_dt_a_model <- future_dt %>% filter(model == a_model) %>% data.table()
+    
+    # History
+    most_similar_county_fip <- top3_data$top_1_fip[top3_data$model == a_model]
+    hist_dt_curr <- hist_dt %>% filter(fips == most_similar_county_fip) %>% data.table()
+    
+    assign(x= paste0("plot_", gsub("-", "_", a_model)),
+           value = {plot_f_h_2_features_1_model(future_dt_a_model, hist_dt_curr)})
+  }
+  assign(x = "plot" , 
+         value={ggarrange(plotlist = list(plot_bcc_csm1_1_m, 
+                                          plot_BNU_ESM, 
+                                          plot_CanESM2,
+                                          plot_CNRM_CM5, 
+                                          plot_GFDL_ESM2G, 
+                                          plot_GFDL_ESM2M
+                                          ),
+                          ncol = 1, nrow = length(all_models), 
+                          common.legend = TRUE, 
+                          legend = "bottom")})
+  return(plot)
+}
+
+plot_f_h_2_features_1_model <- function(f_data, hist_data){
+  # input: future_dt: future features for one fip (target county), one time period, one model
+  #        top3_data: data table including top three similar analogs of given county.
+  #        hist_dt: all historical data
+  # output: scatter plot of both of these in the same plot
+  
+  # extract model name for use in title
+  model <- unique(f_data$model)
+  time_frame <- unique(f_data$time_period)
+  target_county_name <- unique(f_data$st_county)
+  analog_county_name <- unique(hist_data$st_county)
+
+  target_county_name <- paste0(unlist(strsplit(target_county_name, "_"))[2], ", ",
+                               unlist(strsplit(target_county_name, "_"))[1])
+  analog_county_name <- paste0(unlist(strsplit(analog_county_name, "_"))[2], ", ",
+                               unlist(strsplit(analog_county_name, "_"))[1])
+
+  mini_inf <- paste0(" (", time_frame, ", ", model, ")")
+  plt_title <- paste0(target_county_name, mini_inf)
+  plt_subtitle <- paste0("Analog: ", analog_county_name, " (1979-2015, observed)")
+  plot_data <- rbind(hist_data, f_data)
+
+  the_theme <- theme(plot.title = element_text(size = 30, face="bold", color="black"),
+                     plot.subtitle = element_text(size = 26, face="plain", color="black"),
+                     axis.text.x = element_text(size = 20, face = "bold", color="black"),
+                     axis.text.y = element_text(size = 20, face = "bold", color="black"),
+                     axis.title.x = element_text(size = 30, face = "bold", color="black", 
+                                                 margin = margin(t=8, r=0, b=8, l=0)),
+                     axis.title.y = element_text(size = 30, face = "bold", color="black",
+                                                 margin = margin(t=0, r=8, b=0, l=0)),
+                     strip.text = element_text(size=30, face = "bold"),
+                     legend.margin=margin(t=.1, r=0, b=0, l=0, unit='cm'),
+                     legend.title = element_blank(),
+                     legend.position="bottom", 
+                     legend.key.size = unit(1.5, "line"),
+                     legend.spacing.x = unit(.05, 'cm'),
+                     legend.text=element_text(size=12),
+                     panel.spacing.x =unit(.75, "cm"))
+
+  plt <- ggplot(data = plot_data) +
+         geom_point(aes(x = CumDDinF_Aug23, y = yearly_precip, fill = time_period),
+                    alpha = .5, shape = 21, size=9) +
+         ylab("annual precipitation (mm)") +
+         xlab("Cum. DD (F) by Aug 23") + 
+         ggtitle(label = plt_title,
+                 subtitle = plt_subtitle) + 
+         guides(colour = guide_legend(override.aes = list(size=100))) + 
+         the_theme
+  return(plt)
+}
+
+
 plot_the_map <- function(a_dt, county2, title_p, 
                          target_county_map_info, 
                          most_similar_cnty_map_info){
