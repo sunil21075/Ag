@@ -1,5 +1,5 @@
 ######################################################################
-# rm(list=ls())
+rm(list=ls())
 
 library(lubridate)
 library(purrr)
@@ -9,6 +9,11 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(ggpubr)
+
+source_path_1 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog_plots.R"
+source(source_path_1)
+source(source_path_2)
 
 # library(swfscMisc) has na.count(.) in it
 
@@ -92,6 +97,9 @@ main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
 data_sub_dirs <- c("w_precip_rcp45/", "w_precip_rcp85/")
 
 sub_dir <- data_sub_dirs[1]
+sigma_bd <- 2
+target_fip <- 53021
+model_n <- model_names[6]
 
 for (sub_dir in data_sub_dirs){
   # emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
@@ -104,21 +112,17 @@ for (sub_dir in data_sub_dirs){
                                 strsplit(sub_dir, "_")[[1]][1], 
                                 "_", strsplit(sub_dir, "_")[[1]][2], 
                                 "_", emission)
-
   sigma_bds <- c(1, 2)
-
   ######################################################################
-  # sigma_bd <- sigma_bds[1]
-  # target_fip <- local_fips[1]
-  # model_n <- model_names[1]
 
   for (sigma_bd in sigma_bds){
-    data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
-    
     for (target_fip in local_fips){
       for(model_n in model_names){
+        data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
+        #############################################################################
+        #
         # read the data of the three time periods
-
+        #
         analog_file_name_F1 <- paste("analog", model_n, emission, time_p[1], sep="_")
         analog_dat_F1 <- data.table(readRDS(paste0(data_dir, analog_file_name_F1, ".rds")))
 
@@ -127,7 +131,6 @@ for (sub_dir in data_sub_dirs){
 
         analog_file_name_F3 <- paste("analog", model_n, emission, time_p[3], sep="_")
         analog_dat_F3 <- data.table(readRDS(paste0(data_dir, analog_file_name_F3, ".rds")))
-        #############################################################################
 
         #############################################################################
         #
@@ -135,19 +138,20 @@ for (sub_dir in data_sub_dirs){
         #  *** Let us remove counties with historical #grids < min_grids from the map ***
         
         analog_dat_F1 <- analog_dat_F1 %>% 
-                         filter(analog_NNs_county %in% hist_grid_count$fips)
+                         filter(analog_NNs_county %in% hist_grid_count$fips) %>% data.table()
         analog_dat_F2 <- analog_dat_F2 %>% 
-                         filter(analog_NNs_county %in% hist_grid_count$fips)
+                         filter(analog_NNs_county %in% hist_grid_count$fips) %>% data.table()
         analog_dat_F3 <- analog_dat_F3 %>% 
-                         filter(analog_NNs_county %in% hist_grid_count$fips)
-
+                         filter(analog_NNs_county %in% hist_grid_count$fips) %>% data.table()
+        
         #############################################################################
-
+        #
         # filter the location of interest:
+        #
         analog_dat_F1 <- analog_dat_F1 %>% filter(query_county == target_fip)
         analog_dat_F2 <- analog_dat_F2 %>% filter(query_county == target_fip)
         analog_dat_F3 <- analog_dat_F3 %>% filter(query_county == target_fip)
-     
+        
         # remove the stats of not_analog pieces
         analog_dat_F1 <- analog_dat_F1 %>% filter(analog_NNs_county != "no_analog")
         analog_dat_F2 <- analog_dat_F2 %>% filter(analog_NNs_county != "no_analog")
@@ -176,7 +180,7 @@ for (sub_dir in data_sub_dirs){
 
         f_years_F3 = 1 + as.numeric(unlist(strsplit(time_p[3], "_")))[2] - 
                          as.numeric(unlist(strsplit(time_p[3], "_")))[1]
-
+        
         #############################################################################
         #############################################################################
         #
@@ -199,7 +203,7 @@ for (sub_dir in data_sub_dirs){
                                                         f_fips_dt=f_loc_fips_st_cnty, 
                                                         h_fips_dt=h_loc_fips_st_cnty, 
                                                         f_years=f_years_F3, h_years=37)
-        
+
         most_similar_cnty_F1 <- analog_dat_F1_4_map[[2]]
         most_similar_cnty_F2 <- analog_dat_F2_4_map[[2]]
         most_similar_cnty_F3 <- analog_dat_F3_4_map[[2]]
@@ -208,28 +212,36 @@ for (sub_dir in data_sub_dirs){
         analog_dat_F2_4_map <- analog_dat_F2_4_map[[1]]
         analog_dat_F3_4_map <- analog_dat_F3_4_map[[1]]
 
+        most_similar_cnty_F1_fip <- most_similar_cnty_F1
+        most_similar_cnty_F2_fip <- most_similar_cnty_F2
+        most_similar_cnty_F3_fip <- most_similar_cnty_F3
+        
         #############################################################################
-
+        #
         # produce data for geographical map
+        #
         one_mod_map_info_F1 <- produce_dt_for_map(analog_dat_F1_4_map)
         one_mod_map_info_F2 <- produce_dt_for_map(analog_dat_F2_4_map)
         one_mod_map_info_F3 <- produce_dt_for_map(analog_dat_F3_4_map)
 
         # produce data for donuts
         one_mod_pie_info_F1 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F1, 
-                                                     tgt_fip = target_fip, 
+                                                     tgt_fip = target_fip,
+                                                     hist_target_fip = most_similar_cnty_F1_fip,
                                                      f_fips = f_loc_fips_st_cnty, 
                                                      h_fips = h_loc_fips_st_cnty, 
                                                      f_years = f_years_F1, h_years=37)
 
         one_mod_pie_info_F2 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F2, 
-                                                     tgt_fip = target_fip, 
+                                                     tgt_fip = target_fip,
+                                                     hist_target_fip = most_similar_cnty_F2_fip,
                                                      f_fips = f_loc_fips_st_cnty, 
                                                      h_fips = h_loc_fips_st_cnty, 
                                                      f_years = f_years_F2, h_years=37)
 
         one_mod_pie_info_F3 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F3, 
-                                                     tgt_fip = target_fip, 
+                                                     tgt_fip = target_fip,
+                                                     hist_target_fip = most_similar_cnty_F3_fip,
                                                      f_fips = f_loc_fips_st_cnty, 
                                                      h_fips = h_loc_fips_st_cnty, 
                                                      f_years= f_years_F3, h_years=37)
@@ -239,9 +251,7 @@ for (sub_dir in data_sub_dirs){
         target_cnty_name <- paste(unlist(strsplit(target_cnty_name, "_"))[2], 
                             unlist(strsplit(target_cnty_name, "_"))[1], sep= ", ")
 
-        if (emission=="rcp45"){ttl_emiss = "RCP 4.5"
-          } else { ttl_emiss = "RCP 8.5"
-        }
+        if (emission=="rcp45"){ttl_emiss = "RCP 4.5"} else { ttl_emiss = "RCP 8.5"}
 
         titlem_F1 <- paste0(target_cnty_name, 
                             " (", 
@@ -261,10 +271,6 @@ for (sub_dir in data_sub_dirs){
                                   unlist(strsplit(time_p[3], "_"))[2], sep="-"),
                             ", ", model_n, ", ", ttl_emiss, ")" )
 
-        most_similar_cnty_F1_fip <- most_similar_cnty_F1
-        most_similar_cnty_F2_fip <- most_similar_cnty_F2
-        most_similar_cnty_F3_fip <- most_similar_cnty_F3
-
         most_similar_cnty_F1 <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F1]
         most_similar_cnty_F1 <- paste(unlist(strsplit(most_similar_cnty_F1, "_"))[2], 
                                  unlist(strsplit(most_similar_cnty_F1, "_"))[1], sep= ", ")
@@ -278,18 +284,19 @@ for (sub_dir in data_sub_dirs){
                                  unlist(strsplit(most_similar_cnty_F3, "_"))[1], sep= ", ")
 
         # Plot the donuts
-        # paste0(c(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3))
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F1"), 
                           value = {plot_the_pie(one_mod_pie_info_F1, titlem_F1, most_similar_cnty_F1)}
                           )
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F2"), 
-                          value = {plot_the_pie(one_mod_pie_info_F2, titlem_F2, most_similar_cnty_F2)}
-                          )
+                          value = {plot_the_pie(DT = one_mod_pie_info_F2, 
+                                                titl = titlem_F2, 
+                                                subtitle = most_similar_cnty_F2)})
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F3"), 
-                          value = {plot_the_pie(one_mod_pie_info_F3, titlem_F3, most_similar_cnty_F3)}
-                          )
+                          value = {plot_the_pie(DT = one_mod_pie_info_F3, 
+                                                titl = titlem_F3, 
+                                                subtitle = most_similar_cnty_F3)})
         
         # plot geographical maps:
         
@@ -316,11 +323,11 @@ for (sub_dir in data_sub_dirs){
                value = {plot_the_map(one_mod_map_info_F3, cnty2, titlem_F3,
                                      target_county_map_info, most_similar_cnty_F3_map_info)})
 
-        # rm(most_similar_cnty_F1_map_info, most_similar_cnty_F2_map_info, most_similar_cnty_F3_map_info)
-        # rm(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3)
-        # rm(most_similar_cnty_F1_fip, most_similar_cnty_F2_fip, most_similar_cnty_F3_fip)
-        # rm(titlem_F1, titlem_F2, titlem_F3)
-        # rm(one_mod_pie_info_F1, one_mod_pie_info_F3, one_mod_pie_info_F3)
+        rm(most_similar_cnty_F1_map_info, most_similar_cnty_F2_map_info, most_similar_cnty_F3_map_info)
+        rm(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3)
+        rm(most_similar_cnty_F1_fip, most_similar_cnty_F2_fip, most_similar_cnty_F3_fip)
+        rm(titlem_F1, titlem_F2, titlem_F3)
+        rm(one_mod_pie_info_F1, one_mod_pie_info_F3, one_mod_pie_info_F3)
       }
       assign(x = paste0("plot_", target_fip) , 
              value={ggarrange(plotlist = list(map_bcc_csm1_1_m_F1, map_bcc_csm1_1_m_F2, map_bcc_csm1_1_m_F3,
@@ -342,49 +349,60 @@ for (sub_dir in data_sub_dirs){
                                               pie_GFDL_ESM2M_F1, pie_GFDL_ESM2M_F2, pie_GFDL_ESM2M_F3),
                               heights=c(3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1), 
                               ncol = 3, nrow = 12, common.legend = TRUE, legend = "bottom")})
+      rm(analog_dat_F1, analog_dat_F2, analog_dat_F3, 
+      	 most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3,
+         f_years_F3, f_years_F2, f_years_F1, analog_dat_F3_4_map,
+         analog_dat_F2_4_map, analog_dat_F1_4_map, most_similar_cnty_F3_fip,
+         most_similar_cnty_F2_fip, most_similar_cnty_F1_fip, 
+         one_mod_pie_info_F1, one_mod_pie_info_F2, one_mod_pie_info_F3, 
+         titlem_F3, titlem_F2, titlem_F1, 
+         most_similar_cnty_F1_map_info, 
+         most_similar_cnty_F2_map_info,
+         most_similar_cnty_F3_map_info)
     }
     # master_path <- "/Users/hn/Desktop/"
-    master_path <- paste0(data_dir, "/plots/")
+    master_path <- paste0(data_dir, "/geo_maps/")
+
     if (dir.exists(master_path) == F) { dir.create(path = master_path, recursive = T)}
     ggsave(filename = paste0("ID_Canyon_16027", plot_name_extension, ".png"), 
            plot = plot_16027, 
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device="png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("OR_Gilliam_41021", plot_name_extension, ".png"), 
            plot = plot_41021, 
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device="png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("OR_Hood_River_41027", plot_name_extension, ".png"), 
            plot = plot_41027,
            path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           dpi = 300, width = 40, height = 100, unit="in", limitsize = FALSE)
 
     ggsave(filename = paste0("OR_Morrow_41049", plot_name_extension, ".png"), 
            plot = plot_41049,
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device = "png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("OR_Umatilla_41059", plot_name_extension, ".png"), 
            plot = plot_41059,
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device="png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("WA_Adams_53001", plot_name_extension, ".png"), 
            plot = plot_53001,
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device = "png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("WA_Benton_53005", plot_name_extension, ".png"), 
            plot = plot_53005, 
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device = "png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("WA_Chelan_53007", plot_name_extension, ".png"), 
            plot = plot_53007, 
-           path=master_path, device="png",
-           dpi=300, width=40, height=100, unit="in", limitsize = FALSE)
+           path = master_path, device = "png",
+           dpi = 300, width = 40, height = 100, unit = "in", limitsize = FALSE)
 
     ggsave(filename = paste0("WA_Columbia_53013", plot_name_extension, ".png"), 
            plot = plot_53013, 
