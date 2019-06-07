@@ -31,6 +31,7 @@ B <- B %>%
 colnames(data)[colnames(data)=="old_name"] <- "new_name"
 setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another_new_name"))
 
+
 # order a data by a/multiple column. Adding a negative would make the ordering reverse
 A <- A[order(location), ]
 
@@ -63,7 +64,7 @@ myNewDF <- t(df.melted[, 2])
 colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 
 
-# initialize data frame data table dataframe data table
+# initialize data frame data table dataframe datatable
 table = data.frame()
 data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
 data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
@@ -81,6 +82,14 @@ data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   top_3_fip = c("NA", "NA", "NA")
                   )
 
+# pick up every other column. pick up odd columns. pick up even columns
+newdf <- data_1[, c(rep(c(TRUE, FALSE), (ncols(data_1)/2))), with = FALSE]
+
+# combine odd_data with even_data to form data 
+data <- data.table(matrix(nrow = nrow(odd_data), ncol = (ncol(odd_data)*2)))
+colnames_data <- colnames(data)
+setnames(data, old=colnames_data[c(TRUE, FALSE)], new= colnames(odd_data))
+setnames(data, old=colnames_data[c(FALSE, TRUE)], new= colnames(even_data))
 
 DT = data.table(row_count = c("b","b","b","a","a","c"),
                 a = 1:6,
@@ -309,7 +318,7 @@ setDT(dt)[year == 2026, .(count = uniqueN(location))]
 
 # summary summerize summerise summarize summarise
 ddply(us_feat, ~ fips, summarise, mean=mean(age), sd=sd(age))
-dt[,list(mean=mean(age),sd=sd(age)),by=group]
+dt[, list(mean=mean(age), sd=sd(age)),by=group]
 
 
 
