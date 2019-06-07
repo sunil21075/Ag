@@ -403,19 +403,19 @@ count_analogs_counties_quick_cnty_avgs <- function(NNs, sigmas, county_list, sig
   
   sigmas <- as.data.frame(sigmas); # dists <- as.data.frame(dists)
   NNs[, -c(1:2)][sigmas[, -c(1:2)] > sigma_bd] <- NA
-  print ("line 144 of core")
+
   # replace the fips for coordinates of the nearest neighbors
   NNs[2:ncol(NNs)] <- lapply(NNs[2:ncol(NNs)], function(x) county_list$fips[match(x, county_list$fips)])
   # NNs <- as.data.frame(NNs)
   NNs <- within(NNs, remove(year))
-  print ("line 149 of core")
+  
   analog_counts <- NNs %>% 
                    gather("key", "NNs", 2:ncol(.)) %>% 
                    group_by(fips, NNs) %>% 
                    summarize(analog_freq = n()) %>% 
                    arrange(desc(fips), desc(NNs)) %>%
                    data.table()
-  print ("line 156 of core")
+  
   setnames(analog_counts, new=c("query_county", "analog_NNs_county"), old=c("fips", "NNs"))
   analog_counts$analog_NNs_county[is.na(analog_counts$analog_NNs_county)] <- "no_analog"
 
@@ -439,7 +439,7 @@ count_analogs_counties_quick <- function(NNs, sigmas, county_list, sigma_bd=2){
   # Drop the historical year columns
   NNs <- as.data.frame(NNs) # we need to do this shit! to be able to do the next line!
   NNs <- NNs[, c(1, 2, seq(4, ncol(NNs), 2))]
-  print ("line 131 of core")
+
   # convert non analog locations to NA. For the following command to
   # work, data has to be in data frame class.
   # these data will be in the size of about 3 gigs, shall we keep a copy untouched?
@@ -855,7 +855,14 @@ find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors,
     
   # 9 local locations are not in the all_us data!!!
   local_locations <- unique(future_dt$location)
-  local_locations <- local_locations[which(local_locations %in% all_us_locs)] 
+  
+  # lets clear things up outside this function. 
+  # this way when we do county to county we will not end up with empty vector below:
+
+  if (length(all_us_locs) > 1000){
+    local_locations <- local_locations[which(local_locations %in% all_us_locs)] 
+  }
+  
   future_dt <- future_dt %>% filter(location %in% local_locations)
   future_years <- unique(future_dt$year)
   
@@ -885,20 +892,17 @@ find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors,
     Cj.sd[Cj.sd<(10^-10)] = 1
 
     A_prime <- A
-    print ("line 606")
-    print (dim(A_prime))
-    print (class(Cj.sd))
-    print (length(Cj.sd))
     A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`) 
-    print ("line 607 of core")
+    #
     # standardize the analog pool
+    #
     Bj_prime <- Bj
     Bj_prime[, numeric_cols] <-sweep(Bj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
-    print ("line 611 of core")
+    
     # standardize the reference ICV
     Cj_prime <- Cj
     Cj_prime[, numeric_cols] <-sweep(Cj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
-    print ("line 615 of core")
+    
     ## Step 2: Extract the principal components (PCs) of 
     ##         the reference period ICV and project all data onto these PCs
 
@@ -906,7 +910,7 @@ find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors,
     # term is there simply to select all years with complete observations in all variables. 
     #  ZZ[!is.na(apply(ZZ, 1, mean)) ,] selects the rows whose mean is not NaN
     PCA <- prcomp(Cj_prime[, numeric_cols][!is.na(apply(Cj_prime[, numeric_cols], 1, mean)) ,])
-    print ("line 623 of core")
+    
     # find the number of PCs to retain using the PC truncation
     # rule of eigenvector stdev > the truncation threshold
     PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))
@@ -928,11 +932,11 @@ find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors,
     # standard deviation of 1951-1990 interannual 
     # variability in each principal component, ignoring missing years
     Zj_sd <- apply(Zj[, 4:(PCs + 3), drop=F], MARGIN = 2, FUN = sd, na.rm=T)
-    print ("line 645 of core")
+    
     # standardize the analog pool   
     X_prime <- sweep(X[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
     X_prime <- cbind(X[, non_numeric_cols], X_prime)
-    print ("line 649 of core")
+    
     # standardize the projected conditions
     Yj_prime <- sweep(Yj[, 4:(PCs + 3)], MARGIN=2, Zj_sd, FUN = `/`)
     Yj_prime <- cbind(Yj[, non_numeric_cols], Yj_prime)
@@ -1002,6 +1006,7 @@ find_NN_info_biofix <- function(ICV, historical_dt, future_dt, n_neighbors,
   # when I run it on Aeolus. We fix the order of columns here
   ########################################################################
   distance_col_names <- c("year", "location", paste0("NN_", c(1:n_neighbors)))
+
   LL = (ncol(NNs_loc_year_tb)-2)/2
   v = rep(c("year_NN_", "location_NN_"), LL); w = rep(1:LL, each = 2);
   loc_year_col_names <- c("year", "location", paste0(v, w))

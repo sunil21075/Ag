@@ -96,9 +96,9 @@ for (time in time_frames){
 
   lat_long <- substr(int_file, 6, 23)
 
-  saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
-  saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
-  saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", lat_long, "_", model_ty, "_", time,  ".rds"))
+  saveRDS(NN_dist_tb, paste0(out_dir, "/NN_dist_tb_", lat_long, "_", model_ty, "_", time, ".rds"))
+  saveRDS(NN_loc_year_tb, paste0(out_dir, "/NN_loc_year_tb_", lat_long, "_", model_ty, "_", time, ".rds"))
+  saveRDS(NN_sigma_tb, paste0(out_dir, "/NN_sigma_tb_", lat_long, "_", model_ty, "_", time, ".rds"))
 }
 
 end_time <- Sys.time()
