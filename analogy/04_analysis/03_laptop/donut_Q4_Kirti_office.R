@@ -9,6 +9,7 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 library(ggpubr)
+library(gridExtra)
 
 source_path_1 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog.R"
 source_path_2 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog_plots.R"
@@ -294,33 +295,33 @@ for (sub_dir in data_sub_dirs){
                                   unlist(strsplit(time_p[3], "_"))[2], sep="-"),
                             ", ", model_n, ", ", ttl_emiss, ")" )
         
-        most_similar_cnty_F1_name <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F1_fip]
-        most_similar_cnty_F1_name <- paste(unlist(strsplit(most_similar_cnty_F1_name, "_"))[2], 
-                                           unlist(strsplit(most_similar_cnty_F1_name, "_"))[1], sep= ", ")
+        analog_name_F1 <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F1_fip]
+        analog_name_F1 <- paste(unlist(strsplit(analog_name_F1, "_"))[2], 
+                                           unlist(strsplit(analog_name_F1, "_"))[1], sep= ", ")
         
-        most_similar_cnty_F2_name <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F2_fip]
-        most_similar_cnty_F2_name <- paste(unlist(strsplit(most_similar_cnty_F2_name, "_"))[2], 
-                                           unlist(strsplit(most_similar_cnty_F2_name, "_"))[1], sep= ", ")
+        analog_name_F2 <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F2_fip]
+        analog_name_F2 <- paste(unlist(strsplit(analog_name_F2, "_"))[2], 
+                                           unlist(strsplit(analog_name_F2, "_"))[1], sep= ", ")
 
-        most_similar_cnty_F3_name <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F3_fip]
-        most_similar_cnty_F3_name <- paste(unlist(strsplit(most_similar_cnty_F3_name, "_"))[2], 
-                                           unlist(strsplit(most_similar_cnty_F3_name, "_"))[1], sep= ", ")
+        analog_name_F3 <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F3_fip]
+        analog_name_F3 <- paste(unlist(strsplit(analog_name_F3, "_"))[2], 
+                                           unlist(strsplit(analog_name_F3, "_"))[1], sep= ", ")
 
         # Plot the donuts
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F1"), 
                value = {plot_the_pie(DT = one_mod_pie_info_F1, 
                                      titl = titlem_F1, 
-                                     subtitle = most_similar_cnty_F1_name)})
+                                     subtitle = analog_name_F1)})
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F2"), 
                value = {plot_the_pie(DT = one_mod_pie_info_F2, 
                                      titl = titlem_F2, 
-                                     subtitle = most_similar_cnty_F2_name)})
+                                     subtitle = analog_name_F2)})
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F3"), 
                           value = {plot_the_pie(DT = one_mod_pie_info_F3, 
                                                 titl = titlem_F3, 
-                                                subtitle = most_similar_cnty_F3_name)})
+                                                subtitle = analog_name_F3)})
         #________________________________________________________________________________
         #
         # Set up right data for heat map plots
@@ -356,19 +357,19 @@ for (sub_dir in data_sub_dirs){
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F1"), 
                value = {plot_the_contour(data_dt = contour_dt_1, 
                                          con_title = titlem_F1, 
-                                         con_subT = most_similar_cnty_F1_name # , v_line_quantiles=VL_quans
+                                         con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
                                          )})
         
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F2"), 
                value = {plot_the_contour(data_dt = contour_dt_2, 
                                          con_title = titlem_F1, 
-                                         con_subT = most_similar_cnty_F1_name # , v_line_quantiles=VL_quans
+                                         con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
                                          )})
 
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F3"), 
                value = {plot_the_contour(data_dt = contour_dt_3, 
                                          con_title = titlem_F1, 
-                                         con_subT = most_similar_cnty_F1_name# , v_line_quantiles=VL_quans
+                                         con_subT = analog_name_F1# , v_line_quantiles=VL_quans
                                          )})
         #
         # Plot the 1D densities
@@ -376,21 +377,21 @@ for (sub_dir in data_sub_dirs){
         assign(x = paste0("den_", gsub("-", "_", model_n), "_F1"), 
                value = {plot_the_1D_densities(data_dt = contour_dt_1, 
                                               dens_T = titlem_F1, 
-                                              subT = most_similar_cnty_F1_name 
+                                              subT = analog_name_F1 
                                               # , v_line_quantiles=VL_quans
                                               )})
         
         assign(x = paste0("den_", gsub("-", "_", model_n), "_F2"), 
                value = {plot_the_1D_densities(data_dt = contour_dt_2, 
                                               dens_T = titlem_F2, 
-                                              subT = most_similar_cnty_F2_name 
+                                              subT = analog_name_F2 
                                               # , v_line_quantiles=VL_quans
                                               )})
 
         assign(x = paste0("den_", gsub("-", "_", model_n), "_F3"), 
                value = {plot_the_1D_densities(data_dt = contour_dt_3, 
                                               dens_T = titlem_F3, 
-                                              subT = most_similar_cnty_F3_name 
+                                              subT = analog_name_F3 
                                               # , v_line_quantiles=VL_quans
                                               )})
 
@@ -437,27 +438,28 @@ for (sub_dir in data_sub_dirs){
                  left_join(county.fips, by="polyname")
 
         target_county_map_info <- cnty2 %>% filter(fips == target_fip)
-        most_similar_cnty_F1_name_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F1_fip)
-        most_similar_cnty_F2_name_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F2_fip)
-        most_similar_cnty_F3_name_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
+        analog_name_F1_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F1_fip)
+        analog_name_F2_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F2_fip)
+        analog_name_F3_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
         
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F1"), 
                value = {plot_the_map(one_mod_map_info_F1, cnty2, titlem_F1, 
                                      target_county_map_info, 
-                                     most_similar_cnty_F1_name_map_info,
-                                     analog_name=most_similar_cnty_F1_name)})
+                                     analog_name_F1_map_info,
+                                     analog_name=analog_name_F1)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F2"), 
                value = {plot_the_map(one_mod_map_info_F2, cnty2, titlem_F2,
                                      target_county_map_info, 
-                                     most_similar_cnty_F2_name_map_info,
-                                     analog_name= most_similar_cnty_F2_name)})
+                                     analog_name_F2_map_info,
+                                     analog_name= analog_name_F2)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F3"), 
-               value = {plot_the_map(one_mod_map_info_F3, cnty2, titlem_F3,
-                                     target_county_map_info, 
-                                     most_similar_cnty_F3_name_map_info,
-                                     analog_name = most_similar_cnty_F3_name)})
+               value = {plot_the_map(a_dt = one_mod_map_info_F3, county2 = cnty2, 
+                                     title_p = titlem_F3,
+                                     target_county_map_info = target_county_map_info, 
+                                     most_similar_cnty_map_info = analog_name_F3_map_info,
+                                     analog_name = analog_name_F3)})
 
         # rm(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3)
         # rm(most_similar_cnty_F1_fip, most_similar_cnty_F2_fip, most_similar_cnty_F3_fip)
