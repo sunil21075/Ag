@@ -154,6 +154,59 @@ plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_t
   return(contour_plt)
 }
 
+plot_the_margins <- function(data_dt, contour_plot){
+  color_ord = c("red", "dodgerblue") #,  "olivedrab4", grey47
+
+  the_theme <- theme(plot.title = element_text(size=20, face="bold"),
+                     plot.margin = unit(c(t=.5, r=.5, b=0.5, l=0.5), "cm"),
+                     legend.position = "none",
+                     axis.ticks.x = element_blank(),
+                     axis.ticks.y = element_blank(),
+                     axis.text.x = element_text(size=15, face="bold", color="black"),
+                     axis.text.y = element_text(size=15, face="bold", color="black"),
+                     axis.title.x = element_blank(),
+                     axis.title.y = element_blank())
+
+  if ("CumDDinF_Aug23" %in% colnames(data_dt)){
+    x_variable_1 <- "CumDDinF_Aug23"
+    x_variable_2 <- "yearly_precip"
+    
+   } else {
+    x_variable_1 <- "mean_CumDDinF_Aug23"
+    x_variable_2 <- "mean_yearly_precip"
+  }
+
+  DD_plt <- ggplot(data_dt, aes(x = get(x_variable_1), fill=model, color=model)) +
+            geom_density(alpha = 0.1) + 
+            scale_color_manual(values=color_ord) + 
+            guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
+            the_theme
+
+  preip_plt <- ggplot(data_dt, aes(x = get(x_variable_2), fill=model, color=model)) +
+               geom_density(alpha = 0.1) + 
+               scale_color_manual(values=color_ord) + 
+               guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
+               coord_flip() + 
+               the_theme 
+               
+
+  empty <- ggplot()+ 
+           geom_point(aes(1,1), colour="white")+
+           theme(axis.ticks=element_blank(), 
+                 panel.background=element_blank(), 
+                 axis.text.x=element_blank(), axis.text.y=element_blank(),
+                 axis.title.x=element_blank(), axis.title.y=element_blank())
+
+  contour_with_matgins <- grid.arrange(DD_plt, 
+                           empty, 
+                           contour_plot,
+                           preip_plt, # This is on right
+                           ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
+  
+  return (contour_with_matgins)
+}
+
+
 plot_the_1D_densities <- function(data_dt, dens_T, subT){
   color_ord = c("red", "dodgerblue") #,  "olivedrab4", grey47
 
@@ -210,11 +263,10 @@ plot_the_1D_densities <- function(data_dt, dens_T, subT){
   return (densities)
 }
 
-
 plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
   color_ord = c("red", "dodgerblue")
   the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=0, r=5, b=0, l=0), "cm"),
+                     plot.margin = unit(c(t=0, r=1, b=0, l=.5), "cm"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_blank(),
                      legend.position = "bottom",
@@ -262,8 +314,8 @@ plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles
                  ylab(y_lab) + xlab(x_lab) + 
                  stat_density_2d(aes(fill = stat(level), colour = model), 
                                  alpha = .4, contour = TRUE, geom = "polygon") + 
-                 scale_fill_viridis_c(guide = FALSE) + 
-                 scale_color_manual(values=color_ord) + 
+                 scale_fill_viridis_c(guide = FALSE, aesthetics = "fill") + 
+                 scale_color_manual(values = color_ord) + 
                  guides(color = guide_legend(reverse = TRUE)) +
                  # geom_vline(xintercept = vert_H[1], color=line_color_H, size=.5) + 
                  # geom_vline(xintercept = vert_H[2], color=line_color_H, size=.5) + 
@@ -303,7 +355,7 @@ plot_the_map <- function(a_dt, county2, title_p,
                        axis.ticks.y = element_blank(),
                        axis.title.x = element_blank(),
                        axis.title.y = element_blank()) + 
-                 ggtitle(title_p, subtitle= paste0("historical analog: ", analog_name)
+                 ggtitle(title_p, subtitle= paste0("historical analog: ", analog_name))
     return(curr_plot) 
 }
 
@@ -324,7 +376,7 @@ plot_the_pie <- function(DT, titl, subtitle){
         theme(axis.text = element_blank()) + 
         theme(axis.title=element_blank()) + 
         theme(axis.ticks = element_blank()) +
-        labs(title=titl) + 
+        labs(title=titl) 
         # annotate("text", x = 0, y = 0, colour = "red", size = 8,
         #          label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]), 
         #                  "\n",
