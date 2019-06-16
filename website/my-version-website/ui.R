@@ -55,7 +55,6 @@ ui = navbarPage("Hydro Lab", inverse=TRUE, collapsible=TRUE,
                            tabPanel(title = "Median Day of Year"),
                            tabPanel(title = "Difference from Historical")),
                 
-                
                 navbarMenu(title = "CM Flight",
                            tabPanel(title = "Median Day of Year (1st Flight)"),
                            tabPanel(title = "Difference from Historical (1st Flight)"),

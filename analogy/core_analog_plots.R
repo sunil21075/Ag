@@ -98,7 +98,7 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
 
 plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_type, v_line_quantiles=c(0.1, 0.9)){
   the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=0, r=0, b=-2, l=-3), "cm"),
+                     plot.margin = unit(c(t=0, r=0, b=-2, l=0), "cm"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_blank(),
                      legend.position = "bottom",
@@ -158,7 +158,7 @@ plot_the_margins <- function(data_dt, contour_plot){
   color_ord = c("red", "dodgerblue") #,  "olivedrab4", grey47
 
   the_theme <- theme(plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=.5, r=.5, b=0.5, l=0.5), "cm"),
+                     plot.margin = unit(c(t=.5, r=-1, b=0.5, l=-1), "cm"),
                      legend.position = "none",
                      axis.ticks.x = element_blank(),
                      axis.ticks.y = element_blank(),
@@ -188,7 +188,6 @@ plot_the_margins <- function(data_dt, contour_plot){
                guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
                coord_flip() + 
                the_theme 
-               
 
   empty <- ggplot()+ 
            geom_point(aes(1,1), colour="white")+
@@ -197,12 +196,14 @@ plot_the_margins <- function(data_dt, contour_plot){
                  axis.text.x=element_blank(), axis.text.y=element_blank(),
                  axis.title.x=element_blank(), axis.title.y=element_blank())
 
-  contour_with_matgins <- grid.arrange(DD_plt, 
-                           empty, 
-                           contour_plot,
-                           preip_plt, # This is on right
-                           ncol=2, nrow=2, widths=c(4, 1), heights=c(1, 4))
-  
+  contour_with_matgins <- ggarrange(DD_plt, 
+                                    empty, 
+                                    contour_plot,
+                                    preip_plt, # This is on right
+                                    ncol=2, nrow=2, 
+                                    widths = c(4, 1), 
+                                    heights = c(1, 4))
+
   return (contour_with_matgins)
 }
 
@@ -266,6 +267,74 @@ plot_the_1D_densities <- function(data_dt, dens_T, subT){
 plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
   color_ord = c("red", "dodgerblue")
   the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
+                     plot.margin = unit(c(t=.1, r=1, b=0.1, l=.5), "cm"),
+                     legend.spacing.x = unit(0.4, 'cm'),
+                     legend.title = element_text(size=20, face="plain"),
+                     legend.position = "left",
+                     legend.key.size = unit(1, "line"),
+                     legend.text = element_text(size=20, face="plain"),
+                     legend.margin = margin(t=.5, r=0, b=.1, l=0, unit = 'cm'),
+                     axis.ticks.x = element_blank(),
+                     axis.ticks.y = element_blank(),
+                     axis.text.x = element_text(size=15, face="bold", color="black"),
+                     axis.text.y = element_text(size=15, face="bold", color="black"),
+                     axis.title.x = element_text(size=20, face="bold", color="black",
+                                                 margin = margin(t=15, r=0, b=0, l=0)),
+                     axis.title.y = element_text(size=20, face="bold", color="black", 
+                                                 margin = margin(t=0, r=15, b=0, l=0)))
+
+  y_lab <- "annual precipitation (mm)"
+  x_lab <- "Cum. DD (F) by Aug 23"
+   
+  if ("CumDDinF_Aug23" %in% colnames(data_dt)){
+  
+    x_variable <- "CumDDinF_Aug23"
+    y_variable <- "yearly_precip"
+    } else {
+    x_variable <- "mean_CumDDinF_Aug23"
+    y_variable <- "mean_yearly_precip"
+  }
+    
+  # plot with red fill
+  p1 <- ggplot(data = data_dt, aes(x = get(x_variable), y = get(y_variable), color = as.factor(model))) +
+        ylab(y_lab) + xlab(x_lab) + 
+        stat_density2d(aes(fill = ..level..), alpha = 0.3, geom = "polygon") +
+        scale_fill_continuous(low = "grey", high = "red", space = "Lab", name = "observed") +
+        scale_colour_discrete(guide = FALSE) +
+        the_theme 
+
+  # plot with blue fill
+  p2 <- ggplot(data = data_dt, aes(x = get(x_variable), y = get(y_variable), color = as.factor(model))) +
+        stat_density2d(aes(fill = ..level..), alpha = 0.3, geom = "polygon") +
+        scale_fill_continuous(low = "grey", high = "blue", space = "Lab", name = "modeled") +
+        scale_colour_discrete(guide = FALSE) +
+        the_theme 
+
+  # grab plot data
+  pp1 <- ggplot_build(p1)
+  pp2 <- ggplot_build(p2)$data[[1]]
+
+  # replace red fill colours in pp1 with blue colours from pp2 when group is 2
+  pp1$data[[1]]$fill[grep(pattern = "^2", pp2$group)] <- pp2$fill[grep(pattern = "^2", pp2$group)]
+
+  # build plot grobs
+  grob1 <- ggplot_gtable(pp1)
+  grob2 <- ggplotGrob(p2)
+
+  # build legend grobs
+  leg1 <- gtable_filter(grob1, "guide-box") 
+  leg2 <- gtable_filter(grob2, "guide-box") 
+  leg <- gtable:::rbind_gtable(leg1[["grobs"]][[1]],  leg2[["grobs"]][[1]], "first")
+
+  # replace legend in 'red' plot
+  grob1$grobs[grob1$layout$name == "guide-box"][[1]] <- leg
+
+  return(grob1)
+}
+
+plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
+  color_ord = c("red", "dodgerblue")
+  the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
                      plot.margin = unit(c(t=0, r=1, b=0, l=.5), "cm"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_blank(),
@@ -306,7 +375,7 @@ plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles
     x_variable <- "mean_CumDDinF_Aug23"
     y_variable <- "mean_yearly_precip"
   }
-  
+   
   contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
                  # geom_point() + 
                  # geom_density_2d() + 
@@ -342,6 +411,7 @@ plot_the_map <- function(a_dt, county2, title_p,
                  coord_quickmap() + 
                  guides(fill = guide_colourbar(barwidth = 1, barheight = 20)) + 
                  theme(plot.title = element_text(size=30, face="bold"),
+                       plot.subtitle = element_text(size=25, face="bold"),
                        plot.margin = unit(c(t=4, r=1, b=2, l=0), "cm"),
                        legend.title = element_blank(),
                        legend.position = c(.95, .3), # 
@@ -365,7 +435,7 @@ plot_the_pie <- function(DT, titl, subtitle){
         coord_polar(theta="y") +
         xlim(c(0, 4)) +
         theme(plot.title = element_text(size=20, face="bold"), 
-              plot.margin = unit(c(t=0, r=0, b=2, l=-1), "cm"),
+              plot.margin = unit(c(t=0, r=-1, b=2, l=-1), "cm"),
               panel.grid=element_blank(),
               legend.spacing.x = unit(.2, 'cm'),
               legend.title = element_blank(),
@@ -375,8 +445,8 @@ plot_the_pie <- function(DT, titl, subtitle){
         theme(legend.text = element_blank()) + 
         theme(axis.text = element_blank()) + 
         theme(axis.title=element_blank()) + 
-        theme(axis.ticks = element_blank()) +
-        labs(title=titl) 
+        theme(axis.ticks = element_blank()) # + labs(title=titl) 
+        
         # annotate("text", x = 0, y = 0, colour = "red", size = 8,
         #          label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]), 
         #                  "\n",
