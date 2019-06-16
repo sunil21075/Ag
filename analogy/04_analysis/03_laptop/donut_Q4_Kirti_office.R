@@ -10,6 +10,8 @@ library(dplyr)
 library(ggplot2)
 library(ggpubr)
 library(gridExtra)
+library(grid)
+library(gtable)
 
 source_path_1 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog.R"
 source_path_2 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog_plots.R"
@@ -117,9 +119,9 @@ if (county_averages==FALSE){
 #___________________________________________________________________________________________
 ######################################################################
 
-model_names <- c( "BNU-ESM", "CanESM2", "GFDL-ESM2G", "CNRM-CM5", "bcc-csm1-1-m",  "GFDL-ESM2M")
+model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "CNRM-CM5", "bcc-csm1-1-m", "GFDL-ESM2M")
 time_p <- c("2026_2050", "2051_2075", "2076_2095")
-emissions <- c("rcp45", "rcp85") # 
+emissions <- c("rcp85", "rcp45") # 
 sigma_bds <- c(1, 2) # 
 # VL_quans = c(.25, .75)
 
@@ -141,7 +143,9 @@ for (sub_dir in data_sub_dirs){
 
   for (sigma_bd in sigma_bds){
     for (target_fip in local_fips){
+      
       for(model_n in model_names){
+        print(paste0(sigma_bd, ",", sub_dir))
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
         #############################################################################
         #
@@ -204,7 +208,7 @@ for (sub_dir in data_sub_dirs){
 
         f_years_F3 = 1 + as.numeric(unlist(strsplit(time_p[3], "_")))[2] - 
                          as.numeric(unlist(strsplit(time_p[3], "_")))[1]
-        
+        print ("line 207")
         #############################################################################
         #
         # *** Standardize the freq. using # of grids in each county (historical data) ***
@@ -227,7 +231,7 @@ for (sub_dir in data_sub_dirs){
                                                           f_fips_dt=f_loc_fips_st_cnty, 
                                                           h_fips_dt=h_loc_fips_st_cnty, 
                                                           f_years=f_years_F3, h_years=37)
-
+        print ("line 230")
         most_similar_cnty_F1 <- analog_dat_F1_4_map_b[[2]]
         most_similar_cnty_F2 <- analog_dat_F2_4_map_b[[2]]
         most_similar_cnty_F3 <- analog_dat_F3_4_map_b[[2]]
@@ -350,7 +354,6 @@ for (sub_dir in data_sub_dirs){
         contour_dt_1 <- rbind(curr_feat_hist_1, curr_future_feat_F1)
         contour_dt_2 <- rbind(curr_feat_hist_2, curr_future_feat_F2)
         contour_dt_3 <- rbind(curr_feat_hist_3, curr_future_feat_F3)
-        
         #
         # Plot the contours
         #
@@ -369,66 +372,97 @@ for (sub_dir in data_sub_dirs){
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F3"), 
                value = {plot_the_contour(data_dt = contour_dt_3, 
                                          con_title = titlem_F1, 
-                                         con_subT = analog_name_F1# , v_line_quantiles=VL_quans
+                                         con_subT = analog_name_F1 #, v_line_quantiles=VL_quans
                                          )})
-        #
+        
         # Plot the 1D densities
         #
-        assign(x = paste0("den_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_1D_densities(data_dt = contour_dt_1, 
-                                              dens_T = titlem_F1, 
-                                              subT = analog_name_F1 
-                                              # , v_line_quantiles=VL_quans
-                                              )})
+        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F1"), 
+        #        value = {plot_the_1D_densities(data_dt = contour_dt_1, 
+        #                                       dens_T = titlem_F1, 
+        #                                       subT = analog_name_F1 
+        #                                       # , v_line_quantiles=VL_quans
+        #                                       )})
         
-        assign(x = paste0("den_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_1D_densities(data_dt = contour_dt_2, 
-                                              dens_T = titlem_F2, 
-                                              subT = analog_name_F2 
-                                              # , v_line_quantiles=VL_quans
-                                              )})
+        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F2"), 
+        #        value = {plot_the_1D_densities(data_dt = contour_dt_2, 
+        #                                       dens_T = titlem_F2, 
+        #                                       subT = analog_name_F2 
+        #                                       # , v_line_quantiles=VL_quans
+        #                                       )})
 
-        assign(x = paste0("den_", gsub("-", "_", model_n), "_F3"), 
-               value = {plot_the_1D_densities(data_dt = contour_dt_3, 
-                                              dens_T = titlem_F3, 
-                                              subT = analog_name_F3 
-                                              # , v_line_quantiles=VL_quans
-                                              )})
+        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F3"), 
+        #        value = {plot_the_1D_densities(data_dt = contour_dt_3, 
+        #                                       dens_T = titlem_F3, 
+        #                                       subT = analog_name_F3 
+        #                                       # , v_line_quantiles=VL_quans
+        #                                       )})
+        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F1"), 
+               value = {plot_the_margins(data_dt = contour_dt_1,
+                                         get(paste0("con_", gsub("-", "_", model_n), "_F1"))
+                                        )})
+        
+        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F2"), 
+               value = {plot_the_margins(data_dt = contour_dt_2, 
+                                        get(paste0("con_", gsub("-", "_", model_n), "_F2"))
+                                        )})
+
+        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F3"), 
+               value = {plot_the_margins(data_dt = contour_dt_3, 
+                                         get(paste0("con_", gsub("-", "_", model_n), "_F3"))
+                                        )})
 
         # _______________________________________________________________________________
         # 
         # bind the goddamn donut and contour together
         #
+        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F1"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F1")), 
+        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F1")))))
+
+        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F2"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F2")), 
+        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F2")))))
+
+        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F3"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F3")), 
+        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F3")))))
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F1"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F1")), 
-                                                 get(paste0("con_", gsub("-", "_", model_n), "_F1")))))
+                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F1"))
+                                                 )
+                                )
+               )
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F2"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F2")), 
-                                                 get(paste0("con_", gsub("-", "_", model_n), "_F2")))))
+                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F2")))))
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F3"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F3")), 
-                                                 get(paste0("con_", gsub("-", "_", model_n), "_F3")))))
+                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F3"))
+                                                 )
+                                )
+               )
         # _______________________________________________________________________________
         # 
         # bind the goddamn pie_con_ and 1D_dens together
         #
-        assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F1"),
-               value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F1")), 
-                                                 get(paste0("den_", gsub("-", "_", model_n), "_F1"))),
-                                 ncol = 1, nrow = 2))
+        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F1"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F1")), 
+        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F1"))),
+        #                          ncol = 1, nrow = 2))
 
-        assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F2"),
-               value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F2")), 
-                                                 get(paste0("den_", gsub("-", "_", model_n), "_F2"))),
-                                 ncol = 1, nrow = 2))
+        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F2"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F2")), 
+        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F2"))),
+        #                          ncol = 1, nrow = 2))
 
-        assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F3"),
-               value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F3")), 
-                                                 get(paste0("den_", gsub("-", "_", model_n), "_F3"))),
-                                ncol = 1, nrow = 2))
-
+        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F3"),
+        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F3")), 
+        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F3"))),
+        #                         ncol = 1, nrow = 2))
+        print ("line 457")
         #________________________________________________________________________________
         # plot geographical maps:
         data(county.fips) # Load the county.fips dataset for plotting
@@ -467,7 +501,6 @@ for (sub_dir in data_sub_dirs){
         # rm(one_mod_pie_info_F1, one_mod_pie_info_F2, one_mod_pie_info_F3)
       }
 
-
       assign(x = paste0("plot_", target_fip) , 
              value={ggarrange(plotlist = list(map_bcc_csm1_1_m_F1, map_bcc_csm1_1_m_F2, map_bcc_csm1_1_m_F3,
                                               pie_con_bcc_csm1_1_m_F1, pie_con_bcc_csm1_1_m_F2, pie_con_bcc_csm1_1_m_F3,
@@ -486,8 +519,9 @@ for (sub_dir in data_sub_dirs){
 
                                               map_GFDL_ESM2M_F1, map_GFDL_ESM2M_F2, map_GFDL_ESM2M_F3,
                                               pie_con_GFDL_ESM2M_F1, pie_con_GFDL_ESM2M_F2, pie_con_GFDL_ESM2M_F3),
-                              heights=c(3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1), 
+                              heights= rep(c(3, 1), 6), 
                               ncol = 3, nrow = 12, common.legend=FALSE)})
+
       rm(analog_dat_F1, analog_dat_F2, analog_dat_F3, 
          most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3,
          f_years_F3, f_years_F2, f_years_F1, 
@@ -507,97 +541,107 @@ for (sub_dir in data_sub_dirs){
          map_GFDL_ESM2M_F1, map_GFDL_ESM2M_F2, map_GFDL_ESM2M_F3,
          pie_con_GFDL_ESM2M_F1, pie_con_GFDL_ESM2M_F2, pie_con_GFDL_ESM2M_F3)
     }
-    # plot_out_dir <- "/Users/hn/Desktop/"
-    #plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps_", VL_quans[1]*100, "_", VL_quans[2]*100, "/")
+    
+    # plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps_", VL_quans[1]*100, "_", VL_quans[2]*100, "/")
     plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps/")
+    # plot_out_dir <- "/Users/hn/Desktop/"
     
     image_dpi = 200
-    imgage_h = 110
-    imgage_w = 70
-    
-    if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
-    ggsave(filename = paste0("ID_Canyon_16027", plot_name_extension, ".png"), 
-           plot = plot_16027, 
-           path = plot_out_dir, device="png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+    imgage_h = 100
+    imgage_w = 75
 
-    ggsave(filename = paste0("OR_Gilliam_41021", plot_name_extension, ".png"), 
-           plot = plot_41021, 
-           path = plot_out_dir, device="png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
-
-    ggsave(filename = paste0("OR_Hood_River_41027", plot_name_extension, ".png"), 
-           plot = plot_41027,
-           path = plot_out_dir, device="png",
+    ggsave(filename = paste0("WA_Franklin", plot_name_extension, ".png"), 
+           plot = plot_53021, 
+           path=plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
+    
+    print ("WA_Franklin_53021 saved")
+    
+    print ("plot_out_dir line 543")
+    print(plot_out_dir)
+    if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
 
-    ggsave(filename = paste0("OR_Morrow_41049", plot_name_extension, ".png"), 
-           plot = plot_41049,
-           path = plot_out_dir, device = "png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
 
-    ggsave(filename = paste0("OR_Umatilla_41059", plot_name_extension, ".png"), 
-           plot = plot_41059,
-           path = plot_out_dir, device="png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+    ggsave(filename = paste0("WA_Okanogan", plot_name_extension, ".png"), 
+           plot = plot_53047,
+           path=plot_out_dir, device="png",
+           dpi=image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
+    print ("WA_Okanogan_53047 saved")
 
-    ggsave(filename = paste0("WA_Adams_53001", plot_name_extension, ".png"), 
-           plot = plot_53001,
-           path = plot_out_dir, device = "png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
-
-    ggsave(filename = paste0("WA_Benton_53005", plot_name_extension, ".png"), 
-           plot = plot_53005, 
-           path = plot_out_dir, device = "png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
-
-    ggsave(filename = paste0("WA_Chelan_53007", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Chelan", plot_name_extension, ".png"), 
            plot = plot_53007, 
            path = plot_out_dir, device = "png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Columbia_53013", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Yakima", plot_name_extension, ".png"), 
+           plot = plot_53077,
+           path = plot_out_dir, device="png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
+    print ("WA_Yakima_53077 saved")
+
+    ggsave(filename = paste0("ID_Canyon", plot_name_extension, ".png"), 
+           plot = plot_16027, 
+           path = plot_out_dir, device="png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+    print ("ID_Canyon saved")
+
+    ggsave(filename = paste0("OR_Gilliam", plot_name_extension, ".png"), 
+           plot = plot_41021, 
+           path = plot_out_dir, device="png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+   
+    ggsave(filename = paste0("OR_Hood_River", plot_name_extension, ".png"), 
+           plot = plot_41027,
+           path = plot_out_dir, device="png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
+
+    ggsave(filename = paste0("OR_Morrow", plot_name_extension, ".png"), 
+           plot = plot_41049,
+           path = plot_out_dir, device = "png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+
+    ggsave(filename = paste0("OR_Umatilla", plot_name_extension, ".png"), 
+           plot = plot_41059,
+           path = plot_out_dir, device="png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+
+    ggsave(filename = paste0("WA_Adams", plot_name_extension, ".png"), 
+           plot = plot_53001,
+           path = plot_out_dir, device = "png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+    print ("WA_Adams_53001 saved")
+    ggsave(filename = paste0("WA_Benton", plot_name_extension, ".png"), 
+           plot = plot_53005, 
+           path = plot_out_dir, device = "png",
+           dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+
+    ggsave(filename = paste0("WA_Columbia", plot_name_extension, ".png"), 
            plot = plot_53013, 
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height=imgage_h, unit="in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Douglas_53017", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Douglas", plot_name_extension, ".png"), 
            plot = plot_53017, 
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Franklin_53021", plot_name_extension, ".png"), 
-           plot = plot_53021, 
-           path=plot_out_dir, device="png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
- 
-    ggsave(filename = paste0("WA_Grant_53025", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Grant", plot_name_extension, ".png"), 
            plot = plot_53025,
            path=plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Kittitas_53037", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Kittitas", plot_name_extension, ".png"), 
            plot = plot_53037,
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Klickitat_53039", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Klickitat", plot_name_extension, ".png"), 
            plot = plot_53039,
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
 
-    ggsave(filename = paste0("WA_Okanogan_53047", plot_name_extension, ".png"), 
-           plot = plot_53047,
-           path=plot_out_dir, device="png",
-           dpi=image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
-
-    ggsave(filename = paste0("WA_Walla_Walla_53071", plot_name_extension, ".png"), 
+    ggsave(filename = paste0("WA_Walla_Walla", plot_name_extension, ".png"), 
            plot = plot_53071,
-           path = plot_out_dir, device="png",
-           dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
-
-    ggsave(filename = paste0("WA_Yakima_53077", plot_name_extension, ".png"), 
-           plot = plot_53077,
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
 
