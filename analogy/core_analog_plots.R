@@ -171,7 +171,7 @@ plot_the_margins <- function(data_dt, contour_plot){
             scale_color_manual(values=color_ord) + 
             guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
             theme(plot.title = element_text(size=20, face="bold"),
-                  plot.margin = unit(c(t=, r=.5, b=0.5, l=-4), "cm"),
+                  plot.margin = unit(c(t=0, r=.5, b=0.5, l=-4), "cm"),
                   legend.position = "none",
                   axis.ticks.x = element_blank(),
                   axis.ticks.y = element_blank(),
