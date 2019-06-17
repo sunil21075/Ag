@@ -82,12 +82,12 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
                      legend.key.size = unit(1.5, "line"),
                      legend.spacing.x = unit(.05, 'cm'),
                      legend.text=element_text(size=12),
-                     panel.spacing.x =unit(.75, "cm"))
+                     panel.spacing.x =unit(.75, "pt"))
 
   plt <- ggplot(data = plot_data) +
          geom_point(aes(x = CumDDinF_Aug23, y = yearly_precip, fill = time_period),
                     alpha = .5, shape = 21, size=9) +
-         ylab("annual precipitation (mm)") +
+         ylab("annual precip. (mm)") +
          xlab("Cum. DD (F) by Aug 23") + 
          ggtitle(label = plt_title,
                  subtitle = plt_subtitle) + 
@@ -96,62 +96,32 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
   return(plt)
 }
 
-plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_type, v_line_quantiles=c(0.1, 0.9)){
-  the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=0, r=0, b=-2, l=0), "cm"),
-                     legend.spacing.x = unit(0.4, 'cm'),
-                     legend.title = element_blank(),
-                     legend.position = "bottom",
-                     legend.key.size = unit(1, "line"),
-                     legend.text = element_text(size=20, face="plain"),
-                     legend.margin = margin(t=.5, r=0, b=.1, l=0, unit = 'cm'),
-                     axis.ticks.x = element_blank(),
-                     axis.ticks.y = element_blank(),
-                     axis.text.x = element_text(size=15, face="bold", color="black"),
-                     axis.text.y = element_text(size=15, face="bold", color="black"),
-                     axis.title.x = element_text(size=20, face="bold", color="black",
-                                                 margin = margin(t=10, r=0, b=0, l=0)),
-                     axis.title.y = element_text(size=20, face="bold", color="black", 
-                                                 margin = margin(t=0, r=10, b=0, l=0)))
+plot_the_margins_cowplot <- function(data_dt, contour_plot){
+  color_ord = c("red", "dodgerblue") #, "olivedrab4", grey47
 
-  y_lab <- "annual precipitation (mm)"
-  x_lab <- "Cum. DD (F) by Aug 23"
-
-  if (vert_L_type == "historical"){
-      line_color <- "springgreen4"
-      vertical_dt <- data_dt %>% filter(model == "observed") %>% data.table()
-    } else {
-      line_color <- "red"
-      vertical_dt <- data_dt %>% filter(model != "observed") %>% data.table()
-  }
-   
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
-    vert <- quantile(vertical_dt$CumDDinF_Aug23, probs=v_line_quantiles)
-    horiz <- quantile(vertical_dt$yearly_precip, probs=v_line_quantiles)
-    x_variable <- "CumDDinF_Aug23"
-    y_variable <- "yearly_precip"
-    } else {
-    vert <- quantile(vertical_dt$mean_CumDDinF_Aug23, probs=v_line_quantiles)
-    horiz <- quantile(vertical_dt$mean_yearly_precip, probs=v_line_quantiles)
-    x_variable <- "mean_CumDDinF_Aug23"
-    y_variable <- "mean_yearly_precip"
+    x_variable_1 <- "CumDDinF_Aug23"
+    x_variable_2 <- "yearly_precip"
+    
+   } else {
+    x_variable_1 <- "mean_CumDDinF_Aug23"
+    x_variable_2 <- "mean_yearly_precip"
   }
-  
-  contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
-                 # geom_point() + 
-                 # geom_density_2d() + 
-                 # xlim(800, 4700) + ylim(30, 2700) +
-                 ylab(y_lab) + xlab(x_lab) + 
-                 stat_density_2d(aes(fill = stat(level), colour = model), 
-                                 alpha = .4, contour = TRUE, geom = "polygon") + 
-                 scale_fill_viridis_c(guide = FALSE) + 
-                 geom_vline(xintercept = vert[1], color=line_color, size=.5) + 
-                 geom_vline(xintercept = vert[2], color=line_color, size=.5) + 
-                 geom_hline(yintercept = horiz[1], color=line_color, size=.5) + 
-                 geom_hline(yintercept = horiz[2], color=line_color, size=.5) + 
-                 the_theme
 
-  return(contour_plt)
+  DD_plt <- cowplot::axis_canvas(contour_plot, axis="x") + 
+            geom_density(data = data_dt, aes(x=get(x_variable_1), fill=model, color=model), alpha = 0.7) +
+            scale_color_manual(values=color_ord)
+  
+  preip_plt <- cowplot::axis_canvas(contour_plot, axis="y", coord_flip=TRUE) + 
+               geom_density(data = data_dt, aes(x=get(x_variable_2), fill=model, color=model), alpha = 0.7) + 
+               coord_flip() +
+               scale_color_manual(values=color_ord)
+
+  p1 <- cowplot::insert_xaxis_grob(contour_plot, DD_plt, grid::unit(.2, "null"), position= "top")
+  p2 <- cowplot::insert_yaxis_grob(p1, preip_plt, grid::unit(.2, "null"), position= "right")
+
+  # return (contour_with_matgins)
+  return(p2)
 }
 
 plot_the_margins <- function(data_dt, contour_plot){
@@ -165,43 +135,42 @@ plot_the_margins <- function(data_dt, contour_plot){
     x_variable_1 <- "mean_CumDDinF_Aug23"
     x_variable_2 <- "mean_yearly_precip"
   }
-
-  DD_plt <- ggplot(data_dt, aes(x = get(x_variable_1), fill=model, color=model)) +
-            geom_density(alpha = 0.1) + 
-            scale_color_manual(values=color_ord) + 
-            guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
-            theme(plot.title = element_text(size=20, face="bold"),
-                  plot.margin = unit(c(t=0, r=.5, b=0.5, l=-4), "cm"),
-                  legend.position = "none",
-                  axis.ticks.x = element_blank(),
-                  axis.ticks.y = element_blank(),
-                  axis.text.x = element_text(size=15, face="bold", color="black"),
-                  axis.text.y = element_text(size=15, face="bold", color="black"),
-                  axis.title.x = element_blank(),
-                  axis.title.y = element_blank())
-
-  
-  preip_plt <- ggplot(data_dt, aes(x = get(x_variable_2), fill=model, color=model)) +
-               geom_density(alpha = 0.1) + 
-               scale_color_manual(values=color_ord) + 
-               guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
-               coord_flip() + 
-               theme(plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=.5, r=.5, b=0.5, l=-2), "cm"),
-                     legend.position = "none",
-                     axis.ticks.x = element_blank(),
-                     axis.ticks.y = element_blank(),
-                     axis.text.x = element_text(size=15, face="bold", color="black"),
-                     axis.text.y = element_text(size=15, face="bold", color="black"),
-                     axis.title.x = element_blank(),
-                     axis.title.y = element_blank())
-
   empty <- ggplot()+ 
            geom_point(aes(1,1), colour="white")+
            theme(axis.ticks=element_blank(), 
                  panel.background=element_blank(), 
                  axis.text.x=element_blank(), axis.text.y=element_blank(),
                  axis.title.x=element_blank(), axis.title.y=element_blank())
+
+  DD_plt <- ggplot(data_dt, aes(x = get(x_variable_1), fill=model, color=model)) +
+            geom_density(alpha = 0.5) + 
+            scale_color_manual(values=color_ord) + 
+            guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
+            theme(plot.margin = unit(c(t=0.2, r=1, b=0.5, l=.5), "pt"),
+                  legend.position = "none",
+                  axis.ticks.x = element_blank(),
+                  axis.ticks.y = element_blank(),
+                  axis.text.x = element_text(size=15, face="plain", color="black"),
+                  axis.text.y = element_text(size=15, face="plain", color="black"),
+                  axis.title.x = element_blank(),
+                  axis.title.y = element_blank()
+                  )
+  
+  preip_plt <- ggplot(data_dt, aes(x = get(x_variable_2), fill=model, color=model)) +
+               geom_density(alpha = 0.5) + 
+               scale_color_manual(values=color_ord) + 
+               guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
+               coord_flip() + 
+               theme(plot.title = element_text(size=20, face="bold"),
+                     plot.margin = unit(c(t=.1, r=.5, b=1.2, l=0.2), "pt"),
+                     legend.position = "none",
+                     axis.ticks.x = element_blank(),
+                     axis.ticks.y = element_blank(),
+                     axis.text.x = element_text(size=15, face="plain", color="black"),
+                     axis.text.y = element_text(size=15, face="plain", color="black"),
+                     axis.title.x = element_blank(),
+                     axis.title.y = element_blank()
+                     )  
 
   contour_with_matgins <- ggarrange(DD_plt, 
                                     empty, 
@@ -214,12 +183,11 @@ plot_the_margins <- function(data_dt, contour_plot){
   return (contour_with_matgins)
 }
 
-
 plot_the_1D_densities <- function(data_dt, dens_T, subT){
   color_ord = c("red", "dodgerblue") #,  "olivedrab4", grey47
 
   the_theme <- theme(plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=.5, r=.5, b=0.5, l=0.5), "cm"),
+                     plot.margin = unit(c(t=.5, r=.5, b=0.5, l=0.5), "pt"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_blank(),
                      legend.position = "bottom",
@@ -244,7 +212,7 @@ plot_the_1D_densities <- function(data_dt, dens_T, subT){
     x_variable_2 <- "mean_yearly_precip"
   }
   x_lab_1 <- "Cum. DD (in F) by Aug. 23"
-  x_lab_2 <- "annual precipitation"
+  x_lab_2 <- "annual precip."
 
   DD_plt <- ggplot(data_dt, aes(x = get(x_variable_1), fill=model, color=model)) +
             geom_density(alpha = 0.1) + 
@@ -274,7 +242,7 @@ plot_the_1D_densities <- function(data_dt, dens_T, subT){
 plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
   color_ord = c("red", "dodgerblue")
   the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=.1, r=1, b=0.1, l=-5), "cm"),
+                     plot.margin = unit(c(t=.1, r=.5, b=0.1, l=-3.5), "pt"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_text(size=20, face="plain"),
                      legend.position = "left",
@@ -290,7 +258,7 @@ plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles
                      axis.title.y = element_text(size=20, face="bold", color="black", 
                                                  margin = margin(t=0, r=15, b=0, l=0)))
 
-  y_lab <- "annual precipitation (mm)"
+  y_lab <- "annual precip. (mm)"
   x_lab <- "Cum. DD (F) by Aug 23"
    
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
@@ -339,10 +307,9 @@ plot_the_contour <- function(data_dt, con_title, con_subT){ # , v_line_quantiles
   return(grob1)
 }
 
-plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
-  color_ord = c("red", "dodgerblue")
+plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_type, v_line_quantiles=c(0.1, 0.9)){
   the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
-                     plot.margin = unit(c(t=0, r=1, b=0, l=.5), "cm"),
+                     plot.margin = unit(c(t=0, r=0, b=-2, l=0), "pt"),
                      legend.spacing.x = unit(0.4, 'cm'),
                      legend.title = element_blank(),
                      legend.position = "bottom",
@@ -354,35 +321,33 @@ plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){ # , v_li
                      axis.text.x = element_text(size=15, face="bold", color="black"),
                      axis.text.y = element_text(size=15, face="bold", color="black"),
                      axis.title.x = element_text(size=20, face="bold", color="black",
-                                                 margin = margin(t=15, r=0, b=0, l=0)),
+                                                 margin = margin(t=10, r=0, b=0, l=0)),
                      axis.title.y = element_text(size=20, face="bold", color="black", 
-                                                 margin = margin(t=0, r=15, b=0, l=0)))
+                                                 margin = margin(t=0, r=10, b=0, l=0)))
 
-  y_lab <- "annual precipitation (mm)"
+  y_lab <- "annual precip.(mm)"
   x_lab <- "Cum. DD (F) by Aug 23"
-  
-  # line_color_F <- "red"
-  # line_color_H <- "springgreen4"
-  # vertical_dt_F <- data_dt %>% filter(model != "observed") %>% data.table()
-  # vertical_dt_H <- data_dt %>% filter(model == "observed") %>% data.table()
+
+  if (vert_L_type == "historical"){
+      line_color <- "springgreen4"
+      vertical_dt <- data_dt %>% filter(model == "observed") %>% data.table()
+    } else {
+      line_color <- "red"
+      vertical_dt <- data_dt %>% filter(model != "observed") %>% data.table()
+  }
    
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
-    # vert_H <- quantile(vertical_dt_H$CumDDinF_Aug23, probs=v_line_quantiles)
-    # horiz_H <- quantile(vertical_dt_H$yearly_precip, probs=v_line_quantiles)
-    # vert_F <- quantile(vertical_dt_F$CumDDinF_Aug23, probs=v_line_quantiles)
-    # horiz_F <- quantile(vertical_dt_F$yearly_precip, probs=v_line_quantiles)
-    
+    vert <- quantile(vertical_dt$CumDDinF_Aug23, probs=v_line_quantiles)
+    horiz <- quantile(vertical_dt$yearly_precip, probs=v_line_quantiles)
     x_variable <- "CumDDinF_Aug23"
     y_variable <- "yearly_precip"
     } else {
-    # vert_H <- quantile(vertical_dt_H$mean_CumDDinF_Aug23, probs=v_line_quantiles)
-    # horiz_H <- quantile(vertical_dt_H$mean_yearly_precip, probs=v_line_quantiles)
-    # vert_F <- quantile(vertical_dt_F$mean_CumDDinF_Aug23, probs=v_line_quantiles)
-    # horiz_F <- quantile(vertical_dt_F$mean_yearly_precip, probs=v_line_quantiles)
+    vert <- quantile(vertical_dt$mean_CumDDinF_Aug23, probs=v_line_quantiles)
+    horiz <- quantile(vertical_dt$mean_yearly_precip, probs=v_line_quantiles)
     x_variable <- "mean_CumDDinF_Aug23"
     y_variable <- "mean_yearly_precip"
   }
-   
+  
   contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
                  # geom_point() + 
                  # geom_density_2d() + 
@@ -390,17 +355,11 @@ plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){ # , v_li
                  ylab(y_lab) + xlab(x_lab) + 
                  stat_density_2d(aes(fill = stat(level), colour = model), 
                                  alpha = .4, contour = TRUE, geom = "polygon") + 
-                 scale_fill_viridis_c(guide = FALSE, aesthetics = "fill") + 
-                 scale_color_manual(values = color_ord) + 
-                 guides(color = guide_legend(reverse = TRUE)) +
-                 # geom_vline(xintercept = vert_H[1], color=line_color_H, size=.5) + 
-                 # geom_vline(xintercept = vert_H[2], color=line_color_H, size=.5) + 
-                 # geom_hline(yintercept = horiz_H[1], color=line_color_H, size=.5) + 
-                 # geom_hline(yintercept = horiz_H[2], color=line_color_H, size=.5) + 
-                 # geom_vline(xintercept = vert_F[1], color=line_color_F, size=.5) + 
-                 # geom_vline(xintercept = vert_F[2], color=line_color_F, size=.5) + 
-                 # geom_hline(yintercept = horiz_F[1], color=line_color_F, size=.5) + 
-                 # geom_hline(yintercept = horiz_F[2], color=line_color_F, size=.5) + 
+                 scale_fill_viridis_c(guide = FALSE) + 
+                 # geom_vline(xintercept = vert[1], color=line_color, size=.5) + 
+                 # geom_vline(xintercept = vert[2], color=line_color, size=.5) + 
+                 # geom_hline(yintercept = horiz[1], color=line_color, size=.5) + 
+                 # geom_hline(yintercept = horiz[2], color=line_color, size=.5) + 
                  the_theme
 
   return(contour_plt)
@@ -417,14 +376,14 @@ plot_the_map <- function(a_dt, county2, title_p,
                  geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01)+
                  coord_quickmap() + 
                  guides(fill = guide_colourbar(barwidth = 1, barheight = 20)) + 
-                 theme(plot.title = element_text(size=30, face="bold"),
-                       plot.subtitle = element_text(size=25, face="bold"),
-                       plot.margin = unit(c(t=1, r=1, b=.5, l=0), "cm"),
+                 theme(plot.title = element_text(size=20, face="bold"),
+                       plot.subtitle = element_text(size=15, face="bold"),
+                       plot.margin = unit(c(t=1, r=1, b=.5, l=0), "pt"),
                        legend.title = element_blank(),
                        legend.position = c(.95, .3), # 
                        legend.background = element_rect(fill = "grey92"),
-                       legend.key.size = unit(2, "line"),
-                       legend.text = element_text(size=18, face="bold"),
+                       legend.key.size = unit(1, "line"),
+                       legend.text = element_text(size=12, face="bold"),
                        # legend.margin = margin(t=.5, r=0, b=1, l=0, unit = 'cm'),
                        axis.text.x = element_blank(),
                        axis.text.y = element_blank(),
@@ -436,15 +395,110 @@ plot_the_map <- function(a_dt, county2, title_p,
     return(curr_plot) 
 }
 
+plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){ # , v_line_quantiles=c(0.1, 0.9)
+  color_ord = c("red", "dodgerblue")
+  the_theme <- theme(# plot.title = element_text(size=20, face="bold"),
+                     plot.margin = unit(c(t=.1, r=1, b=0, l=.5), "pt"),
+                     legend.spacing.x = unit(0.4, 'cm'),
+                     legend.title = element_blank(),
+                     legend.position = "bottom",
+                     legend.key.size = unit(1, "line"),
+                     legend.text = element_text(size=15, face="plain"),
+                     legend.margin = margin(t=.1, r=0, b=.1, l=0, unit = 'cm'),
+                     axis.ticks.x = element_blank(),
+                     axis.ticks.y = element_blank(),
+                     axis.text.x = element_text(size=12, face="plain", color="black"),
+                     axis.text.y = element_text(size=12, face="plain", color="black"),
+                     axis.title.x = element_text(size=18, face="plain", color="black",
+                                                 margin = margin(t=15, r=0, b=0, l=0)),
+                     axis.title.y = element_text(size=18, face="plain", color="black", 
+                                                 margin = margin(t=0, r=15, b=0, l=0)))
+
+  y_lab <- "annual precip. (mm)"
+  x_lab <- "Cum. DD (F) by Aug 23"
+   
+  if ("CumDDinF_Aug23" %in% colnames(data_dt)){
+     x_variable <- "CumDDinF_Aug23"
+     y_variable <- "yearly_precip"
+    } else {
+     x_variable <- "mean_CumDDinF_Aug23"
+     y_variable <- "mean_yearly_precip"
+  }
+   
+  contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
+                 ylab(y_lab) + xlab(x_lab) + 
+                 stat_density_2d(aes(fill = stat(level), colour = model), 
+                                 alpha = .4, contour = TRUE, geom = "polygon") + 
+                 scale_fill_viridis_c(guide = FALSE, aesthetics = "fill") + 
+                 scale_color_manual(values = color_ord) + 
+                 guides(color = guide_legend(reverse = TRUE)) +
+                 the_theme
+
+  return(contour_plt)
+}
+
+plot_the_map_4_web <- function(a_dt, county2, title_p, 
+                               target_county_map_info, 
+                               most_similar_cnty_map_info, 
+                               analog_name){
+    curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
+                 geom_polygon(data = county2, fill="lightgrey") +
+                 geom_polygon(data = most_similar_cnty_map_info, color="red", size = 1) +
+                 geom_polygon(data = target_county_map_info, color="yellow", size = .75) +
+                 geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01)+
+                 coord_quickmap() + 
+                 guides(fill = guide_colourbar(barwidth = 1, barheight = 20)) + 
+                 theme(plot.title = element_text(size=18, face="bold"),
+                       plot.subtitle = element_text(size=14, face="bold"),
+                       plot.margin = unit(c(t=-5, r=4, b=-1, l=0), "pt"),
+                       legend.title = element_blank(),
+                       legend.position = c(.95, .5), # 
+                       legend.background = element_rect(fill = "grey92"),
+                       legend.key.size = unit(.7, "line"),
+                       legend.text = element_text(size=12, face="bold"),
+                       axis.text.x = element_blank(),
+                       axis.text.y = element_blank(),
+                       axis.ticks.x = element_blank(),
+                       axis.ticks.y = element_blank(),
+                       axis.title.x = element_blank(),
+                       axis.title.y = element_blank()) + 
+                 ggtitle(title_p, subtitle= paste0("historical analog: ", analog_name))
+    return(curr_plot) 
+}
+
+plot_the_pie_4_web <- function(DT, titl, subtitle){
+  pp <- ggplot(DT, aes(fill=category, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
+        geom_rect(colour="grey30") +
+        coord_polar(theta="y") +
+        xlim(c(0, 4)) +
+        theme(plot.title = element_text(size=18, face="plain"), 
+              plot.subtitle = element_text(size=14, face="plain"),
+              plot.margin = unit(c(t=1, b=80, l=10, r=55), "pt"),
+              panel.grid=element_blank(),
+              legend.spacing.x = unit(.2, 'pt'),
+              legend.title = element_blank(),
+              legend.position = "none",
+              legend.key.size = unit(1.6, "line"),
+              legend.text = element_blank()) +
+        theme(legend.text = element_blank()) + 
+        theme(axis.text = element_blank()) + 
+        theme(axis.title=element_blank()) + 
+        theme(axis.ticks = element_blank()) + 
+        # labs(title=titl, subtitle= paste0("historical analog: ", subtitle)) +
+        annotate("text", x = 0, y = 0, colour = "red", size = 8,
+                 label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]))) 
+  return(pp)
+}
+
 plot_the_pie <- function(DT, titl, subtitle){
   pp <- ggplot(DT, aes(fill=category, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +
         geom_rect(colour="grey30") +
         coord_polar(theta="y") +
         xlim(c(0, 4)) +
         theme(plot.title = element_text(size=20, face="bold"), 
-              plot.margin = unit(c(t=0, r=-1, b=1, l=-1), "cm"),
+              plot.margin = unit(c(t=0, r=-1, b=1, l=-1), "pt"),
               panel.grid=element_blank(),
-              legend.spacing.x = unit(.2, 'cm'),
+              legend.spacing.x = unit(.2, 'pt'),
               legend.title = element_blank(),
               legend.position = "none",
               legend.key.size = unit(1.6, "line"),
@@ -471,7 +525,7 @@ plot_the_pie_all_possible <- function(dat, titl){
               panel.grid=element_blank(),
               axis.text = element_blank(),
               axis.ticks = element_blank(),
-              legend.spacing.x = unit(.2, 'cm'),
+              legend.spacing.x = unit(.2, 'pt'),
               legend.title = element_blank(),
               legend.position = "bottom",
               legend.key.size = unit(1.6, "line"),
@@ -491,7 +545,7 @@ plot_the_pie_Q2 <- function(dat, titl){
               panel.grid=element_blank(),
               axis.text = element_blank(),
               axis.ticks = element_blank(),
-              legend.spacing.x = unit(.2, 'cm'),
+              legend.spacing.x = unit(.2, 'pt'),
               legend.title = element_blank(),
               legend.position = "bottom",
               legend.key.size = unit(1.6, "line"),
@@ -511,7 +565,7 @@ plot_the_pie_Q3 <- function(dat, titl){
               panel.grid=element_blank(),
               axis.text = element_blank(),
               axis.ticks = element_blank(),
-              legend.spacing.x = unit(.2, 'cm'),
+              legend.spacing.x = unit(.2, 'pt'),
               legend.title = element_blank(),
               legend.position = "bottom",
               legend.key.size = unit(1.6, "line"),
