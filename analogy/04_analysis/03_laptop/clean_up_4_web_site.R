@@ -80,6 +80,7 @@ Min_fips_st_county <- unique(Min_fips_st_county)
 ####         Set up data directories
 ####
 ######################################################################
+
 county_averages = FALSE
 
 if (county_averages == FALSE){
@@ -126,15 +127,16 @@ sigma_bds <- c(1, 2) #
 # VL_quans = c(.25, .75)
 
 sub_dir <- data_sub_dirs[1]
-sigma_bd <- 2
+sigma_bd <- 1
 target_fip <- 53021
 model_n <- model_names[1]
 
 for (sub_dir in data_sub_dirs){
   # emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
-  emission <- substr(unlist(strsplit(sub_dir, "_"))[3], 1, 5)
   # plot_name_extension <- paste0("_", strsplit(sub_dir, "_")[[1]][1], 
   #                               "_", strsplit(sub_dir, "_")[[1]][3], "_", emission)
+  
+  emission <- substr(unlist(strsplit(sub_dir, "_"))[3], 1, 5)
   plot_name_extension <- paste0("_", 
                                 strsplit(sub_dir, "_")[[1]][1], 
                                 "_", strsplit(sub_dir, "_")[[1]][2], 
@@ -144,9 +146,17 @@ for (sub_dir in data_sub_dirs){
   for (sigma_bd in sigma_bds){
     for (target_fip in local_fips){
       
+      data_4_all_models_F1_map <- data.table()
+      data_4_all_models_F2_map <- data.table()
+      data_4_all_models_F3_map <- data.table()
+
       for(model_n in model_names){
-        print(paste0(sigma_bd, ",", sub_dir))
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
+        plot_out_dir <- paste0(data_dir, "/4_website/")
+        print (plot_out_dir)
+        if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
+        # plot_out_dir <- "/Users/hn/Desktop/"
+
         #############################################################################
         #
         # read the data of the three time periods
@@ -208,7 +218,6 @@ for (sub_dir in data_sub_dirs){
 
         f_years_F3 = 1 + as.numeric(unlist(strsplit(time_p[3], "_")))[2] - 
                          as.numeric(unlist(strsplit(time_p[3], "_")))[1]
-        print ("line 207")
         #############################################################################
         #
         # *** Standardize the freq. using # of grids in each county (historical data) ***
@@ -239,20 +248,36 @@ for (sub_dir in data_sub_dirs){
         analog_dat_F1_4_map <- analog_dat_F1_4_map_b[[1]]
         analog_dat_F2_4_map <- analog_dat_F2_4_map_b[[1]]
         analog_dat_F3_4_map <- analog_dat_F3_4_map_b[[1]]
-        # rm(analog_dat_F1_4_map_b, analog_dat_F2_4_map_b, analog_dat_F3_4_map_b)
-
+        
         most_similar_cnty_F1_fip <- most_similar_cnty_F1
         most_similar_cnty_F2_fip <- most_similar_cnty_F2
         most_similar_cnty_F3_fip <- most_similar_cnty_F3
         #############################################################################
         #
-        # produce data for geographical map
+        # produce data for geographical map, all analogs of one model is present here
         #
         one_mod_map_info_F1 <- produce_dt_for_map(analog_dat_F1_4_map)
         one_mod_map_info_F2 <- produce_dt_for_map(analog_dat_F2_4_map)
         one_mod_map_info_F3 <- produce_dt_for_map(analog_dat_F3_4_map)
+        #############################################################################
+        #
+        # produce data for geographical map, just top anolog of a given is present here
+        #
+        
+        top_analog_F1_4_all_maps <- analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
+        top_analog_F2_4_all_maps <- analog_dat_F2_4_map[which.max(analog_dat_F2_4_map$analog_freq),]
+        top_analog_F3_4_all_maps <- analog_dat_F3_4_map[which.max(analog_dat_F3_4_map$analog_freq),]
+         
+        top_analog_F1_4_all_maps <- produce_dt_for_map(top_analog_F1_4_all_maps)
+        top_analog_F2_4_all_maps <- produce_dt_for_map(top_analog_F2_4_all_maps)
+        top_analog_F3_4_all_maps <- produce_dt_for_map(top_analog_F3_4_all_maps)
 
+        data_4_all_models_F1_map <- rbind(data_4_all_models_F1_map, top_analog_F1_4_all_maps)
+        data_4_all_models_F2_map <- rbind(data_4_all_models_F2_map, top_analog_F2_4_all_maps)
+        data_4_all_models_F3_map <- rbind(data_4_all_models_F3_map, top_analog_F3_4_all_maps)
+        #
         # produce data for donuts
+        #
         one_mod_pie_info_F1 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F1, 
                                                      tgt_fip = target_fip,
                                                      hist_target_fip = most_similar_cnty_F1_fip,
@@ -281,19 +306,19 @@ for (sub_dir in data_sub_dirs){
 
         if (emission=="rcp45"){ttl_emiss = "RCP 4.5"} else { ttl_emiss = "RCP 8.5"}
 
-        titlem_F1 <- paste0(target_cnty_name, 
+        titlem_F1 <- paste0(target_cnty_name, # "\n",
                             " (", 
                             paste(unlist(strsplit(time_p[1], "_"))[1], 
                                   unlist(strsplit(time_p[1], "_"))[2], sep="-"),
                             ", ", model_n, ", ", ttl_emiss, ")" )
 
-        titlem_F2 <- paste0(target_cnty_name, 
+        titlem_F2 <- paste0(target_cnty_name, # "\n",
                             " (", 
                             paste(unlist(strsplit(time_p[2], "_"))[1], 
                                   unlist(strsplit(time_p[2], "_"))[2], sep="-"),
                             ", ", model_n, ", ", ttl_emiss, ")" )
 
-        titlem_F3 <- paste0(target_cnty_name, 
+        titlem_F3 <- paste0(target_cnty_name, # "\n",
                             " (", 
                             paste(unlist(strsplit(time_p[3], "_"))[1], 
                                   unlist(strsplit(time_p[3], "_"))[2], sep="-"),
@@ -313,19 +338,19 @@ for (sub_dir in data_sub_dirs){
 
         # Plot the donuts
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_pie(DT = one_mod_pie_info_F1, 
-                                     titl = titlem_F1, 
-                                     subtitle = analog_name_F1)})
+               value = {plot_the_pie_4_web(DT = one_mod_pie_info_F1, 
+                                           titl = titlem_F1, 
+                                           subtitle = analog_name_F1)})
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_pie(DT = one_mod_pie_info_F2, 
-                                     titl = titlem_F2, 
-                                     subtitle = analog_name_F2)})
+               value = {plot_the_pie_4_web(DT = one_mod_pie_info_F2, 
+                                           titl = titlem_F2, 
+                                           subtitle = analog_name_F2)})
         
         assign(x = paste0("pie_", gsub("-", "_", model_n), "_F3"), 
-                          value = {plot_the_pie(DT = one_mod_pie_info_F3, 
-                                                titl = titlem_F3, 
-                                                subtitle = analog_name_F3)})
+                          value = {plot_the_pie_4_web(DT = one_mod_pie_info_F3, 
+                                                      titl = titlem_F3, 
+                                                      subtitle = analog_name_F3)})
         #________________________________________________________________________________
         #
         # Set up right data for heat map plots
@@ -357,130 +382,53 @@ for (sub_dir in data_sub_dirs){
         #
         # Plot the contours
         #
-        # assign(x = paste0("con_", gsub("-", "_", model_n), "_F1"), 
-        #        value = {plot_the_contour_one_filling(data_dt = contour_dt_1, 
-        #                                              con_title = titlem_F1, 
-        #                                              con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
-        #                                              )})
-        
-        # assign(x = paste0("con_", gsub("-", "_", model_n), "_F2"), 
-        #        value = {plot_the_contour_one_filling(data_dt = contour_dt_2, 
-        #                                              con_title = titlem_F1, 
-        #                                              con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
-        #                                              )})
-
-        # assign(x = paste0("con_", gsub("-", "_", model_n), "_F3"), 
-        #        value = {plot_the_contour_one_filling(data_dt = contour_dt_3, 
-        #                                              con_title = titlem_F1, 
-        #                                              con_subT = analog_name_F1 #, v_line_quantiles=VL_quans
-        #                                              )})
-
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_contour(data_dt = contour_dt_1, 
-                                         con_title = titlem_F1, 
-                                         con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
-                                         )})
+               value = {plot_the_contour_one_filling(data_dt = contour_dt_1, 
+                                                     con_title = titlem_F1, 
+                                                     con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
+                                                     )})
         
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_contour(data_dt = contour_dt_2, 
-                                         con_title = titlem_F1, 
-                                         con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
-                                         )})
+               value = {plot_the_contour_one_filling(data_dt = contour_dt_2, 
+                                                     con_title = titlem_F1, 
+                                                     con_subT = analog_name_F1 # , v_line_quantiles=VL_quans
+                                                     )})
 
         assign(x = paste0("con_", gsub("-", "_", model_n), "_F3"), 
-               value = {plot_the_contour(data_dt = contour_dt_3, 
-                                         con_title = titlem_F1, 
-                                         con_subT = analog_name_F1 #, v_line_quantiles=VL_quans
-                                         )})
-        
-        # Plot the 1D densities
+               value = {plot_the_contour_one_filling(data_dt = contour_dt_3, 
+                                                     con_title = titlem_F1, 
+                                                     con_subT = analog_name_F1 #, v_line_quantiles=VL_quans
+                                                     )})
         #
-        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F1"), 
-        #        value = {plot_the_1D_densities(data_dt = contour_dt_1, 
-        #                                       dens_T = titlem_F1, 
-        #                                       subT = analog_name_F1 
-        #                                       # , v_line_quantiles=VL_quans
-        #                                       )})
+        # Plot the Marginals
+        #
+        assign(x = paste0("con_", gsub("-", "_", model_n), "_F1"), 
+               value = {plot_the_margins_cowplot(data_dt = contour_dt_1,
+                                                 contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F1")))})
         
-        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F2"), 
-        #        value = {plot_the_1D_densities(data_dt = contour_dt_2, 
-        #                                       dens_T = titlem_F2, 
-        #                                       subT = analog_name_F2 
-        #                                       # , v_line_quantiles=VL_quans
-        #                                       )})
+        assign(x = paste0("con_", gsub("-", "_", model_n), "_F2"), 
+               value = {plot_the_margins_cowplot(data_dt = contour_dt_2, 
+                                                 contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F2")))})
 
-        # assign(x = paste0("den_", gsub("-", "_", model_n), "_F3"), 
-        #        value = {plot_the_1D_densities(data_dt = contour_dt_3, 
-        #                                       dens_T = titlem_F3, 
-        #                                       subT = analog_name_F3 
-        #                                       # , v_line_quantiles=VL_quans
-        #                                       )})
-        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_margins(data_dt = contour_dt_1,
-                                         contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F1"))
-                                        )})
-        
-        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_margins(data_dt = contour_dt_2, 
-                                         contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F2"))
-                                        )})
-
-        assign(x = paste0("con_marg_", gsub("-", "_", model_n), "_F3"), 
-               value = {plot_the_margins(data_dt = contour_dt_3, 
-                                         contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F3"))
-                                        )})
+        assign(x = paste0("con_", gsub("-", "_", model_n), "_F3"), 
+               value = {plot_the_margins_cowplot(data_dt = contour_dt_3, 
+                                                 contour_plot = get(paste0("con_", gsub("-", "_", model_n), "_F3")))})
 
         # _______________________________________________________________________________
-        # 
-        # bind the goddamn donut and contour together
-        #
-        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F1"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F1")), 
-        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F1")))))
-
-        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F2"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F2")), 
-        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F2")))))
-
-        # assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F3"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F3")), 
-        #                                          get(paste0("con_", gsub("-", "_", model_n), "_F3")))))
+        
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F1"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F1")), 
-                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F1"))
-                                                 )
-                                )
-               )
+                                                 ggarrange(get(paste0("con_", gsub("-", "_", model_n), "_F1"))))))
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F2"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F2")), 
-                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F2")))))
+                                                 ggarrange(get(paste0("con_", gsub("-", "_", model_n), "_F2"))))))
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F3"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F3")), 
-                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F3"))
-                                                 )
-                                )
-               )
-        # _______________________________________________________________________________
-        # 
-        # bind the goddamn pie_con_ and 1D_dens together
-        #
-        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F1"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F1")), 
-        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F1"))),
-        #                          ncol = 1, nrow = 2))
+                                                 ggarrange(get(paste0("con_", gsub("-", "_", model_n), "_F3")))),
+                                 widths = c(1, 1.5)))
 
-        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F2"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F2")), 
-        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F2"))),
-        #                          ncol = 1, nrow = 2))
-
-        # assign(x = paste0("pie_con_dens_", gsub("-", "_", model_n), "_F3"),
-        #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F3")), 
-        #                                          get(paste0("den_", gsub("-", "_", model_n), "_F3"))),
-        #                         ncol = 1, nrow = 2))
-        print ("line 457")
         #________________________________________________________________________________
         # plot geographical maps:
         data(county.fips) # Load the county.fips dataset for plotting
@@ -495,29 +443,61 @@ for (sub_dir in data_sub_dirs){
         analog_name_F3_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
         
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_map(one_mod_map_info_F1, cnty2, titlem_F1, 
-                                     target_county_map_info, 
-                                     analog_name_F1_map_info,
-                                     analog_name=analog_name_F1)})
+               value = {plot_the_map_4_web(one_mod_map_info_F1, cnty2, titlem_F1, 
+                                           target_county_map_info, 
+                                           analog_name_F1_map_info,
+                                           analog_name=analog_name_F1)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_map(one_mod_map_info_F2, cnty2, titlem_F2,
-                                     target_county_map_info, 
-                                     analog_name_F2_map_info,
-                                     analog_name= analog_name_F2)})
+               value = {plot_the_map_4_web(one_mod_map_info_F2, cnty2, titlem_F2,
+                                           target_county_map_info, 
+                                           analog_name_F2_map_info,
+                                           analog_name= analog_name_F2)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F3"), 
-               value = {plot_the_map(a_dt = one_mod_map_info_F3, county2 = cnty2, 
-                                     title_p = titlem_F3,
-                                     target_county_map_info = target_county_map_info, 
-                                     most_similar_cnty_map_info = analog_name_F3_map_info,
-                                     analog_name = analog_name_F3)})
+               value = {plot_the_map_4_web(a_dt = one_mod_map_info_F3, county2 = cnty2, 
+                                           title_p = titlem_F3,
+                                           target_county_map_info = target_county_map_info, 
+                                           most_similar_cnty_map_info = analog_name_F3_map_info,
+                                           analog_name = analog_name_F3)})
 
-        # rm(most_similar_cnty_F1, most_similar_cnty_F2, most_similar_cnty_F3)
-        # rm(most_similar_cnty_F1_fip, most_similar_cnty_F2_fip, most_similar_cnty_F3_fip)
-        # rm(titlem_F1, titlem_F2, titlem_F3)
-        # rm(one_mod_pie_info_F1, one_mod_pie_info_F2, one_mod_pie_info_F3)
+        target_st_cnty <- gsub(", ", "_", target_cnty_name)
+
+        assign(x = paste0("plot_", target_st_cnty, "_F1") , 
+               value={ggarrange(plotlist = list(get(paste0("map_", gsub("-", "_", model_n), "_F1")), 
+                                                get(paste0("pie_con_", gsub("-", "_", model_n), "_F1"))),
+                                heights= c(1.5, 1), 
+                                widths= c(3, 1),
+                                ncol = 1, nrow = 2, common.legend=FALSE)})
+        
+        ggsave(filename = paste0("triple_", target_st_cnty, "_", gsub("-", "_", model_n), "_F1.png"),
+               plot = get(paste0("plot_", target_st_cnty, "_F1")), 
+               path= plot_out_dir, device="png",
+               dpi = 200, width = 12, height = 12, unit="in", limitsize = FALSE)
+
+        assign(x = paste0("plot_", target_st_cnty, "_F2") , 
+               value={ggarrange(plotlist = list(get(paste0("map_", gsub("-", "_", model_n), "_F2")), 
+                                                get(paste0("pie_con_", gsub("-", "_", model_n), "_F2"))),
+                                heights= c(1.5, 1), 
+                                widths= c(3, 1),
+                                ncol = 1, nrow = 2, common.legend=FALSE)})
+        ggsave(filename = paste0("triple_", target_st_cnty, "_", gsub("-", "_", model_n),"_F2.png"),
+               plot = get(paste0("plot_", target_st_cnty, "_F2")), 
+               path= plot_out_dir, device="png",
+               dpi = 200, width = 12, height = 12, unit="in", limitsize = FALSE)
+
+        assign(x = paste0("plot_", target_st_cnty, "_F3") , 
+               value={ggarrange(plotlist = list(get(paste0("map_", gsub("-", "_", model_n), "_F3")), 
+                                                get(paste0("pie_con_", gsub("-", "_", model_n), "_F3"))),
+                                heights= c(1.5, 1), 
+                                widths= c(3, 1),
+                                ncol = 1, nrow = 2, common.legend=FALSE)})
+        ggsave(filename = paste0("triple_", target_st_cnty, "_", gsub("-", "_", model_n), "_F3.png"),
+               plot = get(paste0("plot_", target_st_cnty, "_F3")), 
+               path= plot_out_dir, device="png",
+               dpi = 200, width = 12, height = 12, unit="in", limitsize = FALSE)
       }
+
 
       assign(x = paste0("plot_", target_fip) , 
              value={ggarrange(plotlist = list(map_bcc_csm1_1_m_F1, map_bcc_csm1_1_m_F2, map_bcc_csm1_1_m_F3,
@@ -560,10 +540,6 @@ for (sub_dir in data_sub_dirs){
          pie_con_GFDL_ESM2M_F1, pie_con_GFDL_ESM2M_F2, pie_con_GFDL_ESM2M_F3)
     }
     
-    # plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps_", VL_quans[1]*100, "_", VL_quans[2]*100, "/")
-    plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps/")
-    plot_out_dir <- "/Users/hn/Desktop/"
-    
     image_dpi = 200
     imgage_h = 150
     imgage_w = 75
@@ -577,8 +553,7 @@ for (sub_dir in data_sub_dirs){
 
     print ("plot_out_dir line 543")
     print(plot_out_dir)
-    if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
-
+    
 
     ggsave(filename = paste0("WA_Okanogan", plot_name_extension, ".png"), 
            plot = plot_53047,
@@ -595,13 +570,11 @@ for (sub_dir in data_sub_dirs){
            plot = plot_53077,
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
-    print ("WA_Yakima_53077 saved")
 
     ggsave(filename = paste0("ID_Canyon", plot_name_extension, ".png"), 
            plot = plot_16027, 
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
-    print ("ID_Canyon saved")
 
     ggsave(filename = paste0("OR_Gilliam", plot_name_extension, ".png"), 
            plot = plot_41021, 
