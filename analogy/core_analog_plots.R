@@ -155,8 +155,7 @@ plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_t
 }
 
 plot_the_margins <- function(data_dt, contour_plot){
-  color_ord = c("red", "dodgerblue") #,  "olivedrab4", grey47
-
+  color_ord = c("red", "dodgerblue") #, "olivedrab4", grey47
 
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
     x_variable_1 <- "CumDDinF_Aug23"
@@ -172,7 +171,7 @@ plot_the_margins <- function(data_dt, contour_plot){
             scale_color_manual(values=color_ord) + 
             guides(colour = guide_legend(reverse = TRUE), fill=guide_legend(reverse = TRUE)) + 
             theme(plot.title = element_text(size=20, face="bold"),
-                  plot.margin = unit(c(t=0, r=.5, b=0.5, l=-4), "cm"),
+                  plot.margin = unit(c(t=, r=.5, b=0.5, l=-4), "cm"),
                   legend.position = "none",
                   axis.ticks.x = element_blank(),
                   axis.ticks.y = element_blank(),
