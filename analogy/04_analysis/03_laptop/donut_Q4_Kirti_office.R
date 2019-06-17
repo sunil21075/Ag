@@ -84,7 +84,7 @@ county_averages = FALSE
 
 if (county_averages == FALSE){
     main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
-  } else {
+   } else {
     main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/county_averages/"
 }
 
@@ -544,10 +544,10 @@ for (sub_dir in data_sub_dirs){
     
     # plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps_", VL_quans[1]*100, "_", VL_quans[2]*100, "/")
     plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps/")
-    # plot_out_dir <- "/Users/hn/Desktop/"
+    plot_out_dir <- "/Users/hn/Desktop/"
     
     image_dpi = 200
-    imgage_h = 100
+    imgage_h = 150
     imgage_w = 75
 
     ggsave(filename = paste0("WA_Franklin", plot_name_extension, ".png"), 
@@ -555,8 +555,8 @@ for (sub_dir in data_sub_dirs){
            path=plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
     
-    print ("WA_Franklin_53021 saved")
-    
+    print ("WA_Franklin saved")
+
     print ("plot_out_dir line 543")
     print(plot_out_dir)
     if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
