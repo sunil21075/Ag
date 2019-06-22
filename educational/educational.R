@@ -82,6 +82,11 @@ data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   top_3_fip = c("NA", "NA", "NA")
                   )
 
+data = data.table(model = c("target"),
+                  start = c(10),
+                  end = c(20)
+                  )
+
 # pick up every other column. pick up odd columns. pick up even columns
 newdf <- data_1[, c(rep(c(TRUE, FALSE), (ncols(data_1)/2))), with = FALSE]
 
@@ -148,11 +153,8 @@ x <- sapply(all_us_locations_cod_moth, function(x) strsplit(x, "_")[[1]], USE.NA
 lat = x[1, ]
 long = x[2, ]
 
-
-
 # not in, opposite of %in%
 D2 = subset(local_locs, !(local_locs %in% local_files))
-
 
 ###### Convert a data table vector to a list:
 unlist(as.list(t(analogs)))
@@ -344,7 +346,6 @@ data = data.table(city = c("NYC", "NYC", "NYC", "LA", "LA", "LA", "LA"),
 
 
 # replace the first nonzero with another thing after group_by:
-
 data %>%
 group_by(city, year) %>%
 mutate(target = replace(target, which.max(target != 0), 666))
@@ -366,5 +367,7 @@ data %>%
    mutate(target = replace(target, match(1, target), 666))
 
 
+# pick the row wich max in a column
+analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
 
 

@@ -89,18 +89,16 @@ cnt_level_merge[is.na(cnt_level_merge)] <- 0
 #######         Plot county data overlayed on FPU boundaries
 ###############
 quartz()
-p<-ggplot() +
- 
-  geom_sf(data = cnt_level_merge, aes(fill = IrrTotalWith15 ), lwd=.1) + 
-  
-  scale_fill_gradient(high = "darkblue", low= "white", name="2015 Total Irrigation Withdrawals (MGD)", 
-                      labels = c("0", "", "", "", "100","1000","2000"),
-                      breaks = c(0, .5, 1, 10, 100,1000,2000)) +
-  theme( panel.grid = element_blank(), panel.grid.major=element_line(colour="transparent")) +
-  guides(fill = guide_colourbar(barwidth = 1, barheight = 10)) +
-  #theme(legend.position="bottom") +
-  geom_sf(data = FPU_dataSub, colour = "black", fill=NA, lwd =1) + 
-  geom_sf(data = FPU_dataSub, colour = "black", fill=NA, lwd =1) + 
+p <- ggplot() +
+     geom_sf(data = cnt_level_merge, aes(fill = IrrTotalWith15 ), lwd=.1) + 
+     scale_fill_gradient(high = "darkblue", low= "white", name="2015 Total Irrigation Withdrawals (MGD)", 
+                         labels = c("0", "", "", "", "100","1000","2000"),
+                         breaks = c(0, .5, 1, 10, 100,1000,2000)) +
+     theme( panel.grid = element_blank(), panel.grid.major=element_line(colour="transparent")) +
+     guides(fill = guide_colourbar(barwidth = 1, barheight = 10)) +
+     #theme(legend.position="bottom") +
+     geom_sf(data = FPU_dataSub, colour = "black", fill=NA, lwd =1) + 
+     geom_sf(data = FPU_dataSub, colour = "black", fill=NA, lwd =1) + 
 
 p
 

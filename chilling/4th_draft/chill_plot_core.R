@@ -38,20 +38,19 @@ safe_box_plot <- function(data, due, chill_start){
             facet_grid(~ scenario ~ warm_cold ) + 
             the_theme + 
             scale_fill_manual(values = color_ord,
-                      name = "Time\nPeriod", 
-                      labels = categ_lab) + 
+                              name = "Time\nPeriod", 
+                              labels = categ_lab) + 
             scale_color_manual(values = color_ord,
-                       name = "Time\nPeriod", 
-                       limits = color_ord,
-                       labels = categ_lab) + 
+                               name = "Time\nPeriod", 
+                               limits = color_ord,
+                               labels = categ_lab) + 
             scale_x_discrete(breaks = c("Historical", "2025_2050", "2051_2075", "2076_2099"),
-                     labels = categ_lab)  +
+                             labels = categ_lab)  +
             geom_text(data = medians, 
-                  aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-                      size=4.2, 
-                      position =  position_dodge(.09),
-                      vjust = 0.1,
-                      hjust=1.45) + 
+                      aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                          size=4.2, 
+                          position =  position_dodge(.09),
+                          vjust = 0.1, hjust=1.45) + 
             ggtitle(lab=paste0("Safe chill accumulation by ", due, " 1st"),
                     subtitle = paste0("chill season started on ", chill_start)) 
   

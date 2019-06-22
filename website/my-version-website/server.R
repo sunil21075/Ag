@@ -208,12 +208,5 @@ output$diapause_abs_rcp85 <- renderImage({
       }, deleteFile = FALSE)
 
 
-
-
-
-
-
-
-
 })
 

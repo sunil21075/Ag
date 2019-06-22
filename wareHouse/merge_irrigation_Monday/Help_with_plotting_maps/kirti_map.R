@@ -32,7 +32,8 @@ stat_level <- data.table(read.csv(stat_level))
 stat_level = stat_level[-51, ] # remove the last row (it is all NA)
 
 ## read us counties map
-ds = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/UScounties/"
+
+ds = "/Users/hn/Documents/GitHub/Kirti/wareHouse/merge_irrigation_Monday/UScounties/"
 US_cnt_ly_name = "UScounties"
 US_cnt <- read_sf(dsn=path.expand(ds), layer = US_cnt_ly_name, quiet = TRUE)
 
@@ -48,10 +49,10 @@ cnt_level_merge <- merge(US_cnt_main_land, cnt_level, by="FIPS", all.x=T)
 library(RColorBrewer)
 my.palette <- brewer.pal(n = 7, name = "Blues")
 plot(cnt_level_merge["totalAcres15"], 
-    pal=brewer.pal(n = 7, name = "Blues"), 
-    lwd= .1, breaks = c(0,25,50,100,200,500,1000,1200),
-    main = "County Level (Total Irrigated Acres in 2015)",
-    cex.main=1)
+     pal=brewer.pal(n = 7, name = "Blues"), 
+     lwd= .1, breaks = c(0,25,50,100,200,500,1000,1200),
+     main = "County Level (Total Irrigated Acres in 2015)",
+     cex.main=1)
 
 # summary(cnt_level_merge)
 plot(cnt_level_merge["IrrTotalWith15"], 

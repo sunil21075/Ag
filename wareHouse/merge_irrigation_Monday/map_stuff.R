@@ -38,7 +38,7 @@ map <-ggplot() +
 ##################################################################################################
 # https://r-spatial.github.io/sf/articles/sf5.html
 
-data_dir = "/Users/hn/Documents/GitHub/Kirti/merge_irrigation_Monday/IMPACT_FPU_Map/"
+data_dir = "/Users/hn/Documents/GitHub/Kirti/wareHouse/merge_irrigation_Monday/IMPACT_FPU_Map/"
 layer_name = "fpu2015_polygons_v3_multipart_polygons"
 tt <- read_sf(dsn=path.expand(data_dir), layer = layer_name, quiet = TRUE)
 tofind <- c("_USA")

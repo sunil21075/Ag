@@ -453,4 +453,17 @@ navbarPage(title = div("",
            #
            ############## Analogs Plots END
            #
+           #
+           #
+           ############## Analogs Map Front Page start
+           #
+           tabPanel(tags$b("Analogs Map"),
+                    
+                    imageOutput("analog_plot")
+                   )
+           #
+           ############## Analogs Map Front Face END
+           #
+           
+
        )
