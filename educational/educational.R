@@ -82,11 +82,14 @@ data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   top_3_fip = c("NA", "NA", "NA")
                   )
 
+<<<<<<< HEAD
 data = data.table(model = c("target"),
                   start = c(10),
                   end = c(20)
                   )
 
+=======
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 # pick up every other column. pick up odd columns. pick up even columns
 newdf <- data_1[, c(rep(c(TRUE, FALSE), (ncols(data_1)/2))), with = FALSE]
 
@@ -346,6 +349,10 @@ data = data.table(city = c("NYC", "NYC", "NYC", "LA", "LA", "LA", "LA"),
 
 
 # replace the first nonzero with another thing after group_by:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 data %>%
 group_by(city, year) %>%
 mutate(target = replace(target, which.max(target != 0), 666))
@@ -367,7 +374,10 @@ data %>%
    mutate(target = replace(target, match(1, target), 666))
 
 
+<<<<<<< HEAD
 # pick the row wich max in a column
 analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
+=======
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 
 

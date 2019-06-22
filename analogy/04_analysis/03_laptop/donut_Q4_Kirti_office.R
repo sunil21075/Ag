@@ -126,7 +126,11 @@ sigma_bds <- c(1, 2) #
 # VL_quans = c(.25, .75)
 
 sub_dir <- data_sub_dirs[1]
+<<<<<<< HEAD
 sigma_bd <- 1
+=======
+sigma_bd <- 2
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 target_fip <- 53021
 model_n <- model_names[1]
 
@@ -145,7 +149,11 @@ for (sub_dir in data_sub_dirs){
     for (target_fip in local_fips){
       
       for(model_n in model_names){
+<<<<<<< HEAD
         print(paste0(sigma_bd, ", ", sub_dir))
+=======
+        print(paste0(sigma_bd, ",", sub_dir))
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
         #############################################################################
         #
@@ -208,6 +216,10 @@ for (sub_dir in data_sub_dirs){
 
         f_years_F3 = 1 + as.numeric(unlist(strsplit(time_p[3], "_")))[2] - 
                          as.numeric(unlist(strsplit(time_p[3], "_")))[1]
+<<<<<<< HEAD
+=======
+        print ("line 207")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
         #############################################################################
         #
         # *** Standardize the freq. using # of grids in each county (historical data) ***
@@ -230,7 +242,11 @@ for (sub_dir in data_sub_dirs){
                                                           f_fips_dt=f_loc_fips_st_cnty, 
                                                           h_fips_dt=h_loc_fips_st_cnty, 
                                                           f_years=f_years_F3, h_years=37)
+<<<<<<< HEAD
         
+=======
+        print ("line 230")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
         most_similar_cnty_F1 <- analog_dat_F1_4_map_b[[2]]
         most_similar_cnty_F2 <- analog_dat_F2_4_map_b[[2]]
         most_similar_cnty_F3 <- analog_dat_F3_4_map_b[[2]]
@@ -446,7 +462,14 @@ for (sub_dir in data_sub_dirs){
         #                                          get(paste0("con_", gsub("-", "_", model_n), "_F3")))))
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F1"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F1")), 
+<<<<<<< HEAD
                                                  get(paste0("con_marg_", gsub("-", "_", model_n), "_F1")))))
+=======
+                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F1"))
+                                                 )
+                                )
+               )
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F2"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F2")), 
@@ -454,7 +477,14 @@ for (sub_dir in data_sub_dirs){
 
         assign(x = paste0("pie_con_", gsub("-", "_", model_n), "_F3"),
                value = ggarrange(plotlist = list(get(paste0("pie_", gsub("-", "_", model_n), "_F3")), 
+<<<<<<< HEAD
                                                  get(paste0("con_marg_", gsub("-", "_", model_n), "_F3")))))
+=======
+                                                 get(paste0("con_marg_", gsub("-", "_", model_n), "_F3"))
+                                                 )
+                                )
+               )
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
         # _______________________________________________________________________________
         # 
         # bind the goddamn pie_con_ and 1D_dens together
@@ -473,6 +503,10 @@ for (sub_dir in data_sub_dirs){
         #        value = ggarrange(plotlist = list(get(paste0("pie_con_", gsub("-", "_", model_n), "_F3")), 
         #                                          get(paste0("den_", gsub("-", "_", model_n), "_F3"))),
         #                         ncol = 1, nrow = 2))
+<<<<<<< HEAD
+=======
+        print ("line 457")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
         #________________________________________________________________________________
         # plot geographical maps:
         data(county.fips) # Load the county.fips dataset for plotting
@@ -553,9 +587,14 @@ for (sub_dir in data_sub_dirs){
     }
     
     # plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps_", VL_quans[1]*100, "_", VL_quans[2]*100, "/")
+<<<<<<< HEAD
     # plot_out_dir <- "/Users/hn/Desktop/"
     plot_out_dir <- paste0(data_dir, "/diff_axis_geo_maps_clear/")
     if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
+=======
+    plot_out_dir <- paste0(data_dir, "/different_axis/geo_maps/")
+    plot_out_dir <- "/Users/hn/Desktop/"
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
     
     image_dpi = 200
     imgage_h = 150
@@ -567,10 +606,23 @@ for (sub_dir in data_sub_dirs){
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
     
     print ("WA_Franklin saved")
+<<<<<<< HEAD
+=======
+
+    print ("plot_out_dir line 543")
+    print(plot_out_dir)
+    if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
+
+
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
     ggsave(filename = paste0("WA_Okanogan", plot_name_extension, ".png"), 
            plot = plot_53047,
            path=plot_out_dir, device="png",
            dpi=image_dpi, width = imgage_w, height = imgage_h, unit="in", limitsize = FALSE)
+<<<<<<< HEAD
+=======
+    print ("WA_Okanogan_53047 saved")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 
     ggsave(filename = paste0("WA_Chelan", plot_name_extension, ".png"), 
            plot = plot_53007, 
@@ -587,6 +639,10 @@ for (sub_dir in data_sub_dirs){
            plot = plot_16027, 
            path = plot_out_dir, device="png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+<<<<<<< HEAD
+=======
+    print ("ID_Canyon saved")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 
     ggsave(filename = paste0("OR_Gilliam", plot_name_extension, ".png"), 
            plot = plot_41021, 
@@ -612,7 +668,11 @@ for (sub_dir in data_sub_dirs){
            plot = plot_53001,
            path = plot_out_dir, device = "png",
            dpi = image_dpi, width = imgage_w, height = imgage_h, unit = "in", limitsize = FALSE)
+<<<<<<< HEAD
     
+=======
+    print ("WA_Adams_53001 saved")
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
     ggsave(filename = paste0("WA_Benton", plot_name_extension, ".png"), 
            plot = plot_53005, 
            path = plot_out_dir, device = "png",

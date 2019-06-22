@@ -23,6 +23,7 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+<<<<<<< HEAD
 compute_curvature <- function(x, y, xend, yend){
   dist <- sqrt(((x - xend) ^ 2) + ((y - yend) ^ 2))
   curv <- 2 / dist
@@ -33,6 +34,8 @@ compute_curvature <- function(x, y, xend, yend){
   }
 }
 
+=======
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 get_286_locs <- function(f_loc_fips_st_cnty, h_loc_fips_st_cnty){
   f_loc_fips_st_cnty <- f_loc_fips_st_cnty %>% 
                       filter(location %in% h_loc_fips_st_cnty$location) %>% 
@@ -166,6 +169,7 @@ produce_dt_for_pie_Q3 <- function(analog_dt, novel_dt, tgt_fip){
   DT = data.table(category = vvv,
                   counts = c(self_similarity_count, non_self_simil_cnt),
                   fraction= c((self_similarity_count/denom), (non_self_simil_cnt/denom)))
+<<<<<<< HEAD
 
   DT = DT[order(DT$fraction), ]
   DT$category <- factor(DT$category, order=T, levels=vvv)
@@ -224,6 +228,66 @@ produce_dt_for_pie_all_possible <- function(analog_dt, novel_dt, tgt_fip, f_fips
   analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
   novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
 
+=======
+
+  DT = DT[order(DT$fraction), ]
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (DT)
+}
+
+produce_dt_for_pie_Q2 <- function(analog_dt, novel_dt, tgt_fip, f_fips, h_fips){
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
+
+  analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
+  novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
+
+  analog_dt <- data.table(analog_dt)
+  novel_dt <- data.table(novel_dt)
+
+  novel_dt <- novel_dt[novel_dt$novel_NNs_county != "not_novel"]
+  novel_cnt <- sum(novel_dt$novel_freq)
+
+  if (tgt_fip %in% analog_dt$analog_NNs_county){
+    self_similarity_count <- analog_dt[analog_dt$analog_NNs_county==tgt_fip, 'analog_freq']$analog_freq
+    } else {
+     self_similarity_count <- 0
+  }
+
+  no_analog_cnt <- analog_dt[analog_dt$analog_NNs_county=="no_analog", 'analog_freq' ]$analog_freq
+  non_self_simil_cnt <- sum(analog_dt$analog_freq) - no_analog_cnt - self_similarity_count
+
+  almost_novel_cnt <-  no_analog_cnt - novel_cnt
+
+  analog_count <- self_similarity_count + non_self_simil_cnt
+  total_comparisons <- no_analog_cnt + analog_count
+
+  vvv <- c("analog count", "no-analog count")
+  DT = data.table(category = vvv,
+                  counts = c(analog_count, no_analog_cnt),
+                  fraction= c((analog_count/total_comparisons), (no_analog_cnt/total_comparisons)))
+
+  DT = DT[order(DT$fraction), ]
+ 
+  DT$category <- factor(DT$category, order=T, levels=vvv)
+
+  DT$ymax = cumsum(DT$fraction)
+  DT$ymin = c(0, head(DT$ymax, n=-1))
+
+  return (DT)
+}
+
+produce_dt_for_pie_all_possible <- function(analog_dt, novel_dt, tgt_fip, f_fips, h_fips, f_years, h_years=37){
+
+  all_possible_ss_cnt <- all_possible_ss(f_fips, h_fips, tgt_fip, f_yrs=f_years, h_yrs=h_years)
+
+  analog_dt <- analog_dt %>% filter(query_county == tgt_fip)
+  novel_dt <- novel_dt %>% filter(query_county == tgt_fip)
+
+>>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
   analog_dt$analog_NNs_county[is.na(analog_dt$analog_NNs_county)] <- "no_analog"
   novel_dt$novel_NNs_county[is.na(novel_dt$novel_NNs_county)] <- "not_novel"
 
