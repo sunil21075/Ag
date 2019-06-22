@@ -23,6 +23,16 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+compute_curvature <- function(x, y, xend, yend){
+  dist <- sqrt(((x - xend) ^ 2) + ((y - yend) ^ 2))
+  curv <- 2 / dist
+  if (xend < x){
+    return (curv)
+   } else{
+      return (-curv)
+  }
+}
+
 get_286_locs <- function(f_loc_fips_st_cnty, h_loc_fips_st_cnty){
   f_loc_fips_st_cnty <- f_loc_fips_st_cnty %>% 
                       filter(location %in% h_loc_fips_st_cnty$location) %>% 
