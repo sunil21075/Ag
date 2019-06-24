@@ -453,7 +453,6 @@ navbarPage(title = div("",
            #
            ############## Analogs Plots END
            #
-<<<<<<< HEAD
            #
            #
            ############## Analogs Map Front Page start
@@ -467,6 +466,4 @@ navbarPage(title = div("",
            #
            
 
-=======
->>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
        )
