@@ -70,13 +70,14 @@ shinyServer(function(input, output, session) {
                { p <- input$map_shape_click
                  print(p)
                  toggleModal(session, modalId = "Graphs", toggle = "open")
-                 county <- readOGR("shp/county.shp", layer = "county")
+                 # county <- readOGR("shp/county.shp", layer = "county")
+                 county <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
                  
                  # get polygon of current selected county(boundary)
                  dat <- data.frame(Longitude = c(p$lng), Latitude =c(p$lat))
                  coordinates(dat) <- ~ Longitude + Latitude
                  proj4string(dat) <- proj4string(county)
-                 currentCountyName <- toString(over(dat,county)$NAME)
+                 currentCountyName <- toString(over(dat, county)$NAME)
                  # neCounties <- subset(county, county$NAME %in% c(currentCountyName))
                  # # get data based on only that county
                  # ## Example RasterLayer
