@@ -465,16 +465,18 @@ navbarPage(title = div("",
                                                    width="100%", height="100%")
                                   )
                               ),
-                    fluidPage(bsModal( "Graphs", trigger=NULL, title = "", size="large",
+                    fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
-                                                      dashboardSidebar( radioButtons("climate", "Scenarios:", climateModels),
-                                                                        radioButtons("indicator", "Indicators:", indicators)),
-                                                      dashboardBody( plotOutput("Plot"), 
-                                                                     p(heatStress), 
-                                                                     p(netPrimaryProductivity),
-                                                                     p(forageVariability), 
-                                                                     p(VegetationType), 
-                                                                     p(vulnerabilityIndex)
+                                                      dashboardSidebar(radioButtons("emission", "Emission", emissions),
+                                                                       selectInput("climate_model", "Climate Model", climate_models),
+                                                                       radioButtons("time_period", "Time Period", time_periods)
+                                                                       ),
+                                                      dashboardBody(plotOutput("Plot"), 
+                                                                    p("heatStress"), 
+                                                                    p("netPrimaryProductivity"),
+                                                                    p("forageVariability"), 
+                                                                    p("VegetationType"), 
+                                                                    p("vulnerabilityIndex")
                                                                     )
                                                     )
                                       )
