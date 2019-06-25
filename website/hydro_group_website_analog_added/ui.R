@@ -500,9 +500,20 @@ navbarPage(title = div("",
                               ),
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
-                                                      dashboardSidebar(radioButtons("emission", "Emission", emissions),
-                                                                       selectInput(inputId = "climate_model", label = "Climate Model", choices = climate_models),
-                                                                       radioButtons("time_period", "Time Period", time_periods)
+                                                      dashboardSidebar(radioButtons(inputId = "emission", 
+                                                                                    label = "Emission", 
+                                                                                    choices = emissions, 
+                                                                                    selected = emissions[1]),
+
+                                                                       selectInput(inputId = "climate_model", 
+                                                                                   label = "Climate Model", 
+                                                                                   choices = climate_models, 
+                                                                                   selected = climate_models[1]),
+
+                                                                       radioButtons(inputId = "time_period", 
+                                                                                    label = "Time Period", 
+                                                                                    choices = time_periods, 
+                                                                                    selected = time_periods[1])
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
                                                       #               p("heatStress"), 
