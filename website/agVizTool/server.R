@@ -18,51 +18,46 @@ shinyServer(function(input, output, session) {
     m <- leaflet(options = leafletOptions(zoomControl = TRUE,
                                           minZoom = 4, maxZoom = 9,
                                           dragging = TRUE)) %>%
-      addTiles() %>%
-      setView(lng = -103.85, lat = 39.45, zoom = 4)
+         addTiles() %>%
+         setView(lng = -103.85, lat = 39.45, zoom = 4)
   })
   
   # Show page on click event...
-  observeEvent(input$map_shape_click, { 
-    p <- input$map_shape_click
-    toggleModal(session, modalId = "Graphs", toggle = "open")
-    
-
-      if (input$boundaries == "District"){  
-        district <- readOGR("shp/district.shp", layer = "district")
-        
-        #get polygon of current selected district(boundary)
-        dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
-        coordinates(dat) <- ~ Longitude + Latitude
-        proj4string(dat) <- proj4string(district)
-        
-        currentDistrictName = toString(over(dat,district)$GEOID)
-        neDistricts <- subset(district, district$GEOID %in% c(currentDistrictName))
-        
-        #get data based on only that district
-        ## Example RasterLayer
-        r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neDistricts))
-        r[] <- 1:length(r)
-        
-        ## crop and mask
-        r2 <- crop(r, extent(neDistricts))
-        r3 <- mask(r2, neDistricts)
-        
-        #plot(r3)
-        #r3 is is the data in the shape file that the user selected.
-      }
+  observeEvent(input$map_shape_click, 
+               { p <- input$map_shape_click
+                toggleModal(session, modalId = "Graphs", toggle = "open")
+                if (input$boundaries == "District"){
+                                      district <- readOGR("shp/district.shp", layer = "district")
+                                      # get polygon of current selected district(boundary)
+                                      dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
+                                      coordinates(dat) <- ~ Longitude + Latitude
+                                      proj4string(dat) <- proj4string(district)        
+                                      currentDistrictName = toString(over(dat,district)$GEOID)
+                                      neDistricts <- subset(district, district$GEOID %in% c(currentDistrictName))
+                                      # get data based on only that district
+                                      ## Example RasterLayer
+                                      r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neDistricts))
+                                      r[] <- 1:length(r)
+                                      
+                                      ## crop and mask
+                                      r2 <- crop(r, extent(neDistricts))
+                                      r3 <- mask(r2, neDistricts)
+                                      
+                                      #plot(r3)
+                                      #r3 is is the data in the shape file that the user selected.
+                                    }
       
       else if (input$boundaries == "County"){     
         county <- readOGR("shp/county.shp", layer = "county")
         
-        #get polygon of current selected county(boundary)
+        # get polygon of current selected county(boundary)
         dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
         coordinates(dat) <- ~ Longitude + Latitude
         proj4string(dat) <- proj4string(county)
         currentCountyName = toString(over(dat,county)$NAME)
         neCounties <- subset(county, county$NAME %in% c(currentCountyName))
         
-        #get data based on only that county
+        # get data based on only that county
         
         ## Example RasterLayer
         r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neCounties))
@@ -258,7 +253,7 @@ shinyServer(function(input, output, session) {
     }
   }
   
-    #check changes in Satellite/Topographic/Basic view 
+    # check changes in Satellite/Topographic/Basic view 
   observe({
     if (input$tileSelect == "Satellite"){
       leafletProxy("map") %>%
@@ -298,7 +293,7 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  #change to time period or model
+  # change to time period or model
   observe({
       {
         foo <- input$tileSelect
@@ -313,8 +308,8 @@ shinyServer(function(input, output, session) {
             d[d == 157] = NA
             d[d == 255] = -1
             d[d == 254] = -2
-          } 
-          else{
+           } 
+           else{
             d[d == 157] = NA
             d[d == 0] = NA
             d[d == 255] = -1
@@ -326,29 +321,29 @@ shinyServer(function(input, output, session) {
         else if(input$Indicators ==  "vulstk"){
           v <- c(-8,8)
           b <- 9
-        }
-        else{
-          d[d== 157] = NA
-          d[d== 255] = -1
-          d[d== 254] = -2
-          v <- c(-2,2)
-          b <- 5
+         }
+         else {
+           d[d== 157] = NA
+           d[d== 255] = -1
+           d[d== 254] = -2
+           v <- c(-2,2)
+           b <- 5
         }
         
         #emission scenario 'b2' is actually 'b1'
         if(input$ClimateModel == "b2" && input$Indicators == "mc2"){
           label <- "b1mc2"
-        }
-        else{
+         }
+         else{
           label <- paste(input$ClimateModel,input$Indicators,sep=" ")
         }
         
         pal <- colorNumeric(c("#8b0000","#ffffff", "#006400"), v, na.color = "transparent")
         leafletProxy("map") %>%
-          clearControls() %>%
-          clearImages() %>%
-          addRasterImage(d, colors = pal, opacity = 1, maxBytes=Inf) %>%
-          addLegend(position = "bottomleft", pal = pal, values =  v,  title =  label, bins=b)
+        clearControls() %>%
+        clearImages() %>%
+        addRasterImage(d, colors = pal, opacity = 1, maxBytes=Inf) %>%
+        addLegend(position = "bottomleft", pal = pal, values =  v,  title =  label, bins=b)
       }
     })
 })

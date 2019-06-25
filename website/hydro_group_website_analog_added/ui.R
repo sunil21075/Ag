@@ -449,7 +449,7 @@ navbarPage(title = div("",
                                  width = 2
                                 ),
                     imageOutput("analog_plot")
-                   )
+                   ),
            #
            ############## Analogs Plots END
            #
@@ -457,12 +457,31 @@ navbarPage(title = div("",
            #
            ############## Analogs Map Front Page start
            #
-           tabPanel(tags$b("Analogs Map"),
-                    
-                    imageOutput("analog_plot")
-                   )
+           tabPanel(tags$b("Analog Map"),
+                    fluidPage( id = "nav", inverse=FALSE, fluid=FALSE, title="Tool",
+                               div( class="outer",
+                                    tags$head(includeCSS("styles.css")),
+                                    leafletOutput("analog_front_page", 
+                                                   width="100%", height="100%")
+                                  )
+                              ),
+                    fluidPage(bsModal( "Graphs", trigger=NULL, title = "", size="large",
+                                       dashboardPage( dashboardHeader(title = "Plots"),
+                                                      dashboardSidebar( radioButtons("climate", "Scenarios:", climateModels),
+                                                                        radioButtons("indicator", "Indicators:", indicators)),
+                                                      dashboardBody( plotOutput("Plot"), 
+                                                                     p(heatStress), 
+                                                                     p(netPrimaryProductivity),
+                                                                     p(forageVariability), 
+                                                                     p(VegetationType), 
+                                                                     p(vulnerabilityIndex)
+                                                                    )
+                                                    )
+                                      )
+                              )
+                    )
            #
-           ############## Analogs Map Front Face END
+           ############## Analogs Map Front page END
            #
            
 
