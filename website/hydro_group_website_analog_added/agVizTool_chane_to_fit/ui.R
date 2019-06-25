@@ -66,18 +66,18 @@ shinyUI(
                                                absolutePanel( id="menuPanel", draggable=FALSE, width=330, height="auto",
                                                               left="auto", right=20, bottom="auto", top=60, fixed=TRUE,
                                                               inverse=TRUE, h2("Map Key"),
-                                                              selectInput("tileSelect", "Map Overlay", overlays),
-                                                              selectInput("boundaries", "Map Boundaries", boundaries),
-                                                              selectInput("Indicators", "Indicators", indicators),
-                                                              selectInput("Decades", "Time Period", decades),
-                                                              selectInput("ClimateModel", "Climate Model", climateModels)
+                                                              selectInput(inputId = "tileSelect", label = "Map Overlay", choices = overlays),
+                                                              selectInput(inputId = "boundaries", label = "Map Boundaries", choices = boundaries),
+                                                              selectInput(inputId = "Indicators", label = "Indicators", choices = indicators),
+                                                              selectInput(inputId = "Decades", label = "Time Period", choices = decades),
+                                                              selectInput(inputId = "ClimateModel", label = "Climate Model", choices = climateModels)
                                                             )
                                               )
                                         ),
                                fluidPage(bsModal( "Graphs", trigger=NULL, title = "", size="large",
                                                   dashboardPage( dashboardHeader(title = "Plots"),
-                                                                 dashboardSidebar( radioButtons("climate", "Scenarios:", climateModels),
-                                                                                   radioButtons("indicator", "Indicators:", indicators)),
+                                                                 dashboardSidebar( radioButtons(inputId = "climate", label = "Scenarios", choices = climateModels),
+                                                                                   radioButtons(inputId = "indicator", label = "Indicators", choices = indicators)),
                                                                  dashboardBody( plotOutput("Plot"), 
                                                                                 p(heatStress), 
                                                                                 p(netPrimaryProductivity),
