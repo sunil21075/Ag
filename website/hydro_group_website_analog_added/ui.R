@@ -471,13 +471,13 @@ navbarPage(title = div("",
                                                                        selectInput("climate_model", "Climate Model", climate_models),
                                                                        radioButtons("time_period", "Time Period", time_periods)
                                                                        ),
-                                                      dashboardBody(plotOutput("Plot"), 
-                                                                    p("heatStress"), 
-                                                                    p("netPrimaryProductivity"),
-                                                                    p("forageVariability"), 
-                                                                    p("VegetationType"), 
-                                                                    p("vulnerabilityIndex")
-                                                                    )
+                                                      dashboardBody(plotOutput("Plot") # , 
+                                                      #               p("heatStress"), 
+                                                      #               p("netPrimaryProductivity"),
+                                                      #               p("forageVariability"), 
+                                                      #               p("VegetationType"), 
+                                                      #               p("vulnerabilityIndex")
+                                                                     )
                                                     )
                                       )
                               )
