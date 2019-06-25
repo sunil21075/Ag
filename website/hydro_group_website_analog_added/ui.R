@@ -515,11 +515,11 @@ navbarPage(title = div("",
                                                                                     choices = time_periods)
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
-                                                      #               p("heatStress"), 
-                                                      #               p("netPrimaryProductivity"),
-                                                      #               p("forageVariability"), 
-                                                      #               p("VegetationType"), 
-                                                      #               p("vulnerabilityIndex")
+                                                                    # p("heatStress"), 
+                                                                    # p("netPrimaryProductivity"),
+                                                                    # p("forageVariability"), 
+                                                                    # p("VegetationType"), 
+                                                                    # p("vulnerabilityIndex")
                                                                     )
                                                     )
                                       )
