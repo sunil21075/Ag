@@ -72,8 +72,8 @@ shinyServer(function(input, output, session) {
       }
       
       
-      else #(input$boundaries == "State")
-      {     
+      else { #(input$boundaries == "State")
+           
         state <- readOGR("shp/state.shp", layer = "state")
         
         #get polygon of current selected state(boundary)
@@ -99,13 +99,12 @@ shinyServer(function(input, output, session) {
 
     output$Plot <- renderPlot({
        #ggplot() + geom_boxplot()
-      s <- stack(paste("tif/",input$climate,input$indicator,".tif",sep=       ""))
+      s <- stack(paste("tif/", input$climate, input$indicator, ".tif", sep=""))
       for (i in 1:nlayers(s)){
-        if (i>1)
-        {
+        if (i>1){
           if(input$indicator ==  "hsi"){
             if(input$climate == "b2"){
-              paste("r",i, sep="")[s[[i]] == 157] = NA
+              paste("r", i, sep="")[s[[i]] == 157] = NA
               s[s[[i]] == 157] = NA
               s[s[[i]] == 255] = -1
               s[s[[i]] == 254] = -2
@@ -136,52 +135,30 @@ shinyServer(function(input, output, session) {
                     r10=values(r10))
                     
       if (input$indicator == "vulstk"){
-          lim <- c(-8,8)
-      }
-      else {
+        lim <- c(-8,8)
+       }
+       else {
           lim <-c(-2,2)
       }
       
       if (input$indicator == "npp"){
-          plot_title <- "Net Primary Productivity"
-      }
-      else if (input$indicator == "nppsd"){
-          plot_title <- "Inter-annual Forage Variability"
-      }
-      else if (input$indicator == "mc2"){
-          plot_title <- "Vegetation Type Trajectory"
-      }
-      else if (input$indicator == "hsi"){
-          plot_title <- "Heat Stress Index"
-      }
-      else {
+        plot_title <- "Net Primary Productivity"
+       }
+       else if (input$indicator == "nppsd"){
+        plot_title <- "Inter-annual Forage Variability"
+       }
+       else if (input$indicator == "mc2"){
+        plot_title <- "Vegetation Type Trajectory"
+       }
+       else if (input$indicator == "hsi"){
+        plot_title <- "Heat Stress Index"
+       }
+       else {
           plot_title <- "Vulnerability Index"
       }
-
       boxplot(df, main=plot_title, 
-                   ylim=lim, names=seq(2010, 2090, by=10), xlab="Decade", ylab="Aggregate Values")
-      
-      #yVals<-c(seq(2010, 2090, by=10))
-      #df = data.frame(vals,yVals)
-      #dfmelt<-melt(df)
-      #print(df)
-       #qplot(seq(2010, 2090, by=10), vals,
-      #        main=paste("scenario=", input$climate,
-      #                           ", indicator=",input$indicator,sep=""),
-      #        xlab="Decade",
-      #        ylab="Mean Value", xlim=c(2010, 2100), ylim = c(-8,8))
-      #data.frame(vals)
-      #if(input$indicator !=  "vulstk")
-      #{
-      #  boxplot(s,xlab="Decade", ylab="Mean Value", ylim = c(-2,2))
-        #boxplot(s~yVals, data=s, 
-        #        xlab="Decade",
-        #               ylab="Mean Value", ylim = c(-2,2))
-      #}
-      #else
-      #{
-       # boxplot(s, xlab="Decade", ylab="Mean Value", ylim = c(-8,8))
-      #}
+                  ylim=lim, names=seq(2010, 2090, by=10), 
+                  xlab="Decade", ylab="Aggregate Values")    
     })
   })
   
@@ -193,10 +170,10 @@ shinyServer(function(input, output, session) {
   loadCounty <- function(county){
     if(is.null(county)) {
       county <- readOGR("shp/county.shp", layer = "county")
-      labels <- sprintf(
-        "<strong>%s</strong><br/><strong>%s</strong>",
-        county$NAME, county$STATEFP
-      ) %>% lapply(htmltools::HTML)
+      labels <- sprintf("<strong>%s</strong><br/><strong>%s</strong>",
+                        county$NAME, county$STATEFP) %>% 
+                lapply(htmltools::HTML)
+      
       leafletProxy("map") %>% 
       addPolygons(data = county, 
                   weight=1,col = 'white', 
@@ -208,21 +185,21 @@ shinyServer(function(input, output, session) {
                                                dashArray = "",
                                                fillOpacity = 0,
                                                bringToFront = TRUE),
-                                               label = labels,
+                  label = labels,
                   labelOptions = labelOptions(style = list("font-weight" = "normal", 
                                                            padding = "3px 8px"),
                                               textsize = "15px",
                                               direction = "auto"))   
     }
   }
+
   loadDistrict <- function(district){
     if(is.null(district)) {
       district <- readOGR("shp/district.shp", layer = "district")
       
-      labels <- sprintf(
-        "<strong>%s</strong><br/><strong>%s</strong>",
-        district$CD115FP, district$STATEFP
-      ) %>% lapply(htmltools::HTML)
+      labels <- sprintf("<strong>%s</strong><br/><strong>%s</strong>",
+                        district$CD115FP, district$STATEFP) %>% 
+                lapply(htmltools::HTML)
       
       leafletProxy("map") %>% 
       addPolygons(data = district, 
@@ -235,20 +212,19 @@ shinyServer(function(input, output, session) {
                                                dashArray = "",
                                                fillOpacity = 0,
                                                bringToFront = TRUE),
-                  
                   labelOptions = labelOptions(style = list("font-weight" = "normal", 
                                                             padding = "3px 8px"),
                                               textsize = "15px",
                                               direction = "auto"))
     }
   }
+
   loadState <- function(state){
     if(is.null(state)) {
       state <- readOGR("shp/state.shp", layer = "state")
-      labels <- sprintf(
-        "<strong>%s</strong><br/>",
-        state$NAME
-      ) %>% lapply(htmltools::HTML)
+      labels <- sprintf("<strong>%s</strong><br/>", state$NAME) %>% 
+                lapply(htmltools::HTML)
+      
       leafletProxy("map") %>% 
       addPolygons(data = state, weight=1, 
                   col = 'white', 
@@ -259,11 +235,11 @@ shinyServer(function(input, output, session) {
                                                dashArray = "",
                                                fillOpacity = 0,
                                                bringToFront = TRUE),
-                                               label = labels,
-                   labelOptions = labelOptions(style = list("font-weight" = "normal", 
-                                                            padding = "3px 8px"),
-                                               textsize = "15px",
-                                               direction = "auto"))
+                  label = labels,
+                  labelOptions = labelOptions(style = list("font-weight" = "normal", 
+                                                           padding = "3px 8px"),
+                                              textsize = "15px",
+                                              direction = "auto"))
     }
   }
   
