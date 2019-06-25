@@ -1,3 +1,8 @@
+library(scales)
+library(lattice)
+# library(ggmap)
+library(jsonlite)
+
 library(data.table)
 library(shiny)
 library(shinydashboard)
@@ -16,7 +21,7 @@ library(RColorBrewer)
 shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
 counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
 
-# Extract just the three states
+# Extract just the three states OR: 41, WA:53, ID: 16
 counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
 
 ############################################################
@@ -39,8 +44,12 @@ counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
 
 shinyServer(function(input, output, session) {
+  ###################################################
   ################################################### ANALOG WITH Global map
+  ###################################################
+  #
   # Create the map
+  #
   output$analog_front_page <- renderLeaflet({
     map <- counties %>%
            leaflet(options = leafletOptions(zoomControl = TRUE,
@@ -53,15 +62,51 @@ shinyServer(function(input, output, session) {
                        label= ~ NAME) %>%
            addPolylines(data = states, color = "black", opacity = 1, weight = 1.5)
   })
+  #
+  # Dashboard plots
+  #
+  # Show page on click event...
+  observeEvent(input$map_shape_click, 
+               { p <- input$map_shape_click
+                 print(p)
+                 toggleModal(session, modalId = "Graphs", toggle = "open")
+                 county <- readOGR("shp/county.shp", layer = "county")
+                 
+                 # get polygon of current selected county(boundary)
+                 dat <- data.frame(Longitude = c(p$lng), Latitude =c(p$lat))
+                 coordinates(dat) <- ~ Longitude + Latitude
+                 proj4string(dat) <- proj4string(county)
+                 currentCountyName <- toString(over(dat,county)$NAME)
+                 # neCounties <- subset(county, county$NAME %in% c(currentCountyName))
+                 # # get data based on only that county
+                 # ## Example RasterLayer
+                 # r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neCounties))
+                 # r[] <- 1:length(r)
+                 
+                 # ## crop and mask
+                 # r2 <- crop(r, extent(neCounties))
+                 # r3 <- mask(r2, neCounties)
 
+                output$Plot <- renderImage({ image_name <- "ID_Canyon_w_precip_rcp85.png"
+                                             filename <- normalizePath(file.path('./plots/analog_plots', image_name))
+                                             # Return a list containing the filename and alt text
+                                              list(src = filename, width = 600, height = 600)}, 
+                                           deleteFile = FALSE
+                                           )
+  })
+  ###################################################
   ################################################### ANALOG WITH just side bar
   ################################################### to choose County names from.
-  output$analog_plot <- renderImage({image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
-                                     filename <- normalizePath(file.path('./plots/analog_plots', image_name))
-                                     # Return a list containing the filename and alt text
-                                     list(src = filename, width = 600, height = 600)}, 
-                                     deleteFile = FALSE)
-
+  ###################################################
+  output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
+                                      filename <- normalizePath(file.path('./plots/analog_plots', image_name))
+                                      # Return a list containing the filename and alt text
+                                      list(src = filename, width = 600, height = 600)}, 
+                                     deleteFile = FALSE
+                                     )
+  ###################################################
+  ###################################################
+  ###################################################
   output$location_group <- renderImage({filename <- normalizePath(file.path('./plots', 'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
