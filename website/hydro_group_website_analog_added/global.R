@@ -71,14 +71,9 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 ########################## For Analog Map
 ##########################
 
-# Map menu
-
+# Analog Plot Menu variables on pop-up page
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
-
-time_period <- c("2026-2050" = "F1",
-                 "2051-2075" = "F2",
-                 "2076-2095" = "F3")
 
 climate_models <- c("bcc-csm1-1-m" = "bcc",
                     "BNU-ESM" = "BNU", 
@@ -87,32 +82,11 @@ climate_models <- c("bcc-csm1-1-m" = "bcc",
                     "GFDL-ESM2G" = "GFG",
                     "GFDL-ESM2M" = "GFM")
 
-# read county shapefile
-shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
-counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
+time_periods <- c("2026-2050" = "F1",
+                  "2051-2075" = "F2",
+                  "2076-2095" = "F3")
 
-# Extract just the three states
-counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
 
-############################################################
-#
-# Simplify polygons/shapefile for making the website faster
-
-# counties <- rmapshaper::ms_simplify(counties)
-############################################################
-#
-# Compute states like so, to put border around states
-states <- aggregate(counties[, "STATEFP"], by = list(ID = counties@data$STATEFP), 
-                    FUN = unique, dissolve = T)
-
-# analog_front_page_map <- counties %>%
-#                          leaflet() %>%
-#                          setView(lng = -118.4942, lat = 46, zoom = 6) %>%
-#                          addPolygons( fillColor = "green", fillOpacity = 0.5,
-#                                      color = "black", opacity = 1.0, weight = .6, smoothFactor = 0.5,
-#                                      highlightOptions = highlightOptions(color="white", weight=2, bringToFront = TRUE),
-#                                      label= ~ NAME) %>%
-#                         addPolylines(data = states, color = "black", opacity = 1, weight = 1.5)
 
 
 
