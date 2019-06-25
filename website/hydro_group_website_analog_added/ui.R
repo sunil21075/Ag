@@ -512,8 +512,7 @@ navbarPage(title = div("",
 
                                                                        radioButtons(inputId = "time_period", 
                                                                                     label = "Time Period", 
-                                                                                    choices = time_periods, 
-                                                                                    selected = time_periods[1])
+                                                                                    choices = time_periods)
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
                                                       #               p("heatStress"), 
