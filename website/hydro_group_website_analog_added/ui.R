@@ -9,13 +9,46 @@ navbarPage(title = div("",
            ############## Home Begin
            #
            tabPanel(tags$b("Home"),
-                    navlistPanel(tabPanel(tags$b("About"), tags$div(style="width:950px", includeHTML("home-page/about.html"))),
-                                 tabPanel(tags$b("People"), tags$div(style="width:950px", includeHTML("home-page/people.html"))),
-                                 tabPanel(tags$b("Codling Moth Life Cycle and Management"), tags$div(style = "width: 950px", includeHTML("home-page/life-cycle.html"))),
-                                 tabPanel(tags$b("Climate Data"), tags$div(style="width:950px", includeHTML("home-page/climate-change-projections.html"))),
-                                 tabPanel(tags$b("What's the story?"), tags$div(style="width: 950px", includeHTML("home-page/changing-pest-pressures.html"))),
-                                 tabPanel(tags$b("Contact"), tags$div(style="width:950px", includeHTML("home-page/contact.html"))),
-                                 tabPanel(tags$b("Take a tour! (video)"), tags$div(style="width:950px", includeHTML("home-page/take-a-tour.html"))),
+                    navlistPanel(tabPanel(tags$b("About"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("home-page/about.html")
+                                                   )
+                                          ),
+                                 
+                                 tabPanel(tags$b("People"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("home-page/people.html")
+                                                   )
+                                          ),
+                                 tabPanel(tags$b("Codling Moth Life Cycle and Management"), 
+                                          tags$div(style = "width: 950px", 
+                                                   includeHTML("home-page/life-cycle.html")
+                                                   )
+                                          ),
+
+                                 tabPanel(tags$b("Climate Data"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("home-page/climate-change-projections.html")
+                                                   )
+                                          ),
+
+                                 tabPanel(tags$b("What's the story?"), 
+                                                 tags$div(style="width: 950px", 
+                                                          includeHTML("home-page/changing-pest-pressures.html")
+                                                          )
+                                                 ),
+
+                                 tabPanel(tags$b("Contact"), 
+                                          tags$div(style="width:950px", 
+                                               includeHTML("home-page/contact.html")
+                                               )
+                                          ),
+
+                                 tabPanel(tags$b("Take a tour! (video)"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("home-page/take-a-tour.html")
+                                                   )
+                                          ),
                                  widths = c(2,10)
                                  )
                     ),
@@ -187,7 +220,7 @@ navbarPage(title = div("",
                                                                             "Generation 3" = "Gen3", 
                                                                             "Generation 4" = "Gen4"),
                                                              selected = "Gen1"),
-                                                 radioButtons("adult_percent_diff", label = h4(tags$b("Select % Population that has completed the growth stage")), #h5(textOutput("growthPercentDiff")), #h5("Select Cumulative Percentage"),
+                                                 radioButtons("adult_percent_diff", label = h4(tags$b("Select % Population that has completed the growth stage")),
                                                               choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
                                                               selected = "0.25", inline = TRUE)
                                                  )
@@ -468,7 +501,7 @@ navbarPage(title = div("",
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
                                                       dashboardSidebar(radioButtons("emission", "Emission", emissions),
-                                                                       selectInput("climate_model", "Climate Model", climate_models),
+                                                                       selectInput(inputId = "climate_model", label = "Climate Model", choices = climate_models),
                                                                        radioButtons("time_period", "Time Period", time_periods)
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
@@ -477,7 +510,7 @@ navbarPage(title = div("",
                                                       #               p("forageVariability"), 
                                                       #               p("VegetationType"), 
                                                       #               p("vulnerabilityIndex")
-                                                                     )
+                                                                    )
                                                     )
                                       )
                               )
