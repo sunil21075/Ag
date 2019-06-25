@@ -43,123 +43,109 @@ shinyServer(function(input, output, session) {
                                       r2 <- crop(r, extent(neDistricts))
                                       r3 <- mask(r2, neDistricts)
                                       
-                                      #plot(r3)
-                                      #r3 is is the data in the shape file that the user selected.
-                                    }
-      
-      else if (input$boundaries == "County"){     
-        county <- readOGR("shp/county.shp", layer = "county")
-        
-        # get polygon of current selected county(boundary)
-        dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
-        coordinates(dat) <- ~ Longitude + Latitude
-        proj4string(dat) <- proj4string(county)
-        currentCountyName = toString(over(dat,county)$NAME)
-        neCounties <- subset(county, county$NAME %in% c(currentCountyName))
-        
-        # get data based on only that county
-        
-        ## Example RasterLayer
-        r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neCounties))
-        r[] <- 1:length(r)
-        
-        ## crop and mask
-        r2 <- crop(r, extent(neCounties))
-        r3 <- mask(r2, neCounties)
-        
-        #plot(r3)
-        #r3 is is the data in the shape file that the user selected.
-      }
-      
-      
-      else { #(input$boundaries == "State")
-           
-        state <- readOGR("shp/state.shp", layer = "state")
-        
-        #get polygon of current selected state(boundary)
-        dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
-        coordinates(dat) <- ~ Longitude + Latitude
-        proj4string(dat) <- proj4string(state)
-        currentStateName = toString(over(dat,state)$NAME)
-        neStates <- subset(state, state$NAME %in% c(currentStateName))
-        
-        #get data based on only that state
-        
-        ## Example RasterLayer
-        r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neStates))
-        r[] <- 1:length(r)
-        
-        ## crop and mask
-        r2 <- crop(r, extent(neStates))
-        r3 <- mask(r2, neStates)
-        
-        #plot(r3)
-        #r3 is is the data in the shape file that the user selected.
-      }
+                                      # plot(r3)
+                                      # r3 is is the data in the shape file 
+                                      # that the user selected.
+                  } else if (input$boundaries == "County"){
+                      county <- readOGR("shp/county.shp", layer = "county")
+                      # get polygon of current selected county(boundary)
+                      dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
+                      coordinates(dat) <- ~ Longitude + Latitude
+                      proj4string(dat) <- proj4string(county)
+                      currentCountyName = toString(over(dat,county)$NAME)
+                      neCounties <- subset(county, county$NAME %in% c(currentCountyName))
+                      # get data based on only that county
+                      ## Example RasterLayer
+                      r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neCounties))
+                      r[] <- 1:length(r)
+                      ## crop and mask
+                      r2 <- crop(r, extent(neCounties))
+                      r3 <- mask(r2, neCounties)
+                      # plot(r3)
+                      # r3 is is the data in the shape file that the user selected.
+                  } else { #(input$boundaries == "State")
+                      state <- readOGR("shp/state.shp", layer = "state")
+                      # get polygon of current selected state(boundary)
+                      dat <- data.frame(Longitude = c(p$lng),Latitude =c(p$lat))
+                      coordinates(dat) <- ~ Longitude + Latitude
+                      proj4string(dat) <- proj4string(state)
+                      currentStateName = toString(over(dat,state)$NAME)
+                      neStates <- subset(state, state$NAME %in% c(currentStateName))
+                      # get data based on only that state
+                      ## Example RasterLayer
+                      r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neStates))
+                      r[] <- 1:length(r)
+                      ## crop and mask
+                      r2 <- crop(r, extent(neStates))
+                      r3 <- mask(r2, neStates)
+                      # plot(r3)
+                      # r3 is is the data in the shape file that the user selected.
+                }
 
-    output$Plot <- renderPlot({
-       #ggplot() + geom_boxplot()
-      s <- stack(paste("tif/", input$climate, input$indicator, ".tif", sep=""))
-      for (i in 1:nlayers(s)){
-        if (i>1){
-          if(input$indicator ==  "hsi"){
-            if(input$climate == "b2"){
-              paste("r", i, sep="")[s[[i]] == 157] = NA
-              s[s[[i]] == 157] = NA
-              s[s[[i]] == 255] = -1
-              s[s[[i]] == 254] = -2
-            } 
-            else{
-              s[s[[i]] == 157] = NA
-              s[s[[i]] == 0] = NA
-              s[s[[i]] == 255] = -1
-              s[s[[i]] == 254] = -2
-            }
-            
-          }
-          else if(input$indicator ==  "vulstk"){
-          }
-          else{
-            s[s[[i]]== 157] = NA
-            s[s[[i]]== 255] = -1
-            s[s[[i]]== 254] = -2
-          }
-          assign(paste("r",i, sep=""), projectRaster(s[[i]], r2))
-        }
-      }
-      
-      df=data.frame(r2=values(r2), r3=values(r3),
-                    r4=values(r4), r5=values(r5),
-                    r6=values(r6), r7=values(r7),
-                    r8=values(r8), r9=values(r9),
-                    r10=values(r10))
-                    
-      if (input$indicator == "vulstk"){
-        lim <- c(-8,8)
-       }
-       else {
-          lim <-c(-2,2)
-      }
-      
-      if (input$indicator == "npp"){
-        plot_title <- "Net Primary Productivity"
-       }
-       else if (input$indicator == "nppsd"){
-        plot_title <- "Inter-annual Forage Variability"
-       }
-       else if (input$indicator == "mc2"){
-        plot_title <- "Vegetation Type Trajectory"
-       }
-       else if (input$indicator == "hsi"){
-        plot_title <- "Heat Stress Index"
-       }
-       else {
-          plot_title <- "Vulnerability Index"
-      }
-      boxplot(df, main=plot_title, 
-                  ylim=lim, names=seq(2010, 2090, by=10), 
-                  xlab="Decade", ylab="Aggregate Values")    
-    })
+                output$Plot <- renderPlot({ # ggplot() + geom_boxplot()
+                                           s <- stack(paste("tif/", input$climate, input$indicator, ".tif", sep=""))
+                                            for (i in 1:nlayers(s)){
+                                              if (i>1){
+                                                if(input$indicator ==  "hsi"){
+                                                  if(input$climate == "b2"){
+                                                    paste("r", i, sep="")[s[[i]] == 157] = NA
+                                                    s[s[[i]] == 157] = NA
+                                                    s[s[[i]] == 255] = -1
+                                                    s[s[[i]] == 254] = -2
+                                                  } 
+                                                  else{
+                                                    s[s[[i]] == 157] = NA
+                                                    s[s[[i]] == 0] = NA
+                                                    s[s[[i]] == 255] = -1
+                                                    s[s[[i]] == 254] = -2
+                                                  }
+                                                  
+                                                }
+                                                else if(input$indicator ==  "vulstk"){
+                                                }
+                                                else{
+                                                  s[s[[i]]== 157] = NA
+                                                  s[s[[i]]== 255] = -1
+                                                  s[s[[i]]== 254] = -2
+                                                }
+                                                assign(paste("r",i, sep=""), projectRaster(s[[i]], r2))
+                                              }
+                                            }
+                                            
+                                            df = data.frame(r2=values(r2), r3=values(r3),
+                                                          r4=values(r4), r5=values(r5),
+                                                          r6=values(r6), r7=values(r7),
+                                                          r8=values(r8), r9=values(r9),
+                                                          r10=values(r10))
+                                                          
+                                            if (input$indicator == "vulstk"){
+                                              lim <- c(-8,8)
+                                             }
+                                             else {
+                                                lim <-c(-2,2)
+                                            }
+                                            
+                                            if (input$indicator == "npp"){
+                                              plot_title <- "Net Primary Productivity"
+                                             }
+                                             else if (input$indicator == "nppsd"){
+                                              plot_title <- "Inter-annual Forage Variability"
+                                             }
+                                             else if (input$indicator == "mc2"){
+                                              plot_title <- "Vegetation Type Trajectory"
+                                             }
+                                             else if (input$indicator == "hsi"){
+                                              plot_title <- "Heat Stress Index"
+                                             }
+                                             else {
+                                                plot_title <- "Vulnerability Index"
+                                            }
+                                            boxplot(df, main=plot_title, 
+                                                    ylim=lim, 
+                                                    names=seq(2010, 2090, by=10), 
+                                                    xlab="Decade", 
+                                                    ylab="Aggregate Values")    
+                                          })
   })
   
   state = NULL
@@ -271,16 +257,13 @@ shinyServer(function(input, output, session) {
     if (input$boundaries == "District"){  
       district <- loadDistrict(district)    
       leafletProxy("map") %>% hideGroup("County") %>% hideGroup("State") %>% showGroup("District")
-    }
-    else if (input$boundaries == "County"){     
+     } else if (input$boundaries == "County"){     
       county <- loadCounty(county)
       leafletProxy("map") %>% 
       hideGroup("District") %>% 
       hideGroup("State") %>% 
       showGroup("County")
-    }
-    else #(input$boundaries == "State")
-    {     
+     } else { #(input$boundaries == "State")
       state <- loadState(state)   
       leafletProxy("map") %>% hideGroup("County") %>% hideGroup("District") %>% showGroup("State")      
     }
