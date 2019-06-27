@@ -49,7 +49,6 @@ f_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, f_loc_fips_st_cnty),
 h_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, h_loc_fips_st_cnty), header=T, sep=",", as.is=T))
 
 f_loc_fips_st_cnty <- get_286_locs(f_loc_fips_st_cnty, h_loc_fips_st_cnty)
-
 local_fips <- unique(f_loc_fips_st_cnty$fips)
  
 # f_grid_count <- f_loc_fips_st_cnty %>%
@@ -145,7 +144,6 @@ for (sub_dir in data_sub_dirs){
 
   for (sigma_bd in sigma_bds){
     for (target_fip in local_fips){
-      
       data_4_all_models_F1_map <- data.table()
       data_4_all_models_F2_map <- data.table()
       data_4_all_models_F3_map <- data.table()
@@ -153,6 +151,7 @@ for (sub_dir in data_sub_dirs){
       for(model_n in model_names){
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
         plot_out_dir <- paste0(data_dir, "/4_website/")
+        # plot_out_dir <- "/Users/hn/Desktop/Desktop/test/"
         print (plot_out_dir)
         if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
         # plot_out_dir <- "/Users/hn/Desktop/"
@@ -499,20 +498,20 @@ for (sub_dir in data_sub_dirs){
                dpi = 200, width = 12, height = 12, unit="in", limitsize = FALSE)
       }
 
-      F1_all_mods_anlgs <- map_of_all_models_anlgs(a_dt = data_4_all_models_F1_map, 
-                                                   county2 = cnty2, 
-                                                   title_p = titlem_F1, 
-                                                   target_county_map_info=target_county_map_info)
+      F1_all_mods_anlgs <- map_of_all_models_anlgs_freq_color(a_dt = data_4_all_models_F1_map,
+                                                              county2 = cnty2,
+                                                              title_p = titlem_F1,
+                                                              target_county_map_info=target_county_map_info)
       
-      F2_all_mods_anlgs <- map_of_all_models_anlgs(a_dt = data_4_all_models_F2_map, 
-                                                   county2 = cnty2, 
-                                                   title_p = titlem_F2, 
-                                                   target_county_map_info=target_county_map_info)
+      F2_all_mods_anlgs <- map_of_all_models_anlgs_freq_color(a_dt = data_4_all_models_F2_map,
+                                                              county2 = cnty2,
+                                                              title_p = titlem_F2,
+                                                              target_county_map_info=target_county_map_info)
       
-      F3_all_mods_anlgs <- map_of_all_models_anlgs(a_dt = data_4_all_models_F3_map, 
-                                                   county2 = cnty2, 
-                                                   title_p = titlem_F3, 
-                                                   target_county_map_info=target_county_map_info)
+      F3_all_mods_anlgs <- map_of_all_models_anlgs_freq_color(a_dt = data_4_all_models_F3_map,
+                                                              county2 = cnty2,
+                                                              title_p = titlem_F3,
+                                                              target_county_map_info=target_county_map_info)
 
       all_model_cty_name <- paste0(unlist(strsplit(target_cnty_name, ", "))[2], 
                                    "_", 
