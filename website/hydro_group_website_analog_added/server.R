@@ -66,8 +66,8 @@ shinyServer(function(input, output, session) {
   # Dashboard plots
   #
   # Show page on click event...
-  observeEvent(input$map_shape_click, 
-               { p <- input$map_shape_click
+  observeEvent(input$analog_front_page_shape_click, 
+               { p <- input$analog_front_page_shape_click
                  print(p)
                  toggleModal(session, modalId = "Graphs", toggle = "open")
                  # county <- readOGR("shp/county.shp", layer = "county")
@@ -78,6 +78,8 @@ shinyServer(function(input, output, session) {
                  coordinates(dat) <- ~ Longitude + Latitude
                  proj4string(dat) <- proj4string(county)
                  currentCountyName <- toString(over(dat, county)$NAME)
+                 print ("hey")
+                 print (currentCountyName)
                  # neCounties <- subset(county, county$NAME %in% c(currentCountyName))
                  # # get data based on only that county
                  # ## Example RasterLayer
@@ -95,10 +97,8 @@ shinyServer(function(input, output, session) {
                                            deleteFile = FALSE
                                            )
   })
-  ###################################################
-  ################################################### ANALOG WITH just side bar
-  ################################################### to choose County names from.
-  ###################################################
+  ########################### ANALOG WITH just side bar
+  ########################### to choose County names from.
   output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
                                       filename <- normalizePath(file.path('./plots/analog_plots', image_name))
                                       # Return a list containing the filename and alt text
@@ -160,21 +160,21 @@ shinyServer(function(input, output, session) {
                                       list(src = filename, width = 800, height = 600)}, 
                                       deleteFile = FALSE)
 
-#  output$ap_vplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'aMonthVsPop.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
-#  
-#  output$lp_vplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lMonthVsPop.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
+  #  output$ap_vplot <- renderImage({
+  #    filename <- normalizePath(file.path('./plots/LarvaAdult', 'aMonthVsPop.png'))
+  #    
+  #    # Return a list containing the filename and alt text
+  #    list(src = filename, width = 1200, height = 900)
+  #    
+  #  }, deleteFile = FALSE)
+  #  
+  #  output$lp_vplot <- renderImage({
+  #    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lMonthVsPop.png'))
+  #    
+  #    # Return a list containing the filename and alt text
+  #    list(src = filename, width = 1200, height = 900)
+  #    
+  #  }, deleteFile = FALSE)
 
   output$gen_pop_plot <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 'gen_pop.png'))
                                       # Return a list containing the filename and alt text
@@ -226,7 +226,7 @@ shinyServer(function(input, output, session) {
                                  list(src = filename, width = 1200, height = 900)}, 
                                  deleteFile = FALSE)
  
-########### 
+  ########### 
   output$cumDD_mongrps_magdiff <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 'cumDD_month_groups_magdiff.png'))
                                                # Return a list containing the filename and alt text
                                                list(src = filename, width = 1200, height = 900)}, 
@@ -266,7 +266,7 @@ shinyServer(function(input, output, session) {
                                       # Return a list containing the filename and alt text
                                       list(src = filename, width = 1200, height = 900)}, 
                                       deleteFile = FALSE)
-###########
+  ###########
 
   output$rel_pop_cumdd <- renderImage({filename <- normalizePath(file.path('./plots/Diapause', 'rel_pop_cumdd.png'))
                                        # Return a list containing the filename and alt text
