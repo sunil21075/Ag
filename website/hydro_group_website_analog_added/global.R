@@ -77,7 +77,8 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
 
-climate_models <- c("bcc-csm1-1-m" = "bcc",
+climate_models <- c("Select a model" = "NULL" ,
+                    "bcc-csm1-1-m" = "bcc",
                     "BNU-ESM" = "BNU", 
                     "CanESM2" = "Can", 
                     "CNRM-CM5"= "CNRM",
