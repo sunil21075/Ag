@@ -1,3 +1,9 @@
+library(leaflet)
+library(shinyBS)
+library(shiny)
+library(plotly)
+library(shinydashboard)
+
 navbarPage(title = div("",
                        img(src='csanr_logo.png', style='width:100px;height:35px;'), 
                        img(src='WSU-DAS-log.png', style='width:100px;height:35px;'),
@@ -493,7 +499,9 @@ navbarPage(title = div("",
            tabPanel(tags$b("Analog Map"),
                     fluidPage( id = "nav", inverse=FALSE, fluid=FALSE, title="Tool",
                                div( class="outer",
-                                    tags$head(includeCSS("styles.css")),
+                                    tags$head(includeCSS("styles.css"),
+                                              includeScript("gomap.js")
+                                              ),
                                     leafletOutput("analog_front_page", 
                                                    width="100%", height="100%")
                                   )
@@ -501,18 +509,20 @@ navbarPage(title = div("",
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
                                                       dashboardSidebar(radioButtons(inputId = "emission", 
-                                                                                    label = "Emission", 
+                                                                                    label = tags$b("Emission"), 
                                                                                     choices = emissions, 
                                                                                     selected = emissions[1]),
 
                                                                        selectInput(inputId = "climate_model", 
-                                                                                   label = "Climate Model", 
+                                                                                   label = tags$b("Climate Model"),
                                                                                    choices = climate_models, 
-                                                                                   selected = climate_models[1]),
+                                                                                   selected = climate_models[1]
+                                                                                   ),
 
                                                                        radioButtons(inputId = "time_period", 
-                                                                                    label = "Time Period", 
-                                                                                    choices = time_periods)
+                                                                                    label = tags$b("Time Period"),
+                                                                                    choices = time_periods,
+                                                                                    selected = time_periods[1])
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
                                                                     # p("heatStress"), 
