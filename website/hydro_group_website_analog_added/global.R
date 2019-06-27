@@ -72,6 +72,10 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 ##########################
 ########################## For Analog Map
 ##########################
+# analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
+# st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
+#                           header=T,
+#                           as.is=T) %>% data.table()
 
 # Analog Plot Menu variables on pop-up page
 emissions <- c("RCP 8.5" = "rcp85",
