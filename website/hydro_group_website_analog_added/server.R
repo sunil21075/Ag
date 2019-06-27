@@ -43,6 +43,24 @@ interest_counties <- c("16027", "53001", "53021", "53071",
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
 
+
+analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
+st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
+                          header=T,
+                          as.is=T) %>% data.table()
+
+
+
+
+
+############################################################
+###########
+########### For some bizzare reason above variables
+########### when defined in global.R are not reachable.
+########### Look into this later.
+###########
+############################################################
+
 shinyServer(function(input, output, session) {
   ###################################################
   ################################################### ANALOG WITH Global map
@@ -68,7 +86,6 @@ shinyServer(function(input, output, session) {
   # Show page on click event...
   observeEvent(input$analog_front_page_shape_click, 
                { p <- input$analog_front_page_shape_click
-                 print(p)
                  toggleModal(session, modalId = "Graphs", toggle = "open")
                  # county <- readOGR("shp/county.shp", layer = "county")
                  county <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
@@ -77,18 +94,13 @@ shinyServer(function(input, output, session) {
                  dat <- data.frame(Longitude = c(p$lng), Latitude =c(p$lat))
                  coordinates(dat) <- ~ Longitude + Latitude
                  proj4string(dat) <- proj4string(county)
-                 currentCountyName <- toString(over(dat, county)$NAME)
+                 current_county_name <- toString(over(dat, county)$NAME)
+                 current_state_fip <- toString(over(dat, county)$STATEFP)
+                 current_state_name <- st_cnty_names[st_cnty_names$state_fip == current_state_fip,]$state[1]
                  print ("hey")
-                 print (currentCountyName)
-                 # neCounties <- subset(county, county$NAME %in% c(currentCountyName))
-                 # # get data based on only that county
-                 # ## Example RasterLayer
-                 # r <- raster(nrow=1e3, ncol=1e3, crs=proj4string(neCounties))
-                 # r[] <- 1:length(r)
-                 
-                 # ## crop and mask
-                 # r2 <- crop(r, extent(neCounties))
-                 # r3 <- mask(r2, neCounties)
+                 print (current_county_name)
+                 print (current_state_fip)
+                 print (current_state_name)
 
                 output$Plot <- renderImage({ image_name <- "ID_Canyon_w_precip_rcp85.png"
                                              filename <- normalizePath(file.path('./plots/analog_plots', image_name))
