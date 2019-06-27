@@ -1,4 +1,3 @@
-
 library(data.table)
 library(dplyr)
 library(ggmap)
@@ -234,32 +233,43 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
   title_p <- title_p[-4]
   title_p <- paste(title_p, collapse=" ")
 
-  count_of_county_rep <- a_dt %>% group_by(model) %>% count(analog_NNs_county)
+  # count_of_county_rep <- a_dt %>% group_by(model) %>% count(analog_NNs_county)
 
-  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
-  county_fill_in = c("cyan3" , "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
+  color_ord = c("grey47", "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
+  county_fill_in = c("cyan3", "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
   
   categ_lab = c( "bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
   
   cols_4_arrow <- c("long", "lat", "group", "order", "region", "subregion", "polyname")
+  
   start_end_df <- target_county_map_info[1,]
   start_end_df <- start_end_df[colnames(start_end_df) %in% cols_4_arrow]
 
   for (modelsss in categ_lab){
     aaa <- a_dt %>% filter(model == modelsss)
-    # avg_long <- mean(aaa$long); avg_lat <- mean(aaa$lat)
-    aaa <- aaa[1,]
-    # aaa$long <- avg_long; aaa$lat <- avg_lat
+    # aaa <- aaa[1,]
+    avg_long <- mean(aaa$long); avg_lat <- mean(aaa$lat)
+    aaa$long <- avg_long; aaa$lat <- avg_lat
     aaa <- aaa[colnames(aaa) %in% cols_4_arrow]
     start_end_df <- rbind(start_end_df, aaa[1,])
   }
+  
+  # replce centroids of each county!
+  start_end_df <- find_target_centroids(start_end_df)
+
+  # start and end of curve cannot be the same! 
+  # make the starting point different in this case:
+  if (nrow(start_end_df) > nrow(unique(start_end_df))){
+    start_end_df$long[1] <- start_end_df$long[1] + 1
+    start_end_df$lat[1] <- start_end_df$lat[1] + 1
+  }
 
   count_of_counties <- a_dt %>% 
-                      group_by(model) %>% 
-                      count(analog_NNs_county) %>% 
-                      group_by(analog_NNs_county) %>% 
-                      count() %>% 
-                      data.table()
+                       group_by(model) %>% 
+                       count(analog_NNs_county) %>% 
+                       group_by(analog_NNs_county) %>% 
+                       count() %>% 
+                       data.table()
   a_dt$county_count = 0L
 
   for (ii in seq(1:nrow(count_of_counties))){
@@ -281,7 +291,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                      plot.margin = unit(c(t=2, r=4, b=-1, l=0), "pt"),
                      legend.spacing.x = unit(5, 'pt'),
                      # legend.spacing.y = unit(1, 'cm'),
-                     legend.title = element_blank(),
+                     legend.title = element_text(size=15, face="bold"),
                      legend.position = c(.87, .2), # 
                      legend.background = element_rect(fill = "grey92"),
                      legend.key.size = unit(2, "line"),
@@ -296,11 +306,11 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                # scale_fill_continuous(limits = c(1, 6), breaks = 1:6,
                #                        guide = guide_colourbar(nbin=6, draw.ulim = TRUE, 
                #                                                draw.llim = TRUE)) + 
-               scale_fill_manual(values = county_fill_in, name= "Repition", 
+               scale_fill_manual(values = county_fill_in, name = "freq. of analog", 
                                  guide = guide_legend(reverse = TRUE)) + 
                geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
                                xend = start_end_df[2, "long"], yend = start_end_df[2, "lat"]), 
-                          colour = "white", data = start_end_df,
+                          colour = arrow_color, data = start_end_df,
                           arrow = arrow(length = unit(arrow_size, "npc")), 
                           curvature = compute_curvature (x = start_end_df[1, "long"], 
                                                          y = start_end_df[1, "lat"], 
@@ -318,12 +328,12 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                           ) + 
                geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
                                xend = start_end_df[4, "long"], yend = start_end_df[4, "lat"]), 
-                          colour = arrow_color, data = start_end_df,
-                          arrow = arrow(length = unit(arrow_size, "npc")), 
-                          curvature = compute_curvature (x = start_end_df[1, "long"], 
-                                                         y = start_end_df[1, "lat"], 
-                                                         xend = start_end_df[4, "long"], 
-                                                         yend = start_end_df[4, "lat"])
+                           colour = arrow_color, data = start_end_df,
+                           arrow = arrow(length = unit(arrow_size, "npc")), 
+                           curvature = compute_curvature (x = start_end_df[1, "long"], 
+                                                          y = start_end_df[1, "lat"], 
+                                                          xend = start_end_df[4, "long"], 
+                                                          yend = start_end_df[4, "lat"])
                           ) + 
                geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
                                xend = start_end_df[5, "long"], yend = start_end_df[5, "lat"]), 
@@ -352,8 +362,20 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                           xend = start_end_df[7, "long"], 
                                                           yend = start_end_df[7, "lat"])
                           )
-  
+  curr_plot
+  # rm(start_end_df)
   return(curr_plot) 
+}
+
+find_target_centroids <- function(start_end){
+  centroids <- housingData::geoCounty
+  for (row in 1:nrow(start_end)){
+    target_row <- centroids %>% filter(rMapState == start_end$region[row] &
+                                        rMapCounty == start_end$subregion[row])
+    start_end[row, "long"] <- target_row$lon
+    start_end[row, "lat"] <- target_row$lat
+  }
+  return(start_end)
 }
 
 map_of_all_models_anlgs <- function(a_dt, county2, title_p, target_county_map_info){

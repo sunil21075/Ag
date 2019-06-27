@@ -25,7 +25,6 @@ d_rcp45 = data.table(readRDS(paste0(data_dir,"/combinedData_rcp45.rds")))
 names(d_rcp45)[names(d_rcp45) == "ClimateGroup"] = "timeFrame"
 d_rcp45$location = paste0(d_rcp45$latitude, "_", d_rcp45$longitude)
 
-
 d1 <- data.table(readRDS(paste0(data_dir, "/subData.rds")))
 d1$month = as.factor(d1$month)
 levels(d1$month) = c("January", "February", "March", 
@@ -44,7 +43,6 @@ levels(d1_rcp45$month) = c("January", "February", "March",
 
 d1_rcp45$location = paste0(d1_rcp45$latitude, "_", d1_rcp45$longitude)
 
-
 RdBu_reverse <- rev(brewer.pal(11, "RdBu"))
 head(d1)
 
@@ -59,7 +57,6 @@ bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
 
 print (colnames(bloom_rcp45))
 ##########################
-
 bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_100_new.rds")))
 bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_100_new.rds")))
 
@@ -69,13 +66,18 @@ bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_95_new.rds")
 bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
 bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
 
+######################################
+###################################### clear above
+######################################
 ##########################
 ########################## For Analog Map
 ##########################
+
 analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
 st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
                           header=T,
                           as.is=T) %>% data.table()
+print (st_cnty_names)
 
 # Analog Plot Menu variables on pop-up page
 emissions <- c("RCP 8.5" = "rcp85",

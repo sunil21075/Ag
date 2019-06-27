@@ -108,15 +108,15 @@ shinyServer(function(input, output, session) {
                                                   s[s[[i]]== 255] = -1
                                                   s[s[[i]]== 254] = -2
                                                 }
-                                                assign(paste("r",i, sep=""), projectRaster(s[[i]], r2))
+                                                assign(paste("r", i, sep=""), projectRaster(s[[i]], r2))
                                               }
                                             }
                                             
                                             df = data.frame(r2=values(r2), r3=values(r3),
-                                                          r4=values(r4), r5=values(r5),
-                                                          r6=values(r6), r7=values(r7),
-                                                          r8=values(r8), r9=values(r9),
-                                                          r10=values(r10))
+                                                            r4=values(r4), r5=values(r5),
+                                                            r6=values(r6), r7=values(r7),
+                                                            r8=values(r8), r9=values(r9),
+                                                            r10=values(r10))
                                                           
                                             if (input$indicator == "vulstk"){
                                               lim <- c(-8,8)

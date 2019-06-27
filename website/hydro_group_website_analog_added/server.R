@@ -42,17 +42,6 @@ interest_counties <- c("16027", "53001", "53021", "53071",
                        "41059", "53017", "53047")
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
-
-
-analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
-st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
-                          header=T,
-                          as.is=T) %>% data.table()
-
-
-
-
-
 ############################################################
 ###########
 ########### For some bizzare reason above variables

@@ -121,14 +121,14 @@ if (county_averages==FALSE){
 
 model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "CNRM-CM5", "bcc-csm1-1-m", "GFDL-ESM2M")
 time_p <- c("2026_2050", "2051_2075", "2076_2095")
-emissions <- c("rcp85", "rcp45") # 
+emissions <- c("rcp85", "rcp45") #
 sigma_bds <- c(1, 2) # 
 # VL_quans = c(.25, .75)
 
 sub_dir <- data_sub_dirs[1]
 sigma_bd <- 1
-target_fip <- 53021
-model_n <- model_names[1]
+target_fip <- 53013
+model_n <- model_names[6]
 
 for (sub_dir in data_sub_dirs){
   # emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
@@ -150,8 +150,9 @@ for (sub_dir in data_sub_dirs){
 
       for(model_n in model_names){
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
-        plot_out_dir <- paste0(data_dir, "/4_website/")
+        plot_out_dir <- paste0(data_dir, "/", sigma_bd, "_sigma_", emission, "_for_web/")
         # plot_out_dir <- "/Users/hn/Desktop/Desktop/test/"
+        print (paste(sigma_bd, target_fip, emission, model_n, sep=", "))
         print (plot_out_dir)
         if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
         # plot_out_dir <- "/Users/hn/Desktop/"
@@ -239,7 +240,7 @@ for (sub_dir in data_sub_dirs){
                                                           f_fips_dt=f_loc_fips_st_cnty, 
                                                           h_fips_dt=h_loc_fips_st_cnty, 
                                                           f_years=f_years_F3, h_years=37)
-        print ("line 230")
+
         most_similar_cnty_F1 <- analog_dat_F1_4_map_b[[2]]
         most_similar_cnty_F2 <- analog_dat_F2_4_map_b[[2]]
         most_similar_cnty_F3 <- analog_dat_F3_4_map_b[[2]]
@@ -255,9 +256,9 @@ for (sub_dir in data_sub_dirs){
         #
         # produce data for geographical map, all analogs of one model is present here
         #
-        one_mod_map_info_F1 <- produce_dt_for_map(analog_dat_F1_4_map)
-        one_mod_map_info_F2 <- produce_dt_for_map(analog_dat_F2_4_map)
-        one_mod_map_info_F3 <- produce_dt_for_map(analog_dat_F3_4_map)
+        one_mod_map_info_F1 <- produce_dt_for_map(b_dt = analog_dat_F1_4_map)
+        one_mod_map_info_F2 <- produce_dt_for_map(b_dt = analog_dat_F2_4_map)
+        one_mod_map_info_F3 <- produce_dt_for_map(b_dt = analog_dat_F3_4_map)
         #############################################################################
         #
         # produce data for geographical map, just top anolog of a given is present here
@@ -266,9 +267,9 @@ for (sub_dir in data_sub_dirs){
         top_analog_F2_4_all_maps <- analog_dat_F2_4_map[which.max(analog_dat_F2_4_map$analog_freq),]
         top_analog_F3_4_all_maps <- analog_dat_F3_4_map[which.max(analog_dat_F3_4_map$analog_freq),]
          
-        top_analog_F1_4_all_maps <- produce_dt_for_map(top_analog_F1_4_all_maps)
-        top_analog_F2_4_all_maps <- produce_dt_for_map(top_analog_F2_4_all_maps)
-        top_analog_F3_4_all_maps <- produce_dt_for_map(top_analog_F3_4_all_maps)
+        top_analog_F1_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F1_4_all_maps)
+        top_analog_F2_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F2_4_all_maps)
+        top_analog_F3_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F3_4_all_maps)
 
         data_4_all_models_F1_map <- rbind(data_4_all_models_F1_map, top_analog_F1_4_all_maps)
         data_4_all_models_F2_map <- rbind(data_4_all_models_F2_map, top_analog_F2_4_all_maps)

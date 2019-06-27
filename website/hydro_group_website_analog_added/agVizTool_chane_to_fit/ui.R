@@ -42,26 +42,13 @@ VegetationType <- "Vegeation Type Trajectory - Ratio of edible to inedible veget
 vulnerabilityIndex <- "Vulnerability Index - Aggregate of four indicators"
 
 shinyUI(
-         navbarPage( title = div( "",
-                                 img(src='csanr_logo.png', style='width:100px;height:35px;')
-                                ), 
+         navbarPage( title = div( ""), 
                      id="nav", windowTitle = "Rangelands",
-                     tabPanel( tags$b("Home"),
-                               navlistPanel( tabPanel(tags$b("About"), tags$div(style="width:950px", includeHTML("home-page/about.html"))),
-                                             tabPanel(tags$b("People"), tags$div(style="width:950px", includeHTML("home-page/people.html"))),
-                                             tabPanel(tags$b("Climate Data"), tags$div(style="width:950px", includeHTML("home-page/climate-change-projections.html"))),
-                                             tabPanel(tags$b("Rangeland Indicators"), tags$div(style = "width: 950px", includeHTML("home-page/life-cycle.html"))),      
-                                             tabPanel(tags$b("Contact"), tags$div(style="width:950px", includeHTML("home-page/contact.html"))),
-                                             tabPanel(tags$b("Video"), tags$div(style="width:950px", includeHTML("home-page/take-a-tour.html"))),
-                                             widths = c(2,10)
-                                            )
-                              ),
                      tabPanel( "Map",
                                fluidPage( id = "nav", inverse=FALSE, fluid=FALSE, title="Tool",
                                           div( class="outer",
                                                tags$head( includeCSS("styles.css"),
-                                                          includeScript("gomap.js")
-                                                        ),
+                                                          includeScript("gomap.js")),
                                                leafletOutput("map", width="100%", height="100%"),
                                                absolutePanel( id="menuPanel", draggable=FALSE, width=330, height="auto",
                                                               left="auto", right=20, bottom="auto", top=60, fixed=TRUE,
