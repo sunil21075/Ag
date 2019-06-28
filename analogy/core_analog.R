@@ -25,6 +25,9 @@ options(digit=9)
 ####################################################################
 compute_curvature <- function(x, y, xend, yend){
   dist <- sqrt(((x - xend) ^ 2) + ((y - yend) ^ 2))
+  if (dist < 0.18 ){
+    return (15)
+  }
   curv <- 2 / dist
   if (xend < x){
     return (curv)

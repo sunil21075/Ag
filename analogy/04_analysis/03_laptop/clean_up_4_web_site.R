@@ -13,6 +13,8 @@ library(gridExtra)
 library(grid)
 library(gtable)
 
+start_time <- Sys.time()
+
 source_path_1 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog.R"
 source_path_2 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog_plots.R"
 source(source_path_1)
@@ -22,6 +24,10 @@ library(swfscMisc) # has na.count(.) in it
 
 options(digit=9)
 options(digits=9)
+
+######################################################################
+
+unwanted_fips <- c(36000)
 
 ######################################################################
 ####
@@ -88,7 +94,7 @@ if (county_averages == FALSE){
     main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/county_averages/"
 }
 
-data_sub_dirs <- c("w_precip_rcp45/", "w_precip_rcp85/")
+data_sub_dirs <- c("w_precip_rcp85/", "w_precip_rcp45/")
 
 #___________________________________________________________________________________________
 
@@ -121,20 +127,19 @@ if (county_averages==FALSE){
 
 model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "CNRM-CM5", "bcc-csm1-1-m", "GFDL-ESM2M")
 time_p <- c("2026_2050", "2051_2075", "2076_2095")
-emissions <- c("rcp85", "rcp45") #
-sigma_bds <- c(1, 2) # 
+sigma_bds <- c(1) # , 2
 # VL_quans = c(.25, .75)
 
 sub_dir <- data_sub_dirs[1]
 sigma_bd <- 1
 target_fip <- 53013
+target_fip <- 53071 # Walla Walla for self_similarity
 model_n <- model_names[6]
 
 for (sub_dir in data_sub_dirs){
   # emission <- substr(unlist(strsplit(sub_dir, "_"))[5], 1, 5)
   # plot_name_extension <- paste0("_", strsplit(sub_dir, "_")[[1]][1], 
   #                               "_", strsplit(sub_dir, "_")[[1]][3], "_", emission)
-  
   emission <- substr(unlist(strsplit(sub_dir, "_"))[3], 1, 5)
   plot_name_extension <- paste0("_", 
                                 strsplit(sub_dir, "_")[[1]][1], 
@@ -144,6 +149,7 @@ for (sub_dir in data_sub_dirs){
 
   for (sigma_bd in sigma_bds){
     for (target_fip in local_fips){
+
       data_4_all_models_F1_map <- data.table()
       data_4_all_models_F2_map <- data.table()
       data_4_all_models_F3_map <- data.table()
@@ -169,6 +175,10 @@ for (sub_dir in data_sub_dirs){
 
         analog_file_name_F3 <- paste("analog", model_n, emission, time_p[3], sep="_")
         analog_dat_F3 <- data.table(readRDS(paste0(data_dir, analog_file_name_F3, ".rds")))
+
+        analog_dat_F1 <- analog_dat_F1 %>% filter(!(analog_NNs_county %in% unwanted_fips))
+        analog_dat_F2 <- analog_dat_F2 %>% filter(!(analog_NNs_county %in% unwanted_fips))
+        analog_dat_F3 <- analog_dat_F3 %>% filter(!(analog_NNs_county %in% unwanted_fips))
 
         #############################################################################
         #
@@ -517,6 +527,7 @@ for (sub_dir in data_sub_dirs){
       all_model_cty_name <- paste0(unlist(strsplit(target_cnty_name, ", "))[2], 
                                    "_", 
                                    unlist(strsplit(target_cnty_name, ", "))[1])
+      
       assign(x = paste0("all_mods_", all_model_cty_name),
              value= {ggarrange(plotlist = list(F1_all_mods_anlgs, 
                                                F2_all_mods_anlgs, 
@@ -553,7 +564,7 @@ for (sub_dir in data_sub_dirs){
     }
   }
 }
-
+print (Sys.time() - start_time)
 
 
 

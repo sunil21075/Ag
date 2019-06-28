@@ -259,9 +259,9 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
 
   # start and end of curve cannot be the same! 
   # make the starting point different in this case:
-  if (nrow(start_end_df) > nrow(unique(start_end_df))){
-    start_end_df$long[1] <- start_end_df$long[1] + 1
-    start_end_df$lat[1] <- start_end_df$lat[1] + 1
+  if (unique(a_dt$query_county) %in% a_dt$analog_NNs_county){
+    start_end_df$long[1] <- start_end_df$long[1] + .1
+    start_end_df$lat[1] <- start_end_df$lat[1] + .1
   }
 
   count_of_counties <- a_dt %>% 
@@ -534,10 +534,10 @@ plot_the_pie_4_web <- function(DT, titl, subtitle){
         theme(legend.text = element_blank()) + 
         theme(axis.text = element_blank()) + 
         theme(axis.title=element_blank()) + 
-        theme(axis.ticks = element_blank()) + 
+        theme(axis.ticks = element_blank()) # + 
         # labs(title=titl, subtitle= paste0("historical analog: ", subtitle)) +
-        annotate("text", x = 0, y = 0, colour = "red", size = 8,
-                 label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]))) 
+        # annotate("text", x = 0, y = 0, colour = "red", size = 8,
+        #          label = paste0(as.integer(DT[1,2]), "/", as.integer(DT[1,2] + DT[2,2]))) 
   return(pp)
 }
 
