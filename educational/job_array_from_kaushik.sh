@@ -1,4 +1,4 @@
-min#!/bin/bash
+#!/bin/bash
 
 ## Export all environment variables in the qsub command's environment to the
 ## batch job.
