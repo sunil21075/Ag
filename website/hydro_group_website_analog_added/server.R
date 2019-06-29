@@ -91,15 +91,36 @@ shinyServer(function(input, output, session) {
                  print (current_state_fip)
                  print (current_state_name)
 
-                output$Plot <- renderImage({ # image_name <- "ID_Canyon_w_precip_rcp85.png"
-                	                         image_name <- paste0("all_mods_", current_state_name, "_", current_county_name, ".png")
-                                             filename <- normalizePath(file.path('./plots/analog_plots/1_sigma_rcp85/', image_name))
+                output$Plot <- renderImage({ 
+                                             if (input$climate_model == "NULL"){
+                                               image_name <- paste0("all_mods_", 
+                                               	                     current_state_name, "_", 
+                                               	                     current_county_name, 
+                                               	                     ".png")
+                                               } else {
+                                                   image_name <- paste0("triple_", 
+                                                                       current_county_name, "_",
+                                                                       current_state_name, "_",
+                                                                       input$climate_model, "_",
+                                                                       input$time_period,
+                                                                       ".png")
+                                             }
+                                             file_dir_string <- paste0("./plots/analog_plots/", 
+                                             	                       "1_sigma_", input$emission, "/", 
+                                             	                       image_name)
+                                             
+                                             filename <- normalizePath(file.path(file_dir_string))
                                              # Return a list containing the filename and alt text
-                                              list(src = filename, width = 600, height = 600)}, 
+                                              list(src = filename, width = 600, height = 600)
+                                            }, 
                                            deleteFile = FALSE
                                            )
   })
-  
+
+  # observe({
+
+  # })
+
   ########################### ANALOG WITH just side bar
   ########################### to choose County names from.
   output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")

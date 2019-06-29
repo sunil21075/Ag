@@ -116,12 +116,12 @@ emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
 
 climate_models <- c("Select a model" = "NULL" ,
-                    "bcc-csm1-1-m" = "bcc",
-                    "BNU-ESM" = "BNU", 
-                    "CanESM2" = "Can", 
-                    "CNRM-CM5"= "CNRM",
-                    "GFDL-ESM2G" = "GFG",
-                    "GFDL-ESM2M" = "GFM")
+                    "bcc-csm1-1-m" = "bcc_csm1_1_m",
+                    "BNU-ESM" = "BNU_ESM", 
+                    "CanESM2" = "CanESM2", 
+                    "CNRM-CM5"= "CNRM_CM5",
+                    "GFDL-ESM2G" = "GFDL_ESM2G",
+                    "GFDL-ESM2M" = "GFDL_ESM2M")
 
 time_periods <- c("2026-2050" = "F1",
                   "2051-2075" = "F2",

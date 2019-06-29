@@ -277,7 +277,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                   as.character(count_of_counties[ii, 2])
   }
   
-  arrow_size = 0.01
+  arrow_size = 0.02
   arrow_color <- "black"
   
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 

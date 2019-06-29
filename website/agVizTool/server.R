@@ -263,28 +263,18 @@ shinyServer(function(input, output, session){
     }
   })
   
-  #check check changes in county/districts
+  # check check changes in county/districts
   observe({
     if (input$boundaries == "District"){
       district <- loadDistrict(district)
       leafletProxy("map") %>% hideGroup("County") %>% hideGroup("State") %>% showGroup("District")
     }
     else if (input$boundaries == "County"){
-      cat ("")
-      cat ("")
-      cat ("heyyyy 275")
-      cat ("heyyyy")
-      cat ("heyyyy 277")
-      cat ("")
-      cat ("")
       county <- loadCounty(county)
       leafletProxy("map") %>% 
       hideGroup("District") %>% 
       hideGroup("State") %>% 
       showGroup("County")
-      cat ("")
-      cat ("hey 286")
-      cat ("")
     }
     else #(input$boundaries == "State")
     {     
@@ -302,7 +292,7 @@ shinyServer(function(input, output, session){
           d <- raster(paste("tif/",input$ClimateModel,input$Indicators,".tif",sep=""), band=input$Decades)
           d <- crop(d, extent(d, 0, 294, 0, 381))
           
-          #set data ranges and transform values from unsigned to signed
+          # set data ranges and transform values from unsigned to signed
           if(input$Indicators ==  "hsi"){
             if(input$ClimateModel == "b2"){
               d[d == 157] = NA
@@ -326,16 +316,16 @@ shinyServer(function(input, output, session){
             d[d== 157] = NA
             d[d== 255] = -1
             d[d== 254] = -2
-            v <- c(-2,2)
+            v <- c(-2, 2)
             b <- 5
           }
           
-          #emission scenario 'b2' is actually 'b1'
+          # emission scenario 'b2' is actually 'b1'
           if(input$ClimateModel == "b2" && input$Indicators == "mc2"){
             label <- "b1mc2"
            }
           else{
-            label <- paste(input$ClimateModel,input$Indicators,sep=" ")
+            label <- paste(input$ClimateModel, input$Indicators, sep=" ")
           }
           
           pal <- colorNumeric(c("#8b0000","#ffffff", "#006400"), v, na.color = "transparent")
@@ -343,7 +333,7 @@ shinyServer(function(input, output, session){
           clearControls() %>%
           clearImages() %>%
           addRasterImage(d, colors = pal, opacity = 1, maxBytes=Inf) %>%
-          addLegend(position = "bottomleft", pal = pal, values =  v,  title =  label, bins=b)
+          addLegend(position = "bottomleft", pal=pal, values=v, title=label, bins=b)
         }
       })
 })
