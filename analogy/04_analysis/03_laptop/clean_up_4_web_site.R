@@ -453,15 +453,19 @@ for (sub_dir in data_sub_dirs){
         analog_name_F3_map_info <- cnty2 %>% filter(fips == most_similar_cnty_F3_fip)
         
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F1"), 
-               value = {plot_the_map_4_web(one_mod_map_info_F1, cnty2, titlem_F1, 
-                                           target_county_map_info, 
-                                           analog_name_F1_map_info,
+               value = {plot_the_map_4_web(a_dt = one_mod_map_info_F1,
+                                           county2 = cnty2,
+                                           title_p = titlem_F1,
+                                           target_county_map_info = target_county_map_info,
+                                           most_similar_cnty_map_info = analog_name_F1_map_info,
                                            analog_name=analog_name_F1)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F2"), 
-               value = {plot_the_map_4_web(one_mod_map_info_F2, cnty2, titlem_F2,
-                                           target_county_map_info, 
-                                           analog_name_F2_map_info,
+               value = {plot_the_map_4_web(a_dt = one_mod_map_info_F2, 
+                                           county2 = cnty2, 
+                                           title_p = titlem_F2,
+                                           target_county_map_info = target_county_map_info, 
+                                           most_similar_cnty_map_info = analog_name_F2_map_info,
                                            analog_name= analog_name_F2)})
 
         assign(x = paste0("map_", gsub("-", "_", model_n), "_F3"), 

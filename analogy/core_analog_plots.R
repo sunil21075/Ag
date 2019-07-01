@@ -253,9 +253,11 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
     aaa <- aaa[colnames(aaa) %in% cols_4_arrow]
     start_end_df <- rbind(start_end_df, aaa[1,])
   }
-  
-  # replce centroids of each county!
+  #***************************************
+  #      replce centroids of each county!
+  #***************************************
   start_end_df <- find_target_centroids(start_end_df)
+  unique_start_end <- unique(start_end_df)
 
   # start and end of curve cannot be the same! 
   # make the starting point different in this case:
@@ -268,8 +270,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                        group_by(model) %>% 
                        count(analog_NNs_county) %>% 
                        group_by(analog_NNs_county) %>% 
-                       count() %>% 
-                       data.table()
+                       count() %>% data.table()
   a_dt$county_count = 0L
 
   for (ii in seq(1:nrow(count_of_counties))){
@@ -285,10 +286,17 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                geom_polygon(aes(fill = county_count), colour = rgb(1, 1, .11, .2), size = .01) +
                geom_polygon(data = target_county_map_info, color="red", size = .75, fill=NA) +
                borders("state") +
+               geom_label_repel(data = unique_start_end,
+                               aes(x = long, y = lat, label = subregion), 
+                               fontface = "bold", box.padding = 0.2, # , 
+                               label.r = 0.55, hjust=-1, # vjust= -1,
+                               # nudge_x = seq(1, .5 + nrow(unique_start_end)/2, by=0.5),
+                               # nudge_y = seq(- (.5 + nrow(unique_start_end)/2 ), -1, by=0.5)
+                               ) + 
                coord_quickmap() + 
                theme(plot.title = element_text(size=18, face="bold"),
                      plot.subtitle = element_text(size=14, face="bold"),
-                     plot.margin = unit(c(t=2, r=4, b=-1, l=0), "pt"),
+                     plot.margin = unit(c(t=2, r=10, b=-1, l=10), "pt"),
                      legend.spacing.x = unit(5, 'pt'),
                      # legend.spacing.y = unit(1, 'cm'),
                      legend.title = element_text(size=15, face="bold"),
@@ -308,8 +316,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                #                                                draw.llim = TRUE)) + 
                scale_fill_manual(values = county_fill_in, name = "freq. of analog", 
                                  guide = guide_legend(reverse = TRUE)) + 
-               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[2, "long"], yend = start_end_df[2, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[2, "long"], yend = start_end_df[2, "lat"]), 
                           colour = arrow_color, data = start_end_df,
                           arrow = arrow(length = unit(arrow_size, "npc")), 
                           curvature = compute_curvature (x = start_end_df[1, "long"], 
@@ -317,8 +324,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                          xend = start_end_df[2, "long"], 
                                                          yend = start_end_df[2, "lat"])
                           ) + 
-               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[3, "long"], yend = start_end_df[3, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[3, "long"], yend = start_end_df[3, "lat"]), 
                           colour = arrow_color, data = start_end_df,
                           arrow = arrow(length = unit(arrow_size, "npc")), 
                           curvature = compute_curvature (x = start_end_df[1, "long"], 
@@ -326,8 +332,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                          xend = start_end_df[3, "long"], 
                                                          yend = start_end_df[3, "lat"])
                           ) + 
-               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[4, "long"], yend = start_end_df[4, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[4, "long"], yend = start_end_df[4, "lat"]), 
                            colour = arrow_color, data = start_end_df,
                            arrow = arrow(length = unit(arrow_size, "npc")), 
                            curvature = compute_curvature (x = start_end_df[1, "long"], 
@@ -335,8 +340,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                           xend = start_end_df[4, "long"], 
                                                           yend = start_end_df[4, "lat"])
                           ) + 
-               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[5, "long"], yend = start_end_df[5, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[5, "long"], yend = start_end_df[5, "lat"]), 
                           colour = arrow_color, data = start_end_df,
                           arrow = arrow(length = unit(arrow_size, "npc")), 
                           curvature = compute_curvature (x = start_end_df[1, "long"], 
@@ -344,8 +348,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                          xend = start_end_df[5, "long"], 
                                                          yend = start_end_df[5, "lat"])
                           ) + 
-               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[6, "long"], yend = start_end_df[6, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[6, "long"], yend = start_end_df[6, "lat"]), 
                           colour = arrow_color, data = start_end_df,
                           arrow = arrow(length = unit(arrow_size, "npc")), 
                           curvature = compute_curvature (x = start_end_df[1, "long"], 
@@ -353,15 +356,15 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                          xend = start_end_df[6, "long"], 
                                                          yend = start_end_df[6, "lat"])
                           ) + 
-               geom_curve( aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], 
-                               xend = start_end_df[7, "long"], yend = start_end_df[7, "lat"]), 
+               geom_curve( aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[7, "long"], yend = start_end_df[7, "lat"]), 
                            colour = arrow_color, data = start_end_df,
                            arrow = arrow(length = unit(arrow_size, "npc")), 
                            curvature = compute_curvature (x = start_end_df[1, "long"], 
                                                           y = start_end_df[1, "lat"], 
                                                           xend = start_end_df[7, "long"], 
                                                           yend = start_end_df[7, "lat"])
-                          )
+                         )
+
   curr_plot
   # rm(start_end_df)
   return(curr_plot) 
@@ -383,7 +386,7 @@ map_of_all_models_anlgs <- function(a_dt, county2, title_p, target_county_map_in
   title_p <- title_p[-4]
   title_p <- paste(title_p, collapse=" ")
 
-  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
+  # color_ord = c("grey47" , "dodgerblue", "olivedrab4", "yellow", "orange2", "blue4") # 
   categ_lab = c( "bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
   
   cols_4_arrow <- c("long", "lat", "group", "order", "region", "subregion", "polyname")
@@ -399,7 +402,7 @@ map_of_all_models_anlgs <- function(a_dt, county2, title_p, target_county_map_in
     start_end_df <- rbind(start_end_df, aaa[1,])
   }
   
-  arrow_size = 0.01
+  arrow_size = 0.02
   
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
                geom_polygon(data = county2, color="black", size=.05, fill="lightgrey") +
@@ -489,6 +492,7 @@ plot_the_map_4_web <- function(a_dt, county2, title_p,
                                target_county_map_info, 
                                most_similar_cnty_map_info, 
                                analog_name){
+
   curr_plot <- ggplot(a_dt, aes(long, lat, group = group)) + 
                geom_polygon(data = county2, color="black", size=0.05, fill="lightgrey") +
                geom_polygon(aes(fill = analog_freq), colour = rgb(1, 1, .11, .2), size = .01) +
@@ -497,11 +501,16 @@ plot_the_map_4_web <- function(a_dt, county2, title_p,
                geom_polygon(data = target_county_map_info, color="red", 
                             size = .75, fill=NA) +
                borders("state") +
-               coord_quickmap() + 
+               # ggrepel::geom_text_repel(data = a_dt, aes(x = long, y = lat, label = subregion), 
+               #                          fontface = "bold", 
+               #                          # nudge_x = c(1, -1.5, 2, 2, -1), 
+               #                          # nudge_y = c(0.25, -0.25, 0.5, 0.5, -0.5)
+               #                          ) +
+               coord_quickmap() +
                guides(fill = guide_colourbar(barwidth = 1, barheight = 20)) + 
                theme(plot.title = element_text(size=18, face="bold"),
                      plot.subtitle = element_text(size=14, face="bold"),
-                     plot.margin = unit(c(t=-5, r=4, b=-1, l=0), "pt"),
+                     plot.margin = unit(c(t=-5, r=5, b=-1, l=5), "pt"),
                      legend.title = element_blank(),
                      legend.position = c(.95, .5), # 
                      legend.background = element_rect(fill = "grey92"),
