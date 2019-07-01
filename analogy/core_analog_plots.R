@@ -258,6 +258,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
   #***************************************
   start_end_df <- find_target_centroids(start_end_df)
   unique_start_end <- unique(start_end_df)
+  unique_start_end$subregion <- Hmisc::capitalize(unique_start_end$subregion)
 
   # start and end of curve cannot be the same! 
   # make the starting point different in this case:
@@ -289,7 +290,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                geom_label_repel(data = unique_start_end,
                                aes(x = long, y = lat, label = subregion), 
                                fontface = "bold", box.padding = 0.2, # , 
-                               label.r = 0.55, hjust=-1, # vjust= -1,
+                               label.r = 0.55, hjust=-.5, # vjust= -1,
                                # nudge_x = seq(1, .5 + nrow(unique_start_end)/2, by=0.5),
                                # nudge_y = seq(- (.5 + nrow(unique_start_end)/2 ), -1, by=0.5)
                                ) + 
@@ -356,7 +357,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                                                          xend = start_end_df[6, "long"], 
                                                          yend = start_end_df[6, "lat"])
                           ) + 
-               geom_curve( aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[7, "long"], yend = start_end_df[7, "lat"]), 
+               geom_curve(aes( x = start_end_df[1, "long"], y = start_end_df[1, "lat"], xend = start_end_df[7, "long"], yend = start_end_df[7, "lat"]), 
                            colour = arrow_color, data = start_end_df,
                            arrow = arrow(length = unit(arrow_size, "npc")), 
                            curvature = compute_curvature (x = start_end_df[1, "long"], 
