@@ -109,15 +109,18 @@ analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
 st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
                           header=T,
                           as.is=T) %>% data.table()
-print (st_cnty_names)
-
-detail_levels <- c("All models analog" = "all_models", 
-                   "More Details" = "more_details")
+#############################################
+#
 # Analog Plot Menu variables on pop-up page
+#
+#############################################
+detail_levels <- c("All Models Analogs" = "all_models", 
+                   "More Details" = "more_details")
+
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
 
-climate_models <- c("Select a model" = "NULL" ,
+climate_models <- c(# "Select a model" = "NULL" ,
                     "bcc-csm1-1-m" = "bcc_csm1_1_m",
                     "BNU-ESM" = "BNU_ESM", 
                     "CanESM2" = "CanESM2", 

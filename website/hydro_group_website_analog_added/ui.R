@@ -3,10 +3,8 @@ library(shinyBS)
 library(shiny)
 library(plotly)
 library(shinydashboard)
-
-detail_levels <- c("All models analog" = "all_models", 
+detail_levels <- c("All Models Analogs" = "all_models", 
                    "More Details" = "more_details")
-
 navbarPage(title = div("",
                        img(src='csanr_logo.png', style='width:100px;height:35px;'), 
                        img(src='WSU-DAS-log.png', style='width:100px;height:35px;'),

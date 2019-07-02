@@ -55,7 +55,7 @@ shinyServer(function(input, output, session) {
                  current_state_fip <- toString(over(dat, county)$STATEFP)
                  current_state_name <- st_cnty_names[st_cnty_names$state_fip == current_state_fip,]$state[1]
 
-                output$Plot <- renderImage({ if (input$climate_model == "NULL"){
+                output$Plot <- renderImage({ if (input$detail_level == "all_models"){
                                                image_name <- paste0("all_mods_", 
                                                                      current_state_name, "_", 
                                                                      current_county_name, 
