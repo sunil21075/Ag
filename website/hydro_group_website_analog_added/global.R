@@ -82,8 +82,8 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 #########################################################
 # read county shapefile
 shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
-simple_shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county_simple/"
-counties <- rgdal::readOGR(dsn=path.expand(simple_shapefile_dir), 
+shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county_simple/"
+counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), 
                            layer = "tl_2017_us_county")
 
 # Extract just the three states OR: 41, WA:53, ID: 16
@@ -120,8 +120,7 @@ detail_levels <- c("All Models Analogs" = "all_models",
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
 
-climate_models <- c(# "Select a model" = "NULL" ,
-                    "bcc-csm1-1-m" = "bcc_csm1_1_m",
+climate_models <- c("bcc-csm1-1-m" = "bcc_csm1_1_m",
                     "BNU-ESM" = "BNU_ESM", 
                     "CanESM2" = "CanESM2", 
                     "CNRM-CM5"= "CNRM_CM5",

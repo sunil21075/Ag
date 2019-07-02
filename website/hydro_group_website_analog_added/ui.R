@@ -3,8 +3,7 @@ library(shinyBS)
 library(shiny)
 library(plotly)
 library(shinydashboard)
-detail_levels <- c("All Models Analogs" = "all_models", 
-                   "More Details" = "more_details")
+
 navbarPage(title = div("",
                        img(src='csanr_logo.png', style='width:100px;height:35px;'), 
                        img(src='WSU-DAS-log.png', style='width:100px;height:35px;'),
@@ -458,42 +457,6 @@ navbarPage(title = div("",
            ############## Regional Plots END
            #
            #
-           ############## Analogs Plots start
-           #
-           # tabPanel(tags$b("Analogs"),
-           #          sidebarPanel(selectInput("emission", 
-           #                                   label = h4(tags$b("Select Emission")),
-           #                                   choices = list("RCP 8.5" = "rcp85",
-           #                                                  "RCP 4.5" = "rcp45"),
-           #                                   selected = "rcp85"),
-           #                       selectInput("county", 
-           #                                   label = h4(tags$b("Select County")),
-           #                                   choices = list("Canyon, ID" = "ID_Canyon", 
-           #                                                  "Adams, WA" = "WA_Adams",
-           #                                                  "Benton, WA" = "WA_Benton",
-           #                                                  "Chelan, WA" = "WA_Chelan", 
-           #                                                  "Columbia, WA" = "WA_Columbia", 
-           #                                                  "Douglas, WA" = "WA_Douglas", 
-           #                                                  "Franklin, WA" = "WA_Franklin", 
-           #                                                  "Grant, WA" = "WA_Grant", 
-           #                                                  "Kittitas, WA" = "WA_Kittitas", 
-           #                                                  "Klickitat, WA" = "WA_Klickitat", 
-           #                                                  "Okanogan, WA" = "WA_Okanogan", 
-           #                                                  "Walla Walla, WA" = "WA_Walla Walla", 
-           #                                                  "Yakima, WA" = "WA_Yakima", 
-           #                                                  "Gilliam, OR" = "OR_Gilliam", 
-           #                                                  "Hood River, OR" = "OR_Hood River", 
-           #                                                  "Morrow, OR" = "OR_Morrow", 
-           #                                                  "Umatilla, OR" = "OR_Umatilla"),
-           #                                   selected = "ID_Canyon"),
-           #                       width = 2
-           #                      ),
-           #          imageOutput("analog_plot")
-           #         ),
-           #
-           ############## Analogs Plots END
-           #
-           #
            #
            ############## Analogs Map Front Page start
            #
@@ -509,36 +472,13 @@ navbarPage(title = div("",
                               ),
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
-                                                      # dashboardSidebar(
-
-                                                      #   tags$b("More Details", style = "font-size:23px"),
-                                                      #                  br(),
-                                                      #                  radioButtons(inputId = "emission", 
-                                                      #                               label = tags$b("Scenario"),
-                                                      #                               choices = emissions, 
-                                                      #                               selected = emissions[1]),
-
-                                                      #                  radioButtons(inputId = "time_period", 
-                                                      #                               label = tags$b("Time Period"),
-                                                      #                               choices = time_periods,
-                                                      #                               selected = time_periods[1]),
-
-                                                      #                  selectInput(inputId = "climate_model", 
-                                                      #                              label = tags$b("Climate Model"),
-                                                      #                              choices = climate_models, 
-                                                      #                              selected = climate_models[1]
-                                                      #                              )
-                                                                       
-
-
-                                                      #                  ),
                                                       dashboardSidebar(
                                                                        selectInput(inputId = "detail_level",
                                                                                    label = tags$b("Detail Level"),
                                                                                    choices = detail_levels, 
                                                                                    selected = detail_levels[1]
                                                                                    ),
-                                                                       # Only show this panel if the plot type is a histogram
+                                                                       # Only show this panel if the level of detail is more_details
                                                                        conditionalPanel(condition = "input.detail_level == 'more_details'",
                                                                                         radioButtons(inputId = "emission", 
                                                                                                      label = tags$b("Scenario"),
