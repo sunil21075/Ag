@@ -43,6 +43,7 @@ interest_counties <- c("16027", "53001", "53021", "53071",
                        "41027", "53007", "53037",  
                        "41049", "53013", "53039", 
                        "41059", "53017", "53047")
+
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 #############################################
 #############################################
@@ -80,11 +81,11 @@ shinyServer(function(input, output, session) {
   #
   # Show page on click event...
   observeEvent(input$analog_front_page_shape_click, 
-               { p <- input$analog_front_page_shape_click
+               {
                  toggleModal(session, modalId = "Graphs", toggle = "open")
-                 # county <- readOGR("shp/county.shp", layer = "county")
-                 county <- rgdal::readOGR(dsn = path.expand(shapefile_dir), 
-                                          layer = "tl_2017_us_county")                 
+                 p <- input$analog_front_page_shape_click
+                 county <- rgdal::readOGR("/data/codmoth_data/analog/simle_county/", layer = "simpleCounty")
+                 # county <- rgdal::readOGR(dsn = path.expand(shapefile_dir), layer = "tl_2017_us_county")                 
                  
                  # get polygon of current selected county(boundary)
                  dat <- data.frame(Longitude = c(p$lng), Latitude =c(p$lat))
