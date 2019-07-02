@@ -121,7 +121,7 @@ plot_the_margins_cowplot <- function(data_dt, contour_plot){
   p1 <- cowplot::insert_xaxis_grob(contour_plot, DD_plt, grid::unit(.2, "null"), position= "top")
   p2 <- cowplot::insert_yaxis_grob(p1, preip_plt, grid::unit(.2, "null"), position= "right")
 
-  # return (contour_with_matgins)
+  # return (contour_with_margins)
   return(p2)
 }
 
@@ -173,7 +173,7 @@ plot_the_margins <- function(data_dt, contour_plot){
                      axis.title.y = element_blank()
                      )  
 
-  contour_with_matgins <- ggarrange(DD_plt, 
+  contour_with_margins <- ggarrange(DD_plt, 
                                     empty, 
                                     contour_plot,
                                     preip_plt, # This is on right
@@ -181,7 +181,7 @@ plot_the_margins <- function(data_dt, contour_plot){
                                     widths = c(4, 1), 
                                     heights = c(1, 4))
 
-  return (contour_with_matgins)
+  return (contour_with_margins)
 }
 
 plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){
@@ -208,13 +208,12 @@ plot_the_contour_one_filling <- function(data_dt, con_title, con_subT){
   x_lab <- "pest pressure"
    
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
-     x_variable <- "CumDDinF_Aug23"
-     y_variable <- "yearly_precip"
-    } else {
-     x_variable <- "mean_CumDDinF_Aug23"
-     y_variable <- "mean_yearly_precip"
-  }
-   
+    x_variable <- "CumDDinF_Aug23"
+    y_variable <- "yearly_precip"
+   } else {
+    x_variable <- "mean_CumDDinF_Aug23"
+    y_variable <- "mean_yearly_precip"
+  }  
   contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
                  ylab(y_lab) + xlab(x_lab) + 
                  stat_density_2d(aes(fill = stat(level), colour = model), 
@@ -258,7 +257,16 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
   #***************************************
   start_end_df <- find_target_centroids(start_end_df)
   unique_start_end <- unique(start_end_df)
-  unique_start_end$subregion <- Hmisc::capitalize(unique_start_end$subregion)
+
+  # Fix the goddamn names of subregions, first letter capitalization
+  for (ii in 1:nrow(unique_start_end)){
+    c <- unique_start_end[ii, "subregion"]
+    c <- unlist(strsplit(c, " "))
+    for (jj in 1:length(c)){
+     c[jj] <- Hmisc::capitalize(c[jj])
+     }
+    unique_start_end[ii, "subregion"] <- paste(c, collapse = " ")
+  }
 
   # start and end of curve cannot be the same! 
   # make the starting point different in this case:

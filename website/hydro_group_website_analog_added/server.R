@@ -17,6 +17,9 @@ library(ggplot2)  # for plotting
 library(reshape2)
 library(RColorBrewer)
 
+#############################################
+#############################################
+#############################################
 # read county shapefile
 shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
 counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
@@ -41,6 +44,9 @@ interest_counties <- c("16027", "53001", "53021", "53071",
                        "41049", "53013", "53039", 
                        "41059", "53017", "53047")
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
+#############################################
+#############################################
+#############################################
 
 ############################################################
 ###########
@@ -77,7 +83,8 @@ shinyServer(function(input, output, session) {
                { p <- input$analog_front_page_shape_click
                  toggleModal(session, modalId = "Graphs", toggle = "open")
                  # county <- readOGR("shp/county.shp", layer = "county")
-                 county <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
+                 county <- rgdal::readOGR(dsn = path.expand(shapefile_dir), 
+                                          layer = "tl_2017_us_county")                 
                  
                  # get polygon of current selected county(boundary)
                  dat <- data.frame(Longitude = c(p$lng), Latitude =c(p$lat))

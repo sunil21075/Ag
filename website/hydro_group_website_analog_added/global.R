@@ -80,27 +80,27 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 ##########################
 
 #########################################################
-# # read county shapefile
-# shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
-# counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
-# # counties <- rgdal::readOGR( paste0(shapefile_dir, "/tl_2017_us_county.shp"),
-# #                              layer = "tl_2017_us_county", GDAL1_integer64_policy = TRUE)
+# read county shapefile
+shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
+counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
+# counties <- rgdal::readOGR( paste0(shapefile_dir, "/tl_2017_us_county.shp"),
+#                              layer = "tl_2017_us_county", GDAL1_integer64_policy = TRUE)
 
-# # Extract just the three states OR: 41, WA:53, ID: 16
-# counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
+# Extract just the three states OR: 41, WA:53, ID: 16
+counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
 
-# ## counties <- rmapshaper::ms_simplify(counties)
+## counties <- rmapshaper::ms_simplify(counties)
 
-# # Compute states like so, to put border around states
-# states <- aggregate(counties[, "STATEFP"], by = list(ID = counties@data$STATEFP), 
-#                     FUN = unique, dissolve = T)
+# Compute states like so, to put border around states
+states <- aggregate(counties[, "STATEFP"], by = list(ID = counties@data$STATEFP), 
+                    FUN = unique, dissolve = T)
 
-# interest_counties <- c("16027", "53001", "53021", "53071",
-#                        "41021", "53005", "53025", "53077", 
-#                        "41027", "53007", "53037",  
-#                        "41049", "53013", "53039", 
-#                        "41059", "53017", "53047")
-# counties <- counties[counties@data$GEOID %in% interest_counties, ]
+interest_counties <- c("16027", "53001", "53021", "53071",
+                       "41021", "53005", "53025", "53077", 
+                       "41027", "53007", "53037",  
+                       "41049", "53013", "53039", 
+                       "41059", "53017", "53047")
+counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
 ################################################################################
 

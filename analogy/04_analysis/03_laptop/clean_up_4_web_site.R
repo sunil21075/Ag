@@ -159,9 +159,7 @@ for (sub_dir in data_sub_dirs){
         plot_out_dir <- paste0(data_dir, "/", sigma_bd, "_sigma_", emission, "_for_web/")
         # plot_out_dir <- "/Users/hn/Desktop/Desktop/test/"
         print (paste(sigma_bd, target_fip, emission, model_n, sep=", "))
-        print (plot_out_dir)
         if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
-        # plot_out_dir <- "/Users/hn/Desktop/"
 
         #############################################################################
         #
@@ -511,6 +509,7 @@ for (sub_dir in data_sub_dirs){
                plot = get(paste0("plot_", target_st_cnty, "_F3")), 
                path= plot_out_dir, device="png",
                dpi = 200, width = 12, height = 12, unit="in", limitsize = FALSE)
+      
       }
 
       F1_all_mods_anlgs <- map_of_all_models_anlgs_freq_color(a_dt = data_4_all_models_F1_map,

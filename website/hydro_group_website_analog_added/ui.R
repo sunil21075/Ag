@@ -508,21 +508,25 @@ navbarPage(title = div("",
                               ),
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
-                                                      dashboardSidebar(radioButtons(inputId = "emission", 
-                                                                                    label = tags$b("Emission"), 
+                                                      dashboardSidebar(tags$b("More Details",  style = "font-size:23px"),
+                                                                       # <font size="6"> "More Details" </font>,
+                                                                       br(),
+                                                                       radioButtons(inputId = "emission", 
+                                                                                    label = tags$b("Scenario"),
                                                                                     choices = emissions, 
                                                                                     selected = emissions[1]),
+
+                                                                       radioButtons(inputId = "time_period", 
+                                                                                    label = tags$b("Time Period"),
+                                                                                    choices = time_periods,
+                                                                                    selected = time_periods[1]),
 
                                                                        selectInput(inputId = "climate_model", 
                                                                                    label = tags$b("Climate Model"),
                                                                                    choices = climate_models, 
                                                                                    selected = climate_models[1]
-                                                                                   ),
-
-                                                                       radioButtons(inputId = "time_period", 
-                                                                                    label = tags$b("Time Period"),
-                                                                                    choices = time_periods,
-                                                                                    selected = time_periods[1])
+                                                                                   )
+                                                                       
                                                                        ),
                                                       dashboardBody(plotOutput("Plot") # , 
                                                                     # p("heatStress"), 
