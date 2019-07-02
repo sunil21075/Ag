@@ -4,6 +4,9 @@ library(shiny)
 library(plotly)
 library(shinydashboard)
 
+detail_levels <- c("All models analog" = "all_models", 
+                   "More Details" = "more_details")
+
 navbarPage(title = div("",
                        img(src='csanr_logo.png', style='width:100px;height:35px;'), 
                        img(src='WSU-DAS-log.png', style='width:100px;height:35px;'),
@@ -508,25 +511,60 @@ navbarPage(title = div("",
                               ),
                     fluidPage(bsModal( "Graphs", trigger = NULL, title = "", size = "large",
                                        dashboardPage( dashboardHeader(title = "Plots"),
-                                                      dashboardSidebar(tags$b("More Details", style = "font-size:23px"),
-                                                                       br(),
-                                                                       radioButtons(inputId = "emission", 
-                                                                                    label = tags$b("Scenario"),
-                                                                                    choices = emissions, 
-                                                                                    selected = emissions[1]),
+                                                      # dashboardSidebar(
 
-                                                                       radioButtons(inputId = "time_period", 
-                                                                                    label = tags$b("Time Period"),
-                                                                                    choices = time_periods,
-                                                                                    selected = time_periods[1]),
+                                                      #   tags$b("More Details", style = "font-size:23px"),
+                                                      #                  br(),
+                                                      #                  radioButtons(inputId = "emission", 
+                                                      #                               label = tags$b("Scenario"),
+                                                      #                               choices = emissions, 
+                                                      #                               selected = emissions[1]),
 
-                                                                       selectInput(inputId = "climate_model", 
-                                                                                   label = tags$b("Climate Model"),
-                                                                                   choices = climate_models, 
-                                                                                   selected = climate_models[1]
-                                                                                   )
+                                                      #                  radioButtons(inputId = "time_period", 
+                                                      #                               label = tags$b("Time Period"),
+                                                      #                               choices = time_periods,
+                                                      #                               selected = time_periods[1]),
+
+                                                      #                  selectInput(inputId = "climate_model", 
+                                                      #                              label = tags$b("Climate Model"),
+                                                      #                              choices = climate_models, 
+                                                      #                              selected = climate_models[1]
+                                                      #                              )
+                                                                       
+
+
+                                                      #                  ),
+                                                      dashboardSidebar(
+                                                                       selectInput(inputId = "detail_level",
+                                                                                   label = tags$b("Detail Level"),
+                                                                                   choices = detail_levels, 
+                                                                                   selected = detail_levels[1]
+                                                                                   ),
+                                                                       # Only show this panel if the plot type is a histogram
+                                                                       conditionalPanel(condition = "input.detail_level == 'more_details'",
+                                                                                        radioButtons(inputId = "emission", 
+                                                                                                     label = tags$b("Scenario"),
+                                                                                                     choices = emissions, 
+                                                                                                     selected = emissions[1]),
+
+                                                                                        radioButtons(inputId = "time_period", 
+                                                                                                     label = tags$b("Time Period"),
+                                                                                                     choices = time_periods,
+                                                                                                     selected = time_periods[1]),
+
+                                                                                        selectInput(inputId = "climate_model", 
+                                                                                                    label = tags$b("Climate Model"),
+                                                                                                    choices = climate_models, 
+                                                                                                    selected = climate_models[1]
+                                                                                                    )
+                                                                                        ) 
                                                                        
                                                                        ),
+                                                      #####################
+                                                      #
+                                                      # End of side bar of dashboard of analog maps
+                                                      #
+                                                      #####################
                                                       dashboardBody(plotOutput("Plot") # , 
                                                                     # p("heatStress"), 
                                                                     # p("netPrimaryProductivity"),
