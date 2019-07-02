@@ -111,6 +111,7 @@ st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"
                           as.is=T) %>% data.table()
 print (st_cnty_names)
 
+detail_levels <- c("all_models", "more_details")
 # Analog Plot Menu variables on pop-up page
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
