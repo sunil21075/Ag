@@ -22,7 +22,9 @@ library(RColorBrewer)
 #############################################
 # read county shapefile
 shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
-counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), layer = "tl_2017_us_county")
+simple_shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county_simple/"
+counties <- rgdal::readOGR(dsn=path.expand(simple_shapefile_dir), 
+                           layer = "tl_2017_us_county")
 
 # Extract just the three states OR: 41, WA:53, ID: 16
 counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
@@ -81,10 +83,10 @@ shinyServer(function(input, output, session) {
   #
   # Show page on click event...
   observeEvent(input$analog_front_page_shape_click, 
-               {
+               { p <- input$analog_front_page_shape_click
                  toggleModal(session, modalId = "Graphs", toggle = "open")
-                 p <- input$analog_front_page_shape_click
-                 county <- rgdal::readOGR("/data/codmoth_data/analog/simle_county/", layer = "simpleCounty")
+                 county <- rgdal::readOGR("/data/codmoth_data/analog/simle_county/", 
+                                           layer = "simpleCounty")
                  # county <- rgdal::readOGR(dsn = path.expand(shapefile_dir), layer = "tl_2017_us_county")                 
                  
                  # get polygon of current selected county(boundary)
@@ -94,24 +96,19 @@ shinyServer(function(input, output, session) {
                  current_county_name <- toString(over(dat, county)$NAME)
                  current_state_fip <- toString(over(dat, county)$STATEFP)
                  current_state_name <- st_cnty_names[st_cnty_names$state_fip == current_state_fip,]$state[1]
-                 print ("hey")
-                 print (current_county_name)
-                 print (current_state_fip)
-                 print (current_state_name)
 
-                output$Plot <- renderImage({ 
-                                             if (input$climate_model == "NULL"){
+                output$Plot <- renderImage({ if (input$climate_model == "NULL"){
                                                image_name <- paste0("all_mods_", 
-                                               	                     current_state_name, "_", 
-                                               	                     current_county_name, 
-                                               	                     ".png")
+                                                                     current_state_name, "_", 
+                                                                     current_county_name, 
+                                                                     ".png")
                                                } else {
                                                    image_name <- paste0("triple_", 
-                                                                       current_county_name, "_",
-                                                                       current_state_name, "_",
-                                                                       input$climate_model, "_",
-                                                                       input$time_period,
-                                                                       ".png")
+                                                                        current_county_name, "_",
+                                                                        current_state_name, "_",
+                                                                        input$climate_model, "_",
+                                                                        input$time_period,
+                                                                        ".png")
                                              }
                                              file_dir_string <- paste0("./plots/analog_plots/", 
                                              	                       "1_sigma_", input$emission, "/", 
