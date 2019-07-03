@@ -9,7 +9,6 @@ storm_calc <- function(df, percentile) {
   calc_KT <- function(return_period) {
     (-sqrt(6)/pi)*(0.5772 + log(log(return_period/(return_period - 1))))
   }
-  
   calc_XT <- function(KT, mean_precip, sd_precip) {
     mean_precip + KT*sd_precip
   }
