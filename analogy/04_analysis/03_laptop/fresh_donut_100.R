@@ -51,8 +51,10 @@ hist_grid_count <- within(hist_grid_count, remove(state, county))
 f_loc_fips_st_cnty <- "local_county_fips.csv"
 h_loc_fips_st_cnty <- "all_us_1300_county_fips_locations.csv"
 
-f_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, f_loc_fips_st_cnty), header=T, sep=",", as.is=T))
-h_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, h_loc_fips_st_cnty), header=T, sep=",", as.is=T))
+f_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, f_loc_fips_st_cnty), 
+                                          header=T, sep=",", as.is=T))
+h_loc_fips_st_cnty <- data.table(read.csv(paste0(param_dir, h_loc_fips_st_cnty), 
+                                          header=T, sep=",", as.is=T))
 
 f_loc_fips_st_cnty <- get_286_locs(f_loc_fips_st_cnty, h_loc_fips_st_cnty)
 local_fips <- unique(f_loc_fips_st_cnty$fips)
@@ -87,7 +89,6 @@ Min_fips_st_county <- unique(Min_fips_st_county)
 ######################################################################
 
 county_averages = FALSE
-
 if (county_averages == FALSE){
     main_in <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/"
    } else {
@@ -95,7 +96,7 @@ if (county_averages == FALSE){
 }
 
 data_sub_dirs <- c("w_precip_rcp85/", "w_precip_rcp45/")
-#___________________________________________________________________________________________
+#_________________________________________________________________________________
 
 raw_feat_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/analogs/00_databases/"
 
@@ -121,10 +122,12 @@ if (county_averages==FALSE){
     feat_hist <- data.table(readRDS(paste0(raw_feat_dir, "cnty_avg_feat_hist.rds")))
 }
 
-#___________________________________________________________________________________________
+#_________________________________________________________________________________
 ######################################################################
 
-model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", "CNRM-CM5", "bcc-csm1-1-m", "GFDL-ESM2M")
+model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", 
+                 "CNRM-CM5", "bcc-csm1-1-m", 
+                 "GFDL-ESM2M")
 time_p <- c("2026_2050", "2051_2075", "2076_2095")
 sigma_bds <- c(1) # , 2
 # VL_quans = c(.25, .75)
@@ -156,7 +159,7 @@ for (sub_dir in data_sub_dirs){
       for(model_n in model_names){
         under_mod_name <- gsub("-", "_", model_n)
         data_dir <- paste0(main_in, sigma_bd, "_sigma/", sub_dir)
-        plot_out_dir <- paste0(data_dir, "/", sigma_bd, "_sigma_", emission, "_for_web/")
+        plot_out_dir <- paste0(data_dir, "/", sigma_bd, "_sigma_", emission, "_fresh_pie/")
         # plot_out_dir <- "/Users/hn/Desktop/Desktop/test/"
         print (paste(sigma_bd, target_fip, emission, model_n, sep=", "))
         if (dir.exists(plot_out_dir) == F) { dir.create(path = plot_out_dir, recursive = T)}
@@ -264,47 +267,25 @@ for (sub_dir in data_sub_dirs){
         #
         # produce data for geographical map, all analogs of one model is present here
         #
-        one_mod_map_info_F1 <- produce_dt_for_map(b_dt = analog_dat_F1_4_map)
-        one_mod_map_info_F2 <- produce_dt_for_map(b_dt = analog_dat_F2_4_map)
-        one_mod_map_info_F3 <- produce_dt_for_map(b_dt = analog_dat_F3_4_map)
+        one_mod_map_info_F1 <- produce_dt_for_map(analog_dat_F1_4_map)
+        one_mod_map_info_F2 <- produce_dt_for_map(analog_dat_F2_4_map)
+        one_mod_map_info_F3 <- produce_dt_for_map(analog_dat_F3_4_map)
         #############################################################################
         #
-        # produce data for geographical map, just top anolog of a given is present here
+        # produce data for geographical map, just top anolog 
+        # of a given is present here
         #  
         top_analog_F1_4_all_maps <- analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
         top_analog_F2_4_all_maps <- analog_dat_F2_4_map[which.max(analog_dat_F2_4_map$analog_freq),]
         top_analog_F3_4_all_maps <- analog_dat_F3_4_map[which.max(analog_dat_F3_4_map$analog_freq),]
          
-        top_analog_F1_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F1_4_all_maps)
-        top_analog_F2_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F2_4_all_maps)
-        top_analog_F3_4_all_maps <- produce_dt_for_map(b_dt = top_analog_F3_4_all_maps)
+        top_analog_F1_4_all_maps <- produce_dt_for_map(top_analog_F1_4_all_maps)
+        top_analog_F2_4_all_maps <- produce_dt_for_map(top_analog_F2_4_all_maps)
+        top_analog_F3_4_all_maps <- produce_dt_for_map(top_analog_F3_4_all_maps)
 
         data_4_all_models_F1_map <- rbind(data_4_all_models_F1_map, top_analog_F1_4_all_maps)
         data_4_all_models_F2_map <- rbind(data_4_all_models_F2_map, top_analog_F2_4_all_maps)
         data_4_all_models_F3_map <- rbind(data_4_all_models_F3_map, top_analog_F3_4_all_maps)
-        #
-        # produce data for donuts
-        #
-        one_mod_pie_info_F1 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F1, 
-                                                     tgt_fip = target_fip,
-                                                     hist_target_fip = most_similar_cnty_F1_fip,
-                                                     f_fips = f_loc_fips_st_cnty, 
-                                                     h_fips = h_loc_fips_st_cnty, 
-                                                     f_years = f_years_F1, h_years=37)
-
-        one_mod_pie_info_F2 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F2, 
-                                                     tgt_fip = target_fip,
-                                                     hist_target_fip = most_similar_cnty_F2_fip,
-                                                     f_fips = f_loc_fips_st_cnty, 
-                                                     h_fips = h_loc_fips_st_cnty, 
-                                                     f_years = f_years_F2, h_years=37)
-
-        one_mod_pie_info_F3 <- produce_dt_for_pie_Q4(analog_dt = analog_dat_F3, 
-                                                     tgt_fip = target_fip,
-                                                     hist_target_fip = most_similar_cnty_F3_fip,
-                                                     f_fips = f_loc_fips_st_cnty, 
-                                                     h_fips = h_loc_fips_st_cnty, 
-                                                     f_years= f_years_F3, h_years=37)
 
         # Extract name of county of interest for putting in the plots:
         target_cnty_name <- Min_fips_st_county$st_county[Min_fips_st_county$fips==target_fip]
@@ -342,22 +323,6 @@ for (sub_dir in data_sub_dirs){
         analog_name_F3 <- Min_fips_st_county$st_county[Min_fips_st_county$fips==most_similar_cnty_F3_fip]
         analog_name_F3 <- paste(unlist(strsplit(analog_name_F3, "_"))[2], 
                                 unlist(strsplit(analog_name_F3, "_"))[1], sep= ", ")
-
-        # Plot the donuts
-        assign(x = paste0("pie_", under_mod_name, "_F1"), 
-               value = {plot_the_pie_4_web(DT = one_mod_pie_info_F1, 
-                                           titl = titlem_F1, 
-                                           subtitle = analog_name_F1)})
-        
-        assign(x = paste0("pie_", under_mod_name, "_F2"), 
-               value = {plot_the_pie_4_web(DT = one_mod_pie_info_F2, 
-                                           titl = titlem_F2, 
-                                           subtitle = analog_name_F2)})
-        
-        assign(x = paste0("pie_", under_mod_name, "_F3"), 
-                          value = {plot_the_pie_4_web(DT = one_mod_pie_info_F3, 
-                                                      titl = titlem_F3, 
-                                                      subtitle = analog_name_F3)})
         #________________________________________________________________________________
         #
         # Set up right data for heat map plots
@@ -420,7 +385,18 @@ for (sub_dir in data_sub_dirs){
         assign(x = paste0("con_", under_mod_name, "_F3"), 
                value = {plot_the_margins_cowplot(data_dt = contour_dt_3, 
                                                  contour_plot = get(paste0("con_", under_mod_name, "_F3")))})
-
+        ######################################################################
+        #
+        # Fresh Pie Stuff
+        #
+        assign(x = paste0("pie_", under_mod_name, "_F1"), 
+               value = {plot_fresh_pie(contour_dt_1)})
+        
+        assign(x = paste0("pie_", under_mod_name, "_F2"), 
+               value = {plot_fresh_pie(contour_dt_2)})
+        
+        assign(x = paste0("pie_", under_mod_name, "_F3"), 
+               value = {plot_fresh_pie(contour_dt_3)})
         # _______________________________________________________________________________
         
         assign(x = paste0("pie_con_", under_mod_name, "_F1"),

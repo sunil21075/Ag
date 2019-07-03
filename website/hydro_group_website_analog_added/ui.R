@@ -488,7 +488,7 @@ navbarPage(title = div("",
                                                                                         radioButtons(inputId = "time_period", 
                                                                                                      label = tags$b("Time Period"),
                                                                                                      choices = time_periods,
-                                                                                                     selected = time_periods[1]),
+                                                                                                     selected = time_periods[3]),
 
                                                                                         selectInput(inputId = "climate_model", 
                                                                                                     label = tags$b("Climate Model"),
@@ -503,12 +503,34 @@ navbarPage(title = div("",
                                                       # End of side bar of dashboard of analog maps
                                                       #
                                                       #####################
-                                                      dashboardBody(plotOutput("Plot") # , 
-                                                                    # p("heatStress"), 
-                                                                    # p("netPrimaryProductivity"),
-                                                                    # p("forageVariability"), 
-                                                                    # p("VegetationType"), 
-                                                                    # p("vulnerabilityIndex")
+                                                      dashboardBody(tags$head(tags$style(HTML('.content-wrapper, 
+                                                                                              .right-side {
+                                                                                                   background-color: #252d38;
+                                                                                                 }
+                                                                                              ')
+                                                                                        )
+                                                                              ),
+                                                                    plotOutput("Plot"), # ,
+                                                                    br(), br(),
+                                                                    br(), br(),
+                                                                    br(), br(),
+                                                                    br(), br(),
+                                                                    br(), br(),
+                                                                    p(tags$b(span("All Models Analogs", style = "color:white")),
+                                                                      (span(" plot includes most similar", style = "color:white")),
+                                                                      (span(" county in all models.", style = "color:white"))
+                                                                      ),
+                                                                    
+                                                                    p((span("A county with", style = "color:white")),
+                                                                      tags$b(span("red", style = "color:red")),
+                                                                      (span(" border is in the future.", style = "color:white"))
+                                                                      ), 
+                                                                    
+                                                                    p((span("A county with", style = "color:white")),
+                                                                      tags$b(span("yellow", style = "color:#fff200")), # "color:GoldenRod"
+                                                                      (span(" border is the best analog", style = "color:white")),
+                                                                      (span(" for a given county.", style = "color:white"))
+                                                                      )
                                                                     )
                                                     )
                                       )

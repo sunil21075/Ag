@@ -23,6 +23,42 @@ options(digit=9)
 ##                                                                ##
 ##                                                                ##
 ####################################################################
+
+find_target_centroids <- function(start_end){
+  centroids <- housingData::geoCounty
+  for (row in 1:nrow(start_end)){
+    target_row <- centroids %>% filter(rMapState == start_end$region[row] &
+                                        rMapCounty == start_end$subregion[row])
+    start_end[row, "long"] <- target_row$lon
+    start_end[row, "lat"] <- target_row$lat
+  }
+  return(start_end)
+}
+
+similarities_2d <- function(f_dt){  
+  future <- f_dt %>%
+            filter(model != "observed") %>%
+            data.table()
+  
+  hist <- f_dt %>%
+          filter(model == "observed") %>%
+          data.table()
+  future <- select(future, CumDDinF_Aug23, yearly_precip)
+  hist <- select(hist, CumDDinF_Aug23, yearly_precip)
+
+  fut_mean <- future[, lapply(.SD, mean)]
+  hist_mean <- hist[, lapply(.SD, mean)]
+
+  fut_covar <- cor(future)
+  hist_covar <- cor(hist)
+
+  dist <- fpc::bhattacharyya.dist(mu1=as.vector(unlist(fut_mean)), 
+                                  mu2=as.vector(unlist(hist_mean)), 
+                                  Sigma1=fut_covar, Sigma2=hist_covar)
+  coeff <- exp(-dist)
+  return(coeff)
+}
+
 seperate_1D_similarities <- function(f_dt){
   ###########
   ###########

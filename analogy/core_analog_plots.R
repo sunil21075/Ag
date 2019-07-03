@@ -98,20 +98,17 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
 plot_the_margins_cowplot <- function(data_dt, contour_plot){
   color_ord = c("red", "dodgerblue") #, "olivedrab4", grey47
 
-  if ("CumDDinF_Aug23" %in% colnames(data_dt)){
-    x_variable_1 <- "CumDDinF_Aug23"
-    x_variable_2 <- "yearly_precip"
-    
-   } else {
-    x_variable_1 <- "mean_CumDDinF_Aug23"
-    x_variable_2 <- "mean_yearly_precip"
+  if("CumDDinF_Aug23" %in% colnames(data_dt)){
+     x_variable_1 <- "CumDDinF_Aug23"
+     x_variable_2 <- "yearly_precip"
+     } else {
+         x_variable_1 <- "mean_CumDDinF_Aug23"
+         x_variable_2 <- "mean_yearly_precip"
   }
-
   DD_plt <- cowplot::axis_canvas(contour_plot, axis="x") + 
             geom_density(data = data_dt, aes(x=get(x_variable_1), fill=model, color=model), 
                          alpha = 0.7) +
             scale_color_manual(values=color_ord)
-  
   preip_plt <- cowplot::axis_canvas(contour_plot, axis="y", coord_flip=TRUE) + 
                geom_density(data = data_dt, aes(x=get(x_variable_2), fill=model, color=model), 
                             alpha = 0.7) + 
@@ -379,17 +376,6 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
   return(curr_plot) 
 }
 
-find_target_centroids <- function(start_end){
-  centroids <- housingData::geoCounty
-  for (row in 1:nrow(start_end)){
-    target_row <- centroids %>% filter(rMapState == start_end$region[row] &
-                                        rMapCounty == start_end$subregion[row])
-    start_end[row, "long"] <- target_row$lon
-    start_end[row, "lat"] <- target_row$lat
-  }
-  return(start_end)
-}
-
 map_of_all_models_anlgs <- function(a_dt, county2, title_p, target_county_map_info){
   title_p <- unlist(strsplit(title_p, " "))
   title_p <- title_p[-4]
@@ -533,6 +519,60 @@ plot_the_map_4_web <- function(a_dt, county2, title_p,
                      axis.title.y = element_blank()) + 
                ggtitle(title_p, subtitle= paste0("historical analog: ", analog_name))
   return(curr_plot) 
+}
+
+plot_fresh_pie <- function(fin_data){
+  similarities <- unlist(seperate_1D_similarities(fin_data))
+  press_sim <- similarities[1]
+  precip_sim <- similarities[2]
+
+  dat = data.frame(count = c(press_sim, (1-press_sim), 
+                               precip_sim, (1-precip_sim)),
+                   ring = c("pest pressure ring", "pest pressure ring", 
+                            "precipitation ring", "precipitation ring"),
+                   category = c("variable", "variable complement", 
+                                "variable", "variable complement"))
+  # compute fractions
+  dat %<>% group_by(ring) %>% 
+           mutate(fraction = count / sum(count),
+                  ymax = cumsum(fraction),
+                  ymin = c(0,ymax[1:length(ymax)-1]))
+  # Add x limits
+  baseNum <- 4
+  # numCat <- length(unique(dat$ring))
+  dat$xmax <- as.numeric(dat$ring) + baseNum
+  dat$xmin = dat$xmax - 1
+
+  p2 = ggplot(dat, aes(fill = category, alpha = ring,
+                       ymax = ymax, ymin = ymin, 
+                       xmax = xmax, xmin = xmin)) +
+       geom_rect(colour = "grey30") +
+       coord_polar(theta = "y") +
+       xlim(c(0, 6)) +
+       theme_bw() +
+       theme(panel.grid = element_blank()) +
+       theme(axis.text = element_blank()) +
+       theme(axis.ticks = element_blank(),
+             panel.border = element_blank()) +
+       # labs(title = "Customized ring plot") + 
+       scale_fill_brewer(palette = "Set1") +
+       scale_alpha_discrete(range = c(0.3, 0.8)) + 
+       theme(plot.title = element_text(size=18, face="bold"),
+             # because its ring, r, l, b are messed up 
+             #            (do NOT count on the followings)
+             #                   r: is actually left
+             #                   l: is actually bottom
+             #                   b: is actually right
+             # plot.margin = unit(c(t=-10, b=-50, l=-50, r=10), "pt"), # almost good
+             # plot.margin = unit(c(t=-10, b=-10, l=-30, r=0), "pt"), # better
+             plot.margin = unit(c(t=-10, b=-10, l=-30, r=0), "pt"),
+             panel.grid=element_blank(),
+             legend.spacing.x = unit(.2, 'pt'),
+             legend.title = element_blank(),
+             legend.position = "none",
+             legend.key.size = unit(1.6, "line"),
+             legend.text = element_blank())
+  return(p2)
 }
 
 plot_the_pie_4_web <- function(DT, titl, subtitle){
@@ -732,23 +772,23 @@ plot_the_contour_stop_working <- function(data_dt, con_title, con_subT, vert_L_t
   x_lab <- "pest pressure" # Cum. DD (F) by Aug 23
 
   if (vert_L_type == "historical"){
-      line_color <- "springgreen4"
-      vertical_dt <- data_dt %>% filter(model == "observed") %>% data.table()
-    } else {
-      line_color <- "red"
-      vertical_dt <- data_dt %>% filter(model != "observed") %>% data.table()
+     line_color <- "springgreen4"
+     vertical_dt <- data_dt %>% filter(model == "observed") %>% data.table()
+     } else {
+     line_color <- "red"
+     vertical_dt <- data_dt %>% filter(model != "observed") %>% data.table()
   }
    
   if ("CumDDinF_Aug23" %in% colnames(data_dt)){
-    vert <- quantile(vertical_dt$CumDDinF_Aug23, probs=v_line_quantiles)
-    horiz <- quantile(vertical_dt$yearly_precip, probs=v_line_quantiles)
-    x_variable <- "CumDDinF_Aug23"
-    y_variable <- "yearly_precip"
-    } else {
-    vert <- quantile(vertical_dt$mean_CumDDinF_Aug23, probs=v_line_quantiles)
-    horiz <- quantile(vertical_dt$mean_yearly_precip, probs=v_line_quantiles)
-    x_variable <- "mean_CumDDinF_Aug23"
-    y_variable <- "mean_yearly_precip"
+     vert <- quantile(vertical_dt$CumDDinF_Aug23, probs=v_line_quantiles)
+     horiz <- quantile(vertical_dt$yearly_precip, probs=v_line_quantiles)
+     x_variable <- "CumDDinF_Aug23"
+     y_variable <- "yearly_precip"
+     } else {
+     vert <- quantile(vertical_dt$mean_CumDDinF_Aug23, probs=v_line_quantiles)
+     horiz <- quantile(vertical_dt$mean_yearly_precip, probs=v_line_quantiles)
+     x_variable <- "mean_CumDDinF_Aug23"
+     y_variable <- "mean_yearly_precip"
   }
   
   contour_plt <- ggplot(data_dt, aes(x = get(x_variable), y = get(y_variable))) + 
@@ -798,7 +838,6 @@ plot_the_map <- function(a_dt, county2, title_p,
                  ggtitle(title_p, subtitle= paste0("historical analog: ", analog_name))
     return(curr_plot) 
 }
-
 
 plot_the_pie_all_possible <- function(dat, titl){
   pp <- ggplot(DT, aes(fill=category, ymax=ymax, ymin=ymin, xmax=4, xmin=3)) +

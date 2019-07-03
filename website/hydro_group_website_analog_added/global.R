@@ -120,18 +120,37 @@ detail_levels <- c("All Models Analogs" = "all_models",
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
 
-climate_models <- c("bcc-csm1-1-m" = "bcc_csm1_1_m",
-                    "BNU-ESM" = "BNU_ESM", 
-                    "CanESM2" = "CanESM2", 
-                    "CNRM-CM5"= "CNRM_CM5",
+climate_models <- c("BNU-ESM" = "BNU_ESM", 
+                    "CanESM2" = "CanESM2",
                     "GFDL-ESM2G" = "GFDL_ESM2G",
+                    "CNRM-CM5"= "CNRM_CM5",
+                    "bcc-csm1-1-m" = "bcc_csm1_1_m",
                     "GFDL-ESM2M" = "GFDL_ESM2M")
 
 time_periods <- c("2026-2050" = "F1",
                   "2051-2075" = "F2",
                   "2076-2095" = "F3")
 
+######################################################
+#
+# Definitions on Dashboard body
+#
+# all_analog_text <- '"All Models Analogs" plot includes most similar county in all models.'
+# red_border <- "A county with red border is in the future."
+# yellow_border <- "A county with yellow border is the best analog for a given county."
 
+inner_ring <- paste0("The inner ring is the similarity measurement ", 
+                     "of pest pressure distribution between future county ", 
+                     "and its analog ")
+
+outer_ring <- paste0("The inner ring is the similarity measurement ", 
+                     "of precipitation distribution between future county ", 
+                     "and its analog ")
+
+
+
+
+######################################################
 
 
 
