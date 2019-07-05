@@ -1,7 +1,4 @@
 
-
-
-
 proj4string(counties) <- proj4string(map_df) # Sync Coordinate Systems
 
 # Set spatial coordinates of points
@@ -21,8 +18,6 @@ map_df <- data.frame(file_name = list.files(file_path))
   
 map(map_df$file_name, RDS_convert)
   
-
-
 
 max_precip <- function(file_list){
   
@@ -44,7 +39,8 @@ RDS_convert <- function(file_name, file_path){
 }
 
 df <- tibble(file_name = list.files("data/pruett/aeolus/CanESM2/rcp85/"),
-       file_path = list.files("data/pruett/aeolus/CanESM2/rcp85/", full.names = TRUE))
+             file_path = list.files("data/pruett/aeolus/CanESM2/rcp85/", 
+             full.names = TRUE))
 
 map2(df$file_name, df$file_path, RDS_convert)
 

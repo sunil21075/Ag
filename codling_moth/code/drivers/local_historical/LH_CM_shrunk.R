@@ -19,7 +19,7 @@ conn = file(paste0(param_dir, file_list), open = "r")
 locations = readLines(conn)
 close(conn)
 
-ClimateGroup = list("Historical", "2040's", "2060's", "2080's")
+ClimateGroup = list("Historical", "2040s", "2060s", "2080s")
 cellByCounty = data.table(read.csv(paste0(param_dir, "CropParamCRB.csv")))
 
 start_h = 1979

@@ -815,12 +815,11 @@ add_dd_cumdd <- function(metdata_data.table, lower, upper) {
 }
 ###############################################################################################################
 ###############################################################################################################
-provide_time_stuff <- function(start_year, end_year){
+provide_time_stuff <- function(start_year, end_year, Nofvariables=4){
   isLeapYear <- leap.year(seq(start_year, end_year))
   countLeapYears <- length(isLeapYear[isLeapYear== TRUE])
   nYears <- length(seq(start_year, end_year))
   Nrecords <- 366 * countLeapYears + 365 * (nYears - countLeapYears ) #33603
-  Nofvariables <- 4 # number of varaibles or column in the forcing data file
   Years <- seq(start_year, end_year)
   ind <- seq(1, Nrecords * Nofvariables, Nofvariables)
   return(list(nYears, Nrecords, Nofvariables, Years, ind))
@@ -857,12 +856,12 @@ create_ymdvalues <- function(nYears, Years, leap.year) {
 }
 ###############################################################################################################
 ###############################################################################################################
-readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables, ymd, ind) {
+readbinarydata_addmdy <- function(filename, Nrecords, Nofvariables=4, ymd, ind) {
   fileCon = file(filename, "rb")
   temp <- readBin(fileCon, integer(), size =2, n = Nrecords * Nofvariables, endian="little")
   close(fileCon)
 
-  dataM <- matrix(0, Nrecords, 4)
+  dataM <- matrix(0, Nrecords, Nofvariables)
 
   dataM[1:Nrecords, 1] <- temp[ind]/40.00    # precip data
   dataM[1:Nrecords, 2] <- temp[ind+1]/100.00 # Max temperature data

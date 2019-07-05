@@ -82,14 +82,12 @@ data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   top_3_fip = c("NA", "NA", "NA")
                   )
 
-<<<<<<< HEAD
+
 data = data.table(model = c("target"),
                   start = c(10),
                   end = c(20)
                   )
 
-=======
->>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 # pick up every other column. pick up odd columns. pick up even columns
 newdf <- data_1[, c(rep(c(TRUE, FALSE), (ncols(data_1)/2))), with = FALSE]
 
@@ -349,10 +347,6 @@ data = data.table(city = c("NYC", "NYC", "NYC", "LA", "LA", "LA", "LA"),
 
 
 # replace the first nonzero with another thing after group_by:
-<<<<<<< HEAD
-=======
-
->>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 data %>%
 group_by(city, year) %>%
 mutate(target = replace(target, which.max(target != 0), 666))
@@ -374,10 +368,56 @@ data %>%
    mutate(target = replace(target, match(1, target), 666))
 
 
-<<<<<<< HEAD
 # pick the row wich max in a column
 analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
-=======
->>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086
 
 
+
+################################################################
+#### Group by and find max, grou_by find max
+
+df <- read.table(header = TRUE, text = 'Gene   Value
+A      12
+A      10
+B      3
+B      5
+B      6
+C      1
+D      3
+D      4')
+
+# aggregate
+aggregate(df$Value, by = list(df$Gene), max)
+aggregate(Value ~ Gene, data = df, max)
+
+# tapply
+tapply(df$Value, df$Gene, max)
+
+# split + lapply
+lapply(split(df, df$Gene), function(y) max(y$Value))
+
+# plyr
+require(plyr)
+ddply(df, .(Gene), summarise, Value = max(Value))
+
+# dplyr
+require(dplyr)
+df %>% group_by(Gene) %>% summarise(Value = max(Value))
+
+# data.table
+require(data.table)
+dt <- data.table(df)
+dt[ , max(Value), by = Gene]
+
+
+# doBy
+require(doBy)
+summaryBy(Value~Gene, data = df, FUN = max)
+
+# sqldf
+require(sqldf)
+sqldf("select Gene, max(Value) as Value from df group by Gene", drv = 'SQLite')
+
+# ave
+df[as.logical(ave(df$Value, df$Gene, FUN = function(x) x == max(x))),]
+################################################################

@@ -1,12 +1,8 @@
 
-
-
 cat /data/kiran/Data/VIC/params/metdatalistmultipleset/list_set1 | while read LINE ; do
 echo "copying $LINE..."
 cp /data/kirti/vic_inputdata0625_pnw_combined_05142008/$LINE ./metdata/
 done
-
-
 
 #####################
 
@@ -21,7 +17,6 @@ cat /Users/hn/Documents/GitHub/Kirti/analogy/parameters/missing_locations_short 
 dir_list=("${dir_list[@]}" "$LINE")
 printf '%s\n' "${dir_list[@]}"
 done
-
 
 
 dir_list=()
