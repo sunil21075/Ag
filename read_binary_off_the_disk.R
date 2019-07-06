@@ -14,17 +14,17 @@ modeled_hist <- read_binary(paste0(main_in, "modeled/historical/", file_name),
 modeled_85 <- read_binary(paste0(main_in, "modeled/rcp85/", file_name), 
                           hist=F, no_vars=4)
 
-
-
-
+observed$location <- "43.84375_-113.78125"
+modeled_hist$location <- "43.84375_-113.78125"
+modeled_85$location <- "43.84375_-113.78125"
 
 ##########################################################
 #############################
 #############################            TEST Lagoon codes
 #############################
-observed <- subset(observed, select=c(year, month, day, precip))
-modeled_hist <- subset(modeled_hist, select=c(year, month, day, precip))
-modeled_85 <- subset(modeled_85, select=c(year, month, day, precip))
+observed <- subset(observed, select=c(location, year, month, day, precip))
+modeled_hist <- subset(modeled_hist, select=c(location, year, month, day, precip))
+modeled_85 <- subset(modeled_85, select=c(location, year, month, day, precip ))
 
 
 

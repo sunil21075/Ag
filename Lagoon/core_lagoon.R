@@ -16,7 +16,7 @@ convert_precip_2_intens <- function(data_tb, col_name){
   # output: data_tb with a new column added to it
   #         that is result of dividing column given by col_name
   #         by 24.
-  data_tb$max_24_hr_intens <- data_tb[, col_name]/24.00
+  data_tb$max_24_hr_intens <- data_tb[, get(col_name)]/24.00
   return(data_tb)
 }
 
@@ -31,7 +31,7 @@ find_annual_max_24_hr <- function(data_tb){
   
   data_tb <- data_tb %>%
              group_by(year, location) %>%
-             summarise(max_24_hr_precip = max(precip)) %>%
+             summarise(max_24_hr_precip_annual = max(precip)) %>%
              data.table()
   return (data_tb)
 }
@@ -49,7 +49,7 @@ find_monthly_max_24_hr <- function(data_tb){
   
   data_tb <- data_tb %>%
              group_by(year, month, location) %>%
-             summarise(max_24_hr_precip = max(precip)) %>%
+             summarise(max_24_hr_precip_monthly = max(precip)) %>%
              data.table()
   return (data_tb)
 }
@@ -77,7 +77,7 @@ find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
 
   data_tb$chunk_month_max <- data_tb %>%
                              group_by(wtr_yr, location) %>%
-                             summarise(max_24_hr_precip = max(precip)) %>%
+                             summarise(max_24_hr_precip_chunky = max(precip)) %>%
                              data.table()
   return(data_tb)
 }
@@ -88,10 +88,18 @@ create_wtr_calendar <- function(data_tb, wtr_yr_start){
   data_tb <- data_tb %>%
              mutate(wtr_yr = case_when(# If Jan:Sept then part of H2O yr of prev year - current year
                                        month %in% c(1:(wtr_yr_start-1)) ~ paste0("wtr_", (year - 1), "-", year),
+                                       
                                        # If Oct:Dec then part of H2O yr of current year - next year
                                        month %in% c(wtr_yr_start:12) ~ paste0("wtr_", year, "-", (year + 1))
                                        )
                     ) %>%
+             data.table()
+
+  # cut the beginning and end of the data that do not belong
+  # to any water year calendar!
+  data_tb <- data_tb %>% 
+             filter(!(year == min(data_tb$year) & (month < wtr_yr_start))) %>%
+             filter(!(year == max(data_tb$year) & (month >= wtr_yr_start))) %>%
              data.table()
   return(data_tb)
 }
