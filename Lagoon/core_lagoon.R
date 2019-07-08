@@ -7,7 +7,112 @@ source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 source(source_path)                                                    #
 ########################################################################
 
-convert_precip_2_intens <- function(data_tb, col_name){
+from_read_to_design_storm <- function(data_tbl){
+  ################################################
+  # This function is written to be applied to "an individual"
+  # location.
+  # input : data_tbl has to have columns: 
+  ################################################
+  if (2050 %in% data_tbl$year){
+     obs = FALSE
+     } else {
+        if(1950  %in% data_tbl$year){
+           obs = FALSE
+          } else {
+            obs = TRUE
+        }
+  }
+
+  data_tbl <- find_annual_max_24_hr(data_tbl)
+  data_tbl <- convert_precip_2_intens(data_tb=data_tbl, 
+                                      col_name="max_24_hr_precip_annual")
+  data_tbl <- put_time_period(data_tb=data_tbl, observed=obs)
+  data_tbl <- design_storm_all_time_periods(data_tbl)
+  return(data_tbl)
+}
+
+design_storm_all_time_periods <- function(data_tbl){
+  ################################################
+  # This function is written to be applied to "an individual"
+  # location.
+  # input : data_tbl has to have columns: 
+  #                  year, location, max_24_hr_precip_annual, max_24_hr_intens,
+  #                  time_period.
+  #
+  #
+  #
+  #
+  ################################################
+
+  # initiate the table to be populated:
+  data = data.table()
+
+  time_periods <- unique(data_tbl$time_period)
+  time_period_stats <- intensity_stats_by_time_period(data_tbl)
+
+  for (time in time_periods){
+    data_t = data_tbl %>% filter(time_period == time)
+    stat_time <- time_period_stats %>% filter(time_period == time)
+    new_row_vec = design_storm_4_1_time_period(data_tb=data_t, 
+                                               avg=stat_time$mean, 
+                                               std=stat_time$sd)
+    new_row = data.table(return_period = time,
+                         five_years = new_row_vec[1],
+                         ten_years = new_row_vec[2],
+                         fifteen_years = new_row_vec[3],
+                         twenty_years = new_row_vec[4],
+                         twenty_five_years = new_row_vec[5]
+                         )
+    data <- rbind(data, new_row)
+  }
+  col_n <- colnames(data)
+  data$location <- unique(data_tbl$location)
+  setcolorder(data, c("location", col_n))
+  return(data)
+}
+
+design_storm_4_1_time_period <- function(data_tb, avg, std){
+  years_intervals <- c(5, 10, 15, 20, 25)
+  gumbel_constants <- compute_gumbel_constant(years_intervals)
+  storm_dens <- avg + (std * gumbel_constants)
+  return(storm_dens)
+}
+
+compute_gumbel_constant <- function(n_years){
+  return(-1 * (sqrt(6) / pi) * (0.5772 + log(log(n_years / (n_years-1) ))))
+}
+
+intensity_stats <- function(data_tb){
+  stats <- data_tb[ , list(mean=mean(max_24_hr_intens), 
+                           sd=sd(max_24_hr_intens))]
+  return(stats)
+}
+
+intensity_stats_by_time_period <- function(data_tb){
+  stats <- data_tb[ , list(mean = mean(max_24_hr_intens), 
+                           sd = sd(max_24_hr_intens)), 
+                      by = time_period]
+  return(stats)
+}
+
+put_time_period <- function(data_tb, observed){
+  if (observed==TRUE){
+     data_tb$time_period <- "1979-2016"
+     } else {
+      data_tb <- data_tb %>%
+                 mutate(time_period = case_when(year %in% c(1950:2005) ~ "1950-2005",
+                                                year %in% c(2006:2025) ~ "2006-2025",
+                                                year %in% c(2026:2050) ~ "2026-2050",
+                                                year %in% c(2051:2075) ~ "2051-2075",
+                                                year %in% c(2076:2099) ~ "2076-2099",
+                                                )
+                          ) %>%
+                   data.table()
+  }
+  return(data_tb)
+}
+
+convert_precip_2_intens <- function(data_tb, col_name="max_24_hr_precip_annual"){
   # input:  data_tb: data of class data.table
   #         col_name: name of the column to be converted
   #                   to intensity. The colum containing
@@ -53,7 +158,6 @@ find_monthly_max_24_hr <- function(data_tb){
              data.table()
   return (data_tb)
 }
-
 
 find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
   # input: data_tb the data containing precip column in it.
@@ -103,10 +207,6 @@ create_wtr_calendar <- function(data_tb, wtr_yr_start){
              data.table()
   return(data_tb)
 }
-
-
-
-
 
 
 
