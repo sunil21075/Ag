@@ -91,26 +91,10 @@ intensity_stats <- function(data_tb){
 intensity_stats_by_time_period <- function(data_tb){
   stats <- data_tb[ , list(mean = mean(max_24_hr_intens), 
                            sd = sd(max_24_hr_intens)), 
-                      by = time_period]
+                      by = c(time_period, model, emission)]
   return(stats)
 }
 
-put_time_period <- function(data_tb, observed){
-  if (observed==TRUE){
-     data_tb$time_period <- "1979-2016"
-     } else {
-      data_tb <- data_tb %>%
-                 mutate(time_period = case_when(year %in% c(1950:2005) ~ "1950-2005",
-                                                year %in% c(2006:2025) ~ "2006-2025",
-                                                year %in% c(2026:2050) ~ "2026-2050",
-                                                year %in% c(2051:2075) ~ "2051-2075",
-                                                year %in% c(2076:2099) ~ "2076-2099",
-                                                )
-                          ) %>%
-                   data.table()
-  }
-  return(data_tb)
-}
 
 convert_precip_2_intens <- function(data_tb, col_name="max_24_hr_precip_annual"){
   # input:  data_tb: data of class data.table
@@ -135,7 +119,7 @@ find_annual_max_24_hr <- function(data_tb){
   ##############################################################
   
   data_tb <- data_tb %>%
-             group_by(year, location) %>%
+             group_by(year, location, model, emission, time_period) %>%
              summarise(max_24_hr_precip_annual = max(precip)) %>%
              data.table()
   return (data_tb)
@@ -153,7 +137,7 @@ find_monthly_max_24_hr <- function(data_tb){
   ##############################################################
   
   data_tb <- data_tb %>%
-             group_by(year, month, location) %>%
+             group_by(year, month, location, model, emission, time_period) %>%
              summarise(max_24_hr_precip_monthly = max(precip)) %>%
              data.table()
   return (data_tb)
@@ -180,7 +164,7 @@ find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
   }
 
   data_tb$chunk_month_max <- data_tb %>%
-                             group_by(wtr_yr, location) %>%
+                             group_by(wtr_yr, location, model, emission, time_period) %>%
                              summarise(max_24_hr_precip_chunky = max(precip)) %>%
                              data.table()
   return(data_tb)
@@ -213,7 +197,7 @@ compute_chunky_cum_precip <- function(data_tb, start_month, end_month){
  return(data_tb)
 }
 
-# ************************************************************************
+# **********************************************************************
 compute_wtr_yr_cum_precip <- function(data_tb){
   #
   # input: data_tb has to have the water_year column in it
@@ -292,4 +276,20 @@ create_wtr_calendar <- function(data_tb, wtr_yr_start){
   return(data_tb)
 }
 
+put_time_period <- function(data_tb, observed){
+  if (observed==TRUE){
+     data_tb$time_period <- "1979-2016"
+     } else {
+      data_tb <- data_tb %>%
+                 mutate(time_period = case_when(year %in% c(1950:2005) ~ "1950-2005",
+                                                year %in% c(2006:2025) ~ "2006-2025",
+                                                year %in% c(2026:2050) ~ "2026-2050",
+                                                year %in% c(2051:2075) ~ "2051-2075",
+                                                year %in% c(2076:2099) ~ "2076-2099",
+                                                )
+                          ) %>%
+                   data.table()
+  }
+  return(data_tb)
+}
 
