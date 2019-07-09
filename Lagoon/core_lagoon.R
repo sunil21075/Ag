@@ -1,4 +1,3 @@
-
 options(digits=9)
 options(digits=9)
 
@@ -6,43 +5,75 @@ options(digits=9)
 source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 source(source_path)                                                    #
 ########################################################################
+design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
+  locations <- unique(data_tbl$location)
+  models <- unique(data_tbl$model)
+  
+  no_locs <- length(locations)
+  no_models <- length(models)
+  emission <- unique(data_tbl$emission)
 
-from_read_to_design_storm <- function(data_tbl){
+  ###################################################
+  #
+  # set up the output table:
+  #
+  n_rows <- no_locs * no_models * 4
+  col_names <- c("location", "model", "return_period", "five_years", "ten_years", 
+                 "fifteen_years", "twenty_years", "twenty_five_years")
+  final_table <- setNames(data.table(matrix(nrow = n_rows, 
+                                     ncol = length(col_names))), col_names)
+
+  final_table$location <- as.character(final_table$location)
+  final_table$model <- as.character(final_table$model)
+  final_table$return_period <- as.character(final_table$return_period)
+  
+  final_table$five_years <- as.numeric(final_table$five_years)
+  final_table$ten_years <- as.numeric(final_table$ten_years)
+  final_table$fifteen_years <- as.numeric(final_table$fifteen_years)
+  final_table$twenty_years <- as.numeric(final_table$twenty_years)
+  final_table$twenty_five_years <- as.numeric(final_table$twenty_five_years)
+  ###################################################
+  row_pointer <- 1
+  
+  for (loc in locations){
+     for (mod in models){
+       curr_dt <- data_tbl %>% filter(location==loc & model==mod)
+       curr_storm <- design_storm_4_oneLoc_oneMod_from_raw(curr_dt, observed)
+       final_table[row_pointer:(row_pointer+3), ] <- curr_storm
+       row_pointer <- row_pointer + 4
+     }
+  }
+  return(final_table)
+}
+
+
+design_storm_4_oneLoc_oneMod_from_raw <- function(data_tbl, observed=FALSE){
   ################################################
   # This function is written to be applied to "an individual"
-  # location.
+  # (location, model) pair
   # input : data_tbl has to have columns: 
   ################################################
-  if (2050 %in% data_tbl$year){
-     obs = FALSE
-     } else {
-      if(1950  %in% data_tbl$year){
-         obs = FALSE
-         } else {
-         obs = TRUE
-      }
-  }
 
   data_tbl <- find_annual_max_24_hr(data_tbl)
-  data_tbl <- convert_precip_2_intens(data_tb=data_tbl, 
+  data_tbl <- convert_precip_2_intens(data_tb=data_tbl,
                                       col_name="max_24_hr_precip_annual")
-  data_tbl <- put_time_period(data_tb=data_tbl, observed=obs)
-  data_tbl <- design_storm_all_time_periods(data_tbl)
+  
+  # data_tbl <- put_time_period(data_tb=data_tbl, observed=obs)
+  data_tbl <- design_storm_all_timePeriods(data_tbl)
   return(data_tbl)
 }
 
-design_storm_all_time_periods <- function(data_tbl){
-  ################################################
+design_storm_all_timePeriods <- function(data_tbl){
+  ################################################################
+  #
   # This function is written to be applied to "an individual"
-  # location.
+  # (location, model)
   # input : data_tbl has to have columns: 
-  #                  year, location, max_24_hr_precip_annual, max_24_hr_intens,
+  #                  year, location, max_24_hr_precip_annual, 
+  #                  max_24_hr_intens,
   #                  time_period.
   #
-  #
-  #
-  #
-  ################################################
+  ################################################################
 
   # initiate the table to be populated:
   data = data.table()
@@ -53,9 +84,9 @@ design_storm_all_time_periods <- function(data_tbl){
   for (time in time_periods){
     data_t = data_tbl %>% filter(time_period == time)
     stat_time <- time_period_stats %>% filter(time_period == time)
-    new_row_vec = design_storm_4_1_time_period(data_tb=data_t, 
-                                               avg=stat_time$mean, 
-                                               std=stat_time$sd)
+    new_row_vec = design_storm_4_1_time_period(data_tb = data_t, 
+                                               avg = stat_time$mean, 
+                                               std = stat_time$sd)
     new_row = data.table(return_period = time,
                          five_years = new_row_vec[1],
                          ten_years = new_row_vec[2],
@@ -67,7 +98,9 @@ design_storm_all_time_periods <- function(data_tbl){
   }
   col_n <- colnames(data)
   data$location <- unique(data_tbl$location)
-  setcolorder(data, c("location", col_n))
+  data$model <- unique(data_tbl$model)
+
+  setcolorder(data, c("location", "model", col_n))
   return(data)
 }
 
@@ -84,17 +117,17 @@ compute_gumbel_constant <- function(n_years){
 
 intensity_stats <- function(data_tb){
   stats <- data_tb[ , list(mean=mean(max_24_hr_intens), 
-                           sd=sd(max_24_hr_intens))]
+                           sd=sd(max_24_hr_intens)),
+                     by = c("model", "emission")]
   return(stats)
 }
 
 intensity_stats_by_time_period <- function(data_tb){
   stats <- data_tb[ , list(mean = mean(max_24_hr_intens), 
                            sd = sd(max_24_hr_intens)), 
-                      by = c(time_period, model, emission)]
+                      by = c("time_period", "model", "emission")]
   return(stats)
 }
-
 
 convert_precip_2_intens <- function(data_tb, col_name="max_24_hr_precip_annual"){
   # input:  data_tb: data of class data.table

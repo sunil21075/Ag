@@ -59,7 +59,6 @@ setcolorder(x, c("c", "b", "a"))
 # reshape a vector into matrix
 d <- matrix(NN.dist, nrow = 70, byrow = FALSE)
 
-
 df.melted <- melt(myDF[, -1], id.vars = NULL)
 myNewDF <- t(df.melted[, 2])
 colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
@@ -67,8 +66,15 @@ colnames(myNewDF) <- paste0("r", rownames(myDF), df.melted[, 1])
 
 # initialize data frame data table dataframe datatable
 table = data.frame()
-data <- setNames(data.table(matrix(nrow = 0, ncol = 3)), c("va", "vb", "vc"))
-data <- data.table(lat=numeric(), long=numeric(), distances=numeric(), sigma=numeric())
+
+col_names <- c("Return Period", "five", "ten", 
+               "fifteen", "twenty", "twenty five")
+data <- setNames(data.table(matrix(nrow = 24776, ncol = length(col_names))), 
+                 col_names)
+
+data <- data.table(lat=numeric(), long=numeric(), 
+                   distances=numeric(), 
+                   sigma=numeric())
 
 data <- setNames(data.table(matrix(nrow = 3, ncol = 6)), 
                  c("future_fip",  "model", "time_period", 
@@ -82,7 +88,6 @@ data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   top_2_fip = c("NA", "NA", "NA"),
                   top_3_fip = c("NA", "NA", "NA")
                   )
-
 
 data = data.table(model = c("target"),
                   start = c(10),
