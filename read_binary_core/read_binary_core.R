@@ -1,6 +1,12 @@
 options(digit=9)
 options(digits=9)
 
+.libPaths("/data/hydro/R_libs35")
+.libPaths()
+library(data.table)
+library(lubridate)
+library(dplyr)
+
 # Define function for reading binary 8-col files
 
 ###### The modeled historical is in /data/hydro/jennylabcommon2/metdata/maca_v2_vic_binary/

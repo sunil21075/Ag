@@ -16,11 +16,11 @@ from_read_to_design_storm <- function(data_tbl){
   if (2050 %in% data_tbl$year){
      obs = FALSE
      } else {
-        if(1950  %in% data_tbl$year){
-           obs = FALSE
-          } else {
-            obs = TRUE
-        }
+      if(1950  %in% data_tbl$year){
+         obs = FALSE
+         } else {
+         obs = TRUE
+      }
   }
 
   data_tbl <- find_annual_max_24_hr(data_tbl)
@@ -131,7 +131,7 @@ find_annual_max_24_hr <- function(data_tb){
   #                                                            #
   # output: a data table that has one row per                  #
   #         (location, year) with the max_24_hr_precip         #
-  #        column in it.                                       #
+  #         column in it.                                      #
   ##############################################################
   
   data_tb <- data_tb %>%
@@ -186,6 +186,90 @@ find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
   return(data_tb)
 }
 
+
+########################################################################
+#
+#        Cumulation of precipitation section
+#
+########################################################################
+compute_chunky_cum_precip <- function(data_tb, start_month, end_month){
+  #
+  # first, put water_calendar so proper months are grouped together
+  # second, toss out unwanted months.
+  # third, find, cumu. over a wtr_year
+  #
+  data_tb <- create_wtr_calendar(data_tb, wtr_yr_start = start_month)
+
+  data_tb <- data_tb %>%
+             filter(!(month %in% ((end_month+1):(start_month-1))))%>%
+             data.table()
+
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(chunk_cum_precip = cumsum(precip)) %>%
+             slice(n()) %>%
+             data.table()
+ 
+ return(data_tb)
+}
+
+# ************************************************************************
+compute_wtr_yr_cum_precip <- function(data_tb){
+  #
+  # input: data_tb has to have the water_year column in it
+  # output: cumulative precip in each water_year
+  #)
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(annual_cum_precip = cumsum(precip)) %>%
+             slice(n()) %>%
+             data.table()
+  return (data_tb)
+}
+# **********************************************************************
+
+compute_annual_cum_precip <- function(data_tb){
+  ##############################################################
+  # input: data_tb                                             #
+  #                                                            #
+  # output:                                                    #
+  #                                                            #
+  #                                                            #
+  ##############################################################
+  
+  data_tb <- data_tb %>%
+             group_by(location, year, model, emission, time_period) %>%
+             mutate(annual_cum_precip = cumsum(precip)) %>%
+             filter(month==12 & day==31) %>%
+             data.table()
+  return (data_tb)
+}
+# **********************************************************************
+
+compute_monthly_cum_precip <- function(data_tb){
+  ##############################################################
+  # input: data_tb                                             #
+  #                                                            #
+  # output:                                                    #
+  #                                                            #
+  #                                                            #
+  ##############################################################
+  
+  data_tb <- data_tb %>%
+             group_by(location, year, month, model, emission) %>%
+             mutate(monthly_cum_precip = cumsum(precip)) %>%
+             slice(which.max(day)) %>%
+             data.table()
+  return (data_tb)
+}
+# **********************************************************************
+
+########################################################################
+#
+#        Create Water Calendar
+#
+########################################################################
+
 create_wtr_calendar <- function(data_tb, wtr_yr_start){
   # input:
   # output:
@@ -207,7 +291,5 @@ create_wtr_calendar <- function(data_tb, wtr_yr_start){
              data.table()
   return(data_tb)
 }
-
-
 
 

@@ -32,7 +32,8 @@ colnames(data)[colnames(data)=="old_name"] <- "new_name"
 setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another_new_name"))
 
 
-# order a data by a/multiple column. Adding a negative would make the ordering reverse
+# order a data by a/multiple column. Adding a negative 
+# would make the ordering reverse
 A <- A[order(location), ]
 
 result <- dataT %>%
