@@ -11,8 +11,8 @@ options(digits=9)
 start_time <- Sys.time()
 
 ################################################################
-main_in <- "/data/hydro/users/Hossein/lagoon/00_headache/"
-out_dir <- "/data/hydro/users/Hossein/lagoon/01/storm/parallel_obtained/"
+main_in <- "/data/hydro/users/Hossein/lagoon/00_model_level_storm/"
+out_dir <- "/data/hydro/users/Hossein/lagoon/01/storm/"
 if (dir.exists(out_dir) == F) {dir.create(path = out_dir, recursive = T)}
 ################################################################
 model_names <- c("bcc-csm1-1", "CanESM2", "CSIRO-Mk3-6-0",

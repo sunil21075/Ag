@@ -22,7 +22,7 @@ source(lagoon_source_path)
 param_dir = file.path("/home/hnoorazar/lagoon_codes/parameters/")
 
 lagoon_out = "/data/hydro/users/Hossein/lagoon/"
-main_out <- file.path(lagoon_out, "/00_headache/")
+main_out <- file.path(lagoon_out, "/00_model_level_storm/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
 
 ######################################################################

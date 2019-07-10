@@ -67,9 +67,6 @@ dir_con <- dir_con[which(dir_con %in% local_files$location)] # filter LOI
 # 3. read and bind the data -------
 all_data <- data.table()
 
-print ("This is what we are looking for:")
-print(getwd())
-print ("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 for(file in dir_con){
   met_data <- read_binary(file_path = file, hist = hist, no_vars=4)
   met_data <- data.table(met_data)
