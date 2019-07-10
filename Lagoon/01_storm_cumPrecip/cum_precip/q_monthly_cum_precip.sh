@@ -1,15 +1,15 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N cum_precip_ann_model
+#PBS -N cum_precip_month
 #PBS -l mem=16gb
 
 #PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_obs_ann_E
-#PBS -o /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_obs_ann_O
+#PBS -e /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_month_E
+#PBS -o /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_month_O
 #PBS -m abe
 
 echo
@@ -25,7 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01/cum_precip/d_observed_precip_annual.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01/cum_precip/d_monthly_cum_precip.R
 
 echo
 echo "----- DONE -----"

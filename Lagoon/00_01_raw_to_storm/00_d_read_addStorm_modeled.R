@@ -1,13 +1,3 @@
-###################################################################
-#**********                            **********
-#**********        WARNING !!!!        **********
-#**********                            **********
-##
-## DO NOT load any libraries here.
-## And do not load any libraries on the drivers!
-## Unless you are aware of conflicts between packages.
-## I spent hours to figrue out what the hell is going on!
-###################################################################
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
 library(data.table)
@@ -21,9 +11,7 @@ options(digits=9)
 start_time <- Sys.time()
 
 ######################################################################
-##                                                                  ##
 ##                      Define all paths                            ##
-##                                                                  ##
 ######################################################################
 reading_binary_source <- "/home/hnoorazar/reading_binary/read_binary_core.R"
 lagoon_source_path = "/home/hnoorazar/lagoon_codes/core_lagoon.R"
@@ -34,12 +22,10 @@ source(lagoon_source_path)
 param_dir = file.path("/home/hnoorazar/lagoon_codes/parameters/")
 
 lagoon_out = "/data/hydro/users/Hossein/lagoon/"
-main_out <- file.path(lagoon_out, "/00_raw_data/")
+main_out <- file.path(lagoon_out, "/00_headache/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
 
 ######################################################################
-##                                                                  ##
-##                                                                  ##
 ##                                                                  ##
 ######################################################################
 
@@ -67,9 +53,6 @@ dir_con <- dir_con[which(dir_con %in% local_files$location)] # filter LOI
 # 3. read and bind the data -------
 all_data <- data.table()
 
-print ("This is what we are looking for:")
-print(getwd())
-print ("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 for(file in dir_con){
   met_data <- read_binary(file_path = file, hist = hist, no_vars=4)
   met_data <- data.table(met_data)
@@ -82,14 +65,21 @@ for(file in dir_con){
               data.table()
 
   met_data$location <- location
-  met_data <- put_time_period(met_data, observed=FALSE)
-
   all_data <- rbind(all_data, met_data)
 }
 
-new_col_order <- c("location", "year", "month", "day", "precip", "time_period")
-setcolorder(all_data, new_col_order)
-saveRDS(all_data, paste0(current_out, "/raw.rds"))
+all_data <- put_time_period(all_data, observed=FALSE)
+all_data$model <- unlist(strsplit(getwd(), "/"))[7]
+all_data$emission <- unlist(strsplit(getwd(), "/"))[8]
+
+new_col_corder <- c("location", "year", "month", "day","precip", 
+                    "time_period", "model", "emission")
+setcolorder(all_data, new_col_corder)
+
+all_data <- design_storm_4_allLoc_allMod_from_raw(data_tbl=all_data, 
+                                                  observed=FALSE)
+all_data <- unique(all_data)
+saveRDS(all_data, paste0(current_out, "/storm.rds"))
 
 # How long did it take?
 end_time <- Sys.time()

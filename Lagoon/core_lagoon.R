@@ -17,7 +17,12 @@ design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
   #
   # set up the output table:
   #
-  n_rows <- no_locs * no_models * 4
+  if (observed==TRUE){
+     mini_tab_nrow <- 1
+     } else {
+     mini_tab_nrow <- 4
+  }
+  n_rows <- no_locs * no_models * mini_tab_nrow
   col_names <- c("location", "model", "return_period", "five_years", "ten_years", 
                  "fifteen_years", "twenty_years", "twenty_five_years")
   final_table <- setNames(data.table(matrix(nrow = n_rows, 
@@ -39,8 +44,8 @@ design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
      for (mod in models){
        curr_dt <- data_tbl %>% filter(location==loc & model==mod)
        curr_storm <- design_storm_4_oneLoc_oneMod_from_raw(curr_dt, observed)
-       final_table[row_pointer:(row_pointer+3), ] <- curr_storm
-       row_pointer <- row_pointer + 4
+       final_table[row_pointer:(row_pointer + (mini_tab_nrow-1)), ] <- curr_storm
+       row_pointer <- row_pointer + mini_tab_nrow
      }
   }
   return(final_table)
@@ -224,7 +229,7 @@ compute_chunky_cum_precip <- function(data_tb, start_month, end_month){
   data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(chunk_cum_precip = cumsum(precip)) %>%
-             slice(n()) %>%
+             # slice(n()) %>%
              data.table()
  
  return(data_tb)
@@ -239,7 +244,7 @@ compute_wtr_yr_cum_precip <- function(data_tb){
   data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(annual_cum_precip = cumsum(precip)) %>%
-             slice(n()) %>%
+             # slice(n()) %>%
              data.table()
   return (data_tb)
 }
@@ -257,7 +262,7 @@ compute_annual_cum_precip <- function(data_tb){
   data_tb <- data_tb %>%
              group_by(location, year, model, emission, time_period) %>%
              mutate(annual_cum_precip = cumsum(precip)) %>%
-             filter(month==12 & day==31) %>%
+             # filter(month==12 & day==31) %>%
              data.table()
   return (data_tb)
 }
@@ -275,7 +280,7 @@ compute_monthly_cum_precip <- function(data_tb){
   data_tb <- data_tb %>%
              group_by(location, year, month, model, emission) %>%
              mutate(monthly_cum_precip = cumsum(precip)) %>%
-             slice(which.max(day)) %>%
+             # slice(which.max(day)) %>%
              data.table()
   return (data_tb)
 }

@@ -1,17 +1,17 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N 01_mod
+#PBS -N Hydro_HeadAche
 #PBS -l mem=2gb
 
-#PBS -l nodes=1:ppn=1,walltime=10:00:00
-#PBS -q hydro
+#PBS -l nodes=1:ppn=1,walltime=6:00:00
+#PBS -q batch
 #PBS -t 1-72
 
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/lagoon_codes/01/error/mod_E
-#PBS -o /home/hnoorazar/lagoon_codes/01/error/mod_O
+#PBS -e /home/hnoorazar/lagoon_codes/Erin_headache/error/mod_E
+#PBS -o /home/hnoorazar/lagoon_codes/Erin_headache/error/mod_O
 #PBS -m abe
 
 echo
@@ -49,11 +49,10 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01
+Rscript --vanilla /home/hnoorazar/lagoon_codes/Erin_headache/00_d_read_addStorm_modeled.R
 
 echo
 echo "----- DONE -----"
 echo
-cd /data/hydro/users/Hossein/lagoon/01/
-rm -r MIROC-ESM
+
 exit 0

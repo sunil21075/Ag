@@ -1,15 +1,15 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N cum_precip_mod_ann
-#PBS -l mem=16gb
+#PBS -N Hydro_HeadAche
+#PBS -l mem=2gb
 
 #PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_mod_ann_E
-#PBS -o /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_mod_ann_O
+#PBS -e /home/hnoorazar/lagoon_codes/Erin_headache/error/merge_storm_E
+#PBS -o /home/hnoorazar/lagoon_codes/Erin_headache/error/merge_storm_O
 #PBS -m abe
 
 echo
@@ -25,7 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01/cum_precip/d_modeled_precip_annual.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/Erin_headache/00_d_merge_storms.R
 
 echo
 echo "----- DONE -----"

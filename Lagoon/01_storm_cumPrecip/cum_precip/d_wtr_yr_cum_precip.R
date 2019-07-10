@@ -30,31 +30,28 @@ if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
 ##                                                                  ##
 ##                                                                  ##
 ######################################################################
+raw_files <- c("raw_modeled_hist.rds", 
+               "raw_observed.rds", 
+               "raw_RCP45.rds", 
+               "raw_RCP85.rds")
 
-for(file in dir_con){
-  met_data <- read_binary(file_path = file, hist = hist, no_vars=4)
-  met_data <- data.table(met_data)
+for(file in raw_files){
+  curr_dt <- data.table(readRDS(paste0(data_dir, file)))
+  curr_dt <- create_wtr_calendar(curr_dt, wtr_yr_start=10)
+  curr_dt <- compute_wtr_yr_cum_precip(curr_dt)
+  saveRDS(curr_dt, paste0(main_out, "/", gsub("raw", "wtr_yr_sept_cum_precip", file)))
 
-  location <- substr(file, start = 6, stop = 24)
+  curr_dt <- curr_dt %>%
+             slice(n()) %>%
+             data.table()
+  saveRDS(curr_dt, paste0(main_out, "/wtr_yr/", 
+                          gsub("raw", "wtr_yr_sept_cum_precip_last_day", file)))
 
-  # Clean it up
-  met_data <- met_data %>%
-              select(c(precip, year, month, day)) %>%
-              data.table()
 
-  met_data$location <- location
-  met_data <- put_time_period(met_data, observed=FALSE)
-
-  all_data <- rbind(all_data, met_data)
 }
 
-new_col_order <- c("location", "year", "month", "day", "precip", "time_period")
-setcolorder(all_data, new_col_order)
-print ("before_saving")
-print(current_out)
-saveRDS(all_data, paste0(current_out, "/raw.rds"))
-
-# How long did it take?
 end_time <- Sys.time()
 print( end_time - start_time)
+
+
 
