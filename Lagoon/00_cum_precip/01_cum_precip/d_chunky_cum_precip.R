@@ -38,7 +38,7 @@ for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_dt <- compute_chunky_cum_precip(curr_dt, start_month=10, end_month=3)
   
-  saveRDS(curr_dt, paste0(main_out, "/", gsub("raw", "Sept_March_cum_precip", file)))
+  saveRDS(curr_dt, paste0(main_out, "/chunky/", gsub("raw", "Sept_March_cum_precip", file)))
  
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%

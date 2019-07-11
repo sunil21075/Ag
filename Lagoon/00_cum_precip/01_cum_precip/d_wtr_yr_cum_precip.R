@@ -39,7 +39,7 @@ for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_dt <- create_wtr_calendar(curr_dt, wtr_yr_start=10)
   curr_dt <- compute_wtr_yr_cum_precip(curr_dt)
-  saveRDS(curr_dt, paste0(main_out, "/", gsub("raw", "wtr_yr_sept_cum_precip", file)))
+  saveRDS(curr_dt, paste0(main_out, "/wtr_yr/", gsub("raw", "wtr_yr_sept_cum_precip", file)))
 
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%

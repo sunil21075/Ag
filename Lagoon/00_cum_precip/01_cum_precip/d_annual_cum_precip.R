@@ -37,7 +37,7 @@ raw_files <- c("raw_modeled_hist.rds",
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_dt <- compute_annual_cum_precip(curr_dt)
-  saveRDS(curr_dt, paste0(main_out, "/", gsub("raw", "ann_cum_precip", file)))
+  saveRDS(curr_dt, paste0(main_out, "/annual/", gsub("raw", "ann_cum_precip", file)))
  
   curr_dt <- curr_dt %>%
              group_by(location, year, model, emission, time_period) %>%
