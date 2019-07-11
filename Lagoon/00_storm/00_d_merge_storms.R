@@ -12,7 +12,7 @@ start_time <- Sys.time()
 
 ################################################################
 main_in <- "/data/hydro/users/Hossein/lagoon/00_model_level_storm/"
-out_dir <- "/data/hydro/users/Hossein/lagoon/01/storm/"
+out_dir <- "/data/hydro/users/Hossein/lagoon/01_storm_cumPrecip/storm/"
 if (dir.exists(out_dir) == F) {dir.create(path = out_dir, recursive = T)}
 ################################################################
 model_names <- c("bcc-csm1-1", "CanESM2", "CSIRO-Mk3-6-0",
@@ -51,8 +51,23 @@ hist_data_85 <- hist_data
 hist_data_45$emission <- "RCP 4.5"
 hist_data_85$emission <- "RCP 8.5"
 
-all_storms <- rbind(rcp45_data, rcp85_data, hist_data_45, hist_data_85)
-saveRDS(all_storms, paste0(out_dir, "all_storms.rds"))
+########### Read observed storm:
+#
+storm_observed <- readRDS(paste0(out_dir, "storm_observed.rds"))
+storm_observed_45 <- storm_observed
+storm_observed_85 <- storm_observed
+
+storm_observed_45$emission <- "RCP 4.5"
+storm_observed_85$emission <- "RCP 8.5"
+#
+###########
+
+all_storms <- rbind(rcp45_data, rcp85_data, 
+                    hist_data_45, hist_data_85, 
+                    storm_observed_45, storm_observed_85)
+
+saveRDS(all_storms, paste0(out_dir, "all_modeled_storms.rds"))
+
 # saveRDS(rcp45_data, paste0(out_dir, "storm_RCP45.rds"))
 # saveRDS(rcp85_data, paste0(out_dir, "storm_RCP85.rds"))
 # saveRDS(hist_data, paste0(out_dir, "storm_modeled_hist.rds"))

@@ -10,8 +10,8 @@
 
 #PBS -k o
 ##PBS -j oe
-#PBS -e /home/hnoorazar/lagoon_codes/Erin_headache/error/mod_E
-#PBS -o /home/hnoorazar/lagoon_codes/Erin_headache/error/mod_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/mod_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/mod_O
 #PBS -m abe
 
 echo
@@ -49,7 +49,7 @@ module load r/3.5.1
 # new job for each directory index, up to max arrayid
 cd ${dir_list[((${PBS_ARRAYID} - 1))]}
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/Erin_headache/00_d_read_addStorm_modeled.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01_cum_storm/storm/00_d_read_addStorm_modeled.R
 
 echo
 echo "----- DONE -----"

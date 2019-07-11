@@ -8,8 +8,8 @@
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/Erin_headache/error/merge_storm_E
-#PBS -o /home/hnoorazar/lagoon_codes/Erin_headache/error/merge_storm_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/merge_storm_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/merge_storm_O
 #PBS -m abe
 
 echo
@@ -25,7 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/Erin_headache/00_d_merge_storms.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01_cum_storm/storm/00_d_merge_storms.R
 
 echo
 echo "----- DONE -----"

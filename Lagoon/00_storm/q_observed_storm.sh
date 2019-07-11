@@ -8,8 +8,8 @@
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01/storm/error/observed_storm_E
-#PBS -o /home/hnoorazar/lagoon_codes/01/storm/error/observed_storm_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/observed_storm_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/observed_storm_O
 #PBS -m abe
 
 echo
@@ -25,7 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01/storm/d_observed_storm.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01_cum_storm/storm/00_d_observed_storm.R
 
 echo
 echo "----- DONE -----"
