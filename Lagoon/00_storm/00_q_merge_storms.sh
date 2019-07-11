@@ -13,7 +13,7 @@
 #PBS -m abe
 
 echo
-echo We are now in $PWD.
+echo We are in $PWD.
 echo
 
 module purge

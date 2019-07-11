@@ -5,17 +5,15 @@
 #PBS -l mem=2gb
 
 #PBS -l nodes=1:ppn=1,walltime=6:00:00
-#PBS -q batch
 #PBS -t 1-72
 
 #PBS -k o
-##PBS -j oe
 #PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/mod_E
 #PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/storm/error/mod_O
 #PBS -m abe
 
 echo
-echo We are in the $PWD directory
+echo We are in $PWD.
 echo
 
 cd $PBS_O_WORKDIR

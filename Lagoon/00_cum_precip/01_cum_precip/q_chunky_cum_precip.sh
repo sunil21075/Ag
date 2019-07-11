@@ -8,8 +8,8 @@
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_chunky_E
-#PBS -o /home/hnoorazar/lagoon_codes/01/cum_precip/error/cum_precip_chunky_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/error/cum_precip_chunky_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/error/cum_precip_chunky_O
 #PBS -m abe
 
 echo
@@ -25,7 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01/cum_precip/d_chunky_cum_precip.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/d_chunky_cum_precip.R
 
 echo
 echo "----- DONE -----"

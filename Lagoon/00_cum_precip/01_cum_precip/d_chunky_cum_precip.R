@@ -20,7 +20,6 @@ lagoon_source_path = "/home/hnoorazar/lagoon_codes/core_lagoon.R"
 source(lagoon_source_path)
 
 data_dir <- "/data/hydro/users/Hossein/lagoon/00_raw_data/"
-
 lagoon_out = "/data/hydro/users/Hossein/lagoon/"
 main_out <- file.path(lagoon_out, "/01_storm_cumPrecip/cum_precip/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
