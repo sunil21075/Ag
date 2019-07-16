@@ -13,6 +13,7 @@ library(gridExtra)
 library(grid)
 library(gtable)
 
+
 start_time <- Sys.time()
 
 source_path_1 = "/Users/hn/Documents/GitHub/Kirti/analogy/core_analog.R"
@@ -131,6 +132,7 @@ if (county_averages==FALSE){
 model_names <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G", 
                  "CNRM-CM5", "bcc-csm1-1-m", 
                  "GFDL-ESM2M")
+
 time_p <- c("2026_2050", "2051_2075", "2076_2095")
 sigma_bds <- c(1) # , 2
 # VL_quans = c(.25, .75)
@@ -354,7 +356,7 @@ for (sub_dir in data_sub_dirs){
         curr_feat_hist_2 <- feat_hist %>% 
                             filter(fips == most_similar_cnty_F2_fip) %>% 
                             data.table()
-                            
+
         curr_feat_hist_3 <- feat_hist %>% 
                             filter(fips == most_similar_cnty_F3_fip) %>% 
                             data.table()

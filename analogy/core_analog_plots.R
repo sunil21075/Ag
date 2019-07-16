@@ -110,17 +110,15 @@ plot_fucking_dens <- function(data_dt){
   x_lab_2 <- "annual precip. (mm)"
   y_lab <- "density"
  
-  simils <- unlist(seperate_1D_similarities(fin_data))
+  simils <- unlist(seperate_1D_similarities(data_dt))
   press_simil <- signif(simils[1] * 100, 4)
   precip_simil <- signif(simils[2] * 100, 4)
   press_ann <- paste0(press_simil, "% similarity")
   precip_ann <- paste0(precip_simil, "% similarity")
-
-  pp_label_x <- min(data_dt[, get(x_variable_1)]) + 
-                max(data_dt[, get(x_variable_1)])/4
-  prec_label_x <- min(data_dt[, get(x_variable_1)]) + 
-                  max(data_dt[, get(x_variable_2)])/4
   
+  pp_label_x <- find_x_position(data_dt, x_variable_1)
+  prec_label_x <- find_x_position(data_dt, x_variable_2)
+
   pp_y_pos <- find_y_position(data_dt, x_variable_1)
   prec_y_pos <- find_y_position(data_dt, x_variable_2)
 
@@ -141,10 +139,10 @@ plot_fucking_dens <- function(data_dt){
                   strip.text.x = element_text(size=7, face = "bold"),
                   strip.text.y = element_text(size=7, face = "bold"),
                   axis.ticks = element_line(size = .1, color = "black"),
-                  axis.text.y = element_text(size = 8, face = "bold", color = "black"),
-                  axis.text.x = element_text(size = 8, face = "bold", color="black"),
-                  axis.title.y = element_text(size = 10, face = "bold", margin = margin(t=0, r=4, b=0, l=0)),
-                  axis.title.x = element_text(size = 10, face = "bold", margin = margin(t=4, r=0, b=4, l=0)),
+                  axis.text.y = element_blank(), # element_text(size = 8, face = "bold", color = "black"),
+                  axis.text.x = element_blank(), # element_text(size = 8, face = "bold", color="black"),
+                  axis.title.y = element_blank(), # element_text(size = 10, face = "bold", margin = margin(t=0, r=4, b=0, l=0)),
+                  axis.title.x = element_text(size = 12, face = "bold", margin = margin(t=4, r=0, b=4, l=0)),
                   )
   pp <- ggplot() +
         geom_density(data = data_dt, 
@@ -170,7 +168,7 @@ plot_fucking_dens <- function(data_dt){
 
   pp_pre <- ggarrange(pp, pre, ncol=1, nrow=2, 
                       common.legend=TRUE,
-                      legend="bottom")
+                      legend="none")
   return(pp_pre)
 }
 
@@ -374,7 +372,7 @@ map_of_all_models_anlgs_freq_color <- function(a_dt, county2, title_p, target_co
                geom_polygon(aes(fill = county_count), colour = rgb(1, 1, .11, .2), size = .01) +
                geom_polygon(data = target_county_map_info, color="red", size = .75, fill=NA) +
                borders("state") +
-               geom_label_repel(data = unique_start_end,
+               ggrepel::geom_label_repel(data = unique_start_end,
                                aes(x = long, y = lat, label = subregion), 
                                fontface = "bold", box.padding = 0.2, # , 
                                label.r = 0.55, hjust=-.5, # vjust= -1,

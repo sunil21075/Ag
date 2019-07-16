@@ -85,6 +85,23 @@ seperate_1D_similarities <- function(f_dt){
   return(list(press_simil, precip_simil))
 }
 
+find_x_position <- function(f_dt, col_name){ 
+  future <- f_dt %>%
+            filter(model != "observed") %>% data.table()
+  hist <- f_dt %>%
+          filter(model == "observed") %>% data.table()
+
+  futu <- future[, get(col_name)]
+  hist <- hist[, get(col_name)]
+
+  lower <- min(c(futu, hist)) - 1 
+  upper <- max(c(futu, hist)) + 1
+  da <- density(futu, from=lower, to=upper)
+  db <- density(hist, from=lower, to=upper)
+  x_pos <- 0.5 * (median(da$x) + median(db$x))
+  return(x_pos)
+}
+
 find_y_position <- function(f_dt, col_name){ 
   future <- f_dt %>%
             filter(model != "observed") %>% data.table()
