@@ -19,14 +19,17 @@ combine_models <- function(file_name, climate_proj){
       df_NA <- df_futr %>% filter(year <= 2025 || year >= 2095) %>%
         mutate(group = NA)
       
-      df_2040 <- df_futr %>% filter(year >= 2025, year <= 2055) %>%
-        mutate(group = "2040s")
+      df_2040 <- df_futr %>% 
+                 filter(year >= 2025, year <= 2055) %>%
+                 mutate(group = "2040s")
       
-      df_2060 <- df_futr %>% filter(year >= 2045, year <= 2075) %>%
-        mutate(group = "2060s")
+      df_2060 <- df_futr %>% 
+                 filter(year >= 2045, year <= 2075) %>%
+                 mutate(group = "2060s")
       
-      df_2080 <- df_futr %>% filter(year >= 2065, year <= 2095) %>%
-        mutate(group = "2080s")
+      df_2080 <- df_futr %>% 
+                 filter(year >= 2065, year <= 2095) %>%
+                 mutate(group = "2080s")
       
       x <- nrow(df_2080)
       

@@ -16,8 +16,9 @@ combine_models_fluxes <- function(file_name, climate_proj){
       df_futr <- readRDS(paste0("data/pruett/runoff/RDS/", model, "_", climate_proj, "/", file_name, ".RDS")) %>% 
         filter(year >= 2016)
       
-      df_NA <- df_futr %>% filter(year <= 2025 || year >= 2095) %>%
-        mutate(group = NA)
+      df_NA <- df_futr %>% 
+               filter(year <= 2025 || year >= 2095) %>%
+               mutate(group = NA)
       
       df_2040 <- df_futr %>% filter(year >= 2025, year <= 2055) %>%
         mutate(group = "2040s")

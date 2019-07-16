@@ -26,6 +26,15 @@ B <- B %>%
      group_by(location, year) %>%
      summarise_at(.funs = funs(mean(., na.rm=TRUE)), vars(CumDDinF))%>% 
      data.table()
+
+a <- observed_dt %>%
+     group_by(location) %>%
+     summarise_at(vars(annual_cum_precip), funs(mean(., na.rm=TRUE)))%>%
+     data.table()
+b <- observed_dt %>% 
+     group_by(location)%>% 
+     summarise(mean=mean(annual_cum_precip), sd=sd(annual_cum_precip))
+
 ######## 
 # Chnage name of a columns
 colnames(data)[colnames(data)=="old_name"] <- "new_name"

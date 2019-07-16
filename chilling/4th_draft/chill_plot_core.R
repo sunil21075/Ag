@@ -5,7 +5,7 @@ safe_box_plot <- function(data, due, chill_start){
   box_width = 0.25
   
   df <- data.frame(data)
-  df <- (df %>% group_by(time_period, scenario, warm_cold))
+  df <- df %>% group_by(time_period, scenario, warm_cold)
   medians <- (df %>% summarise(med = median(quan_90)))
   medians_vec <- medians$med
   
@@ -47,18 +47,10 @@ safe_box_plot <- function(data, due, chill_start){
             scale_x_discrete(breaks = c("Historical", "2025_2050", "2051_2075", "2076_2099"),
                              labels = categ_lab)  +
             geom_text(data = medians, 
-<<<<<<< HEAD:chilling/4th_draft/chill_plot_core.R
                       aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
                           size=4.2, 
                           position =  position_dodge(.09),
-                          vjust = 0.1, hjust=1.45) + 
-=======
-                  aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-                      size=4.2, 
-                      position =  position_dodge(.09),
-                      vjust = 0.1,
-                      hjust=1.45) + 
->>>>>>> 7fe27badee5edc6ec0f2094d8a9c29b50e65b086:chilling/4th_draft/chill_plot_core.R
+                          vjust = 0.1, hjust=1.45) +
             ggtitle(lab=paste0("Safe chill accumulation by ", due, " 1st"),
                     subtitle = paste0("chill season started on ", chill_start)) 
   

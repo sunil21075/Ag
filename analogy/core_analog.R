@@ -17,8 +17,8 @@
 options(digits=9)
 options(digit=9)
 
-source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
-source(source_path)
+# source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
+# source(source_path)
 
 ####################################################################
 ##                                                                ##
@@ -63,16 +63,12 @@ similarities_2d <- function(f_dt){
   return(coeff)
 }
 
-seperate_1D_similarities <- function(f_dt){
-  ###########
-  ###########
+seperate_1D_similarities <- function(f_dt){ 
   future <- f_dt %>%
-            filter(model != "observed") %>%
-            data.table()
+            filter(model != "observed") %>% data.table()
   
   hist <- f_dt %>%
-          filter(model == "observed") %>%
-          data.table()
+          filter(model == "observed") %>% data.table()
 
   future_press <- future$CumDDinF_Aug23
   hist_press <- hist$CumDDinF_Aug23
@@ -89,12 +85,29 @@ seperate_1D_similarities <- function(f_dt){
   return(list(press_simil, precip_simil))
 }
 
+find_y_position <- function(f_dt, col_name){ 
+  future <- f_dt %>%
+            filter(model != "observed") %>% data.table()
+  hist <- f_dt %>%
+          filter(model == "observed") %>% data.table()
+
+  futu <- future[, get(col_name)]
+  hist <- hist[, get(col_name)]
+
+  lower <- min(c(futu, hist)) - 1 
+  upper <- max(c(futu, hist)) + 1
+  da <- density(futu, from=lower, to=upper)
+  db <- density(hist, from=lower, to=upper)
+  y_pos <- max(max(da$y), max(db$y))
+  return(y_pos * .9)
+}
+
 measure_1D_similarity <- function(a, b){
   # define limits of a common grid, adding a buffer so that tails aren't cut off
   lower <- min(c(a, b)) - 1 
   upper <- max(c(a, b)) + 1
 
-  # generate kernel densities
+  # Generate kernel densities
   da <- density(a, from=lower, to=upper)
   db <- density(b, from=lower, to=upper)
   d <- data.frame(x=da$x, a=da$y, b=db$y)
@@ -103,9 +116,9 @@ measure_1D_similarity <- function(a, b){
   d$w <- pmin(d$a, d$b)
 
   # integrate areas under curves
-
-  total <- integrate.xy(d$x, d$a) + integrate.xy(d$x, d$b)
-  intersection <- integrate.xy(d$x, d$w)
+  total <- sfsmisc::integrate.xy(d$x, d$a) + 
+           sfsmisc::integrate.xy(d$x, d$b)
+  intersection <- sfsmisc::integrate.xy(d$x, d$w)
 
   # compute overlap coefficient
   overlap <- 2 * intersection / total

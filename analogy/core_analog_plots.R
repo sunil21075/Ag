@@ -84,7 +84,8 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
                      panel.spacing.x =unit(.75, "pt"))
 
   plt <- ggplot(data = plot_data) +
-         geom_point(aes(x = CumDDinF_Aug23, y = yearly_precip, fill = time_period),
+         geom_point(aes(x = CumDDinF_Aug23, y = yearly_precip, 
+                        fill = time_period),
                     alpha = .5, shape = 21, size=9) +
          ylab("annual precip. (mm)") +
          xlab("pest pressure") + # Cum. DD (F) by Aug 23
@@ -95,6 +96,84 @@ plot_f_h_2_features_1_model <- function(f_data, hist_data){
   return(plt)
 }
 
+plot_fucking_dens <- function(data_dt){
+  color_ord = c("red", "dodgerblue") #, "olivedrab4", grey47
+
+  if("CumDDinF_Aug23" %in% colnames(data_dt)){
+     x_variable_1 <- "CumDDinF_Aug23"
+     x_variable_2 <- "yearly_precip"
+     } else {
+        x_variable_1 <- "mean_CumDDinF_Aug23"
+        x_variable_2 <- "mean_yearly_precip"
+  }
+  x_lab_1 <- "pest pressure"
+  x_lab_2 <- "annual precip. (mm)"
+  y_lab <- "density"
+ 
+  simils <- unlist(seperate_1D_similarities(fin_data))
+  press_simil <- signif(simils[1] * 100, 4)
+  precip_simil <- signif(simils[2] * 100, 4)
+  press_ann <- paste0(press_simil, "% similarity")
+  precip_ann <- paste0(precip_simil, "% similarity")
+
+  pp_label_x <- min(data_dt[, get(x_variable_1)]) + 
+                max(data_dt[, get(x_variable_1)])/4
+  prec_label_x <- min(data_dt[, get(x_variable_1)]) + 
+                  max(data_dt[, get(x_variable_2)])/4
+  
+  pp_y_pos <- find_y_position(data_dt, x_variable_1)
+  prec_y_pos <- find_y_position(data_dt, x_variable_2)
+
+  the_th <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                  panel.border = element_rect(fill=NA, size=.3),
+                  panel.grid.major = element_line(size = 0.05),
+                  panel.grid.minor = element_blank(),
+                  panel.spacing = unit(.35, "line"),
+                  legend.position = "bottom", 
+                  legend.key.size = unit(.7, "line"),
+                  legend.spacing.x = unit(.1, 'line'),
+                  panel.spacing.y = unit(.5, 'line'),
+                  legend.text = element_text(size = 7, face="bold"),
+                  legend.margin = margin(t=.2, r=0, b=.2, l=4, unit = 'line'),
+                  legend.title = element_blank(),
+                  plot.title = element_text(size = 7, face = "bold"),
+                  plot.subtitle = element_text(face = "bold"),
+                  strip.text.x = element_text(size=7, face = "bold"),
+                  strip.text.y = element_text(size=7, face = "bold"),
+                  axis.ticks = element_line(size = .1, color = "black"),
+                  axis.text.y = element_text(size = 8, face = "bold", color = "black"),
+                  axis.text.x = element_text(size = 8, face = "bold", color="black"),
+                  axis.title.y = element_text(size = 10, face = "bold", margin = margin(t=0, r=4, b=0, l=0)),
+                  axis.title.x = element_text(size = 10, face = "bold", margin = margin(t=4, r=0, b=4, l=0)),
+                  )
+  pp <- ggplot() +
+        geom_density(data = data_dt, 
+                     aes(x=get(x_variable_1), fill=model, color=model), 
+                     alpha = 0.7) +
+        scale_color_manual(values=color_ord) +
+        labs(x=x_lab_1, y=y_lab) +
+        geom_label(aes(x=pp_label_x , y=pp_y_pos, label = press_ann),
+                   size = 5, fill="white",
+                   label.padding = unit(0.55, "lines")) +
+        the_th
+  
+  pre <- ggplot()+ 
+         geom_density(data = data_dt, 
+                      aes(x=get(x_variable_2), fill=model, color=model), 
+                          alpha = 0.7) + 
+         scale_color_manual(values=color_ord) +
+         labs(x=x_lab_2, y=y_lab) +
+         geom_label(aes(x=prec_label_x , y=prec_y_pos, label = precip_ann),
+                   size = 5, fill="white",
+                   label.padding = unit(0.55, "lines")) +
+        the_th
+
+  pp_pre <- ggarrange(pp, pre, ncol=1, nrow=2, 
+                      common.legend=TRUE,
+                      legend="bottom")
+  return(pp_pre)
+}
+
 plot_the_margins_cowplot <- function(data_dt, contour_plot){
   color_ord = c("red", "dodgerblue") #, "olivedrab4", grey47
 
@@ -102,15 +181,18 @@ plot_the_margins_cowplot <- function(data_dt, contour_plot){
      x_variable_1 <- "CumDDinF_Aug23"
      x_variable_2 <- "yearly_precip"
      } else {
-         x_variable_1 <- "mean_CumDDinF_Aug23"
-         x_variable_2 <- "mean_yearly_precip"
+        x_variable_1 <- "mean_CumDDinF_Aug23"
+        x_variable_2 <- "mean_yearly_precip"
   }
   DD_plt <- cowplot::axis_canvas(contour_plot, axis="x") + 
-            geom_density(data = data_dt, aes(x=get(x_variable_1), fill=model, color=model), 
+            geom_density(data = data_dt, 
+                         aes(x=get(x_variable_1), fill=model, color=model), 
                          alpha = 0.7) +
             scale_color_manual(values=color_ord)
+  
   preip_plt <- cowplot::axis_canvas(contour_plot, axis="y", coord_flip=TRUE) + 
-               geom_density(data = data_dt, aes(x=get(x_variable_2), fill=model, color=model), 
+               geom_density(data = data_dt, 
+                            aes(x=get(x_variable_2), fill=model, color=model), 
                             alpha = 0.7) + 
                coord_flip() +
                scale_color_manual(values=color_ord)

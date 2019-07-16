@@ -5,6 +5,58 @@ options(digits=9)
 source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 source(source_path)                                                    #
 ########################################################################
+cluster_yr_time_series <- function(observed_dt, no_clusters=4){
+  observed_dt <- subset(observed_dt, select=c(location, 
+                                              year, 
+                                              annual_cum_precip))
+  
+  observed_dt <- reshape(observed_dt, idvar = "location", 
+                                      timevar = "year", 
+                                      direction = "wide")
+  locations <- observed_dt$location
+  observed_dt <- within(observed_dt, remove(location))
+
+  ts_clusters <- kmeans(observed_dt, centers = no_clusters, nstart = 25)
+  return(ts_clusters)
+}
+
+cluster_yr_avging <- function(observed_dt, scale=TRUE, no_clusters=4){
+  #
+  # max_clusters: maximum number of clusters to try and pick
+  #               the best.
+  #
+  if (scale == FALSE){
+    observed_dt <- observed_dt %>% 
+                 group_by(location)%>% 
+                 summarise(target_col = mean(annual_cum_precip))%>% 
+                 data.table()
+     } else {
+      observed_dt <- observed_dt %>% 
+                 group_by(location)%>% 
+                 summarise(mean_annual_precip = mean(annual_cum_precip),
+                           sd = sd(annual_cum_precip))%>%
+                 mutate(target_col = (mean_annual_precip/sd)) %>% 
+                 data.table()
+  }
+  # for_elbow = data.table(no_clusters = c(1:max_clusters),
+  #                        total_within_cluster_ss = rep(-666, max_clusters))
+  set.seed(100)
+  clusters <- kmeans(observed_dt$target_col, 
+                     centers = no_clusters, 
+                     nstart = 25)
+
+  x <- sapply(observed_dt$location, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  # for_elbow[k, "total_within_cluster_ss"] <- clusters$betweenss
+  clusters = data.table(clusters = clusters$cluster,
+                        lat = lat, long=long)
+  return(clusters)
+}
+
+
+#********************************************************
 design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
   locations <- unique(data_tbl$location)
   models <- unique(data_tbl$model)

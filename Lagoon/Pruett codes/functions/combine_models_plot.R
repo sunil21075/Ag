@@ -9,13 +9,14 @@ source("functions/wsu_colors.R")
 #### SET DATA ####
 
 # df <- combine_models("data_48.46875_-122.40625", climate_proj = "rcp85") %>% filter(precip >=0) # DRY
-df <- combine_models("data_48.71875_-121.09375", climate_proj = "rcp85") %>% filter(precip >=0) # WET
+df <- combine_models("data_48.71875_-121.09375", climate_proj = "rcp85") %>% 
+      filter(precip >=0) # WET
 
 # FOR Multiple climate projections
 df <- map2("data_48.46875_-122.40625", c("rcp45", "rcp85"), combine_models) %>% 
-  bind_rows() %>% 
-  mutate(climate_proj = as.factor(climate_proj)) %>% 
-  filter(precip >=0) # DRY
+      bind_rows() %>% 
+      mutate(climate_proj = as.factor(climate_proj)) %>% 
+      filter(precip >=0) # DRY
 
 df <- map2("data_48.46875_-121.09375", c("rcp45", "rcp85"), combine_models) %>% 
   bind_rows() %>% 
@@ -259,16 +260,16 @@ df_cum_precip <- df %>% mutate(water_date = time_stamp %m+% months(3),
                               "-", month(time_stamp), "-", day(time_stamp))))
 
 p <- df_cum_precip %>% filter(!is.na(group)) %>% 
-  ggplot() +
-  geom_line(aes(x = CDate, y = cum_precip_median, color = climate_proj, linetype = group)) +
-  geom_ribbon(aes(x = CDate, ymin = cum_precip_low, ymax = cum_precip_high, fill = climate_proj), alpha = 0.25) +
-  labs(y = "Mean Cumalitive Weekly Precip (mm)") +
-  theme(legend.title = element_blank(),
-        axis.title.x = element_blank(),
-        legend.position = c(.75, 0.15)) +
-  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
-  scale_color_wsu() +
-  scale_fill_wsu() 
+     ggplot() +
+     geom_line(aes(x = CDate, y = cum_precip_median, color = climate_proj, linetype = group)) +
+     geom_ribbon(aes(x = CDate, ymin = cum_precip_low, ymax = cum_precip_high, fill = climate_proj), alpha = 0.25) +
+     labs(y = "Mean Cumalitive Weekly Precip (mm)") +
+     theme(legend.title = element_blank(),
+           axis.title.x = element_blank(),
+           legend.position = c(.75, 0.15)) +
+     scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+     scale_color_wsu() +
+     scale_fill_wsu() 
 
 save_plot("figures/cum_precip_wet.pdf", p, base_aspect_ratio = 1.618)
 
@@ -339,23 +340,23 @@ p_monthly_dry <- df %>% group_by(month, year, group, model, climate_proj) %>%
 # save_plot("figures/dry_days_models.pdf", p, base_aspect_ratio = 1.1, scale=2.75)
 
 p_octmar_dry <- df %>% mutate(water_year = year(time_stamp + month(3))) %>%
-  group_by(group, water_year, model, climate_proj) %>%
-  filter(month >= 10 | month <= 3, precip == 0, !is.na(group)) %>%
-  summarise(dry_days = n()) %>%
-  ggplot() +
-  geom_boxplot(aes(x = group, y = dry_days, color = group, fill = group), alpha = 0.75) +
-  # geom_jitter(aes(x = group, y = total_precip, color = group), alpha = 0.5, width = 0.05) +
-  theme_classic(base_size = size) +
-  # facet_grid(.~month_name, switch = "x") +
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.title.y = element_blank(),
-        legend.title = element_blank(),
-        legend.position = "none") +
-  scale_color_wsu() +
-  scale_fill_wsu() +
-  labs(x = "Oct - Mar") +
-  ylim(0, 110)
+                group_by(group, water_year, model, climate_proj) %>%
+                filter(month >= 10 | month <= 3, precip == 0, !is.na(group)) %>%
+                summarise(dry_days = n()) %>%
+                ggplot() +
+                geom_boxplot(aes(x = group, y = dry_days, color = group, fill = group), alpha = 0.75) +
+                # geom_jitter(aes(x = group, y = total_precip, color = group), alpha = 0.5, width = 0.05) +
+                theme_classic(base_size = size) +
+                # facet_grid(.~month_name, switch = "x") +
+                theme(axis.text.x = element_blank(),
+                      axis.ticks.x = element_blank(),
+                      axis.title.y = element_blank(),
+                      legend.title = element_blank(),
+                      legend.position = "none") +
+                scale_color_wsu() +
+                scale_fill_wsu() +
+                labs(x = "Oct - Mar") +
+                ylim(0, 110)
 
 p_dry_dry <- plot_grid(p_monthly_dry, p_octmar_dry, rel_widths = c(5.5, 1), align = 'vh', nrow = 1, axis = "b")
 
@@ -367,13 +368,21 @@ save_plot("figures/dry_days.pdf", p_dry, base_aspect_ratio = 1.5, scale = 2, lim
 #### Histogram of precip ####
 
 p <- ggplot(filter(df, !is.na(group))) +
-  geom_density(aes(precip, color = group), alpha = 0.1) +
-  ylim(0, 0.10) +
-  xlim(0, 25) +
-  scale_fill_wsu() +
-  scale_color_wsu() +
-  # facet_grid(group~.) +
-  theme_classic() +
-  theme(legend.position = "bottom")
+     geom_density(aes(precip, color = group), alpha = 0.1) +
+     ylim(0, 0.10) +
+     xlim(0, 25) +
+     scale_fill_wsu() +
+     scale_color_wsu() +
+     # facet_grid(group~.) +
+     theme_classic() +
+     theme(legend.position = "bottom")
 
-save_plot("figures/precip_density_dry_zoom.pdf", p, base_aspect_ratio = 1.618, scale = 2)
+save_plot("figures/precip_density_dry_zoom.pdf", 
+          p, 
+          base_aspect_ratio = 1.618, 
+          scale = 2)
+
+
+
+
+
