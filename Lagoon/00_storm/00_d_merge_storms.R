@@ -22,7 +22,6 @@ model_names <- c("bcc-csm1-1", "CanESM2", "CSIRO-Mk3-6-0",
                  "MIROC-ESM-CHEM", "BNU-ESM", "CNRM-CM5",
                  "GFDL-ESM2M", "inmcm4", "IPSL-CM5B-LR",
                  "MRI-CGCM3")
-
 emission <- c("historical", "rcp45", "rcp85")
 
 rcp45_data <- data.table()
@@ -32,8 +31,8 @@ hist_data <- data.table()
 for (model in model_names){
   current_45 <- readRDS(paste0(main_in, model, "/rcp45/", "storm.rds"))
   current_85 <- readRDS(paste0(main_in, model, "/rcp85/", "storm.rds"))
-  current_hist<-readRDS(paste0(main_in, model, "/historical/", "storm.rds"))
-
+  current_hist <- readRDS(paste0(main_in, model, "/historical/", "storm.rds"))
+  print (dim(current_45))
   current_45$model <- gsub("-", "_", current_45$model)
   current_85$model <- gsub("-", "_", current_85$model)
   current_hist$model <- gsub("-", "_", current_hist$model)
@@ -68,10 +67,12 @@ all_storms <- rbind(rcp45_data, rcp85_data,
 
 saveRDS(all_storms, paste0(out_dir, "all_modeled_storms.rds"))
 
+print ("Do not be surprised, it is fast indeed. No Error!")
 # saveRDS(rcp45_data, paste0(out_dir, "storm_RCP45.rds"))
 # saveRDS(rcp85_data, paste0(out_dir, "storm_RCP85.rds"))
 # saveRDS(hist_data, paste0(out_dir, "storm_modeled_hist.rds"))
-
+end_time <- Sys.time()
+print( end_time - start_time)
 
 
 

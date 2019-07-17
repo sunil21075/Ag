@@ -27,15 +27,17 @@ setnames(local_295, old=c("latitude", "longitude"), new=c("lat", "long"))
 ###########                                                          ###########
 ################################################################################
 
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Growing_tree_lat_long_CSV_files/"
+in_dir <- "/Users/hn/Documents/GitHub/Kirti/wareHouse/Growing_tree_lat_long_CSV_files/"
 plot_dir <- "/Users/hn/Desktop/"
 
 #####
-##### The locations of all farms in the US given by Kiriti's email xlsx file
+##### The locations of all farms 
+##### in the US given by Kiriti's 
+##### email xlsx file
 #####
 all_west <- read.table(paste0(in_dir, "lat_long_Grid.csv"), header=TRUE, sep=",")
 grids <- read.table(paste0(in_dir, "TreeFruitGrids.csv"), header=TRUE, sep=",")
-setnames(all_west, old=c("vicidgeo"), new = c("vicid"))
+setnames(all_west, old=c("vicidgeo"), new=c("vicid"))
 
 west_0_percent <- merge(all_west, grids) %>% filter(SumTreeFruit > 0)
 west_0_percent <- within(west_0_percent, remove(vicid, SumTreeFruit))
@@ -87,30 +89,40 @@ write.table(x = all_west_locs_5,
 # test <- read.delim(file = paste0(main_out, "file_list_1_percent.txt"), header = F)
 # test <- as.vector(test$V1)
 
-################################################################################
+########################################################################
 
-####################      Form location groups, Warmer, cooler, Oregon
+##############      Form location groups, Warmer, cooler, Oregon
 
-################################################################################
+########################################################################
 all_west_locs <- paste0("data_", all_west$lat, "_", all_west$long)
-y <- sapply(all_west_locs, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+y <- sapply(all_west_locs, 
+            function(x) strsplit(x, "_")[[1]], 
+            USE.NAMES=FALSE)
 west_lats = y[2, ]
 west_long = y[3, ]
 all_west_lat_long <- data.table(west_lats, west_long)
-setnames(all_west_lat_long, old=c("west_lats", "west_long"), new=c("latitude", "longitude"))
+setnames(all_west_lat_long, 
+         old=c("west_lats", "west_long"), 
+         new=c("latitude", "longitude"))
 
 pm_dir <- "/Users/hn/Documents/GitHub/Kirti/codling_moth/code/parameters/"
 WA_LocationGroups <- read.csv(paste0(pm_dir, "LocationGroups.csv"))
-setnames(WA_LocationGroups, old=c("latitude", "longitude"), new=c("lat", "long"))
+setnames(WA_LocationGroups, 
+         old=c("latitude", "longitude"), 
+         new=c("lat", "long"))
 
-all_north_west_for_chill <- subset(merged_locs_0_percent, select=c("lat", "long"))
-all_north_west_for_chill <- join(x=all_north_west_for_chill, y=WA_LocationGroups, type = "left", match = "all")
+all_north_west_for_chill <- subset(merged_locs_0_percent,
+                                   select=c("lat", "long"))
 
+all_north_west_for_chill <- join(x=all_north_west_for_chill, 
+                                 y=WA_LocationGroups, 
+                                 type = "left", match = "all")
 
 all_north_west_for_chill[is.na(all_north_west_for_chill)] <- 3
 all_north_west_for_chill$location <- paste0(all_north_west_for_chill$lat, "_", 
                                             all_north_west_for_chill$long)
-all_north_west_for_chill <- all_north_west_for_chill %>% filter(!(location %in%  monata_sites_lat_long$location))
+all_north_west_for_chill <- all_north_west_for_chill %>% 
+                            filter(!(location %in% monata_sites_lat_long$location))
 
 new_pm_dir <- "/Users/hn/Documents/GitHub/Kirti/Chilling/parameters/"
 
@@ -118,13 +130,15 @@ write.table(x = all_north_west_for_chill,
             file = file.path(new_pm_dir, "LocationGroups_NoMontana.csv"),
             row.names = F, col.names = T, sep=",")
 
-################################################################################
-####################                 USA Locations
-################################################################################
+################################################################
+##########                 USA Locations
+################################################################
 all_us_locations <- read.delim(file = paste0(param_dir, "all_us_locations_list.txt"), header = F)
 all_us_locations <- as.vector(all_us_locations$V1)
 
-x <- sapply(all_us_locations, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+x <- sapply(all_us_locations, 
+            function(x) strsplit(x, "_")[[1]], 
+            USE.NAMES=FALSE)
 us_lats = x[1, ]
 us_long = x[2, ]
 all_us_locations <- data.table(us_lats, us_long)
@@ -135,11 +149,11 @@ all_us_locations$long = as.numeric(all_us_locations$us_long)
 all_us_locations$lat = as.numeric(all_us_locations$lat)
 all_us_locations$long = as.numeric(all_us_locations$long)
 
-#############################################################################
+######################################################
 
 #                   Map PLOTS
 
-#############################################################################
+#######################################################
 states <- map_data("state")
 
 all_us_map <- all_us_locations %>%  

@@ -34,7 +34,7 @@ current_out <- paste0(main_out, "observed")
 if (dir.exists(current_out) == F) {dir.create(path = current_out, recursive = T)}
 
 ######################################################################
-local_files <- read.csv(file = paste0(param_dir, "tri_states.csv"), 
+local_files <- read.csv(file = paste0(param_dir, "three_counties.csv"), 
                         header = T, as.is=T)
 
 local_files$location <- paste0(paste0("data_", local_files$location))

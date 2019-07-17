@@ -4,8 +4,10 @@
 #PBS -N cum_precip_ann
 #PBS -l mem=16gb
 
-#PBS -l nodes=1:ppn=1,walltime=2:00:00
-#PBS -q fast
+## PBS -l nodes=1:ppn=1,walltime=2:00:00
+## PBS -q fast
+
+#PBS -l nodes=1:ppn=1,walltime=6:00:00
 
 #PBS -k o
 #PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/error/cum_precip_ann_E

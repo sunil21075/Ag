@@ -36,7 +36,9 @@ b <- observed_dt %>%
      summarise(mean=mean(annual_cum_precip), sd=sd(annual_cum_precip))
 
 ######## 
-# Chnage name of a columns
+# Change name of a columns
+# rename
+#
 colnames(data)[colnames(data)=="old_name"] <- "new_name"
 setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another_new_name"))
 
@@ -60,6 +62,9 @@ quan_per_feb <- feb_result %>%
 
 # count number of NA in each column
 all_data_dt[, lapply(.SD, function(x) sum(is.na(x))), .SDcols = 1:9]
+
+# sort/order two vectors simultaneously
+vector2[order(vector1, decreasing=TRUE)]
 
 
 # change order of columns of data table
@@ -165,7 +170,9 @@ colSums(is.na(dt)|dt == '')
 
 strsplit vector 
 
-x <- sapply(all_us_locations_cod_moth, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
+x <- sapply(all_us_locations_cod_moth, 
+            function(x) strsplit(x, "_")[[1]], 
+            USE.NAMES=FALSE)
 lat = x[1, ]
 long = x[2, ]
 
@@ -436,3 +443,65 @@ sqldf("select Gene, max(Value) as Value from df group by Gene", drv = 'SQLite')
 # ave
 df[as.logical(ave(df$Value, df$Gene, FUN = function(x) x == max(x))),]
 ################################################################
+# followigs work equal
+# OP's input
+
+########## ONE
+clusterDT = data.table(old_label = 1:2, centroid = c(9.5, 1.5))
+
+# overwrite labels by sorting and assigning row number
+clusterDT[order(centroid), new_label := .I]
+
+# update data
+data[, cluster := clusterDT[.SD, on=.(old_label = cluster), x.new_label]]
+
+     city population cluster
+1:    NYC         10       2
+2:     LA          9       2
+3: Hawaii          1       1
+4:  Essex          2       1
+
+####### TWO 
+
+dt <- data.table(city = c("NYC", "LA", "Hawaii", "Essex"),
+                 population = c(10, 9, 1, 2),
+                 cluster = c(1, 1, 2, 2)
+) %>% group_by(cluster) %>% #create the centroids variable
+  mutate(centroid = mean(population)) %>% ungroup()
+
+# implicitly rank the centroids, assigning increasing integers to decerasing vals
+#assign the result as the cluster
+dt %>% mutate("cluster" = frankv(centroid, ties.method = "dense"))
+
+# A tibble: 4 x 4
+  city   population cluster centroid
+  <chr>       <dbl>   <int>    <dbl>
+1 NYC            10       2      9.5
+2 LA              9       2      9.5
+3 Hawaii          1       1      1.5
+4 Essex           2       1      1.5
+
+##############################################
+# Same as above
+  
+# 1st method:
+A <- clusters %>% 
+       mutate("cluster" = frankv(centroid, 
+                                 ties.method = "dense"))
+
+# 2nd method
+
+clusterDT = data.table(old_label = 1:4, 
+                       centroid = as.vector(clusters_obj$centers))
+clusterDT[order(centroid), new_label := .I]
+
+B <- clusters
+B[, cluster := clusterDT[.SD, on=.(old_label = cluster_label), x.new_label]]
+
+
+
+labels <- c("c1_mean", "c2_mean", "c3_mean", "c4_mean")
+labels <- labels[order(cluster_means, decreasing=TRUE)]
+order(cluster_means)
+
+

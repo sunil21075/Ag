@@ -2,8 +2,8 @@ options(digits=9)
 options(digits=9)
 
 ########################################################################
-source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
-source(source_path)                                                    #
+# source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
+# source(source_path)                                                    #
 ########################################################################
 cluster_yr_time_series <- function(observed_dt, no_clusters=4){
   observed_dt <- subset(observed_dt, select=c(location, 
@@ -20,41 +20,59 @@ cluster_yr_time_series <- function(observed_dt, no_clusters=4){
   return(ts_clusters)
 }
 
-cluster_yr_avging <- function(observed_dt, scale=TRUE, no_clusters=4){
+cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   #
   # max_clusters: maximum number of clusters to try and pick
   #               the best.
   #
   if (scale == FALSE){
     observed_dt <- observed_dt %>% 
-                 group_by(location)%>% 
-                 summarise(target_col = mean(annual_cum_precip))%>% 
-                 data.table()
+                   group_by(location) %>% 
+                   summarise(target_col = mean(annual_cum_precip)) %>% 
+                   data.table()
      } else {
       observed_dt <- observed_dt %>% 
-                 group_by(location)%>% 
-                 summarise(mean_annual_precip = mean(annual_cum_precip),
-                           sd = sd(annual_cum_precip))%>%
-                 mutate(target_col = (mean_annual_precip/sd)) %>% 
-                 data.table()
+                     group_by(location)%>% 
+                     summarise(mean_annual_precip = mean(annual_cum_precip),
+                               sd = sd(annual_cum_precip))%>%
+                     mutate(target_col = (mean_annual_precip/sd)) %>% 
+                     data.table()
   }
   # for_elbow = data.table(no_clusters = c(1:max_clusters),
   #                        total_within_cluster_ss = rep(-666, max_clusters))
   set.seed(100)
-  clusters <- kmeans(observed_dt$target_col, 
-                     centers = no_clusters, 
-                     nstart = 25)
+  clusters_obj <- kmeans(observed_dt$target_col, 
+                         centers = no_clusters, 
+                         nstart = 50)
 
-  x <- sapply(observed_dt$location, function(x) strsplit(x, "_")[[1]], USE.NAMES=FALSE)
-  lat = x[1, ]
-  long = x[2, ]
-  
   # for_elbow[k, "total_within_cluster_ss"] <- clusters$betweenss
-  clusters = data.table(clusters = clusters$cluster,
-                        lat = lat, long=long)
-  return(clusters)
-}
+  clusters = data.table(location = observed_dt$location,
+                        ann_prec_mean = observed_dt$target_col,
+                        cluster_label = clusters_obj$cluster
+                        )
 
+  ##### Sort according descending order 4 is most rainy, 1 least
+  # centroids_dt <- data.table(centroid=as.vector(clusters_obj$centers),
+  #                            cluster_label = 1:no_clusters)
+  # clusters <- merge(clusters, centroids_dt, 
+  #                   by="cluster_label", all.x=TRUE)
+  
+  # 1st method
+  clusters <- clusters %>% 
+              group_by(cluster_label) %>% #create the centroids variable
+              mutate(centroid = mean(ann_prec_mean)) %>%
+              # ungroup() %>%
+              data.table()
+  
+  # re-order cluster labels so that the max label 
+  # corresponds to max rain and so on
+  clusters <- clusters %>% 
+              mutate("cluster" = frankv(centroid, 
+                                 ties.method = "dense"))
+
+  clusters <- within(clusters, remove(cluster_label))
+  return(list(clusters, clusters_obj))
+}
 
 #********************************************************
 design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
@@ -375,10 +393,9 @@ put_time_period <- function(data_tb, observed){
                                                 year %in% c(2006:2025) ~ "2006-2025",
                                                 year %in% c(2026:2050) ~ "2026-2050",
                                                 year %in% c(2051:2075) ~ "2051-2075",
-                                                year %in% c(2076:2099) ~ "2076-2099",
-                                                )
-                          ) %>%
-                   data.table()
+                                                year %in% c(2076:2099) ~ "2076-2099")
+                        ) %>%
+                 data.table()
   }
   return(data_tb)
 }
