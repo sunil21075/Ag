@@ -62,6 +62,7 @@ shinyServer(function(input, output, session) {
                                                                    current_state_name, "_", 
                                                                    current_county_name, 
                                                                    ".png")
+                                              curr_emission <- input$arrow_emission
                                                } else {
                                                  image_name <- paste0("triple_", 
                                                                       current_county_name, "_",
@@ -69,11 +70,13 @@ shinyServer(function(input, output, session) {
                                                                       input$climate_model, "_",
                                                                       input$time_period,
                                                                       ".png")
+                                                 curr_emission <- input$emission
                                              }
                                              file_dir_string <- paste0("./plots/analog_plots/", 
-                                                                       "1_sigma_", input$emission, "/", 
+                                                                       "1_sigma_", 
+                                                                       curr_emission, "/", 
                                                                        image_name)
-                                             
+
                                              filename <- normalizePath(file.path(file_dir_string))
                                              # Return a list containing the filename and alt text
                                               list(src = filename, width = 600, height = 600)

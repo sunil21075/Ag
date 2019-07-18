@@ -201,7 +201,8 @@ navbarPage(title = div("",
                                                                             "Generation 3" = "Gen3", 
                                                                             "Generation 4" = "Gen4"),
                                                              selected = "Gen1"),
-                                                 radioButtons("adult_percent", label = h4(tags$b("Select % Population that has completed the growth stage")),
+                                                 radioButtons("adult_percent", 
+                                                              label = h4(tags$b("Select % Population that has completed the growth stage")),
                                                               choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
                                                               selected = "0.25", inline = TRUE
                                                               )
@@ -226,7 +227,8 @@ navbarPage(title = div("",
                                                                             "Generation 3" = "Gen3", 
                                                                             "Generation 4" = "Gen4"),
                                                              selected = "Gen1"),
-                                                 radioButtons("adult_percent_diff", label = h4(tags$b("Select % Population that has completed the growth stage")),
+                                                 radioButtons("adult_percent_diff", 
+                                                              label = h4(tags$b("Select % Population that has completed the growth stage")),
                                                               choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
                                                               selected = "0.25", inline = TRUE)
                                                  )
@@ -315,7 +317,8 @@ navbarPage(title = div("",
                                                                             "Generation 3" = "Gen3", 
                                                                             "Generation 4" = "Gen4"),
                                                              selected = "Gen1"),
-                                                 radioButtons("larvae_percent_diff", label = h4(tags$b("Select Proportion of Eggs hatched")),
+                                                 radioButtons("larvae_percent_diff", 
+                                                              label = h4(tags$b("Select Proportion of Eggs hatched")),
                                                               choices = list("25 %" = "0.25", 
                                                                              "50 %" = "0.5", 
                                                                              "75 %" = "0.75"),
@@ -478,6 +481,14 @@ navbarPage(title = div("",
                                                                                    choices = detail_levels, 
                                                                                    selected = detail_levels[1]
                                                                                    ),
+                                                                       conditionalPanel(condition = "input.detail_level == 'all_models'",
+                                                                                        radioButtons(inputId = "arrow_emission",
+                                                                                                     label = tags$b("Scenario"),
+                                                                                                     choices = emissions, 
+                                                                                                     selected = emissions[1]
+                                                                                                     )
+                                                                                        ),
+
                                                                        # Only show this panel if the level of detail is more_details
                                                                        conditionalPanel(condition = "input.detail_level == 'more_details'",
                                                                                         radioButtons(inputId = "emission", 
@@ -504,8 +515,8 @@ navbarPage(title = div("",
                                                       #
                                                       #####################
                                                       dashboardBody(tags$head(tags$style(HTML('.content-wrapper, 
-                                                                                              .right-side {
-                                                                                                   background-color: #252d38;
+                                                                                               .right-side {
+                                                                                               background-color: #252d38;
                                                                                                  }
                                                                                               ')
                                                                                         )
