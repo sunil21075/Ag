@@ -19,19 +19,24 @@ obs_clusters <- read.csv(paste0(param_dir, "observed_clusters.csv"),
 obs_clusters <- subset(obs_clusters, select = c("location", "cluster")) %>%
                 data.table()
 
-# subdir <- c("cum_precip/annual/")
-# subdir <- c("cum_precip/chunky/")
-# subdir <- c("cum_precip/monthly/")
-# subdir <- c("cum_precip/wtr_yr/")
-# subdir <- c("storm/")
+subdir <- c("cum_precip/annual/"); print(subdir)
+# subdir <- c("cum_precip/chunky/"); print(subdir)
+# subdir <- c("cum_precip/monthly/"); print(subdir)
+# subdir <- c("cum_precip/wtr_yr/"); print(subdir)
+# subdir <- c("storm/"); print(subdir)
 
 for (sub in subdir){
   in_dir <- file.path(paste0(main_in, sub))
   files_list <- list.files(path=in_dir, pattern=".rds")
-  print(in_dir)
   for (file in files_list){
-    print(file)
-    A <- data.table(readRDS(paste0(in_dir, file)))
+    A <- readRDS(paste0(in_dir, file))
+    A <- as.data.frame(A)
+    A <- A[,unique(names(A))]
+    if ("cluster" %in% colnames(A)){A <- within(A, remove(cluster))}
+    if ("cluster.x" %in% colnames(A)){A <- within(A, remove(cluster.x))}
+    if ("cluster.y" %in% colnames(A)){A <- within(A, remove(cluster.y))}
+    
+    A <- data.table(A)
     A <- merge(A, obs_clusters, by="location", all.x=T)
     saveRDS(A, paste0(in_dir, file))
   }
@@ -39,10 +44,5 @@ for (sub in subdir){
 
 end_time <- Sys.time()
 print( end_time - start_time)
-
-
-
-
-
 
 
