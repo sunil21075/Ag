@@ -393,8 +393,6 @@ data %>%
 # pick the row wich max in a column
 analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
 
-
-
 ################################################################
 #### Group by and find max, grou_by find max
 
@@ -504,4 +502,7 @@ labels <- c("c1_mean", "c2_mean", "c3_mean", "c4_mean")
 labels <- labels[order(cluster_means, decreasing=TRUE)]
 order(cluster_means)
 
+
+# conditional replacement
+A[precip < 0, precip := 0]
 

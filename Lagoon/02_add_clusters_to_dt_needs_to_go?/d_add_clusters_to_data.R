@@ -10,7 +10,6 @@ options(digits=9)
 start_time <- Sys.time()
 
 ###########################################################
-
 main_in <- "/data/hydro/users/Hossein/lagoon/01_storm_cumPrecip/"
 param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
 ###########################################################
@@ -44,5 +43,4 @@ for (sub in subdir){
 
 end_time <- Sys.time()
 print( end_time - start_time)
-
 

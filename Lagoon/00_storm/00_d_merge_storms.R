@@ -65,7 +65,7 @@ all_storms <- rbind(rcp45_data, rcp85_data,
                     hist_data_45, hist_data_85, 
                     storm_observed_45, storm_observed_85)
 
-saveRDS(all_storms, paste0(out_dir, "all_modeled_storms.rds"))
+saveRDS(all_storms, paste0(out_dir, "all_storms.rds"))
 
 print ("Do not be surprised, it is fast indeed. No Error!")
 # saveRDS(rcp45_data, paste0(out_dir, "storm_RCP45.rds"))

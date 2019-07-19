@@ -24,6 +24,15 @@ data_dir <- "/data/hydro/users/Hossein/lagoon/00_raw_data/"
 lagoon_out = "/data/hydro/users/Hossein/lagoon/"
 main_out <- file.path(lagoon_out, "/01_storm_cumPrecip/cum_precip/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
+######################################################################
+##                                                                  ##
+##                                                                  ##
+######################################################################
+param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
+obs_clusters <- read.csv(paste0(param_dir, "observed_clusters.csv"),
+                         header=T, as.is=T)
+obs_clusters <- subset(obs_clusters, select = c("location", "cluster")) %>%
+                data.table()
 
 ######################################################################
 ##                                                                  ##
@@ -37,13 +46,23 @@ raw_files <- c("raw_modeled_hist.rds",
 
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
+  # replace negative precips
+  curr_dt <- curr_dt[precip < 0, precip := 0]
+  
+
   curr_dt <- compute_monthly_cum_precip(curr_dt)
-  saveRDS(curr_dt, paste0(main_out, "/monthly/", gsub("raw", "month_cum_precip", file)))
+
+  curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
+  saveRDS(curr_dt, paste0(main_out, "/monthly/", 
+                          gsub("raw", "month_cum_precip", file)))
+
+  curr_dt <- within(curr_dt, remove(cluster))
 
   curr_dt <- curr_dt %>%
              group_by(location, year, month, model, emission) %>%
              slice(which.max(day)) %>%
              data.table()
+  curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
   saveRDS(curr_dt, paste0(main_out, "/monthly/", 
                           gsub("raw", "month_cum_precip_last_day", file)))
 

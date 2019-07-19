@@ -121,7 +121,6 @@ design_storm_4_allLoc_allMod_from_raw <- function(data_tbl, observed=FALSE){
   return(final_table)
 }
 
-
 design_storm_4_oneLoc_oneMod_from_raw <- function(data_tbl, observed=FALSE){
   ################################################
   # This function is written to be applied to "an individual"

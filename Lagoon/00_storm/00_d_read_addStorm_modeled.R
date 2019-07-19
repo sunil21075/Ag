@@ -24,7 +24,12 @@ param_dir = file.path("/home/hnoorazar/lagoon_codes/parameters/")
 lagoon_out = "/data/hydro/users/Hossein/lagoon/"
 main_out <- file.path(lagoon_out, "/00_model_level_storm/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
-
+######################################################################
+param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
+obs_clusters <- read.csv(paste0(param_dir, "observed_clusters.csv"),
+                         header=T, as.is=T)
+obs_clusters <- subset(obs_clusters, select = c("location", "cluster")) %>%
+                data.table()
 ######################################################################
 ##                                                                  ##
 ######################################################################
@@ -63,6 +68,9 @@ for(file in dir_con){
   met_data <- met_data %>%
               select(c(precip, year, month, day)) %>%
               data.table()
+  
+  # fix negative precips
+  met_data <- met_data[precip < 0, precip := 0]
 
   met_data$location <- location
   all_data <- rbind(all_data, met_data)
@@ -78,7 +86,11 @@ setcolorder(all_data, new_col_corder)
 
 all_data <- design_storm_4_allLoc_allMod_from_raw(data_tbl=all_data, 
                                                   observed=FALSE)
+
 all_data <- unique(all_data)
+
+all_data <- merge(all_data, obs_clusters, by="location", all.x=T)
+
 saveRDS(all_data, paste0(current_out, "/storm.rds"))
 
 # How long did it take?

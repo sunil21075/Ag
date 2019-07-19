@@ -13,28 +13,172 @@ options(digits=9)
 #                         Functions
 #
 ################################################################
+extremes_time_series <- function(dt_db){
+  
+
+}
+
+cum_box_cluster_x <- function(dt, tgt_col){
+  cluster_label <- c(4, 3, 2, 1)
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")
+  time_label <- c("1950-2005", "1979-2016", 
+                   "2006-2025", "2026-2050",
+                   "2051-2075", "2076-2099")
+
+  # color_ord = c("red", "purple", "dodgerblue2", "blue4")
+  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red",
+                "blue3", "gold")
+  
+  # medians <- data.frame(dt) %>% 
+  #            group_by(cluster, time_period, emission) %>% 
+  #            summarise( medians = median(get(tgt_col)))  %>% 
+  #            data.table()
+  dt <- within(dt, remove(month, day, precip, wtr_yr))
+  dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
+  
+  melted <- melt(dt, id = c("location", "year", 
+                            "time_period", "model", "emission",
+                            "cluster"))
+  
+  melted$cluster <- factor(melted$cluster, levels=c(4, 3, 2, 1))
+
+  ax_txt_size <- 6; ax_ttl_size <- 7; box_width = 0.53
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.6, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                          face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_text(size = ax_ttl_size , face = "bold",
+                                           margin = margin(t=2, r=0, b=-10, l=0))
+                    )
+
+  box_p <- ggplot(data = melted, 
+                  aes(x=cluster, y=value, fill=time_period)) +
+           geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+           # labs(x="", y="") + # theme_bw() + 
+           facet_grid(~ emission) +
+           xlab("time period") + 
+           ylab("annual cum. precip. (mm)") + 
+           scale_x_discrete(breaks=c(4, 3, 2, 1),
+                            labels=categ_label) +  
+           scale_fill_manual(values = color_ord,
+                             name = "time\nperiod", 
+                             labels = time_label) + 
+           the
+  return(box_p)
+}
+
+cum_clust_box_plots <- function(dt, tgt_col){
+  cluster_label <- c(4, 3, 2, 1)
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")
+
+  # color_ord = c("red", "purple", "dodgerblue2", "blue4")
+  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red")
+  
+  # medians <- data.frame(dt) %>% 
+  #            group_by(cluster, time_period, emission) %>% 
+  #            summarise( medians = median(get(tgt_col)))  %>% 
+  #            data.table()
+  dt <- within(dt, remove(month, day, precip, wtr_yr))
+  dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
+  
+  melted <- melt(dt, id = c("location", "year", 
+                            "time_period", "model", "emission",
+                            "cluster"))
+  
+  melted$cluster <- factor(melted$cluster, levels=c(4, 3, 2, 1))
+
+  ax_txt_size <- 6; ax_ttl_size <- 7; box_width = 0.53
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.6, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                          face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_text(size = ax_ttl_size , face = "bold",
+                                           margin = margin(t=2, r=0, b=-10, l=0))
+                    )
+
+  box_p <- ggplot(data = melted, 
+                  aes(x=time_period, y=value, fill=cluster)) +
+           geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+           # labs(x="", y="") + # theme_bw() + 
+           facet_grid(~ emission) +
+           xlab("time period") + 
+           ylab("annual cum. precip. (mm)") + 
+           scale_fill_manual(values = color_ord,
+                             name = "precip\nlevel", 
+                             labels = categ_label) + 
+           the
+  return(box_p)
+}
+
 storm_box_plot <- function(data_tb){
   categ_lab <- sort(unique(data_tb$return_period))
   color_ord = c("grey47", "blue3", "olivedrab4", 
                 "red", "steelblue1", "gold")
-
-  box_width = 0.53
   x_ticks <- c("5", "10", "15", "20", "25")
 
-  medians <- data.frame(data_tb) %>% 
-             group_by(model, return_period, emission) %>% 
-             summarise( med_5 = median(five_years),
-                       med_10 = median(ten_years),
-                       med_15 = median(fifteen_years),
-                       med_20 = median(twenty_years),
-                       med_25 = median(twenty_five_years))  %>% 
-             data.table()
+  # medians <- data.frame(data_tb) %>% 
+  #            group_by(return_period, emission) %>% 
+  #            summarise( med_5 = median(five_years),
+  #                      med_10 = median(ten_years),
+  #                      med_15 = median(fifteen_years),
+  #                      med_20 = median(twenty_years),
+  #                      med_25 = median(twenty_five_years))  %>% 
+  #            data.table()
 
-  melted <- melt(data_tb, 
-                 id = c("location", "model", 
-                        "return_period", "emission"))
-  ax_txt_size <- 5
-  ax_ttl_size <- 6
+  melted <- melt(data_tb,  id = c("location", "model", 
+                                  "return_period", "emission"))
+  
+  ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
                panel.grid.major = element_line(size = 0.05),
@@ -103,7 +247,7 @@ geo_map_of_clusters <- function(obs_w_clusters){
   WA_state <- subset(states, region %in% c("washington"))
 
   # "grey47",
-  color_ord = c("red", "purple", "dodgerblue2", "blue4") 
+  color_ord = c("red", "purple", "dodgerblue2", "blue4")
   # color_ord = c("00CCFF", "006699", "maroon3", "red")
   # color_ord = c("red", "maroon3", "royalblue3", "steelblue1")
   categ_lab = c("least precip", "lesser precip",
