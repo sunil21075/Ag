@@ -48,11 +48,11 @@ setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another
 A <- A[order(location), ]
 
 result <- dataT %>%
-            mutate(thresh_range = cut(get(col_name), breaks = bks )) %>%
-            group_by(lat, long, climate_type, time_period, 
-                     thresh_range, model, scenario) %>%
-            summarize(no_years = n_distinct(Chill_season)) %>% 
-            data.table()
+          mutate(thresh_range = cut(get(col_name), breaks = bks )) %>%
+          group_by(lat, long, climate_type, time_period, 
+                   thresh_range, model, scenario) %>%
+          summarize(no_years = n_distinct(Chill_season)) %>% 
+          data.table()
 
 
 quan_per_feb <- feb_result %>% 
@@ -394,7 +394,7 @@ data %>%
 analog_dat_F1_4_map[which.max(analog_dat_F1_4_map$analog_freq),]
 
 ################################################################
-#### Group by and find max, grou_by find max
+#### Group by and find max, group_by find max
 
 df <- read.table(header = TRUE, text = 'Gene   Value
 A      12
@@ -423,6 +423,11 @@ ddply(df, .(Gene), summarise, Value = max(Value))
 # dplyr
 require(dplyr)
 df %>% group_by(Gene) %>% summarise(Value = max(Value))
+
+dt %>%
+group_by(time_period, month, emission, cluster) %>%
+summarise(mean=mean(monthly_cum_precip))%>%
+data.table()
 
 # data.table
 require(data.table)

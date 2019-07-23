@@ -6,32 +6,29 @@ library(tidyverse)
 library(data.table)
 library(dplyr)
 library(ggplot2)
-
+options(digit=9)
+options(digits=9)
 
 source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
 source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-options(digit=9)
-options(digits=9)
-
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/plots/"
+plot_dir <- paste0(in_dir, "plots/")
 
 ##############################
 
-files <- c("ann_all_last_days", "month_all_last_days",
-           "Sept_March_all_last_days", "wtr_yr_sept_all_last_days")
+files <- c("ann_all_last_days", "wtr_yr_sept_all_last_days",
+           "Sept_March_all_last_days", "month_all_last_days")
 
-plotting_cols <- c("annual_cum_precip", "monthly_cum_precip",
-                   "chunk_cum_precip", "annual_cum_precip")
+plotting_cols <- c("annual_cum_precip", "annual_cum_precip", 
+                   "chunk_cum_precip", "monthly_cum_precip")
 
-file <- files[1]
-plot_col <- plotting_cols[1]
+file <- files[4]
+plot_col <- plotting_cols[4]
 
 for (ii in 1:4){
-  print("first line of loop")
   file <- files[ii]
   plot_col <- plotting_cols[ii]
 

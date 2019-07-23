@@ -13,9 +13,150 @@ options(digits=9)
 #                         Functions
 #
 ################################################################
-extremes_time_series <- function(dt_db){
-  
+box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
+  #
+  # input p_type is in {box, trend} (box plot or line plot)
+  #   trend_type is in {mean, median} (line plot)
+  #
+  dt <- within(dt, remove(day, precip, model))
+  dt$cluster <- as.character(dt$cluster)
 
+  cluster_label <- as.character(c(4, 3, 2, 1))
+  str_labels <- c("4" = "most precip.", 
+                  "3" ="less precip.", 
+                  "2" = "lesser precip.", 
+                  "1" = "least precip.")
+  
+  month_names <- c("1" = "Jan.", "2" = "Feb.", "3" = "Mar.", 
+                   "4" = "Apr.", "5" = "May.", "6" = "Jun.", 
+                   "7" = "Jul.", "8" = "Aug.", "9" = "Sept.", 
+                   "10" = "Oct.", "11" = "Nov.", "12" = "Dec.")
+  
+  time_p_lbl <- c("1950-2005", "1979-2016", 
+                  "2006-2025", "2026-2050",
+                  "2051-2075", "2076-2099")
+  
+  if (p_type=="box"){
+    dt <- within(dt, remove(year))
+    # color_ord = c("red", "purple", "dodgerblue2", "blue4")
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red",
+                  "blue3", "gold")
+    melted <- melt(dt, id = c("location", "month",
+                              "time_period", "emission",
+                              "cluster"))
+    
+    melted$cluster <- factor(melted$cluster, levels=cluster_label)
+    melted$month <- factor(melted$month, levels=1:12)
+    ax_txt_size <- 6; ax_ttl_size <- 7; box_width = 0.53
+    the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+                 panel.border = element_rect(fill=NA, size=.3),
+                 panel.grid.major = element_line(size = 0.05),
+                 panel.grid.minor = element_blank(),
+                 panel.spacing = unit(.35, "line"),
+                 legend.position = "bottom", 
+                 legend.key.size = unit(.6, "line"),
+                 legend.spacing.x = unit(.1, 'line'),
+                 panel.spacing.y = unit(.5, 'line'),
+                 legend.text = element_text(size = ax_ttl_size, face="bold"),
+                 legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+                 legend.title = element_blank(),
+                 plot.title = element_text(size = ax_ttl_size, face = "bold"),
+                 plot.subtitle = element_text(face = "bold"),
+                 strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                             margin = margin(.15, 0, .15, 0, "line")),
+                 axis.ticks = element_line(size = .1, color = "black"),
+                 axis.text.y = element_text(size = ax_txt_size, 
+                                            face = "bold", color = "black"),
+                 axis.text.x = element_text(size = ax_txt_size, 
+                                            face = "bold", color="black",
+                                            margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                            ),
+                 axis.title.y = element_text(size = ax_ttl_size, 
+                                             face = "bold", 
+                                             margin = margin(t=0, r=2, b=0, l=0)),
+                 axis.title.x = element_text(size = ax_ttl_size , face = "bold",
+                                             margin = margin(t=2, r=0, b=-10, l=0))
+                      )
+
+    box_p <- ggplot(data = melted, 
+                    aes(x=month, y=value, fill=time_period)) +
+             the + 
+             geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+             # labs(x="", y="") + # theme_bw() + 
+             facet_grid(~ emission ~ cluster,
+                        labeller=labeller(cluster = str_labels)) +
+             xlab("month") + 
+             ylab("monthly cum. precip. (mm)") + 
+             scale_x_discrete(breaks=1:12,
+                              labels=month_names) +  
+             scale_fill_manual(values = color_ord,
+                               name = "time\nperiod", 
+                               labels = time_p_lbl)
+    return(box_p)
+
+  } else {
+    ax_txt_size <- 12; ax_ttl_size <- 14;
+    the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+                 panel.border = element_rect(fill=NA, size=.3),
+                 panel.grid.major = element_line(size = 0.05),
+                 panel.grid.minor = element_blank(),
+                 legend.position = "bottom", 
+                 legend.key.size = unit(1.2, "line"),
+                 legend.spacing.x = unit(1, 'line'),
+                 panel.spacing.x = unit(2, 'line'),
+                 panel.spacing.y = unit(1, 'line'),
+                 legend.text = element_text(size = ax_ttl_size, face="bold"),
+                 legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+                 legend.title = element_blank(),
+                 plot.title = element_text(size = ax_ttl_size, face = "bold"),
+                 plot.subtitle = element_text(face = "bold"),
+                 strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                             margin = margin(.15, 0, .15, 0, "line")),
+                 strip.text.y = element_text(size = ax_ttl_size, face = "bold",
+                                             margin = margin(.15, 0, .15, 0, "line")),
+                 axis.ticks = element_line(size = .1, color = "black"),
+                 axis.text.y = element_text(size = ax_txt_size, 
+                                            face = "bold", color = "black"),
+                 axis.text.x = element_text(size = ax_txt_size, 
+                                            face = "bold", color="black",
+                                            margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                            ),
+                 axis.title.y = element_text(size = ax_ttl_size, 
+                                             face = "bold", 
+                                             margin = margin(t=0, r=2, b=0, l=0)),
+                 axis.title.x = element_text(size = ax_ttl_size , face = "bold",
+                                             margin = margin(t=2, r=0, b=-10, l=0))
+                      )
+  
+    if (trend_type=="median"){
+      dt <- dt %>%
+            group_by(time_period, month, 
+                     emission, cluster, year) %>%
+            summarise(stat_col=median(monthly_cum_precip))%>%
+            data.table()
+      } else {
+        dt <- dt %>%
+              group_by(time_period, month, 
+                       emission, cluster, year) %>%
+              summarise(stat_col=mean(monthly_cum_precip))%>%
+              data.table()
+      }
+      
+    dt$month <- as.character(dt$month)
+    dt$month <- factor(dt$month, levels=as.character(1:12))
+    line_p <- ggplot(data=dt, 
+                     aes(x=year, y=stat_col, 
+                         group=time_period, 
+                         color=time_period)) +
+              geom_line() +
+              the + 
+              facet_grid(~ emission ~ cluster  ~ month,
+                         labeller=labeller(cluster = str_labels,
+                                           month = month_names))
+      return(line_p)
+  }
 }
 
 cum_box_cluster_x <- function(dt, tgt_col){
@@ -34,9 +175,10 @@ cum_box_cluster_x <- function(dt, tgt_col){
   #            group_by(cluster, time_period, emission) %>% 
   #            summarise( medians = median(get(tgt_col)))  %>% 
   #            data.table()
-  dt <- within(dt, remove(month, day, precip, wtr_yr))
-  dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
-  
+  dt <- within(dt, remove( day, precip, wtr_yr))
+  if (tgt_col=="annual_cum_precip"){
+    dt <- within(dt, remove(month, day))
+  }  
   melted <- melt(dt, id = c("location", "year", 
                             "time_period", "model", "emission",
                             "cluster"))
@@ -76,6 +218,7 @@ cum_box_cluster_x <- function(dt, tgt_col){
 
   box_p <- ggplot(data = melted, 
                   aes(x=cluster, y=value, fill=time_period)) +
+           the + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
@@ -87,8 +230,8 @@ cum_box_cluster_x <- function(dt, tgt_col){
                             labels=categ_label) +  
            scale_fill_manual(values = color_ord,
                              name = "time\nperiod", 
-                             labels = time_label) + 
-           the
+                             labels = time_label)
+  
   return(box_p)
 }
 
@@ -104,7 +247,11 @@ cum_clust_box_plots <- function(dt, tgt_col){
   #            group_by(cluster, time_period, emission) %>% 
   #            summarise( medians = median(get(tgt_col)))  %>% 
   #            data.table()
-  dt <- within(dt, remove(month, day, precip, wtr_yr))
+  dt <- within(dt, remove(day, precip, wtr_yr))
+  if (tgt_col=="annual_cum_precip"){
+    dt <- within(dt, remove(month, day))
+  }
+
   dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
   
   melted <- melt(dt, id = c("location", "year", 
@@ -146,6 +293,7 @@ cum_clust_box_plots <- function(dt, tgt_col){
 
   box_p <- ggplot(data = melted, 
                   aes(x=time_period, y=value, fill=cluster)) +
+           the +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
@@ -155,8 +303,8 @@ cum_clust_box_plots <- function(dt, tgt_col){
            ylab("annual cum. precip. (mm)") + 
            scale_fill_manual(values = color_ord,
                              name = "precip\nlevel", 
-                             labels = categ_label) + 
-           the
+                             labels = categ_label)
+           
   return(box_p)
 }
 

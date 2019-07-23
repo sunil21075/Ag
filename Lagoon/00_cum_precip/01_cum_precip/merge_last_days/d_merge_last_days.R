@@ -12,10 +12,9 @@ start_time <- Sys.time()
 ###########################################################
 
 main_in <- "/data/hydro/users/Hossein/lagoon/01_storm_cumPrecip/cum_precip/"
+out_dir <- paste0(main_in, "last_days/")
 param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
 ###########################################################
-
-
 subdir <- c("annual/", "chunky/", 
             "monthly/", "wtr_yr/")
 
@@ -60,6 +59,7 @@ for (sub in subdir){
     rm(A)
   }
   saveRDS(last_days, paste0(in_dir, "/", name_pref, "all_last_days.rds"))
+  rm(last_days)
 }
 
 end_time <- Sys.time()
