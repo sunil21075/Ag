@@ -40,7 +40,7 @@ b <- observed_dt %>%
 # rename
 #
 colnames(data)[colnames(data)=="old_name"] <- "new_name"
-setnames(data, old=c("old_name", "another_old_name"), new=c("new_name", "another_new_name"))
+setnames(data, old=c("old_name"), new=c("new_name"))
 
 
 # order a data by a/multiple column. Adding a negative 
@@ -168,14 +168,14 @@ R_LIBS_USER=~/.local/lib/R3.5.1
 colSums(is.na(dt)|dt == '')
 
 
-strsplit vector 
-
+# strsplit vector 
 x <- sapply(all_us_locations_cod_moth, 
             function(x) strsplit(x, "_")[[1]], 
             USE.NAMES=FALSE)
 lat = x[1, ]
 long = x[2, ]
 
+A <- subset(A, col_names)
 # not in, opposite of %in%
 D2 = subset(local_locs, !(local_locs %in% local_files))
 
@@ -433,7 +433,6 @@ data.table()
 require(data.table)
 dt <- data.table(df)
 dt[ , max(Value), by = Gene]
-
 
 # doBy
 require(doBy)

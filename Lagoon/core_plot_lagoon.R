@@ -8,11 +8,127 @@ library(tidyverse)
 
 options(digits=9)
 options(digits=9)
-################################################################
+############################################################
 #
 #                         Functions
 #
-################################################################
+############################################################
+one_time_medians <- function(dt, min, max, ttl, subttl){
+  tgt_col <- "twenty_five_years"
+  x <- sapply(dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+
+  states <- map_data("state")
+  states_cluster <- subset(states, 
+                           region %in% c("washington"))
+  dt %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = tgt_col), 
+             alpha = 1,
+             size=.3) +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(min, max),
+                        breaks = pretty_breaks(n = 4)) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12, face="plain"),
+        legend.title = element_blank(),
+        # legend.justification = c(.93, .9),
+        # legend.position = c(.93, .9),
+        legend.position = "top",
+        strip.text = element_text(size=14, face="bold"))+
+  ggtitle(ttl, subtitle=subttl)
+}
+
+all_mods_map <- function(dt, min, max, ttl){
+  tgt_col <- "twenty_five_years"
+  x <- sapply(dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+
+  states <- map_data("state")
+  states_cluster <- subset(states, 
+                           region %in% c("washington"))
+  dt %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = tgt_col), 
+             alpha = 1,
+             size = .15) +
+  facet_wrap(~ model) +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(min, max),
+                        breaks = pretty_breaks(n = 4)) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12, face="plain"),
+        legend.title = element_blank(),
+        legend.position = "top",
+        legend.margin = margin(t=-1, r=0, b=0, l=0, unit = 'line'),
+        strip.text = element_text(size=14, face="bold"))+
+  ggtitle(ttl)
+}
+
+obs_hist_map <- function(dt, min, max) {
+  tgt_col <- "twenty_five_years"
+  x <- sapply(dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+
+  states <- map_data("state")
+  states_cluster <- subset(states, 
+                           region %in% c("washington"))
+  dt %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = tgt_col), 
+                        alpha = 1,
+                        size=.3) +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(min, max),
+                        breaks = pretty_breaks(n = 4)) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12, face="plain"),
+        legend.title = element_blank(),
+        legend.justification = c(.93, .9),
+        legend.position = c(.93, .9),
+        strip.text = element_text(size=14, face="bold")) +
+  ggtitle("Observed historical")
+}
+
 box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
   #
   # input p_type is in {box, trend} (box plot or line plot)
@@ -45,7 +161,8 @@ box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
                               "time_period", "emission",
                               "cluster"))
     
-    melted$cluster <- factor(melted$cluster, levels=cluster_label)
+    melted$cluster <- factor(melted$cluster, 
+                             levels=cluster_label)
     melted$month <- factor(melted$month, levels=1:12)
     ax_txt_size <- 6; ax_ttl_size <- 7; box_width = 0.53
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -310,7 +427,8 @@ cum_clust_box_plots <- function(dt, tgt_col){
 
 storm_box_plot <- function(data_tb){
   categ_lab <- sort(unique(data_tb$return_period))
-  color_ord = c("grey47", "blue3", "olivedrab4", 
+  color_ord = c("grey47", # "blue3", 
+                "olivedrab4", 
                 "red", "steelblue1", "gold")
   x_ticks <- c("5", "10", "15", "20", "25")
 

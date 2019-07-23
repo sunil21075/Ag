@@ -105,7 +105,6 @@ stats_comp_ensemble <- stats_comp %>%
 # 3. Mapping --------------------------------------------------------------
 
 # Pull base layers
-
 states <- map_data("state")
 states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
 
@@ -126,13 +125,17 @@ observed_hist_map <- function(min, max, month_col) {
   stats_comp %>%
     filter(model == "observed") %>%
     ggplot() +
-    geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
+    geom_polygon(data = states_cluster, 
+                 aes(x = long, y = lat, group = group),
                  fill = "grey", color = "black") +
+    
     geom_point(aes_string(x = "long", y = "lat",
                           color = month_col), alpha = 0.4) +
-    scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
+    scale_color_viridis_c(option = "plasma", 
+                          name = "Median", direction = -1,
                           limits = c(min, max),
                           breaks = pretty_breaks(n = 4)) +
+
     coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
     facet_wrap(~ time_period, nrow = 1) +
     theme(axis.title.y = element_blank(),

@@ -16,10 +16,17 @@ options(digit=9)
 options(digits=9)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/storm/"
-
+           
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
-all_storms <- within(all_storms, remove(cluster)) %>% data.table()
 
+A <- all_storms
+all_storms <- within(all_storms, remove(cluster)) %>% 
+              data.table()
+
+all_storms <- all_storms %>%
+              filter(return_period != "1950-2005")%>%
+              data.table()
+              
 box_p <- storm_box_plot(all_storms)
 
 plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/plots/"
