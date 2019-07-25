@@ -5,6 +5,37 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
+add_coord_from_location <- function(dt){
+  x <- sapply(dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+  return(dt)
+}
+
+change_cluster_labels <- function(B){
+  B$cluster <- as.character(B$cluster)
+  B$cluster <- recode(B$cluster, "4" = "most precip",
+                                 "3" = "less precip",
+                                 "2" = "lesser precip",
+                                 "1" = "least precip")
+
+  return(B)
+}
+
+read_min_file <- function(conn){
+  RLData <- readLines(conn)
+  RLData_df <- as.data.frame(RLData)
+  RLData_df <- stringr::str_split_fixed(RLData_df$RLData, "\t", 7)
+  RLData_df <- data.table(RLData_df)
+
+  col_name <- c("year", "month", "day", 
+                "precip", "evap", "runoff", "base_flow")
+  colnames(RLData_df) <- col_name
+  return(RLData_df)
+}
+
 cluster_yr_time_series <- function(observed_dt, no_clusters=4){
   observed_dt <- subset(observed_dt, select=c(location, 
                                               year, 
@@ -283,7 +314,7 @@ find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
 #        Cumulation of precipitation section
 #
 ########################################################################
-compute_chunky_cum_precip <- function(data_tb, start_month, end_month){
+compute_chunky_cum <- function(data_tb, start_month, end_month){
   #
   # first, put water_calendar so proper months are grouped together
   # second, toss out unwanted months.
@@ -295,31 +326,46 @@ compute_chunky_cum_precip <- function(data_tb, start_month, end_month){
              filter(!(month %in% ((end_month+1):(start_month-1))))%>%
              data.table()
 
-  data_tb <- data_tb %>%
+  if (precip %in% colnames(data_tb)){
+    data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(chunk_cum_precip = cumsum(precip)) %>%
              # slice(n()) %>%
              data.table()
- 
+  } else{
+    data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(chunk_cum_runbase = cumsum(run_p_base)) %>%
+             # slice(n()) %>%
+             data.table()
+  }
  return(data_tb)
 }
 
 # **********************************************************************
-compute_wtr_yr_cum_precip <- function(data_tb){
+compute_wtr_yr_cum <- function(data_tb){
   #
   # input: data_tb has to have the water_year column in it
   # output: cumulative precip in each water_year
-  #)
-  data_tb <- data_tb %>%
+  #
+  if ("precip" %in% colnames(data_tb)){
+    data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(annual_cum_precip = cumsum(precip)) %>%
              # slice(n()) %>%
              data.table()
+  } else {
+    data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(annual_cum_runbase = cumsum(run_p_base)) %>%
+             # slice(n()) %>%
+             data.table()
+  }
   return (data_tb)
 }
 # **********************************************************************
 
-compute_annual_cum_precip <- function(data_tb){
+compute_annual_cum <- function(data_tb){
   ##############################################################
   # input: data_tb                                             #
   #                                                            #
@@ -327,17 +373,24 @@ compute_annual_cum_precip <- function(data_tb){
   #                                                            #
   #                                                            #
   ##############################################################
-  
+  if ("run_p_base" %in% colnames(data_tb)){
   data_tb <- data_tb %>%
              group_by(location, year, model, emission, time_period) %>%
-             mutate(annual_cum_precip = cumsum(precip)) %>%
+             mutate(annual_cum_runbase = cumsum(run_p_base)) %>%
              # filter(month==12 & day==31) %>%
              data.table()
+    } else {
+      data_tb <- data_tb %>%
+                 group_by(location, year, model, emission, time_period) %>%
+                 mutate(annual_cum_precip = cumsum(precip)) %>%
+                 # filter(month==12 & day==31) %>%
+                 data.table()
+  }
   return (data_tb)
 }
 # **********************************************************************
 
-compute_monthly_cum_precip <- function(data_tb){
+compute_monthly_cum <- function(data_tb){
   ##############################################################
   # input: data_tb                                             #
   #                                                            #
@@ -345,12 +398,19 @@ compute_monthly_cum_precip <- function(data_tb){
   #                                                            #
   #                                                            #
   ##############################################################
-  
-  data_tb <- data_tb %>%
-             group_by(location, year, month, model, emission) %>%
-             mutate(monthly_cum_precip = cumsum(precip)) %>%
-             # slice(which.max(day)) %>%
-             data.table()
+  if ("precip" %in% colnames(data_tb)){
+    data_tb <- data_tb %>%
+               group_by(location, year, month, model, emission) %>%
+               mutate(monthly_cum_precip = cumsum(precip)) %>%
+               # slice(which.max(day)) %>%
+               data.table()
+    } else {
+      data_tb <- data_tb %>%
+               group_by(location, year, month, model, emission) %>%
+               mutate(monthly_cum_runbase = cumsum(run_p_base)) %>%
+               # slice(which.max(day)) %>%
+               data.table()
+  }
   return (data_tb)
 }
 # **********************************************************************

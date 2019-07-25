@@ -16,6 +16,8 @@ options(digit=9)
 options(digits=9)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
+
+
 ann_all_doomsday <- readRDS(paste0(in_dir, "/ann_all_last_days.rds")) %>%
                     data.table()
 

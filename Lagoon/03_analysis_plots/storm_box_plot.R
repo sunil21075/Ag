@@ -16,12 +16,13 @@ options(digit=9)
 options(digits=9)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/storm/"
+plot_dir <- paste0(in_dir, "plots/")
            
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
 
-A <- all_storms
-all_storms <- within(all_storms, remove(cluster)) %>% 
-              data.table()
+# A <- all_storms
+# all_storms <- within(all_storms, remove(cluster)) %>% 
+#               data.table()
 
 all_storms <- all_storms %>%
               filter(return_period != "1950-2005")%>%
@@ -29,10 +30,9 @@ all_storms <- all_storms %>%
               
 box_p <- storm_box_plot(all_storms)
 
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/plots/"
 ggsave(filename = paste0("storm_box.png"), 
        plot = box_p, 
-       width = 4, height = 2, units = "in", 
+       width = 8, height = 4, units = "in", 
        dpi=600, device = "png",
        path=plot_dir)
 

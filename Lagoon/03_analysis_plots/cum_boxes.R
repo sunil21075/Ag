@@ -20,17 +20,24 @@ plot_dir <- paste0(in_dir, "plots/")
 ##############################
 
 files <- c("ann_all_last_days", "wtr_yr_sept_all_last_days",
-           "Sept_March_all_last_days", "month_all_last_days")
+           "Sept_March_all_last_days")
 
 plotting_cols <- c("annual_cum_precip", "annual_cum_precip", 
-                   "chunk_cum_precip", "monthly_cum_precip")
+                   "chunk_cum_precip")
 
-file <- files[4]
-plot_col <- plotting_cols[4]
+file <- files[3]
+plot_col <- plotting_cols[3]
 
-for (ii in 1:4){
+for (ii in 1:3){
   file <- files[ii]
   plot_col <- plotting_cols[ii]
+  if (file == "ann_all_last_days"){
+    y_lab <- "annual cum. precip. (mm)"
+  } else if (file == "wtr_yr_sept_all_last_days"){
+    y_lab <- "annual (water year) cum. precip. (mm)"
+  } else{
+    y_lab <- "Sept.- Mar. cum. precip. (mm)"
+  }
 
   dt_tb <- data.table(readRDS(paste0(in_dir, file, ".rds")))
   head(dt_tb, 2)
@@ -38,8 +45,9 @@ for (ii in 1:4){
   # exclude modeled historical
   # dt <- dt %>% filter(time_period != "1950-2005")
 
-  box_plt <- cum_clust_box_plots(dt=dt_tb, tgt_col=plot_col)
-  box_plt_clst_x <- cum_box_cluster_x(dt=dt_tb, tgt_col=plot_col)
+  box_plt <- cum_clust_box_plots(dt=dt_tb, tgt_col=plot_col, y_lab)
+  box_plt_clst_x <- cum_box_cluster_x(dt=dt_tb, tgt_col=plot_col, y_lab)
+
   ggsave(filename = paste0(file, ".png"), 
          plot = box_plt, 
          width = 8, height = 3, units = "in", 

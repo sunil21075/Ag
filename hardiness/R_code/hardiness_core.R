@@ -13,7 +13,7 @@ hardiness_model <- function(data,
 		                  "t_min", "predicted_Hc", "observed_Hc",
 		                  "budbreak", "predicted_on")
 
-	#output$predicted_on <- as.character(output$predicted_on)
+	# output$predicted_on <- as.character(output$predicted_on)
 
     output$variety <- as.character(output$variety)
     output$location <- as.character(output$location)

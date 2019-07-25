@@ -14,6 +14,10 @@ options(digits=9)
 #
 ############################################################
 one_time_medians <- function(dt, min, max, ttl, subttl){
+  #
+  # one_time_medians means one-time in the sense of 25 years
+  # strom, (not including 5, 10, 15, 20 years)
+
   tgt_col <- "twenty_five_years"
   x <- sapply(dt$location, 
               function(x) strsplit(x, "_")[[1]], 
@@ -91,17 +95,16 @@ all_mods_map <- function(dt, min, max, ttl){
   ggtitle(ttl)
 }
 
-obs_hist_map <- function(dt, min, max) {
-  tgt_col <- "twenty_five_years"
-  x <- sapply(dt$location, 
-              function(x) strsplit(x, "_")[[1]], 
-              USE.NAMES=FALSE)
-  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
-  dt$lat <- lat; dt$long <- long;
+obs_hist_map <- function(dt, min, max, fips_clust, tgt_col="twenty_five_years") {
+  
+  dt <- add_coord_from_location(dt)
+  dt <- merge(dt, fips_clust, by="location", all.x=T)
+  dt <- within(dt, remove(location, model, return_period))
 
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
+
   dt %>%
   ggplot() +
   geom_polygon(data = states_cluster, 
@@ -126,7 +129,10 @@ obs_hist_map <- function(dt, min, max) {
         legend.justification = c(.93, .9),
         legend.position = c(.93, .9),
         strip.text = element_text(size=14, face="bold")) +
-  ggtitle("Observed historical")
+  ggtitle("Observed historical") +
+  geom_polygon(fill = "transparent", color = "red", size = .1, 
+                data = dt, aes(x = long, y = lat, group = cluster))
+
 }
 
 box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
@@ -276,7 +282,7 @@ box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
   }
 }
 
-cum_box_cluster_x <- function(dt, tgt_col){
+cum_box_cluster_x <- function(dt, tgt_col, y_lab){
   cluster_label <- c(4, 3, 2, 1)
   categ_label <- c("most precip", "less precip", 
                    "lesser precip", "least precip")
@@ -342,7 +348,7 @@ cum_box_cluster_x <- function(dt, tgt_col){
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission) +
            xlab("time period") + 
-           ylab("annual cum. precip. (mm)") + 
+           ylab(y_lab) + 
            scale_x_discrete(breaks=c(4, 3, 2, 1),
                             labels=categ_label) +  
            scale_fill_manual(values = color_ord,
@@ -352,7 +358,7 @@ cum_box_cluster_x <- function(dt, tgt_col){
   return(box_p)
 }
 
-cum_clust_box_plots <- function(dt, tgt_col){
+cum_clust_box_plots <- function(dt, tgt_col, y_lab){
   cluster_label <- c(4, 3, 2, 1)
   categ_label <- c("most precip", "less precip", 
                    "lesser precip", "least precip")
@@ -417,7 +423,7 @@ cum_clust_box_plots <- function(dt, tgt_col){
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission) +
            xlab("time period") + 
-           ylab("annual cum. precip. (mm)") + 
+           ylab(y_lab) + 
            scale_fill_manual(values = color_ord,
                              name = "precip\nlevel", 
                              labels = categ_label)
@@ -432,6 +438,13 @@ storm_box_plot <- function(data_tb){
                 "red", "steelblue1", "gold")
   x_ticks <- c("5", "10", "15", "20", "25")
 
+  data_tb$cluster <- factor(data_tb$cluster, levels=c(4, 3, 2, 1))
+  cluster_label <- as.character(c(4, 3, 2, 1))
+  str_labels <- c("4" = "most precip.", 
+                  "3" ="less precip.", 
+                  "2" = "lesser precip.", 
+                  "1" = "least precip.")
+
   # medians <- data.frame(data_tb) %>% 
   #            group_by(return_period, emission) %>% 
   #            summarise( med_5 = median(five_years),
@@ -441,14 +454,14 @@ storm_box_plot <- function(data_tb){
   #                      med_25 = median(twenty_five_years))  %>% 
   #            data.table()
 
-  melted <- melt(data_tb,  id = c("location", "model", 
+  melted <- melt(data_tb,  id = c("location", "model", "cluster",
                                   "return_period", "emission"))
   
   ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
-               panel.grid.major = element_line(size = 0.05),
-               panel.grid.minor = element_blank(),
+               #panel.grid.major = element_line(size = 0.05),
+               #panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
                legend.position = "bottom", 
                legend.key.size = unit(.6, "line"),
@@ -481,7 +494,8 @@ storm_box_plot <- function(data_tb){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission) +
+           facet_grid(~ emission ~ cluster,
+                      labeller=labeller(cluster = str_labels)) +
            scale_x_discrete(labels=c("five_years" = "5", 
                                      "ten_years" = "10",
                                      "fifteen_years" = "15",
@@ -492,6 +506,7 @@ storm_box_plot <- function(data_tb){
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
+           scale_y_continuous(breaks = 1:15) + 
            the
 }
 

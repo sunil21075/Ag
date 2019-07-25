@@ -16,6 +16,7 @@ options(digit=9)
 options(digits=9)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
+plot_dir <- paste0(in_dir, "plots/")
 
 ###############
 ann_all_doomsday <- readRDS(paste0(in_dir, "/ann_all_last_days.rds")) %>%
@@ -52,7 +53,6 @@ TS <- ggplot(dt_db) +
       geom_line(aes(x=year, y=annual_cum_precip)) +
       facet_grid(. ~ emission ~ cluster ~ condition)
 
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/plots/"
 ggsave(filename = paste0("TS.png"), 
        plot = TS, 
        width = 8, height = 4, units = "in", 

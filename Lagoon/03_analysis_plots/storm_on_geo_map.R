@@ -20,11 +20,16 @@ source(source_path_2)
 fi <- "/Users/hn/Desktop/Desktop/Kirti/"
 sec <- "check_point/lagoon/storm/"
 in_dir <- paste0(fi, sec)
+plot_dir <- paste0(in_dir, "plots/")
 
-plot_dir <- in_dir
+###################################################################################
+# 
 
-#########################
+param_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
+fip_clust <- read.csv(paste0(param_dir, "loc_fip_clust.csv"), 
+                      header=T, as.is=T)
 
+###################################################################################
 #
 # Read file
 #
@@ -40,9 +45,11 @@ storm <- storm %>%
 storm <- storm %>%
          filter(return_period != "2006-2025") %>%
          data.table()
-
+######
+######
+######
 return_levels <- c("1979-2016", "2026-2050", 
-	               "2051-2075", "2076-2099")
+                   "2051-2075", "2076-2099")
 
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 
@@ -51,7 +58,7 @@ storm$return_period <- factor(storm$return_period,
 #
 # pick up the columns that matter:
 #
-nd_cols <- c("location", "model", "emission",
+nd_cols <- c("location", "model", "emission", 
              "return_period", "twenty_five_years")
 
 storm <- subset(storm, select=nd_cols)
@@ -63,9 +70,22 @@ storm_45 <- storm %>%
 storm_85 <- storm %>%
             filter(emission == "RCP 4.5") %>%
             data.table()
-#
-# Plot RCP 4.5 all models
-#
+
+storm_obs <- storm %>%
+             filter(return_period == "1979-2016") %>%
+             select(-c("emission")) %>%
+             unique()%>%
+             data.table()
+
+storm_F <- storm %>%
+           filter(return_period != "1979-2016") %>%
+           data.table()
+
+rm(storm)
+
+##
+### Plot RCP 4.5 all models
+##
 min <- min(storm_45$twenty_five_years)
 max <- max(storm_45$twenty_five_years)
 for (ft_pr in future_rn_pr){
@@ -91,8 +111,7 @@ ggsave(filename = paste0("rcp45_all_map.png"),
        dpi=600, device = "png",
        path = plot_dir)
 
-rm(min, max, RCP45_figs, 
-   map_45_2026_2050, map_45_2051_2075, map_45_2076_2099)
+rm(min, max, RCP45_figs, map_45_2026_2050, map_45_2051_2075, map_45_2076_2099)
 #
 # Plot RCP 8.5 all models
 #
@@ -102,7 +121,7 @@ for (ft_pr in future_rn_pr){
   curr_dt <- storm_85 %>%
              filter(return_period %in% c("1979-2016", ft_pr))%>%
              data.table()
-  title <- paste0("RCP 4.5 (", ft_pr, ")")
+  title <- paste0("RCP 8.5 (", ft_pr, ")")
   
   assign(x = paste0("map_85_", 
                     gsub(pattern = "-", 
@@ -124,41 +143,44 @@ ggsave(filename = paste0("rcp85_all_map.png"),
 rm(min, max, RCP85_figs, 
    map_85_2026_2050, map_85_2051_2075, map_85_2076_2099)
 
-#####################
+####################################
 #
-# Medians
+#        Medians 
 #
-#####################
-storm_obs <- storm %>%
-             filter(return_period == "1979-2016") %>%
-             select(-c("emission")) %>%
-             unique()%>%
-             data.table()
-
-storm_F <- storm %>%
-           filter(return_period != "1979-2016") %>%
-           data.table()
-
+####################################
+#
 # find medians among models for each location
-storm_F <- storm_F %>%
-           group_by(location, emission, return_period) %>% 
-           summarise(twenty_five_years = median(twenty_five_years)) %>% 
-           data.table()
+#
+storm_F_medians <- storm_F %>%
+                   group_by(location, emission, return_period) %>% 
+                   summarise(twenty_five_years = median(twenty_five_years)) %>% 
+                   data.table()
+
 #
 # Plot all medians
 #
-min <- min(storm_F$twenty_five_years)
-max <- max(storm_F$twenty_five_years)
+min <- min(storm_F_medians$twenty_five_years)
+max <- max(storm_F_medians$twenty_five_years)
 
-min <- min(storm_obs$twenty_five_years, min)
-max <- max(storm_obs$twenty_five_years, max)
+# min <- min(storm_obs$twenty_five_years, min)
+# max <- max(storm_obs$twenty_five_years, max)
 
-obs_map <- obs_hist_map(dt = storm_obs, min, max)
+
+########################################
+#
+#       Map of observed data
+#
+########################################
+obs_map <- obs_hist_map(dt = storm_obs, min, max, 
+                        fips_clust=fip_clust, 
+                        tgt_col="twenty_five_years")
+
 emissions <- c("RCP 4.5", "RCP 8.5")
 subttl <- "medians taken over models"
+
 for (em in emissions){
   for (rp in future_rn_pr){
-    curr_dt <- storm_F %>%
+    curr_dt <- storm_F_medians %>%
                filter(emission == em & return_period==rp) %>%
                data.table()
     title <- paste0(em, " (", rp, ")")
@@ -190,27 +212,24 @@ ggsave(filename = "median_figs.png",
 
 rm(RCP_8.5_2076_2099, RCP_8.5_2051_2075, RCP_8.5_2026_2050,
    RCP_4.5_2076_2099, RCP_4.5_2051_2075, RCP_4.5_2026_2050,
-   storm_F, median_figs)
+   storm_F_medians, median_figs)
 ###########################################
 #
 # Differences of median and obs
 #
 ###########################################
-# storm_diff <- storm_F
+# storm_diff <- storm_F_medians
 # for (row in 1:nrow(storm_diff)){
-#   curr_loc <- storm_F[row, location]
+#   curr_loc <- storm_F_medians[row, location]
 #   curr_hist_val <- storm_obs[location==curr_loc, twenty_five_years]
 #   storm_diff[row, "twenty_five_years"] <- storm_diff[row, twenty_five_years] - curr_hist_val
 # }
 # saveRDS(storm_diff, paste0(in_dir, "storm_medians_diff_25yrs.rds"))
 
-storm_diff <- readRDS(paste0(in_dir, "storm_diff_25yrs.rds"))
+storm_diff <- readRDS(paste0(in_dir, "storm_medians_diff_25yrs.rds"))
 
 min <- min(storm_diff$twenty_five_years)
 max <- max(storm_diff$twenty_five_years)
-
-min <- min(storm_obs$twenty_five_years, min)
-max <- max(storm_obs$twenty_five_years, max)
 
 for (em in emissions){
   for (rp in future_rn_pr){
@@ -234,9 +253,8 @@ median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
                                          RCP_8.5_2026_2050,
                                          RCP_4.5_2076_2099,
                                          RCP_4.5_2076_2099,
-                                         RCP_4.5_2076_2099,
-                                         NULL, obs_map, NULL),
-                        ncol = 3, nrow = 3,
+                                         RCP_4.5_2076_2099),
+                        ncol = 3, nrow = 2,
                         common.legend = TRUE)
 ggsave(filename = "diff_median_figs.png", 
        plot = median_figs, 
