@@ -141,43 +141,49 @@ box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
   #   trend_type is in {mean, median} (line plot)
   #
   dt <- within(dt, remove(day, precip, model))
-  dt$cluster <- as.character(dt$cluster)
+  dt <- cluster_numeric_2_str(dt)
 
-  cluster_label <- as.character(c(4, 3, 2, 1))
-  str_labels <- c("4" = "most precip.", 
-                  "3" ="less precip.", 
-                  "2" = "lesser precip.", 
-                  "1" = "least precip.")
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")  
+  dt$cluster <- factor(dt$cluster, levels=categ_label)
+
+  # str_labels <- c("4" = "most precip.", "3" ="less precip.", 
+  #                 "2" = "lesser precip.", "1" = "least precip.")
   
-  month_names <- c("1" = "Jan.", "2" = "Feb.", "3" = "Mar.", 
+  month_names <- c("1" = "Jan.", "2" = "Feb.", "3" = "Mar.",
                    "4" = "Apr.", "5" = "May.", "6" = "Jun.", 
                    "7" = "Jul.", "8" = "Aug.", "9" = "Sept.", 
                    "10" = "Oct.", "11" = "Nov.", "12" = "Dec.")
   
-  time_p_lbl <- c("1950-2005", "1979-2016", 
-                  "2006-2025", "2026-2050",
-                  "2051-2075", "2076-2099")
-  
   if (p_type=="box"){
+    dt <- dt %>% 
+          filter(time_period != "1950-2005" & 
+                 time_period != "2006-2025") %>% 
+          data.table()
+    time_lbl <- c("1979-2016", "2026-2050",
+                "2051-2075", "2076-2099")
+    dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  
+
     dt <- within(dt, remove(year))
-    # color_ord = c("red", "purple", "dodgerblue2", "blue4")
-    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red",
-                  "blue3", "gold")
+
     melted <- melt(dt, id = c("location", "month",
                               "time_period", "emission",
                               "cluster"))
-    
-    melted$cluster <- factor(melted$cluster, 
-                             levels=cluster_label)
-    melted$month <- factor(melted$month, levels=1:12)
-    ax_txt_size <- 6; ax_ttl_size <- 7; box_width = 0.53
+
+    melted$month <- factor(melted$month, 
+                           levels=c(9, 10, 11, 12, 1, 2, 3, 
+                                    4, 5, 6, 7, 8))
+
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                  panel.border = element_rect(fill=NA, size=.3),
                  panel.grid.major = element_line(size = 0.05),
                  panel.grid.minor = element_blank(),
                  panel.spacing = unit(.35, "line"),
                  legend.position = "bottom", 
-                 legend.key.size = unit(.6, "line"),
+                 legend.key.size = unit(1, "line"),
                  legend.spacing.x = unit(.1, 'line'),
                  panel.spacing.y = unit(.5, 'line'),
                  legend.text = element_text(size = ax_ttl_size, face="bold"),
@@ -209,24 +215,57 @@ box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
                         position = position_dodge(0.6)) +
              # labs(x="", y="") + # theme_bw() + 
              facet_grid(~ emission ~ cluster,
-                        labeller=labeller(cluster = str_labels)) +
+                        # labeller=labeller(cluster = str_labels)
+                        ) +
              xlab("month") + 
              ylab("monthly cum. precip. (mm)") + 
-             scale_x_discrete(breaks=1:12,
+             scale_x_discrete(# breaks=1:12,
                               labels=month_names) +  
              scale_fill_manual(values = color_ord,
                                name = "time\nperiod", 
-                               labels = time_p_lbl)
+                               labels = time_lbl) + 
+             scale_y_continuous(breaks=c(125, 250, 500, 1000, 
+                                         1500, 2000, 2500)) + 
+             geom_hline(yintercept= 125, color = "red", size=.2)+
+             geom_hline(yintercept= 250, color = "red", size=.2)+
+             geom_hline(yintercept= 500, color = "red", size=.2)
+            
     return(box_p)
 
   } else {
-    ax_txt_size <- 12; ax_ttl_size <- 14;
+    time_lbl <- c("1950-2005", "1979-2016", "2006-2025", 
+                  "2026-2050", "2051-2075", "2076-2099")
+    dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  
+    if (trend_type=="median"){
+      dt <- dt %>%
+            group_by(time_period, month, 
+                     emission, cluster, year) %>%
+            summarise(stat_col=median(monthly_cum_precip))%>%
+            data.table()
+      y_lab <- "medians of cum. monthly precip. (over models)"
+      } else {
+        dt <- dt %>%
+              group_by(time_period, month, 
+                       emission, cluster, year) %>%
+              summarise(stat_col=mean(monthly_cum_precip))%>%
+              data.table()
+        y_lab <- "means of cum. monthly precip. (over models)"
+    }
+      
+    dt$month <- as.character(dt$month)
+    dt$month <- factor(dt$month, 
+                       levels=as.character(c(9, 10, 11, 12, 
+                                             1, 2, 3, 4, 5,
+                                             6, 7, 8)))
+
+    ax_txt_size <- 15; ax_ttl_size <- 17;
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                  panel.border = element_rect(fill=NA, size=.3),
                  panel.grid.major = element_line(size = 0.05),
                  panel.grid.minor = element_blank(),
                  legend.position = "bottom", 
-                 legend.key.size = unit(1.2, "line"),
+                 legend.key.size = unit(1.5, "line"),
                  legend.spacing.x = unit(1, 'line'),
                  panel.spacing.x = unit(2, 'line'),
                  panel.spacing.y = unit(1, 'line'),
@@ -253,46 +292,108 @@ box_trend_monthly <- function(dt, p_type="trend", trend_type="median"){
                                              margin = margin(t=2, r=0, b=-10, l=0))
                       )
   
-    if (trend_type=="median"){
-      dt <- dt %>%
-            group_by(time_period, month, 
-                     emission, cluster, year) %>%
-            summarise(stat_col=median(monthly_cum_precip))%>%
-            data.table()
-      } else {
-        dt <- dt %>%
-              group_by(time_period, month, 
-                       emission, cluster, year) %>%
-              summarise(stat_col=mean(monthly_cum_precip))%>%
-              data.table()
-      }
-      
-    dt$month <- as.character(dt$month)
-    dt$month <- factor(dt$month, levels=as.character(1:12))
     line_p <- ggplot(data=dt, 
                      aes(x=year, y=stat_col, 
                          group=time_period, 
                          color=time_period)) +
               geom_line() +
               the + 
-              facet_grid(~ emission ~ cluster  ~ month,
-                         labeller=labeller(cluster = str_labels,
-                                           month = month_names))
+              facet_grid(~ emission ~ cluster ~ month,
+                         labeller=labeller(month = month_names))+
+              ylab(y_lab)
+
       return(line_p)
   }
 }
 
+ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
+  # toss unwanted time periods
+  dt <- dt %>% 
+        filter(time_period != "1950-2005" & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  dt <- within(dt, remove(month, day, precip, model, wtr_yr))
+  dt <- cluster_numeric_2_str(dt)
+  # medians <- data.frame(dt) %>% 
+  #            group_by(cluster, time_period, emission) %>% 
+  #            summarise( medians = median(get(tgt_col)))  %>% 
+  #            data.table()
+
+  melted <- melt(dt, id = c("location", "year", 
+                            "time_period", "emission",
+                            "cluster"))
+
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")
+  time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+  
+  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.53
+
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                          face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_text(size = ax_ttl_size , face = "bold",
+                                           margin = margin(t=2, r=0, b=-10, l=0))
+                    )
+
+  box_p <- ggplot(data = melted, 
+                  aes(x=cluster, y=value, fill=time_period)) +
+           the + 
+           geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+           # labs(x="", y="") + # theme_bw() + 
+           facet_grid(~ emission) +
+           xlab("precip. group") +
+           ylab(y_lab) + 
+           scale_fill_manual(values = color_ord,
+                             labels = time_label)
+  return(box_p)
+
+}
+
 cum_box_cluster_x <- function(dt, tgt_col, y_lab){
+  dt <- dt %>% 
+        filter(time_period != "1950-2005" & time_period != "2006-2025") %>% 
+        data.table()
+
   cluster_label <- c(4, 3, 2, 1)
   categ_label <- c("most precip", "less precip", 
                    "lesser precip", "least precip")
-  time_label <- c("1950-2005", "1979-2016", 
-                   "2006-2025", "2026-2050",
-                   "2051-2075", "2076-2099")
+  time_label <- c(# "1950-2005", 
+                  "1979-2016", # "2006-2025",
+                  "2026-2050",
+                  "2051-2075", "2076-2099")
 
-  # color_ord = c("red", "purple", "dodgerblue2", "blue4")
-  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red",
-                "blue3", "gold")
+  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+  # color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red", "blue3", "gold")
   
   # medians <- data.frame(dt) %>% 
   #            group_by(cluster, time_period, emission) %>% 
@@ -347,12 +448,8 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission) +
-           xlab("time period") + 
            ylab(y_lab) + 
-           scale_x_discrete(breaks=c(4, 3, 2, 1),
-                            labels=categ_label) +  
            scale_fill_manual(values = color_ord,
-                             name = "time\nperiod", 
                              labels = time_label)
   
   return(box_p)
@@ -375,7 +472,7 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
     dt <- within(dt, remove(month, day))
   }
 
-  dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
+  # dt <- dt %>% filter(get(tgt_col) >= 0)%>% data.table()
   
   melted <- melt(dt, id = c("location", "year", 
                             "time_period", "model", "emission",

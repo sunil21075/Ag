@@ -510,3 +510,15 @@ order(cluster_means)
 # conditional replacement
 A[precip < 0, precip := 0]
 
+#########################################
+#
+# clusters are 4, ..., 1
+# we wantedd strip titles be different:
+#
+str_labels <- c("4" = "most precip.", 
+                "3" ="less precip.", 
+                "2" = "lesser precip.", 
+                "1" = "least precip.")
+facet_grid(~ emission ~ cluster,
+           labeller=labeller(cluster = str_labels)
+                        ) 

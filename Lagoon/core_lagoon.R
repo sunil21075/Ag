@@ -14,7 +14,7 @@ add_coord_from_location <- function(dt){
   return(dt)
 }
 
-change_cluster_labels <- function(B){
+cluster_numeric_2_str <- function(B){
   B$cluster <- as.character(B$cluster)
   B$cluster <- recode(B$cluster, "4" = "most precip",
                                  "3" = "less precip",

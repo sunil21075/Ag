@@ -25,19 +25,21 @@ dt_tb <- data.table(readRDS(paste0(in_dir, file, ".rds")))
 head(dt_tb, 2)
 
 box_plt <- box_trend_monthly(dt=dt_tb, p_type="box")
-trend_med <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="median")
-# trend_mean <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="mean")
 
-ggsave(filename = paste0(file, ".png"), 
+ggsave(filename = "monthly_box.png", 
        plot = box_plt, 
-       width = 8, height = 3, units = "in", 
+       width = 14, height = 6, units = "in", 
        dpi=600, device = "png",
-       path = paste0(plot_dir, "time_on_x/"))
+       path = paste0(plot_dir, "clust_on_x/"))
 
+# trend_mean <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="mean")
+trend_med <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="median")
+
+trend_med <- line_p
 ggsave(filename = paste0(file, "_trend_med.png"), 
        plot = trend_med, 
        width = 40, height = 20, units = "in", 
        dpi=600, device = "png",
-       path = paste0(plot_dir, "time_on_x/")) 
+       path = paste0(plot_dir, "clust_on_x/")) 
 
 
