@@ -31,5 +31,5 @@ ggsave(filename = "monthly_box.png",
        plot = box_plt, 
        width = 14, height = 6, units = "in", 
        dpi=600, device = "png",
-       path = paste0(plot_dir, "clust_on_x/"))
+       path = plot_dir)
 
