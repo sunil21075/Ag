@@ -18,16 +18,21 @@ in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
 plot_dir <- paste0(in_dir, "plots/")
 
 ##############################
-fileN <- "ann_all_last_days"
+
+fileN <- "Sept_March_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
+head(dt_tb, 2)
 
-plot_col <- "annual_cum_precip"
-y_lab <- "annual cum. precip. (mm)"
+plot_col <- "chunk_cum_precip"
+y_lab <- "Sept. - Mar. cum. precip. (mm)"
 
-ann_box_p <- ann_wtrYr_chunk_cum_box_cluster_x(dt_tb, y_lab, tgt_col = plot_col)
+chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
+                                                y_lab = y_lab,
+                                                tgt_col=plot_col)
 
 ggsave(filename = paste0(fileN, ".png"), 
-       plot = ann_box_p, 
+       plot = chunk_box, 
        width = 8, height = 3, units = "in", 
        dpi=600, device = "png",
        path = paste0(plot_dir, "clust_on_x/"))
+

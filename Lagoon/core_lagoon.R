@@ -398,16 +398,16 @@ compute_monthly_cum <- function(data_tb){
   #                                                            #
   #                                                            #
   ##############################################################
-  if ("precip" %in% colnames(data_tb)){
+  if ("runoff" %in% colnames(data_tb)){
     data_tb <- data_tb %>%
                group_by(location, year, month, model, emission) %>%
-               mutate(monthly_cum_precip = cumsum(precip)) %>%
+               mutate(monthly_cum_runbase = cumsum(run_p_base)) %>%
                # slice(which.max(day)) %>%
                data.table()
     } else {
       data_tb <- data_tb %>%
                group_by(location, year, month, model, emission) %>%
-               mutate(monthly_cum_runbase = cumsum(run_p_base)) %>%
+               mutate(monthly_cum_precip = cumsum(precip)) %>%
                # slice(which.max(day)) %>%
                data.table()
   }

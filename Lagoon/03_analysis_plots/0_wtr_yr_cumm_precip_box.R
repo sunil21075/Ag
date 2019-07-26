@@ -27,8 +27,8 @@ plot_col <- "annual_cum_precip"
 y_lab <- "annual (water year) cum. precip. (mm)"
 
 wtr_yr_cum_prec <- ann_wtrYr_chunk_cum_box_cluster_x(dt_tb, 
-                                                     y_lab=y_lab, 
-                                                     tgt_col=plot_col)
+                                                      y_lab=y_lab, 
+                                                      tgt_col=plot_col)
 
 ggsave(filename = paste0(fileN, ".png"), 
        plot = wtr_yr_cum_prec, 

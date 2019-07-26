@@ -24,7 +24,9 @@ plotting_col <- "monthly_cum_precip"
 dt_tb <- data.table(readRDS(paste0(in_dir, file, ".rds")))
 head(dt_tb, 2)
 
-box_plt <- box_trend_monthly(dt=dt_tb, p_type="box")
+y_lab <- "monthly cum. precip. (mm)"
+
+box_plt <- box_trend_monthly_cum_prec(dt=dt_tb, p_type="box", y_lab)
 
 ggsave(filename = "monthly_box.png", 
        plot = box_plt, 
@@ -32,8 +34,11 @@ ggsave(filename = "monthly_box.png",
        dpi=600, device = "png",
        path = paste0(plot_dir, "clust_on_x/"))
 
-# trend_mean <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="mean")
-trend_med <- box_trend_monthly(dt=dt_tb, p_type="trend", trend_type="median")
+# trend_mean <- box_trend_monthly_cum_prec(dt=dt_tb, p_type="trend", trend_type="mean")
+trend_med <- box_trend_monthly_cum(dt=dt_tb, 
+                                   p_type="trend", 
+                                   trend_type="median",
+                                   y_lab)
 
 trend_med <- line_p
 ggsave(filename = paste0(file, "_trend_med.png"), 
