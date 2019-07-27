@@ -18,17 +18,20 @@ in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
 plot_dir <- paste0(in_dir, "plots/")
 
 ##############################
-fileN <- "all_ann_cum_runoff_LD"
+fileN <- "all_monthly_cum_runoff_LD"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
-plot_col <- "annual_cum_runbase"
-y_lab <- "annual cum. [runoff + BF] (mm)"
+plotting_col <- "monthly_cum_runbase"
+y_labb <- "monthly cum. [runff + BF] (mm)"
 
-ann_box_p <- ann_wtrYr_chunk_cum_box_cluster_x(dt_tb, y_lab, tgt_col = plot_col)
+tg_col = "monthly_cum_runbase"
+box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box", 
+                                 y_lab=y_labb, tgt_col = tg_col)
 
-ggsave(filename = paste0(fileN, ".png"), 
-       plot = ann_box_p, 
-       width = 8, height = 3, units = "in", 
+ggsave(filename = "monthly_box.png", 
+       plot = box_plt, 
+       width = 14, height = 6, units = "in", 
        dpi=600, device = "png",
        path = plot_dir)
+

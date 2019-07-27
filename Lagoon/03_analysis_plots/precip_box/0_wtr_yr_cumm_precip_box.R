@@ -14,24 +14,29 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
+in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
 plot_dir <- paste0(in_dir, "plots/")
 
 ##############################
-fileN <- "all_chunk_cum_runoff_LD"
+
+fileN <- "wtr_yr_sept_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
-plot_col <- "chunk_cum_runbase"
-y_lab <- "Sept.-Mar. cum. [runoff + BF] (mm)"
+plot_col <- "annual_cum_precip"
+y_lab <- "annual (water year) cum. precip. (mm)"
 
-chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
-                                                y_lab = y_lab,
-                                                tgt_col=plot_col)
+wtr_yr_cum_prec <- ann_wtrYr_chunk_cum_box_cluster_x(dt = dt_tb, 
+                                                     y_lab = y_lab, 
+                                                     tgt_col = plot_col)
 
 ggsave(filename = paste0(fileN, ".png"), 
-       plot = chunk_box, 
-       width = 8, height = 3, units = "in", 
+       plot = wtr_yr_cum_prec, 
+       width = 10, height = 3, units = "in", 
        dpi=600, device = "png",
-       path = plot_dir)
+       path = paste0(plot_dir, "clust_on_x/"))
+
+
+
+
 

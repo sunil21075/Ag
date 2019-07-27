@@ -26,7 +26,14 @@ head(dt_tb, 2)
 
 y_lab <- "monthly cum. precip. (mm)"
 
-box_plt <- box_trend_monthly_cum_prec(dt=dt_tb, p_type="box", y_lab)
+###############################
+#
+# Box plot
+#
+###############################
+tg_col <- "monthly_cum_precip"
+box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box", 
+	                             y_lab = y_lab, tgt_col= tg_col)
 
 ggsave(filename = "monthly_box.png", 
        plot = box_plt, 
@@ -34,17 +41,18 @@ ggsave(filename = "monthly_box.png",
        dpi=600, device = "png",
        path = paste0(plot_dir, "clust_on_x/"))
 
-# trend_mean <- box_trend_monthly_cum_prec(dt=dt_tb, p_type="trend", trend_type="mean")
-trend_med <- box_trend_monthly_cum(dt=dt_tb, 
-                                   p_type="trend", 
-                                   trend_type="median",
-                                   y_lab)
+###############################
+#
+# Trend line
+#
+###############################
 
-trend_med <- line_p
-ggsave(filename = paste0(file, "_trend_med.png"), 
-       plot = trend_med, 
-       width = 40, height = 20, units = "in", 
-       dpi=600, device = "png",
-       path = paste0(plot_dir, "clust_on_x/")) 
+# trend_med <- box_trend_monthly_cum(dt=dt_tb, p_type="trend", 
+#                                    trend_type="median", y_lab=y_lab)
+# ggsave(filename = paste0(file, "_trend_med.png"), 
+#        plot = trend_med, 
+#        width = 40, height = 20, units = "in", 
+#        dpi=600, device = "png",
+#        path = paste0(plot_dir, "clust_on_x/")) 
 
 

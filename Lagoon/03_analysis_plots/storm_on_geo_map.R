@@ -39,11 +39,8 @@ storm <- data.table(readRDS(paste0(in_dir, storm_file)))
 # Filter modeled hist out
 #
 storm <- storm %>%
-         filter(return_period != "1950-2005") %>%
-         data.table()
-
-storm <- storm %>%
-         filter(return_period != "2006-2025") %>%
+         filter(return_period != "2006-2025" & 
+                return_period != "1950-2005") %>%
          data.table()
 ######
 ######
@@ -98,7 +95,7 @@ for (ft_pr in future_rn_pr){
                     gsub(pattern = "-", 
                          replacement = "_", 
                          x = ft_pr)),
-         value ={all_mods_map(curr_dt, min, max, title)})
+         value ={all_mods_map_storm(curr_dt, minn=min, maxx=max, title)})
 }
 RCP45_figs <- ggarrange(plotlist = list(map_45_2026_2050,
                                         map_45_2051_2075,
@@ -127,7 +124,7 @@ for (ft_pr in future_rn_pr){
                     gsub(pattern = "-", 
                          replacement = "_", 
                          x = ft_pr)),
-         value ={all_mods_map(curr_dt, min, max, title)})
+         value ={all_mods_map_storm(curr_dt, minn=min, maxx=max, title)})
 }
 
 RCP85_figs <- ggarrange(plotlist = list(map_85_2026_2050,
@@ -171,9 +168,9 @@ max <- max(storm_F_medians$twenty_five_years)
 #       Map of observed data
 #
 ########################################
-obs_map <- obs_hist_map(dt = storm_obs, min, max, 
-                        fips_clust=fip_clust, 
-                        tgt_col="twenty_five_years")
+obs_map <- obs_hist_map_storm(dt = storm_obs, minn=min, maxx=max, 
+                              fips_clust=fip_clust, 
+                              tgt_col="twenty_five_years")
 
 emissions <- c("RCP 4.5", "RCP 8.5")
 subttl <- "medians taken over models"
@@ -191,7 +188,8 @@ for (em in emissions){
                       gsub(pattern = "-", 
                            replacement = "_", 
                            x = rp)),
-           value ={one_time_medians(curr_dt, min, max, title, subttl)})
+           value ={one_time_medians_storm_geoMap(curr_dt, minn=min, maxx=max, 
+                                                 title, subttl, differ=FALSE)})
 
   }
 }
@@ -204,6 +202,8 @@ median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
                                          NULL, obs_map, NULL),
                         ncol = 3, nrow = 3,
                         common.legend = TRUE)
+
+
 ggsave(filename = "median_figs.png", 
        plot = median_figs, 
        width = 14, height = 8, units = "in", 
@@ -244,7 +244,8 @@ for (em in emissions){
                       gsub(pattern = "-", 
                            replacement = "_", 
                            x = rp)),
-           value ={one_time_medians(curr_dt, min, max, title, subttl)})
+           value ={one_time_medians_storm_geoMap(curr_dt, minn = min, maxx = max, 
+                                                 title, subttl, differ=TRUE)})
 
   }
 }

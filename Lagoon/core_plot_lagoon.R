@@ -13,6 +13,68 @@ options(digits=9)
 #                         Functions
 #
 ############################################################
+#
+# change the name and maintain the code so it is 
+# funtional for wide range of data.
+# lets say one column is location, and one column determines
+# color of stuff on the map.
+#
+geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
+  
+  x <- sapply(dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+
+  states <- map_data("state")
+  states_cluster <- subset(states, 
+                           region %in% c("washington"))
+
+  dt %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = col_col), 
+             alpha = 1,
+             size=.3) +
+  guides(fill = guide_colourbar(barwidth = .1, barheight = 20))+
+  # scale_color_viridis_c(option = "plasma", 
+  #                       name = "storm", direction = -1,
+  #                       limits = c(min, max),
+  #                       # begin = 0.5, end = 1,
+  #                       breaks = pretty_breaks(n = 3)) +
+  scale_color_gradient2(breaks = c((as.integer(minn*0.5)), 
+                                    0,
+                                    (as.integer(maxx/2)), 
+                                    (as.integer((maxx-1)*0.85))),
+                        labels = c((as.integer(minn*0.5)), 
+                                   0, 
+                                   (as.integer(maxx/2)),
+                                   (as.integer((maxx-1)*0.85))),
+                        low = "red", high = "blue", mid = "white",
+                        space="Lab"
+                        ) +
+  # scale_color_continuous(breaks = c(as.integer(minn+1), 0, as.integer(maxx-1)),
+  #                        labels = c(as.integer(minn+1), 0, as.integer(maxx-1)),
+  #                        low = "red", high = "blue") + 
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 12, face="plain"),
+        legend.title = element_blank(),
+        # legend.justification = c(.93, .9),
+        # legend.position = c(.93, .9),
+        legend.position = "top",
+        strip.text = element_text(size=14, face="bold"))+
+  ggtitle(ttl, subtitle=subttl)
+  
+}
 
 #
 # Following works are on both precip and runoffs
@@ -24,28 +86,35 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   
   # toss unwanted time periods
   dt <- dt %>% 
-        filter(time_period != "1950-2005" & 
+        filter(# time_period != "1950-2005" & 
                time_period != "2006-2025") %>% 
         data.table()
 
-  dt <- within(dt, remove(month, day, precip, model, wtr_yr))
+  suppressWarnings({ dt <- within(dt, remove(month, day, precip, model, wtr_yr))})
   dt <- cluster_numeric_2_str(dt)
-  # medians <- data.frame(dt) %>% 
-  #            group_by(cluster, time_period, emission) %>% 
-  #            summarise( medians = median(get(tgt_col)))  %>% 
-  #            data.table()
+  
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
 
   melted <- melt(dt, id = c("location", "year", 
                             "time_period", "emission",
                             "cluster"))
+  rm(dt)
 
   categ_label <- c("most precip", "less precip", 
                    "lesser precip", "least precip")
-  time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+  
+  # time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+  # color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+  
+  time_label <- c("1950-2005", "1979-2016", "2026-2050", "2051-2075", "2076-2099")
+  color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
-  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
   ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.53
 
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -74,32 +143,42 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
-               axis.title.x = element_text(size = ax_ttl_size , face = "bold",
-                                           margin = margin(t=2, r=0, b=-10, l=0))
+               axis.title.x = element_blank()
                     )
-
-  box_p <- ggplot(data = melted, 
-                  aes(x=cluster, y=value, fill=time_period)) +
-           the + 
-           geom_boxplot(outlier.size = - 0.3, notch=F, 
+  ########
+  ########    PLOT
+  ########
+  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6)) +
-           # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission) +
-           xlab("precip. group") +
-           ylab(y_lab) + 
-           scale_fill_manual(values = color_ord,
-                             labels = time_label)
-  return(box_p)
+                        position = position_dodge(0.8)) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  facet_grid(~ emission) +
+  xlab("precip. group") +
+  ylab(y_lab) + 
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.8), vjust = -1
+            # hjust = 1
+            )
+
 }
 
-box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab){
+box_trend_monthly_cum <- function(dt, p_type="trend", 
+                                  trend_type="median", y_lab, tgt_col){
   #
   # input p_type is in {box, trend} (box plot or line plot)
   #   trend_type is in {mean, median} (line plot)
   #
 
-  dt <- within(dt, remove(day, precip, model, evap, runoff, base_flow, run_p_base))
+  dt <- within(dt, remove(day, precip, model))
+  if ("evap" %in% colnames(dt)){
+    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+  }
   dt <- cluster_numeric_2_str(dt)
 
   categ_label <- c("most precip", "less precip", 
@@ -113,23 +192,35 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
   
   if (p_type=="box"){
     dt <- dt %>% 
-          filter(time_period != "1950-2005" & 
+          filter(# time_period != "1950-2005" & 
                  time_period != "2006-2025") %>% 
           data.table()
+    
     time_lbl <- c("1979-2016", "2026-2050",
-                "2051-2075", "2076-2099")
+                  "2051-2075", "2076-2099")
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+ 
+    time_lbl <- c("1950-2005", "1979-2016", "2026-2050",
+                  "2051-2075", "2076-2099")
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+
     dt$time_period <- factor(dt$time_period, levels=time_lbl)
     dt <- within(dt, remove(year))
+
+    # medians <- data.frame(dt) %>% 
+    #            group_by(cluster, time_period, emission, month) %>% 
+    #            summarise( med = median(get(tgt_col))) %>% 
+    #            data.table()
 
     melted <- melt(dt, id = c("location", "month",
                               "time_period", "emission",
                               "cluster"))
+    rm(dt)
 
     melted$month <- factor(melted$month, 
                            levels=c(9, 10, 11, 12, 1, 2, 3, 
                                     4, 5, 6, 7, 8))
 
-    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
     ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                  panel.border = element_rect(fill=NA, size=.3),
@@ -157,9 +248,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  axis.title.y = element_text(size = ax_ttl_size, 
                                              face = "bold", 
                                              margin = margin(t=0, r=2, b=0, l=0)),
-                 axis.title.x = element_text(size = ax_ttl_size , face = "bold",
-                                             margin = margin(t=2, r=0, b=-10, l=0))
-                      )
+                 axis.title.x = element_blank()
+                )
     
     box_p <- ggplot(data = melted, 
                     aes(x=month, y=value, fill=time_period)) +
@@ -168,21 +258,28 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
              # labs(x="", y="") + # theme_bw() + 
-             facet_grid(~ emission ~ cluster,
-                        # labeller=labeller(cluster = str_labels)
-                        ) +
-             xlab("month") + 
+             facet_grid(~ emission ~ cluster) +
+             # xlab("month") + 
              ylab(y_lab) + 
              scale_x_discrete(# breaks=1:12,
-                              labels=month_names) +  
+                              labels=month_names,) +  
              scale_fill_manual(values = color_ord,
                                name = "time\nperiod", 
                                labels = time_lbl) + 
              scale_y_continuous(breaks=c(125, 250, 500, 1000, 
-                                         1500, 2000, 2500)) + 
-             geom_hline(yintercept= 125, color = "red", size=.2)+
-             geom_hline(yintercept= 250, color = "red", size=.2)+
-             geom_hline(yintercept= 500, color = "red", size=.2)
+                                         1500, 2000, 2500)) 
+             # +
+             # geom_text(data = medians, 
+             #           aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
+             #           size = 2, vjust = -1.4,
+             #           position = position_dodge(.9)
+             #           # hjust = 1
+             #           )
+
+             # + 
+             # geom_hline(yintercept= 125, color = "white", size=.2)+
+             # geom_hline(yintercept= 250, color = "white", size=.2)+
+             # geom_hline(yintercept= 500, color = "white", size=.2)
             
     return(box_p)
 
@@ -265,7 +362,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
 #            STORM
 #
 #
-one_time_medians_storm <- function(dt, min, max, ttl, subttl){
+one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FALSE){
   # Storm related
   # one_time_medians means one-time in the sense of 25 years
   # strom, (not including 5, 10, 15, 20 years)
@@ -280,35 +377,64 @@ one_time_medians_storm <- function(dt, min, max, ttl, subttl){
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
-  dt %>%
-  ggplot() +
-  geom_polygon(data = states_cluster, 
-               aes(x = long, y = lat, group = group),
-               fill = "grey", color = "black") +
-  geom_point(aes_string(x = "long", y = "lat",
-                        color = tgt_col), 
-             alpha = 1,
-             size=.3) +
-  scale_color_viridis_c(option = "plasma", 
-                        name = "storm", direction = -1,
-                        limits = c(min, max),
-                        breaks = pretty_breaks(n = 4)) +
-  theme(axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.text = element_blank(),
-        plot.title = element_text(size = 14, face = "bold"),
-        legend.text = element_text(size = 12, face="plain"),
-        legend.title = element_blank(),
-        # legend.justification = c(.93, .9),
-        # legend.position = c(.93, .9),
-        legend.position = "top",
-        strip.text = element_text(size=14, face="bold"))+
-  ggtitle(ttl, subtitle=subttl)
+
+   th <- theme(axis.title.y = element_blank(),
+               axis.title.x = element_blank(),
+               axis.ticks.y = element_blank(), 
+               axis.ticks.x = element_blank(),
+               axis.text = element_blank(),
+               plot.title = element_text(size = 14, face = "bold"),
+               legend.text = element_text(size = 12, face="plain"),
+               legend.title = element_blank(),
+               # legend.justification = c(.93, .9),
+               # legend.position = c(.93, .9),
+               legend.position = "top",
+               strip.text = element_text(size=14, face="bold"))
+  
+  if (differ==TRUE){
+    bbb <- dt %>%
+          ggplot() +
+          geom_polygon(data = states_cluster, 
+                       aes(x = long, y = lat, group = group),
+                       fill = "grey", color = "black") +
+          geom_point(aes_string(x = "long", y = "lat",
+                                color = tgt_col), 
+                     alpha = 1, size=.3) +
+          scale_color_gradient2(breaks = c((as.integer(minn*0.5)), 
+                                            0,
+                                            (as.integer(maxx/2)), 
+                                            (as.integer((maxx-1)*0.85))),
+                                labels = c((as.integer(minn*0.5)), 
+                                           0, 
+                                           (as.integer(maxx/2)),
+                                           (as.integer((maxx-1)*0.85))),
+                                low = "red", high = "blue", mid = "white",
+                                space="Lab"
+                                )  +
+          th +
+          ggtitle(ttl, subtitle=subttl)
+      } else{
+       bbb <- dt %>%
+              ggplot() +
+              geom_polygon(data = states_cluster, 
+                           aes(x = long, y = lat, group = group),
+                           fill = "grey", color = "black") +
+              geom_point(aes_string(x = "long", y = "lat",
+                                    color = tgt_col), 
+                         alpha = 1, size=.3) +
+              scale_color_viridis_c(option = "plasma", 
+                                    name = "storm", direction = -1,
+                                    limits = c(min, max),
+                                    breaks = pretty_breaks(n = 4)) +
+              th +
+              ggtitle(ttl, subtitle=subttl)
+    }
+    return(bbb)
 }
 
-all_mods_map_storm <- function(dt, min, max, ttl){
+#####################################
+#####################################
+all_mods_map_storm <- function(dt, minn, maxx, ttl){
   tgt_col <- "twenty_five_years"
   x <- sapply(dt$location, 
               function(x) strsplit(x, "_")[[1]], 
@@ -343,11 +469,11 @@ all_mods_map_storm <- function(dt, min, max, ttl){
         legend.title = element_blank(),
         legend.position = "top",
         legend.margin = margin(t=-1, r=0, b=0, l=0, unit = 'line'),
-        strip.text = element_text(size=14, face="bold"))+
+        strip.text = element_text(size=14, face="bold")) + 
   ggtitle(ttl)
 }
 
-obs_hist_map_storm <- function(dt, min, max, fips_clust, tgt_col="twenty_five_years") {
+obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_years") {
   
   dt <- add_coord_from_location(dt)
   dt <- merge(dt, fips_clust, by="location", all.x=T)
@@ -368,7 +494,7 @@ obs_hist_map_storm <- function(dt, min, max, fips_clust, tgt_col="twenty_five_ye
                         size=.3) +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
-                        limits = c(min, max),
+                        limits = c(minn, maxx),
                         breaks = pretty_breaks(n = 4)) +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
@@ -381,9 +507,10 @@ obs_hist_map_storm <- function(dt, min, max, fips_clust, tgt_col="twenty_five_ye
         legend.justification = c(.93, .9),
         legend.position = c(.93, .9),
         strip.text = element_text(size=14, face="bold")) +
-  ggtitle("Observed historical") +
-  geom_polygon(fill = "transparent", color = "red", size = .1, 
-                data = dt, aes(x = long, y = lat, group = cluster))
+  ggtitle("Observed historical") 
+  # +
+  # geom_polygon(fill = "transparent", color = "red", size = .1, 
+  #               data = dt, aes(x = long, y = lat, group = cluster))
 
 }
 
@@ -416,8 +543,8 @@ storm_box_plot <- function(data_tb){
   ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
-               #panel.grid.major = element_line(size = 0.05),
-               #panel.grid.minor = element_blank(),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
                legend.position = "bottom", 
                legend.key.size = unit(.6, "line"),
@@ -462,7 +589,7 @@ storm_box_plot <- function(data_tb){
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
-           scale_y_continuous(breaks = 1:15) + 
+           scale_y_continuous(breaks = 1:20) + 
            the
 }
 ############################################################
@@ -470,8 +597,6 @@ storm_box_plot <- function(data_tb){
 #            Precip
 #
 #
-
-
 ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
   # toss unwanted time periods
   dt <- dt %>% 
@@ -633,6 +758,7 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
   #            group_by(cluster, time_period, emission) %>% 
   #            summarise( medians = median(get(tgt_col)))  %>% 
   #            data.table()
+
   dt <- within(dt, remove(day, precip, wtr_yr))
   if (tgt_col=="annual_cum_precip"){
     dt <- within(dt, remove(month, day))

@@ -5,6 +5,70 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
+
+compute_median_diff_4_map <- function(dt, tgt_col){
+
+  ################################################
+  #
+  # We need to do the following lines in order
+  # to make the subtraction within groups work.
+  #
+  dt_observed <- dt %>% 
+                 filter(time_period == "1979-2016") %>%
+                 select(-c("emission")) %>%
+                 unique()%>%
+                 data.table()
+
+  dt_observed$emission <- "observed"
+
+  dt <- dt %>% filter(time_period != "1979-2016") %>% data.table()
+  dt <- rbind(dt, dt_observed)
+
+  #
+  # Clean unwanted data
+  #
+  if ("evap" %in% colnames(dt)){
+    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+  }
+  if ("wtr_yr" %in% colnames(dt)) {
+    dt <- within(dt, remove(wtr_yr))
+  }
+
+  dt <- within(dt, remove(year, month, day, precip, model, cluster))
+
+  dt <- dt %>% 
+        filter(time_period != "1950-2005" & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  medians <- data.frame(dt) %>% 
+             group_by(location, time_period, emission) %>% 
+             summarise( medians = median(get(tgt_col)))  %>% 
+             data.table()
+
+  median_diffs <- medians %>%
+                  group_by(location) %>%
+                  mutate(diff = medians - medians[time_period == "1979-2016"])%>%
+                  data.table()
+
+  median_diffs <- median_diffs %>% 
+                  filter(time_period != "1979-2016")%>%
+                  data.table()
+
+  # to do percentages
+  obs_medians <- medians %>% 
+                 filter(emission == "observed") %>% 
+                 data.table()
+  obs_medians <- within(obs_medians, remove(time_period, emission))
+  setnames(obs_medians, old=c("medians"), new=c("obs_median"))
+
+  median_diffs <- merge(median_diffs, obs_medians, by="location", all.x=T)
+  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
+  median_diffs <- within(median_diffs, remove(medians, obs_median))
+  return(median_diffs)
+}
+
+########################################################################
 add_coord_from_location <- function(dt){
   x <- sapply(dt$location, 
               function(x) strsplit(x, "_")[[1]], 

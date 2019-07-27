@@ -709,9 +709,14 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
   ######
   ###### Compute medians of each group to annotate in the plot, if possible!!!
   ######
-  df <- data.frame(data)
-  df <- (df %>% group_by(CountyGroup, ClimateGroup))
-  medians <- (df %>% summarise(med = median(Emergence)))
+  # df <- data.frame(data)
+  # df <- (df %>% group_by(CountyGroup, ClimateGroup))
+  # medians <- (df %>% summarise(med = median(Emergence)))
+  # medians_vec <- medians$med
+
+  df <- data.frame(data) %>% 
+        group_by(CountyGroup, ClimateGroup)) %>% 
+        summarise(med = median(Emergence)))
   medians_vec <- medians$med
   
   p = ggplot(data = data, aes(x=ClimateGroup, y=Emergence, fill=ClimateGroup))+
