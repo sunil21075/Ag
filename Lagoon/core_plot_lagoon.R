@@ -40,10 +40,8 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group), 
                fill = NA, colour = "grey60", size=.3) + 
-  geom_point(aes_string(x = "long", y = "lat",
-                        color = col_col), 
-             alpha = 1,
-             size=.3) +
+  geom_point(aes_string(x = "long", y = "lat", color = col_col), 
+             alpha = 1, size=.3) +
   guides(fill = guide_colourbar(barwidth = .1, barheight = 20))+
   # scale_color_viridis_c(option = "plasma", 
   #                       name = "storm", direction = -1,
@@ -52,12 +50,12 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   #                       breaks = pretty_breaks(n = 3)) +
   scale_color_gradient2(breaks = c((as.integer(minn*0.5)), 
                                     0,
-                                    (as.integer(maxx/2)), 
-                                    (as.integer((maxx-1)*0.85))),
+                                    (as.integer(maxx*0.5)), 
+                                    (as.integer((maxx)*0.85))),
                         labels = c((as.integer(minn*0.5)), 
                                    0, 
-                                   (as.integer(maxx/2)),
-                                   (as.integer((maxx-1)*0.85))),
+                                   (as.integer(maxx*0.5)),
+                                   (as.integer((maxx)*0.85))),
                         low = "red", high = "blue", mid = "white",
                         space="Lab"
                         ) +

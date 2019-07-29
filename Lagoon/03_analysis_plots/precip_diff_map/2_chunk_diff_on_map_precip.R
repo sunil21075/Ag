@@ -83,7 +83,7 @@ ggsave(filename = "precip_diff_medians_chunk.png",
 #######
 #######     Percentage perc_difference of medians of annual precip
 #######
-subtitle <- "Diff. of medians of cum. precip. (Sept.-Mar.)\n (in percentage)"
+subtitle <- "Diff. of medians of cum. precip. (Sept.-Mar., in percentage)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%

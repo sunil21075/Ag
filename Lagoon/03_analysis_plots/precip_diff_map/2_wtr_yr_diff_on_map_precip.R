@@ -86,7 +86,7 @@ ggsave(filename = "precip_diff_medians_WTRYR.png",
 #######
 #######     Percentage perc_difference of medians of annual precip
 #######
-subtitle <- "Diff. of medians of cum. precip. (Water Year)\n(in percentage)"
+subtitle <- "Diff. of medians of cum. precip. (Water Year, in percentage)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%
