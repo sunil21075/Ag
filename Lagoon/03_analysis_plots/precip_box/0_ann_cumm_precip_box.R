@@ -20,6 +20,8 @@ plot_dir <- paste0(in_dir, "plots/")
 ##############################
 fileN <- "ann_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
+dt_tb <- cluster_numeric_2_str(dt_tb)
+head(dt_tb)
 
 plot_col <- "annual_cum_precip"
 y_lab <- "annual cum. precip. (mm)"

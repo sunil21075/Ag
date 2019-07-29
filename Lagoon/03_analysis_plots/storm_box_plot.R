@@ -27,7 +27,14 @@ all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
 all_storms <- all_storms %>%
               filter(return_period != "1950-2005")%>%
               data.table()
-              
+
+dt <- all_storms
+dt$cluster <- as.character(dt$cluster)
+dt$cluster <- recode(dt$cluster, "4" = "most precip",
+                                 "3" = "less precip",
+                                 "2" = "lesser precip",
+                                 "1" = "least precip") 
+
 box_p <- storm_box_plot(all_storms)
 
 ggsave(filename = paste0("storm_box.png"), 

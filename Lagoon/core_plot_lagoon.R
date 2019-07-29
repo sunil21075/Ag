@@ -30,12 +30,16 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
-
+  WA_counties <- map_data("county", "washington")
+  
   dt %>%
   ggplot() +
   geom_polygon(data = states_cluster, 
                aes(x = long, y = lat, group = group),
                fill = "grey", color = "black") +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "grey60", size=.3) + 
   geom_point(aes_string(x = "long", y = "lat",
                         color = col_col), 
              alpha = 1,
@@ -101,17 +105,15 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   melted <- melt(dt, id = c("location", "year", 
                             "time_period", "emission",
                             "cluster"))
-  rm(dt)
-
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")
-  
+  rm(dt)  
   # time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   # color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
   
   time_label <- c("1950-2005", "1979-2016", "2026-2050", "2051-2075", "2076-2099")
   color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
-
+  
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -342,7 +344,6 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
                  axis.title.x = element_text(size = ax_ttl_size , face = "bold",
                                              margin = margin(t=2, r=0, b=-10, l=0))
                       )
-  
     line_p <- ggplot(data=dt, 
                      aes(x=year, y=stat_col, 
                          group=time_period, 
@@ -377,6 +378,7 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
+  WA_counties <- map_data("county", "washington")
 
    th <- theme(axis.title.y = element_blank(),
                axis.title.x = element_blank(),
@@ -397,6 +399,9 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
           geom_polygon(data = states_cluster, 
                        aes(x = long, y = lat, group = group),
                        fill = "grey", color = "black") +
+          geom_polygon(data=WA_counties, 
+                       aes(x=long, y=lat,group = group), 
+                       fill = NA, colour = "grey60", size=0.3) + 
           geom_point(aes_string(x = "long", y = "lat",
                                 color = tgt_col), 
                      alpha = 1, size=.3) +
@@ -419,6 +424,9 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
               geom_polygon(data = states_cluster, 
                            aes(x = long, y = lat, group = group),
                            fill = "grey", color = "black") +
+              geom_polygon(data=WA_counties, 
+                           aes(x=long, y=lat,group = group), 
+                          fill = NA, colour = "grey60") + 
               geom_point(aes_string(x = "long", y = "lat",
                                     color = tgt_col), 
                          alpha = 1, size=.3) +
@@ -445,11 +453,17 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
+
+  WA_counties <- map_data("county", "washington")
+
   dt %>%
   ggplot() +
   geom_polygon(data = states_cluster, 
                aes(x = long, y = lat, group = group),
                fill = "grey", color = "black") +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat,group = group), 
+               fill = NA, colour = "grey60") + 
   geom_point(aes_string(x = "long", y = "lat",
                         color = tgt_col), 
              alpha = 1,
@@ -482,12 +496,15 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
-
+  WA_counties <- map_data("county", "washington")
   dt %>%
   ggplot() +
   geom_polygon(data = states_cluster, 
                aes(x = long, y = lat, group = group),
                fill = "grey", color = "black") +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat,group = group), 
+               fill = NA, colour = "grey60") + 
   geom_point(aes_string(x = "long", y = "lat",
                         color = tgt_col), 
                         alpha = 1,
@@ -523,11 +540,9 @@ storm_box_plot <- function(data_tb){
 
   data_tb$cluster <- factor(data_tb$cluster, levels=c(4, 3, 2, 1))
   cluster_label <- as.character(c(4, 3, 2, 1))
-  str_labels <- c("4" = "most precip.", 
-                  "3" ="less precip.", 
-                  "2" = "lesser precip.", 
-                  "1" = "least precip.")
 
+  data_tb <- cluster_numeric_2_str(data_tb)
+ 
   # medians <- data.frame(data_tb) %>% 
   #            group_by(return_period, emission) %>% 
   #            summarise( med_5 = median(five_years),
@@ -577,8 +592,7 @@ storm_box_plot <- function(data_tb){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission ~ cluster,
-                      labeller=labeller(cluster = str_labels)) +
+           facet_grid(~ emission ~ cluster) +
            scale_x_discrete(labels=c("five_years" = "5", 
                                      "ten_years" = "10",
                                      "fifteen_years" = "15",
@@ -675,9 +689,6 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
         filter(time_period != "1950-2005" & time_period != "2006-2025") %>% 
         data.table()
 
-  cluster_label <- c(4, 3, 2, 1)
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")
   time_label <- c(# "1950-2005", 
                   "1979-2016", # "2006-2025",
                   "2026-2050",
@@ -747,10 +758,6 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
 }
 
 cum_clust_box_plots <- function(dt, tgt_col, y_lab){
-  cluster_label <- c(4, 3, 2, 1)
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")
-
   # color_ord = c("red", "purple", "dodgerblue2", "blue4")
   color_ord = c("grey47", "dodgerblue2", "olivedrab4", "red")
   
@@ -814,35 +821,31 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
            xlab("time period") + 
            ylab(y_lab) + 
            scale_fill_manual(values = color_ord,
-                             name = "precip\nlevel", 
-                             labels = categ_label)
+                             name = "precip\nlevel")
            
   return(box_p)
 }
 
 geo_map_of_clusters <- function(obs_w_clusters){
   obs_w_clusters <- subset(obs_w_clusters, 
-                           select=c(location, cluster))
+                         select=c(location, cluster))
   obs_w_clusters <- unique(obs_w_clusters)
-  
+
   x <- sapply(obs_w_clusters$location, 
               function(x) strsplit(x, "_")[[1]], 
               USE.NAMES=FALSE)
   lat = as.numeric(x[1, ]); long = as.numeric(x[2, ])
-  
+
   obs_w_clusters$lat <- lat
   obs_w_clusters$long <- long
   obs_w_clusters <- within(obs_w_clusters, remove(location))
 
   states <- map_data("state")
   WA_state <- subset(states, region %in% c("washington"))
+  WA_counties <- map_data("county", "washington")
 
-  # "grey47",
-  color_ord = c("red", "purple", "dodgerblue2", "blue4")
-  # color_ord = c("00CCFF", "006699", "maroon3", "red")
-  # color_ord = c("red", "maroon3", "royalblue3", "steelblue1")
-  categ_lab = c("least precip", "lesser precip",
-                "less precip", "most precip")
+  # color_ord = c("red", "purple", "dodgerblue2", "blue4")
+  color_ord = c("red", "maroon3", "royalblue3", "steelblue1")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
@@ -864,19 +867,22 @@ geo_map_of_clusters <- function(obs_w_clusters){
   cluster_plot <- obs_w_clusters %>%
                   ggplot() +
                   geom_polygon(data = WA_state, 
-                              aes(x=long, y=lat, group = group),
-                                  fill = "grey", color = "black", size=0.5) +
+                               aes(x=long, y=lat, group = group),
+                               fill = "grey", color = "black", size=0.5) +
+                  geom_polygon(data=WA_counties, 
+                               aes(x=long, y=lat,group = group), 
+                               fill = NA, colour = "grey60") + 
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
-                             alpha = 1, size=0.8) + 
+                            alpha = 1, size=0.8) + 
                   scale_color_manual(values = color_ord,
-                                    name = "Precip.\n", 
-                                    labels = categ_lab) + 
+                                   name = "Precip.\n") + 
                   the_theme +
                   # size of dot inside the legend
                   guides(colour = guide_legend(override.aes = list(size=3))) + 
                   labs(title = "Groups of grids based on annual precip.",
-                       subtitle = "averaged over 38 years.")
+                       subtitle = "averaged over 38 years.") + 
                   ggtitle("Groups of grids")
+
   return(cluster_plot)
 }
 

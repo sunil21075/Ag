@@ -35,7 +35,7 @@ max_diff_perc <- max(meds$perc_diff)
 
 emissions <- c("RCP 4.5", "RCP 8.5")
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
-subtitle <- "Difference of medians of cum. precip. (Sept.-Mar.)"
+subtitle <- "Diff. of medians of cum. precip. (Sept.-Mar.)"
 #######
 #######     Difference of medians of annual precip
 #######
@@ -61,13 +61,13 @@ for (em in emissions){
   }
 }
 
-diff_figs <- ggarrange(plotlist = list(RCP_4.5_2026_2050,
-                                       RCP_8.5_2026_2050,
-                                       RCP_4.5_2051_2075,
+diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                                        RCP_8.5_2051_2075,
-                                       RCP_4.5_2076_2099,
-                                       RCP_8.5_2076_2099),
-                       ncol = 2, nrow = 3,
+                                       RCP_8.5_2076_2099,
+                                       RCP_4.5_2026_2050,
+                                       RCP_4.5_2051_2075,
+                                       RCP_4.5_2076_2099),
+                       ncol = 3, nrow = 2,
                        common.legend = TRUE)
 
 rm(RCP_4.5_2026_2050, RCP_8.5_2026_2050,
@@ -76,13 +76,14 @@ rm(RCP_4.5_2026_2050, RCP_8.5_2026_2050,
 
 ggsave(filename = "precip_diff_medians_chunk.png", 
        plot = diff_figs, 
-       width = 7, height = 8, units = "in", 
-       dpi=600, device = "png",
+       width = 10, height = 7, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)
 
 #######
 #######     Percentage perc_difference of medians of annual precip
 #######
+subtitle <- "Diff. of medians of cum. precip. (Sept.-Mar.)\n (in percentage)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%
@@ -105,28 +106,20 @@ for (em in emissions){
   }
 }
 
-perc_diff_figs <- ggarrange(plotlist = list(RCP_4.5_2026_2050,
-                                            RCP_8.5_2026_2050,
-                                            RCP_4.5_2051_2075,
+perc_diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                                             RCP_8.5_2051_2075,
-                                           RCP_4.5_2076_2099,
-                                           RCP_8.5_2076_2099),
-                           ncol = 2, nrow = 3,
+                                            RCP_8.5_2076_2099,
+                                            RCP_4.5_2026_2050,
+                                            RCP_4.5_2051_2075,
+                                            RCP_4.5_2076_2099),
+                           ncol = 3, nrow = 2,
                            common.legend = TRUE)
 
 ggsave(filename = "precip_perc_diff_medians_chunk.png", 
        plot = perc_diff_figs, 
-       width = 7, height = 8, units = "in", 
-       dpi=600, device = "png",
+       width = 10, height = 7, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)
-
-
-
-
-
-
-
-
 
 
 

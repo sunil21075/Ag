@@ -39,13 +39,14 @@ future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 #######
 #######     Difference of medians of annual precip
 #######
+subtitle <- "Diff. of medians of cum. precip. (Water Year)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%
                filter(emission == em & time_period==rp) %>%
                data.table()
     title <- paste0(em, " (", rp, ")")
-    subtitle <- "Difference of medians of cum. precip. (Water Year)"
+    
     assign(x = paste0(gsub(pattern = " ", 
                            replacement = "_", 
                            x = em),
@@ -62,13 +63,14 @@ for (em in emissions){
   }
 }
 
-diff_figs <- ggarrange(plotlist = list(RCP_4.5_2026_2050,
-                                       RCP_8.5_2026_2050,
-                                       RCP_4.5_2051_2075,
+diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                                        RCP_8.5_2051_2075,
-                                       RCP_4.5_2076_2099,
-                                       RCP_8.5_2076_2099),
-                       ncol = 2, nrow = 3,
+                                       RCP_8.5_2076_2099,
+                                       RCP_4.5_2026_2050,
+                                       RCP_4.5_2051_2075,
+                                       RCP_4.5_2076_2099
+                                       ),
+                       ncol = 3, nrow = 2,
                        common.legend = TRUE)
 
 rm(RCP_4.5_2026_2050, RCP_8.5_2026_2050,
@@ -77,20 +79,20 @@ rm(RCP_4.5_2026_2050, RCP_8.5_2026_2050,
 
 ggsave(filename = "precip_diff_medians_WTRYR.png", 
        plot = diff_figs, 
-       width = 7, height = 8, units = "in", 
-       dpi=600, device = "png",
+       width = 10, height = 7, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)
 
 #######
 #######     Percentage perc_difference of medians of annual precip
 #######
+subtitle <- "Diff. of medians of cum. precip. (Water Year)\n(in percentage)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%
                filter(emission == em & time_period==rp) %>%
                data.table()
     title <- paste0(em, " (", rp, ")")
-    subtitle <- "perc. difference of medians of cum. precip. (Water Year)"
     assign(x = paste0(gsub(pattern = " ", 
                            replacement = "_", 
                            x = em),
@@ -107,19 +109,19 @@ for (em in emissions){
   }
 }
 
-perc_diff_figs <- ggarrange(plotlist = list(RCP_4.5_2026_2050,
-                                            RCP_8.5_2026_2050,
-                                            RCP_4.5_2051_2075,
+perc_diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                                             RCP_8.5_2051_2075,
-                                           RCP_4.5_2076_2099,
-                                           RCP_8.5_2076_2099),
-                           ncol = 2, nrow = 3,
+                                            RCP_8.5_2076_2099,
+                                            RCP_4.5_2026_2050,
+                                            RCP_4.5_2051_2075,
+                                            RCP_4.5_2076_2099),
+                           ncol = 3, nrow = 2,
                            common.legend = TRUE)
 
 ggsave(filename = "precip_perc_diff_medians_WTRYR.png", 
        plot = perc_diff_figs, 
-       width = 7, height = 8, units = "in", 
-       dpi=600, device = "png",
+       width = 10, height = 7, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)
 
 

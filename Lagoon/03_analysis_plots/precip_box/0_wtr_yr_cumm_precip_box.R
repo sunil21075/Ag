@@ -21,6 +21,7 @@ plot_dir <- paste0(in_dir, "plots/")
 
 fileN <- "wtr_yr_sept_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
+dt_tb <- cluster_numeric_2_str(dt_tb)
 head(dt_tb, 2)
 
 plot_col <- "annual_cum_precip"

@@ -206,8 +206,8 @@ median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
 
 ggsave(filename = "median_figs.png", 
        plot = median_figs, 
-       width = 14, height = 8, units = "in", 
-       dpi=600, device = "png",
+       width = 10, height = 8, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)
 
 rm(RCP_8.5_2076_2099, RCP_8.5_2051_2075, RCP_8.5_2026_2050,
@@ -231,6 +231,12 @@ storm_diff <- readRDS(paste0(in_dir, "storm_medians_diff_25yrs.rds"))
 min <- min(storm_diff$twenty_five_years)
 max <- max(storm_diff$twenty_five_years)
 
+
+source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source(source_path_1)
+source(source_path_2)
+
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- storm_diff %>%
@@ -249,7 +255,7 @@ for (em in emissions){
 
   }
 }
-median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
+diff_median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
                                          RCP_8.5_2051_2075,
                                          RCP_8.5_2026_2050,
                                          RCP_4.5_2076_2099,
@@ -257,8 +263,9 @@ median_figs <- ggarrange(plotlist = list(RCP_8.5_2076_2099,
                                          RCP_4.5_2076_2099),
                         ncol = 3, nrow = 2,
                         common.legend = TRUE)
+
 ggsave(filename = "diff_median_figs.png", 
-       plot = median_figs, 
-       width = 14, height = 8, units = "in", 
-       dpi=600, device = "png",
+       plot = diff_median_figs, 
+       width = 10, height = 8, units = "in", 
+       dpi=300, device = "png",
        path = plot_dir)

@@ -38,7 +38,7 @@ box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box",
 ggsave(filename = "monthly_box.png", 
        plot = box_plt, 
        width = 14, height = 6, units = "in", 
-       dpi=600, device = "png",
+       dpi=300, device = "png",
        path = paste0(plot_dir, "clust_on_x/"))
 
 ###############################
