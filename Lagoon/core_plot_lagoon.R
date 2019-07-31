@@ -19,14 +19,93 @@ options(digits=9)
 # lets say one column is location, and one column determines
 # color of stuff on the map.
 #
-geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
+
+Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
+
+  suppressWarnings({dt <- within(dt, remove(day, precip, model))})
+  if ("evap" %in% colnames(dt)){
+    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+                                              base_flow, run_p_base))})
+  }
+  dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
+
+  dt <- dt %>% 
+        filter(time_period != "1950-2005" & 
+               time_period != "2006-2025") %>% 
+        data.table()
   
+  time_lbl <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+
+  dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  suppressWarnings({dt <- within(dt, remove(year))})
+
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission, month) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(dt, id = c("location", "month",
+                            "time_period", "emission",
+                            "cluster"))
+  rm(dt)
+  ax_txt_size <- 10; ax_ttl_size <- 12; box_width = 0.7
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(1.5, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               strip.text.y = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                          face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+  
+  ggplot(data = melted, 
+        aes(x=month, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = -0.3, notch=F, 
+               width = box_width, lwd=.1,
+               position = position_dodge(.8)) +
+  facet_grid(~ emission ~ cluster) +
+  ylab(y_lab) +
+  scale_fill_manual(values = color_ord,
+                    name = "time\nperiod",
+                    labels = time_lbl) + 
+  scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
+  geom_text(data = medians, 
+            aes(label = sprintf("%1.0f", medians$med), y = medians$med),
+            size = 2.5, vjust = -.6, position = position_dodge(.8))
+}
+
+geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
+  color_limit <- max(abs(minn), abs(maxx))
   x <- sapply(dt$location, 
               function(x) strsplit(x, "_")[[1]], 
               USE.NAMES=FALSE)
   lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
   dt$lat <- lat; dt$long <- long;
-
+  
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
@@ -48,17 +127,24 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   #                       limits = c(min, max),
   #                       # begin = 0.5, end = 1,
   #                       breaks = pretty_breaks(n = 3)) +
-  scale_color_gradient2(breaks = c((as.integer(minn*0.5)), 
-                                    0,
-                                    (as.integer(maxx*0.5)), 
-                                    (as.integer((maxx)*0.85))),
-                        labels = c((as.integer(minn*0.5)), 
-                                   0, 
-                                   (as.integer(maxx*0.5)),
-                                   (as.integer((maxx)*0.85))),
-                        low = "red", high = "blue", mid = "white",
-                        space="Lab"
-                        ) +
+  
+  # scale_color_gradient2(breaks = c((as.integer(minn*0.6)), 
+  #                                   0,
+  #                                   (as.integer(maxx*0.9)), 
+  #                                   (as.integer((maxx)*0.9))),
+                        
+  #                       labels = c((as.integer(minn*0.6)), 
+  #                                  0, 
+  #                                  (as.integer(maxx*0.9)),
+  #                                  (as.integer((maxx)*0.9))),
+
+  #                       low = "red", high = "blue", mid = "white",
+  #                       space="Lab"
+  #                       ) +
+  scale_color_gradient2(midpoint = 0, mid = "white", 
+                        high = muted("blue"), low = muted("red"), 
+                        guide = "colourbar", space = "Lab",
+                        limit = c(-color_limit, color_limit)) + 
   # scale_color_continuous(breaks = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        labels = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        low = "red", high = "blue") + 
@@ -68,7 +154,7 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
         axis.ticks.x = element_blank(),
         axis.text = element_blank(),
         plot.title = element_text(size = 14, face = "bold"),
-        legend.text = element_text(size = 12, face="plain"),
+        legend.text = element_text(size = 8, face="plain"),
         legend.title = element_blank(),
         # legend.justification = c(.93, .9),
         # legend.position = c(.93, .9),
@@ -83,7 +169,8 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
 #
 ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   if (tgt_col=="annual_cum_runbase" | tgt_col=="chunk_cum_runbase"){
-    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+      base_flow, run_p_base))})
   }
   
   # toss unwanted time periods
@@ -92,7 +179,8 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
                time_period != "2006-2025") %>% 
         data.table()
 
-  suppressWarnings({ dt <- within(dt, remove(month, day, precip, model, wtr_yr))})
+  suppressWarnings({dt <- within(dt, 
+                                 remove(month, day, year, precip, model, wtr_yr))})
   dt <- cluster_numeric_2_str(dt)
   
   medians <- data.frame(dt) %>% 
@@ -100,22 +188,25 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
              summarise( med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("location", "year", 
+  melted <- melt(dt, id = c("location", 
                             "time_period", "emission",
                             "cluster"))
-  rm(dt)  
-  # time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
-  # color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
-  
-  time_label <- c("1950-2005", "1979-2016", "2026-2050", "2051-2075", "2076-2099")
-  color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
-  
+  rm(dt)
+
+  if (length(unique(melted$time_period)) == 4){
+    time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 5){
+    time_label <- c("1950-2005", "1979-2016", "2026-2050", "2051-2075", "2076-2099")
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
   categ_label <- c("most precip", "less precip", 
                    "lesser precip", "least precip")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
-  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.53
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
 
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
@@ -162,33 +253,22 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   geom_text(data = medians, 
             aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
             size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -1
-            # hjust = 1
-            )
-
+            position = position_dodge(.8), vjust = -.6)
 }
 
-box_trend_monthly_cum <- function(dt, p_type="trend", 
-                                  trend_type="median", y_lab, tgt_col){
+box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab, tgt_col){
   #
   # input p_type is in {box, trend} (box plot or line plot)
   #   trend_type is in {mean, median} (line plot)
   #
 
-  dt <- within(dt, remove(day, precip, model))
+  suppressWarnings({dt <- within(dt, remove(day, precip, model))})
   if ("evap" %in% colnames(dt)){
-    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+                                             base_flow, run_p_base))})
   }
   dt <- cluster_numeric_2_str(dt)
-
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")  
-  dt$cluster <- factor(dt$cluster, levels=categ_label)
-  
-  month_names <- c("1" = "Jan.", "2" = "Feb.", "3" = "Mar.",
-                   "4" = "Apr.", "5" = "May.", "6" = "Jun.", 
-                   "7" = "Jul.", "8" = "Aug.", "9" = "Sept.", 
-                   "10" = "Oct.", "11" = "Nov.", "12" = "Dec.")
+  dt <- month_numeric_2_str(dt)
   
   if (p_type=="box"){
     dt <- dt %>% 
@@ -196,8 +276,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
                  time_period != "2006-2025") %>% 
           data.table()
     
-    time_lbl <- c("1979-2016", "2026-2050",
-                  "2051-2075", "2076-2099")
+    time_lbl <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
     color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
  
     time_lbl <- c("1950-2005", "1979-2016", "2026-2050",
@@ -205,7 +284,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
 
     dt$time_period <- factor(dt$time_period, levels=time_lbl)
-    dt <- within(dt, remove(year))
+    suppressWarnings({dt <- within(dt, remove(year))})
 
     # medians <- data.frame(dt) %>% 
     #            group_by(cluster, time_period, emission, month) %>% 
@@ -216,10 +295,6 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
                               "time_period", "emission",
                               "cluster"))
     rm(dt)
-
-    melted$month <- factor(melted$month, 
-                           levels=c(9, 10, 11, 12, 1, 2, 3, 
-                                    4, 5, 6, 7, 8))
 
     ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -237,6 +312,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
                  plot.title = element_text(size = ax_ttl_size, face = "bold"),
                  plot.subtitle = element_text(face = "bold"),
                  strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                             margin = margin(.15, 0, .15, 0, "line")),
+                 strip.text.y = element_text(size = ax_ttl_size, face = "bold",
                                              margin = margin(.15, 0, .15, 0, "line")),
                  axis.ticks = element_line(size = .1, color = "black"),
                  axis.text.y = element_text(size = ax_txt_size, 
@@ -260,9 +337,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend",
              # labs(x="", y="") + # theme_bw() + 
              facet_grid(~ emission ~ cluster) +
              # xlab("month") + 
-             ylab(y_lab) + 
-             scale_x_discrete(# breaks=1:12,
-                              labels=month_names,) +  
+             ylab(y_lab) +
              scale_fill_manual(values = color_ord,
                                name = "time\nperiod", 
                                labels = time_lbl) + 
@@ -378,7 +453,7 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
                            region %in% c("washington"))
   WA_counties <- map_data("county", "washington")
 
-   th <- theme(axis.title.y = element_blank(),
+  th <- theme(axis.title.y = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.y = element_blank(), 
                axis.ticks.x = element_blank(),
@@ -390,7 +465,7 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
                # legend.position = c(.93, .9),
                legend.position = "top",
                strip.text = element_text(size=14, face="bold"))
-  
+  color_limit <- max(abs(minn), abs(maxx))
   if (differ==TRUE){
     bbb <- dt %>%
           ggplot() +
@@ -403,17 +478,10 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
           geom_point(aes_string(x = "long", y = "lat",
                                 color = tgt_col), 
                      alpha = 1, size=.3) +
-          scale_color_gradient2(breaks = c((as.integer(minn*0.5)), 
-                                            0,
-                                            (as.integer(maxx/2)), 
-                                            (as.integer((maxx-1)*0.85))),
-                                labels = c((as.integer(minn*0.5)), 
-                                           0, 
-                                           (as.integer(maxx/2)),
-                                           (as.integer((maxx-1)*0.85))),
-                                low = "red", high = "blue", mid = "white",
-                                space="Lab"
-                                )  +
+          scale_color_gradient2(midpoint = 0, mid = "white", 
+                                high = muted("blue"), low = muted("red"), 
+                                guide = "colourbar", space = "Lab",
+                                limits = c(-color_limit, color_limit)) +
           th +
           ggtitle(ttl, subtitle=subttl)
       } else{
@@ -679,7 +747,6 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
            scale_fill_manual(values = color_ord,
                              labels = time_label)
   return(box_p)
-
 }
 
 cum_box_cluster_x <- function(dt, tgt_col, y_lab){

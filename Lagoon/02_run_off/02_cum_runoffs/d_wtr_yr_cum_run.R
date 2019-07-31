@@ -48,9 +48,7 @@ raw_files <- c(file_inN)
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_model_N <- unique(curr_dt$model)
-
   curr_dt <- create_wtr_calendar(curr_dt, wtr_yr_start=10)
-  
   curr_dt <- compute_wtr_yr_cum(curr_dt)
 
   # curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
@@ -62,13 +60,13 @@ for(file in raw_files){
   
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             slice(n()) %>%
+             filter(month==9 & day==30) %>%
              data.table()
   
+  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
-
   saveRDS(curr_dt, paste0(main_out,
-                          "wtr_yr_cum_", curr_model_N, "_last_day.rds" ))
+                          "wtr_yr_cum_", curr_model_N, "_LD.rds" ))
 }
 
 end_time <- Sys.time()

@@ -28,9 +28,10 @@ if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
 ##                                                                  ##
 ######################################################################
 param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
-obs_clusters <- read.csv(paste0(param_dir, "observed_clusters.csv"),
+obs_clusters <- read.csv(paste0(param_dir, "loc_fip_clust.csv"),
                          header=T, as.is=T)
-obs_clusters <- subset(obs_clusters, select = c("location", "cluster")) %>%
+obs_clusters <- subset(obs_clusters, 
+                       select = c("location", "cluster")) %>%
                 data.table()
 
 ######################################################################
@@ -48,20 +49,22 @@ for(file in raw_files){
   # replace negative precips
   curr_dt <- curr_dt[precip < 0, precip := 0]
   
-  curr_dt <- compute_chunky_cum_precip(curr_dt, start_month=10, end_month=3)
+  curr_dt <- compute_chunky_cum(curr_dt, start_month=9, end_month=3)
   
-  curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
-  saveRDS(curr_dt, paste0(main_out, "/chunky/", gsub("raw", "Sept_March_cum_precip", file)))
- 
-  curr_dt <- within(curr_dt, remove(cluster))
+  # curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
+  # saveRDS(curr_dt, paste0(main_out, "/chunky/", gsub("raw", "Sept_March_cum_precip", file)))
+  # curr_dt <- within(curr_dt, remove(cluster))
+  
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             slice(n()) %>%
+             filter(month==3 & day==31) %>%
              data.table()
+
+  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
 
   saveRDS(curr_dt, paste0(main_out, "/chunky/", 
-                          gsub("raw", "Sept_March_cum_precip_last_day", file)))
+                          gsub("raw", "Sept_March_cum_precip_LD", file)))
 }
 
 

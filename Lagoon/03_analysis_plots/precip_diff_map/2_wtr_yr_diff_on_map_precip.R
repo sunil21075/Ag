@@ -128,5 +128,3 @@ ggsave(filename = "precip_perc_diff_medians_WTRYR.png",
 
 
 
-
-

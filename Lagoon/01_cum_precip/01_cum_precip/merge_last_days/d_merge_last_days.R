@@ -15,12 +15,15 @@ main_in <- "/data/hydro/users/Hossein/lagoon/01_storm_cumPrecip/cum_precip/"
 out_dir <- paste0(main_in, "last_days/")
 param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
 ###########################################################
-subdir <- c("annual/", "chunky/", 
-            "monthly/", "wtr_yr/")
+subdir <- c(# "annual/", 
+            "chunky/"# , 
+            # "monthly/", 
+            # "wtr_yr/"
+            )
 
 for (sub in subdir){
   in_dir <- file.path(paste0(main_in, sub))
-  files_list <- list.files(path=in_dir, pattern="last_day")
+  files_list <- list.files(path=in_dir, pattern="LD")
   last_days <- data.table()
   if (sub == "annual/"){
      name_pref <- "ann_"

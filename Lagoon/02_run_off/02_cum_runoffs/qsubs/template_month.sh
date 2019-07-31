@@ -5,8 +5,8 @@
 
 #PBS -l nodes=1:ppn=1,walltime=6:00:00
 #PBS -l mem=10gb
-#PBS -e /home/hnoorazar/lagoon_codes/01_run_offs/01_cum_runs/qsubs/error/month_file_outer_E.txt
-#PBS -o /home/hnoorazar/lagoon_codes/01_run_offs/01_cum_runs/qsubs/error/month_file_outer_O.txt
+#PBS -e /home/hnoorazar/lagoon_codes/01_run_offs/01_cum_runs/qsubs/error/month_file_outer_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_run_offs/01_cum_runs/qsubs/error/month_file_outer_O
 #PBS -m abe
 
 echo

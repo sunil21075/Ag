@@ -59,10 +59,12 @@ for(file in raw_files){
              group_by(location, year, month, model, emission) %>%
              slice(which.max(day)) %>%
              data.table()
+
+  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
 
   saveRDS(curr_dt, paste0(main_out, 
-                          "month_cum_", curr_model_N, "_last_day.rds" ))
+                          "month_cum_", curr_model_N, "_LD.rds" ))
 
 }
 

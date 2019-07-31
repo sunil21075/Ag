@@ -5,6 +5,42 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
+make_percentage_column_discrete <- function(dta){
+  tps <- unique(dta$time_period)
+  emissions <- c("RCP 4.5", "RCP 8.5")
+  result <- data.table()
+  for (tp in tps){
+    for (em in emissions){
+      print (em)
+      print(tp)
+      dt <- dta %>% filter(emission == em & time_period==tp) %>% data.table()
+      minn <- min(dt$perc_diff)
+      maxx <- max(dt$perc_diff)
+      # c(0, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15, 0.20, 0.40, 0.80)
+      dt$perc_diff <- dt$perc_diff/100
+
+      dt <- dt %>% 
+            mutate(tagt_perc = case_when((perc_diff >= 0   & perc_diff <= 0.05) ~ 5,
+                                         (perc_diff > 0.05 & perc_diff <= 0.1)  ~ 10,
+                                         (perc_diff > 0.1  & perc_diff <= 0.15) ~ 15,
+                                         (perc_diff > 0.15 & perc_diff <= 0.2)  ~ 20,
+                                         (perc_diff > 0.2  & perc_diff <= 0.5)  ~ 50,
+                                         (perc_diff > 0.5) ~ 100,
+                                         (perc_diff < 0     & perc_diff >= -0.05) ~ -5,
+                                         (perc_diff < -0.05 & perc_diff >= -0.1)  ~ -10,
+                                         (perc_diff < -0.1  & perc_diff >= -0.15) ~ -15,
+                                         (perc_diff < -0.15 & perc_diff >= -0.2)  ~ -20,
+                                         (perc_diff < -0.2  & perc_diff >= -0.5)  ~ -50,
+                                         (perc_diff < -.5) ~ -100
+                                         )
+                  ) %>%
+            data.table()
+    result <- rbind(result, dt)
+
+    }
+  }
+  return(result)
+}
 
 compute_median_diff_4_map <- function(dt, tgt_col){
 
@@ -43,7 +79,7 @@ compute_median_diff_4_map <- function(dt, tgt_col){
 
   medians <- data.frame(dt) %>% 
              group_by(location, time_period, emission) %>% 
-             summarise( medians = median(get(tgt_col)))  %>% 
+             summarise(medians = median(get(tgt_col)))  %>% 
              data.table()
 
   median_diffs <- medians %>%
@@ -59,10 +95,12 @@ compute_median_diff_4_map <- function(dt, tgt_col){
   obs_medians <- medians %>% 
                  filter(emission == "observed") %>% 
                  data.table()
+
   obs_medians <- within(obs_medians, remove(time_period, emission))
   setnames(obs_medians, old=c("medians"), new=c("obs_median"))
 
   median_diffs <- merge(median_diffs, obs_medians, by="location", all.x=T)
+
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
   median_diffs <- within(median_diffs, remove(medians, obs_median))
   return(median_diffs)
@@ -78,12 +116,29 @@ add_coord_from_location <- function(dt){
   return(dt)
 }
 
+month_numeric_2_str <- function(B){
+  B$month <- as.character(B$month)
+  B$month <- recode(B$month, "1" = "Jan.", "2" = "Feb.", "3" = "Mar.",
+                             "4" = "Apr.", "5" = "May.", "6" = "Jun.", 
+                             "7" = "Jul.", "8" = "Aug.", "9" = "Sept.", 
+                             "10" = "Oct.", "11" = "Nov.", "12" = "Dec.")
+
+  month_levels <- c("Sept.", "Oct.", "Nov.", "Dec.",
+                    "Jan.", "Feb.", "Mar.", "Apr.", 
+                    "May.", "Jun.", "Jul.", "Aug.")
+  B$month <- factor(B$month, levels=month_levels)
+  return(B)
+}
+
 cluster_numeric_2_str <- function(B){
   B$cluster <- as.character(B$cluster)
   B$cluster <- recode(B$cluster, "4" = "most precip",
                                  "3" = "less precip",
                                  "2" = "lesser precip",
                                  "1" = "least precip")
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")  
+  B$cluster <- factor(B$cluster, levels=categ_label)
 
   return(B)
 }
@@ -163,7 +218,7 @@ cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   # corresponds to max rain and so on
   clusters <- clusters %>% 
               mutate("cluster" = frankv(centroid, 
-                                 ties.method = "dense"))
+                                        ties.method = "dense"))
 
   clusters <- within(clusters, remove(cluster_label))
   return(list(clusters, clusters_obj))
@@ -390,16 +445,16 @@ compute_chunky_cum <- function(data_tb, start_month, end_month){
              filter(!(month %in% ((end_month+1):(start_month-1))))%>%
              data.table()
 
-  if (precip %in% colnames(data_tb)){
+  if ("runoff" %in% colnames(data_tb)){
     data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             mutate(chunk_cum_precip = cumsum(precip)) %>%
+             mutate(chunk_cum_runbase = cumsum(run_p_base)) %>%
              # slice(n()) %>%
              data.table()
   } else{
     data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             mutate(chunk_cum_runbase = cumsum(run_p_base)) %>%
+             mutate(chunk_cum_precip = cumsum(precip)) %>%
              # slice(n()) %>%
              data.table()
   }
@@ -412,16 +467,16 @@ compute_wtr_yr_cum <- function(data_tb){
   # input: data_tb has to have the water_year column in it
   # output: cumulative precip in each water_year
   #
-  if ("precip" %in% colnames(data_tb)){
+  if ("runoff" %in% colnames(data_tb)){
     data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             mutate(annual_cum_precip = cumsum(precip)) %>%
+             mutate(annual_cum_runbase = cumsum(run_p_base)) %>%
              # slice(n()) %>%
              data.table()
   } else {
     data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             mutate(annual_cum_runbase = cumsum(run_p_base)) %>%
+             mutate(annual_cum_precip = cumsum(precip)) %>%
              # slice(n()) %>%
              data.table()
   }
@@ -484,8 +539,18 @@ compute_monthly_cum <- function(data_tb){
 #        Create Water Calendar
 #
 ########################################################################
-
 create_wtr_calendar <- function(data_tb, wtr_yr_start){
+  l = unique(data_tb$time_period)
+  all_dt <- data.table()
+  for (tp in l){
+    cr_dt <- data_tb %>% filter(time_period==tp) %>% data.table()
+    cr_dt <- create_wtr_calendar_1_tp(cr_dt, wtr_yr_start)
+    all_dt <- rbind(all_dt, cr_dt)
+  }
+  return(all_dt)
+}
+
+create_wtr_calendar_1_tp <- function(data_tb, wtr_yr_start){
   # input:
   # output:
   data_tb <- data_tb %>%

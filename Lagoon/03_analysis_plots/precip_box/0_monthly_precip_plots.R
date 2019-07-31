@@ -15,7 +15,7 @@ source(source_path_1)
 source(source_path_2)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
-plot_dir <- paste0(in_dir, "plots/")
+plot_dir <- paste0(in_dir, "plots/monthly/")
 
 ##############################
 
@@ -33,13 +33,29 @@ y_lab <- "monthly cum. precip. (mm)"
 ###############################
 tg_col <- "monthly_cum_precip"
 box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box", 
-	                             y_lab = y_lab, tgt_col= tg_col)
+                                 y_lab = y_lab, tgt_col= tg_col)
 
 ggsave(filename = "monthly_box.png", 
        plot = box_plt, 
        width = 14, height = 6, units = "in", 
        dpi=300, device = "png",
-       path = paste0(plot_dir, "clust_on_x/"))
+       path = plot_dir)
+
+###############################
+#
+# Separate Nov and Dec.
+#
+dt_tb_NOV_Dec <- dt_tb %>% filter(month %in% c(11, 12)) %>% data.table()
+dt_tb_NOV_Dec <- dt_tb_NOV_Dec %>%
+                 filter(time_period != "1950-2005") %>% data.table()
+
+nov_Dec <- Nod_Dec_cum_box(dt=dt_tb_NOV_Dec, y_lab = y_lab, tgt_col= tg_col)
+
+ggsave(filename = "nov_Dec_box.png", 
+       plot = nov_Dec, 
+       width = 10, height = 6, units = "in", 
+       dpi=300, device = "png",
+       path = plot_dir)
 
 ###############################
 #
@@ -53,6 +69,6 @@ ggsave(filename = "monthly_box.png",
 #        plot = trend_med, 
 #        width = 40, height = 20, units = "in", 
 #        dpi=600, device = "png",
-#        path = paste0(plot_dir, "clust_on_x/")) 
+#        path = plot_dir)
 
 

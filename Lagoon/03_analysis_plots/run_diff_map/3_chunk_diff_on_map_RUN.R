@@ -15,7 +15,8 @@ source(source_path_1)
 source(source_path_2)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-plot_dir <- paste0(in_dir, "plots/")
+plot_dir <- paste0(in_dir, "plots/test/")
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 
 ##############################
 
@@ -25,6 +26,11 @@ head(dt_tb, 2)
 
 tgt_col <- "chunk_cum_runbase"
 meds <- compute_median_diff_4_map(dt_tb, tgt_col=tgt_col)
+
+# make the goddamn perc. diff into discrete values
+# meds <- make_percentage_column_discrete(meds)
+
+# meds$perc_diff <- meds$perc_diff / 100
 
 min_diff <- min(meds$diff)
 max_diff <- max(meds$diff)
@@ -70,10 +76,11 @@ diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                        ncol = 3, nrow = 2,
                        common.legend = TRUE)
 
+# plot_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/"
 
 ggsave(filename = "run_diff_medians_Sept_March.png",
        plot = diff_figs, 
-       width = 10, height = 7, units = "in", 
+       width = 10, height = 7, units = "in",
        dpi=300, device = "png",
        path = plot_dir)
 

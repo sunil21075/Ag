@@ -65,9 +65,11 @@ for(file in raw_files){
              group_by(location, year, model, emission, time_period) %>%
              filter(month==12 & day==31) %>%
              data.table()
+  
+  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
   saveRDS(curr_dt, paste0(main_out, 
-                          "ann_cum_", curr_model_N, "_last_day.rds" ))
+                          "ann_cum_", curr_model_N, "_LD.rds" ))
 }
 
 end_time <- Sys.time()

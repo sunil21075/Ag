@@ -48,7 +48,7 @@ for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_model_N <- unique(curr_dt$model)
   
-  curr_dt <- compute_chunky_cum(curr_dt, start_month=10, end_month=3)
+  curr_dt <- compute_chunky_cum(curr_dt, start_month=9, end_month=3)
   
   # curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
   # saveRDS(curr_dt, paste0(main_out, "/chunky/", gsub("raw", "Sept_March_cum_precip", file)))
@@ -56,11 +56,13 @@ for(file in raw_files){
 
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
-             slice(n()) %>%
+             filter(month==3 & day==31) %>%
              data.table()
+
+  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
   saveRDS(curr_dt, paste0(main_out,
-                          "Sept_March_cum_", curr_model_N, "_last_day.rds" ))
+                          "Sept_March_cum_", curr_model_N, "_LD.rds" ))
 }
 
 end_time <- Sys.time()

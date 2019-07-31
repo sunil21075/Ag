@@ -69,7 +69,7 @@ diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                        common.legend = TRUE)
 diff_figs
 
-ggsave(filename = "runn_diff_medians_ANNUAL.png", 
+ggsave(filename = "run_diff_medians_ANNUAL.png", 
        plot = diff_figs, 
        width = 10, height = 7, units = "in", 
        dpi=300, device = "png",
@@ -114,7 +114,7 @@ perc_diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
                             ncol = 3, nrow = 2,
                             common.legend = TRUE)
 
-ggsave(filename = "runn_perc_diff_medians_ANNUAL.png", 
+ggsave(filename = "run_perc_diff_medians_ANNUAL.png", 
        plot = perc_diff_figs, 
        width = 10, height = 7, units = "in", 
        dpi=300, device = "png",

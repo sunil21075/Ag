@@ -83,7 +83,6 @@ ggsave(filename = "precip_diff_medians_ANNUAL.png",
        dpi=300, device = "png",
        path = plot_dir)
 
-
 #######
 #######     Percentage perc_difference of medians of annual precip
 #######

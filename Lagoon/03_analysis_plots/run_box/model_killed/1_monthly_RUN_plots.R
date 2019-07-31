@@ -1,0 +1,54 @@
+rm(list=ls())
+library(lubridate)
+library(ggpubr)
+library(purrr)
+library(tidyverse)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+options(digit=9)
+options(digits=9)
+
+source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source(source_path_1)
+source(source_path_2)
+
+in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
+plot_dir <- paste0(in_dir, "plots/model_killed/monthly/")
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
+
+
+##############################
+fileN <- "all_monthly_cum_runoff_LD"
+dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
+head(dt_tb, 2)
+
+plotting_col <- "monthly_cum_runbase"
+y_labb <- "monthly cum. [runff + BF] (mm)"
+
+tg_col = "monthly_cum_runbase"
+box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box", 
+                                 y_lab=y_labb, tgt_col = tg_col)
+
+ggsave(filename = "monthly_box.png", 
+       plot = box_plt, 
+       width = 14, height = 6, units = "in", 
+       dpi=600, device = "png",
+       path = plot_dir)
+
+##############################
+
+dt_tb <- dt_tb %>% filter(month %in% c(11, 12)) %>% data.table()
+dt_tb <- dt_tb %>%
+         filter(time_period != "1950-2005") %>% data.table()
+
+source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source(source_path_2)
+
+nov_Dec <- Nod_Dec_cum_box(dt=dt_tb, y_lab = y_labb, tgt_col= tg_col)
+ggsave(filename = "nov_Dec_box_hey.png", 
+       plot = nov_Dec, 
+       width = 9, height = 6, units = "in", 
+       dpi=300, device = "png",
+       path = plot_dir)
