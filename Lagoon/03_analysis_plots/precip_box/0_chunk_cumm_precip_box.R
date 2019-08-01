@@ -30,10 +30,9 @@ y_lab <- "Sept. - Mar. cum. precip. (mm)"
 dt_tb_85 <- dt_tb %>% filter(emission == "RCP 8.5") %>% data.table()
 dt_tb_45 <- dt_tb %>% filter(emission == "RCP 4.5") %>% data.table()
 
-# toss modeled historical
-dt_tb_noHM <- dt_tb %>% filter(time_period != "1950-2005")%>% data.table()
-dt_tb_85_noHM <- dt_tb_noHM %>% filter(emission == "RCP 8.5") %>% data.table()
-dt_tb_45_noHM <- dt_tb_noHM %>% filter(emission == "RCP 4.5") %>% data.table()
+dt_tb_noMH <- dt_tb %>% filter(time_period != "1950-2005")%>% data.table()
+dt_tb_85_noMH <- dt_tb_noMH %>% filter(emission == "RCP 8.5") %>% data.table()
+dt_tb_45_noMH <- dt_tb_noMH %>% filter(emission == "RCP 4.5") %>% data.table()
 
 ###################################################################
 chunk_box_p <- ann_wtrYr_chunk_cum_box_cluster_x(dt = dt_tb,
@@ -66,11 +65,6 @@ ggsave(filename = "chunk_cum_prec_45.png",
        dpi = 600, device = "png",
        path = paste0(plot_dir))
 
-################### No-Modeled Historical
-
-dt_tb_noMH <- dt_tb %>% filter(time_period != "1950-2005")%>% data.table()
-dt_tb_85_noMH <- dt_tb_noMH %>% filter(emission == "RCP 8.5") %>% data.table()
-dt_tb_45_noMH <- dt_tb_noMH %>% filter(emission == "RCP 4.5") %>% data.table()
 
 chunk_box_p_noMH <- ann_wtrYr_chunk_cum_box_cluster_x(dt = dt_tb_noMH, 
                                                       y_lab=y_lab, 

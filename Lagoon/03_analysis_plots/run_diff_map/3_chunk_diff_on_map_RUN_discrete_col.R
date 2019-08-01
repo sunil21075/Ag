@@ -39,56 +39,12 @@ max_diff_perc <- max(meds$tagt_perc)
 
 emissions <- c("RCP 4.5", "RCP 8.5")
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
-#######
-#######     Difference of medians of annual precip
-#######
-subtitle <- "Diff. of medians of cum. runoff\n(Sept.-Mar.)"
-for (em in emissions){
-  for (rp in future_rn_pr){
-    curr_dt <- meds %>%
-               filter(emission == em & time_period==rp) %>%
-               data.table()
-    title <- paste0(em, " (", rp, ")")
-    
-    assign(x = paste0(gsub(pattern = " ", 
-                           replacement = "_", 
-                           x = em),
-                      "_",
-                      gsub(pattern = "-", 
-                           replacement = "_", 
-                           x = rp)),
-           value ={geo_map_of_diffs(dt = curr_dt, 
-                                    col_col = "diff" , 
-                                    minn = min_diff, maxx = max_diff,
-                                    ttl = title, 
-                                    subttl= subtitle)})
 
-  }
-}
-
-diff_figs <- ggarrange(plotlist = list(RCP_8.5_2026_2050,
-                                       RCP_8.5_2051_2075,
-                                       RCP_8.5_2076_2099,
-                                       RCP_4.5_2026_2050,
-                                       RCP_4.5_2051_2075,
-                                       RCP_4.5_2076_2099),
-                       ncol = 3, nrow = 2,
-                       common.legend = TRUE)
-
-plot_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/"
-
-ggsave(filename = "run_diff_medians_Sept_March.png",
-       plot = diff_figs, 
-       width = 10, height = 7, units = "in",
-       dpi=300, device = "png",
-       path = plot_dir)
-
-rm(RCP_4.5_2026_2050, RCP_8.5_2026_2050,
-   RCP_4.5_2051_2075, RCP_8.5_2051_2075,
-   RCP_4.5_2076_2099, RCP_8.5_2076_2099, diff_figs)
+em <- emissions[1]
+rp <- future_rn_pr[1]
 #######
 #######     Percentage perc_difference of medians of annual precip
-#######
+
 subtitle <- "Diff. of medians of cum. runoff\n(Sept.-Mar., in percentage)"
 for (em in emissions){
   for (rp in future_rn_pr){

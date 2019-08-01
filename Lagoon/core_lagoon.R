@@ -5,43 +5,6 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
-make_percentage_column_discrete <- function(dta){
-  tps <- unique(dta$time_period)
-  emissions <- c("RCP 4.5", "RCP 8.5")
-  result <- data.table()
-  for (tp in tps){
-    for (em in emissions){
-      print (em)
-      print(tp)
-      dt <- dta %>% filter(emission == em & time_period==tp) %>% data.table()
-      minn <- min(dt$perc_diff)
-      maxx <- max(dt$perc_diff)
-      # c(0, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15, 0.20, 0.40, 0.80)
-      dt$perc_diff <- dt$perc_diff/100
-
-      dt <- dt %>% 
-            mutate(tagt_perc = case_when((perc_diff >= 0   & perc_diff <= 0.05) ~ 5,
-                                         (perc_diff > 0.05 & perc_diff <= 0.1)  ~ 10,
-                                         (perc_diff > 0.1  & perc_diff <= 0.15) ~ 15,
-                                         (perc_diff > 0.15 & perc_diff <= 0.2)  ~ 20,
-                                         (perc_diff > 0.2  & perc_diff <= 0.5)  ~ 50,
-                                         (perc_diff > 0.5) ~ 100,
-                                         (perc_diff < 0     & perc_diff >= -0.05) ~ -5,
-                                         (perc_diff < -0.05 & perc_diff >= -0.1)  ~ -10,
-                                         (perc_diff < -0.1  & perc_diff >= -0.15) ~ -15,
-                                         (perc_diff < -0.15 & perc_diff >= -0.2)  ~ -20,
-                                         (perc_diff < -0.2  & perc_diff >= -0.5)  ~ -50,
-                                         (perc_diff < -.5) ~ -100
-                                         )
-                  ) %>%
-            data.table()
-    result <- rbind(result, dt)
-
-    }
-  }
-  return(result)
-}
-
 compute_median_diff_4_map <- function(dt, tgt_col){
 
   ################################################
