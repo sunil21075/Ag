@@ -22,12 +22,19 @@ cluster_info <- within(cluster_info, remove(ann_prec_mean, centroid))
 # cluster_obs <- within(cluster_obs, remove(ann_prec_mean, centroid))
 # merged <- merge(cluster_info, cluster_obs, by="location", all.x=T)
 
-clust_map <- geo_map_of_clusters(cluster_info)
+
+cluster_info$cluster <- factor(cluster_info$cluster, 
+                               levels=c("most precip", 
+                                        "less precip", 
+                                        "lesser precip",
+                                        "least precip"))
+
+clust_map <- geo_map_of_clusters(obs_w_clusters=cluster_info)
 plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
 
 ggsave(filename = paste0("clust_map.png"), 
        plot = clust_map, 
-       width = 6, height = 6, units = "in", 
+       width = 4, height = 4, units = "in", 
        dpi=600, device = "png",
        path = plot_dir)
 

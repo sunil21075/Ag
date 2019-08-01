@@ -5,27 +5,18 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
-compute_median_diff_4_map <- function(dt, tgt_col){
 
+compute_median_of_diffs_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
+  #
+  # tgt_col: name of the column, which is different in annual vs chunky.
+  # diff_from difference from observed("1979-2016") or modeled("1950-2005")?
+  #
+  #
   ################################################
-  #
-  # We need to do the following lines in order
-  # to make the subtraction within groups work.
-  #
-  dt_observed <- dt %>% 
-                 filter(time_period == "1979-2016") %>%
-                 select(-c("emission")) %>%
-                 unique()%>%
-                 data.table()
-
-  dt_observed$emission <- "observed"
-
-  dt <- dt %>% filter(time_period != "1979-2016") %>% data.table()
-  dt <- rbind(dt, dt_observed)
-
   #
   # Clean unwanted data
   #
+  dt <- within(dt, remove(year, month, day, precip, model, cluster))
   if ("evap" %in% colnames(dt)){
     dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
   }
@@ -33,26 +24,43 @@ compute_median_diff_4_map <- function(dt, tgt_col){
     dt <- within(dt, remove(wtr_yr))
   }
 
-  dt <- within(dt, remove(year, month, day, precip, model, cluster))
-
+  if (diff_from == "1979-2016"){
+    unwanted_period <- "1950-2005"
+    } else {
+    unwanted_period <- "1979-2016"
+  }
   dt <- dt %>% 
-        filter(time_period != "1950-2005" & 
+        filter(time_period != unwanted_period & 
                time_period != "2006-2025") %>% 
         data.table()
 
-  medians <- data.frame(dt) %>% 
+  h_dt <- dt %>% 
+          filter(time_period == diff_from) %>%
+          select(-c("emission")) %>%
+          unique()%>%
+          data.table()
+
+  h_dt <- unique(h_dt)
+  h_dt <- h_dt[, .( tgt_col = median(get(tgt_col))), 
+               by = c("location")]
+  setnames(h_dt, old= "tgt_col", new=tgt_col)
+  h_dt$time_period <- diff_from
+  h_dt$emission <- "hist"
+
+  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
+  dt <- rbind(dt, h_dt)
+  
+  differences <- dt %>%
+                 group_by(location) %>%
+                 mutate(diff = chunk_cum_precip - chunk_cum_precip[time_period == diff_from])%>%
+                 data.table()
+
+  differences <- differences %>% filter(emission != "hist")
+
+  medians <- data.frame(differences) %>% 
              group_by(location, time_period, emission) %>% 
-             summarise(medians = median(get(tgt_col)))  %>% 
+             summarise(medians = median(diff))  %>% 
              data.table()
-
-  median_diffs <- medians %>%
-                  group_by(location) %>%
-                  mutate(diff = medians - medians[time_period == "1979-2016"])%>%
-                  data.table()
-
-  median_diffs <- median_diffs %>% 
-                  filter(time_period != "1979-2016")%>%
-                  data.table()
 
   # to do percentages
   obs_medians <- medians %>% 
@@ -66,6 +74,101 @@ compute_median_diff_4_map <- function(dt, tgt_col){
 
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
   median_diffs <- within(median_diffs, remove(medians, obs_median))
+  return(median_diffs)
+}
+
+compute_median_of_diff_of_medians <- function(dt){
+  #
+  # tgt_col \in (diff, perc_diff)
+  #
+  diffs <- dt %>%
+           group_by(location, time_period, emission) %>%
+           transmute(med_of_diffs_of_meds = median(diff))%>%
+           unique() %>%
+           data.table()
+
+  perc_diffs <- dt %>%
+                group_by(location, time_period, emission) %>%
+                transmute(perc_med_of_diffs_of_meds = median(perc_diff))%>%
+                unique() %>%
+                data.table()
+
+  diffs <- merge(diffs, perc_diffs, by=c("location", 'emission', "time_period"))
+  cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
+  diffs[,(cols) := round(.SD, 2), .SDcols=cols]
+  return(diffs)
+}
+
+compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
+  #
+  # Clean unwanted data
+  #
+  if (diff_from == "1979-2016"){
+    unwanted_period <- "1950-2005"
+    } else {
+    unwanted_period <- "1979-2016"
+  }
+
+  dt <- dt %>% 
+        filter(time_period != unwanted_period & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  if ("evap" %in% colnames(dt)){
+    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+  }
+  if ("wtr_yr" %in% colnames(dt)) {
+    dt <- within(dt, remove(wtr_yr))
+  }
+  dt <- within(dt, remove(year, month, day, precip, cluster))
+
+  ################################################
+  #
+  # We need to do the following lines in order
+  # to make the subtraction within groups work.
+  #
+  dt_hist <- dt %>% 
+             filter(time_period == diff_from) %>%
+             select(-c("emission")) %>%
+             unique()%>%
+             data.table()
+
+  dt_hist$emission <- "hist"
+
+  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
+  dt <- rbind(dt, dt_hist)
+  
+  medians <- data.frame(dt) %>% 
+             group_by(location, time_period, emission, model) %>% 
+             summarise(medians = median(get(tgt_col)))  %>% 
+             data.table()
+
+  median_diffs <- medians %>%
+                  group_by(location) %>%
+                  mutate(diff = medians - medians[time_period == diff_from])%>%
+                  data.table()
+
+  median_diffs <- median_diffs %>% 
+                  filter(time_period != diff_from)%>%
+                  data.table()
+
+  # to do percentages
+  obs_medians <- medians %>% 
+                 filter(time_period == diff_from) %>% 
+                 data.table()
+
+  obs_medians <- within(obs_medians, remove(time_period, emission, model))
+
+  if (diff_from=="1979-2016"){
+    new_col_name <- "obs_median"
+    } else {
+     new_col_name <- "hist_median"
+  }
+  setnames(obs_medians, old=c("medians"), new=new_col_name)
+
+  median_diffs <- merge(median_diffs, obs_medians, by="location", all.x=T)
+
+  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
   return(median_diffs)
 }
 

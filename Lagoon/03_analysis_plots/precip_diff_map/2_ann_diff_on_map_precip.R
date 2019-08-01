@@ -15,8 +15,8 @@ source(source_path_1)
 source(source_path_2)
 
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
-plot_dir <- paste0(in_dir, "plots/")
-
+plot_dir <- paste0(in_dir, "plots/maps/")
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 ##############################
 fileN <- "ann_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
@@ -25,6 +25,7 @@ head(dt_tb, 2)
 tgt_col <- "annual_cum_precip"
 
 meds <- compute_median_diff_4_map(dt_tb, tgt_col=tgt_col)
+
 dim(meds)
 
 min_diff <- min(meds$diff)

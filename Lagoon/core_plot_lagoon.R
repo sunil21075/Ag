@@ -94,13 +94,13 @@ Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
                     labels = time_lbl) + 
   scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
   geom_text(data = medians, 
-            aes(label = sprintf("%1.0f", medians$med), y = medians$med),
+            aes(label = sprintf("%1.2f", medians$med), y = medians$med),
             size = 2.5, vjust = -.6, position = position_dodge(.8))
 }
 #
 # Following works are on both precip and runoffs
 #
-ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
+ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   if (tgt_col=="annual_cum_runbase" | tgt_col=="chunk_cum_runbase"){
     suppressWarnings({dt <- within(dt, remove(evap, runoff, 
       base_flow, run_p_base))})
@@ -114,22 +114,26 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   suppressWarnings({dt <- within(dt, 
                                  remove(month, day, year, precip, model, wtr_yr))})
   # dt <- cluster_numeric_2_str(dt)
+  if ("diff" %in% colnames(dt)){
+    dt <- subset(dt, select=c("location", "time_period", "emission",
+                              "cluster", tgt_col))
+  }
 
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission) %>% 
-             summarise( med = median(get(tgt_col))) %>% 
+             summarise(med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("location", 
-                            "time_period", "emission",
-                            "cluster"))
+  melted <- melt(dt, id = c("location", "emission",
+                            "time_period", "cluster"))
   rm(dt)
-
-  if (length(unique(melted$time_period)) == 4){
-    time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
-    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
     } else if (length(unique(melted$time_period)) == 5){
-    time_label <- c("1950-2005", "1979-2016", "2026-2050", "2051-2075", "2076-2099")
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
@@ -153,7 +157,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold"),
-               plot.subtitle = element_text(face = "bold"),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
                axis.ticks = element_line(size = .1, color = "black"),
@@ -174,8 +178,8 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
-                        width = box_width, lwd=.1, 
-                        position = position_dodge(0.8)) +
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.8)) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission) +
@@ -183,9 +187,10 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col){
   ylab(y_lab) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
-            aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
+            aes(label = sprintf("%1.2f", medians$med), y = medians$med), 
             size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6)
+            position = position_dodge(.8), vjust = -.6) + 
+  ggtitle(ttl, subtitle=subttl)
 }
 
 box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab, tgt_col){
@@ -548,6 +553,18 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   #                       low = "red", high = "blue", mid = "white",
   #                       space="Lab"
   #                       ) +
+
+  # Look at this. This may work, if you spend time on it.
+  # problem is that we have to create one of these
+  # manually for each map? We do not want to do this.
+  # There are too many maps, one function per map is just ...
+  #
+  # scale_fill_gradientn(name="CPU Utilization",
+  #       colours=c("darkgreen","green","red","darkred","red","green","darkgreen"),
+  #       values=c(0, 0.19, 0.2, 0.5, 0.8, 0.81, 1),
+  #       limits=c(-color_limit, color_limit),
+  #       breaks = c(20, 30, 40, 50, 60, 70, 80, 90, 100))
+
   scale_color_gradient2(midpoint = 0, mid = "white", 
                         high = muted("blue"), low = muted("red"), 
                         guide = "colourbar", space = "Lab",
@@ -578,15 +595,20 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
   lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
   dt$lat <- lat; dt$long <- long;
 
-  states <- map_data("state")
-  states_cluster <- subset(states, 
-                           region %in% c("washington"))
+  # states <- map_data("state")
+  # states_cluster <- subset(states, 
+  #                          region %in% c("washington"))
 
   WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()
 
   dt %>%
   ggplot() +
-  geom_polygon(data = states_cluster, 
+  geom_polygon(data = WA_counties, 
                aes(x = long, y = lat, group = group),
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
@@ -621,13 +643,18 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
   dt <- merge(dt, fips_clust, by="location", all.x=T)
   dt <- within(dt, remove(location, model, return_period))
 
-  states <- map_data("state")
-  states_cluster <- subset(states, 
-                           region %in% c("washington"))
+  # states <- map_data("state")
+  # states_cluster <- subset(states, 
+  #                          region %in% c("washington"))
   WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()
   dt %>%
   ggplot() +
-  geom_polygon(data = states_cluster, 
+  geom_polygon(data = WA_counties, 
                aes(x = long, y = lat, group = group),
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
@@ -878,7 +905,7 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
 
 geo_map_of_clusters <- function(obs_w_clusters){
   obs_w_clusters <- subset(obs_w_clusters, 
-                         select=c(location, cluster))
+                           select=c(location, cluster))
   obs_w_clusters <- unique(obs_w_clusters)
 
   x <- sapply(obs_w_clusters$location, 
@@ -890,24 +917,31 @@ geo_map_of_clusters <- function(obs_w_clusters){
   obs_w_clusters$long <- long
   obs_w_clusters <- within(obs_w_clusters, remove(location))
 
-  states <- map_data("state")
-  WA_state <- subset(states, region %in% c("washington"))
+  # states <- map_data("state")
+  # WA_state <- subset(states, region %in% c("washington"))
+  # WA_state <- WA_state %>% filter(subregion == "main")
+  
   WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()
 
   # color_ord = c("red", "purple", "dodgerblue2", "blue4")
-  color_ord = c("red", "maroon3", "royalblue3", "steelblue1")
+  color_ord = c("royalblue3", "steelblue1", "maroon3", "red")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      legend.position = "bottom",
-                     legend.key.size = unit(1, "line"),
+                     legend.key.size = unit(.6, "line"),
                      legend.spacing.x = unit(.1, 'line'),
                      panel.spacing.y = unit(.5, 'line'),
-                     legend.text = element_text(size = 10, face="bold"),
+                     legend.text = element_text(size = 9, face="bold"),
                      legend.margin = margin(t=.4, r=0, b=0, l=0, unit = 'line'),
                      legend.title = element_blank(),
                      plot.title = element_text(size = 13, face = "bold"),
-                     plot.subtitle = element_text(size = 9, face = "bold"),
+                     plot.subtitle = element_text(size = 10, face = "bold"),
                      axis.ticks = element_blank(),
                      axis.text.y = element_blank(),
                      axis.text.x = element_blank(),
@@ -916,12 +950,12 @@ geo_map_of_clusters <- function(obs_w_clusters){
 
   cluster_plot <- obs_w_clusters %>%
                   ggplot() +
-                  geom_polygon(data = WA_state, 
+                  geom_polygon(data = WA_counties, 
                                aes(x=long, y=lat, group = group),
                                fill = "grey", color = "black", size=0.5) +
                   geom_polygon(data=WA_counties, 
                                aes(x=long, y=lat,group = group), 
-                               fill = NA, colour = "grey60") + 
+                               fill = NA, colour = "black", size=0.0000001) + 
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
                             alpha = 1, size=0.8) + 
                   scale_color_manual(values = color_ord,
@@ -931,7 +965,9 @@ geo_map_of_clusters <- function(obs_w_clusters){
                   guides(colour = guide_legend(override.aes = list(size=3))) + 
                   labs(title = "Groups of grids based on annual precip.",
                        subtitle = "averaged over 38 years.") + 
-                  ggtitle("Groups of grids")
+                  ggtitle("Groups of grids") + 
+                  # size of dot inside the legend box
+                  guides(colour = guide_legend(override.aes = list(size=2.5)))
 
   return(cluster_plot)
 }
