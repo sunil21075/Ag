@@ -191,8 +191,6 @@ Drop the word county: https://stackoverflow.com/questions/55599225/drop-a-word-i
 counties[, COUNTY := sub("\\s+County$", "", COUNTY)]
 df$county = gsub("county", "", df$county)
 
-
-
 ######## compute frequency, aggregation
 
 values <- data.frame(query = c("q1", "q1", "q1","q2", "q2"),

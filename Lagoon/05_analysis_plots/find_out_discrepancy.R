@@ -67,34 +67,34 @@ melted$time_period <- factor(melted$time_period, levels=time_label)
 
 ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
 
-  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
-               panel.border = element_rect(fill=NA, size=.3),
-               panel.grid.major = element_line(size = 0.05),
-               panel.grid.minor = element_blank(),
-               panel.spacing = unit(.35, "line"),
-               legend.position = "bottom", 
-               legend.key.size = unit(.8, "line"),
-               legend.spacing.x = unit(.1, 'line'),
-               panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
-               legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold"),
-               plot.subtitle = element_text(face = "bold"),
-               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
-                                           margin = margin(.15, 0, .15, 0, "line")),
-               axis.ticks = element_line(size = .1, color = "black"),
-               axis.text.y = element_text(size = ax_txt_size, 
-                                          face = "bold", color = "black"),
-               axis.text.x = element_text(size = ax_txt_size, 
-                                          face = "bold", color="black",
-                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
-                                          ),
-               axis.title.y = element_text(size = ax_ttl_size, 
-                                           face = "bold", 
-                                           margin = margin(t=0, r=2, b=0, l=0)),
-               axis.title.x = element_blank()
-                    )
+the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+             panel.border = element_rect(fill=NA, size=.3),
+             panel.grid.major = element_line(size = 0.05),
+             panel.grid.minor = element_blank(),
+             panel.spacing = unit(.35, "line"),
+             legend.position = "bottom", 
+             legend.key.size = unit(.8, "line"),
+             legend.spacing.x = unit(.1, 'line'),
+             panel.spacing.y = unit(.5, 'line'),
+             legend.text = element_text(size = ax_ttl_size, face="bold"),
+             legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+             legend.title = element_blank(),
+             plot.title = element_text(size = ax_ttl_size, face = "bold"),
+             plot.subtitle = element_text(face = "bold"),
+             strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(.15, 0, .15, 0, "line")),
+             axis.ticks = element_line(size = .1, color = "black"),
+             axis.text.y = element_text(size = ax_txt_size, 
+                                        face = "bold", color = "black"),
+             axis.text.x = element_text(size = ax_txt_size, 
+                                        face = "bold", color="black",
+                                        margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                        ),
+             axis.title.y = element_text(size = ax_ttl_size, 
+                                         face = "bold", 
+                                         margin = margin(t=0, r=2, b=0, l=0)),
+             axis.title.x = element_blank()
+            )
 ########
 diff_box <- ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
             the + 

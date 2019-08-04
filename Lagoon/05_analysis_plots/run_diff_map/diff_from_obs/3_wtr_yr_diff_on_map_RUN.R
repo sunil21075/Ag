@@ -26,20 +26,24 @@ dim(dt_tb)
 length(unique(dt_tb$location))
 
 tgt_col <- "annual_cum_runbase"
-meds <- compute_median_diff_4_map(dt_tb, tgt_col=tgt_col)
+meds <- median_diff_4_map_obs_or_modeled(dt_tb, 
+                                         tgt_col=tgt_col, 
+                                         diff_from="1979-2016")
 
-min_diff <- min(meds$diff)
-max_diff <- max(meds$diff)
+meds <- median_of_diff_of_medians(meds)
 
-min_diff_perc <- min(meds$perc_diff)
-max_diff_perc <- max(meds$perc_diff)
+min_diff <- min(meds$med_of_diffs_of_meds)
+max_diff <- max(meds$med_of_diffs_of_meds)
+
+min_diff_perc <- min(meds$perc_med_of_diffs_of_meds)
+max_diff_perc <- max(meds$perc_med_of_diffs_of_meds)
 
 emissions <- c("RCP 4.5", "RCP 8.5")
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 #######
 #######     Difference of medians of annual precip
 #######
-subtitle <- "Diff. of medians\nof cum. [runoff + BF] (Water Year)"
+subtitle <- "Diff. of medians\nof cum. runoff (Water Year)"
 for (em in emissions){
   for (rp in future_rn_pr){
     curr_dt <- meds %>%

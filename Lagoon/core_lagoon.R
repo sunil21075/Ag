@@ -5,79 +5,60 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
-
-compute_median_of_diffs_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
-  #
-  # tgt_col: name of the column, which is different in annual vs chunky.
-  # diff_from difference from observed("1979-2016") or modeled("1950-2005")?
-  #
-  #
-  ################################################
-  #
-  # Clean unwanted data
-  #
-  dt <- within(dt, remove(year, month, day, precip, model, cluster))
-  if ("evap" %in% colnames(dt)){
-    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
-  }
-  if ("wtr_yr" %in% colnames(dt)) {
-    dt <- within(dt, remove(wtr_yr))
-  }
-
-  if (diff_from == "1979-2016"){
-    unwanted_period <- "1950-2005"
-    } else {
-    unwanted_period <- "1979-2016"
-  }
-  dt <- dt %>% 
-        filter(time_period != unwanted_period & 
-               time_period != "2006-2025") %>% 
-        data.table()
-
-  h_dt <- dt %>% 
-          filter(time_period == diff_from) %>%
-          select(-c("emission")) %>%
-          unique()%>%
-          data.table()
-
-  h_dt <- unique(h_dt)
-  h_dt <- h_dt[, .( tgt_col = median(get(tgt_col))), 
-               by = c("location")]
-  setnames(h_dt, old= "tgt_col", new=tgt_col)
-  h_dt$time_period <- diff_from
-  h_dt$emission <- "hist"
-
-  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
-  dt <- rbind(dt, h_dt)
-  
-  differences <- dt %>%
-                 group_by(location) %>%
-                 mutate(diff = chunk_cum_precip - chunk_cum_precip[time_period == diff_from])%>%
-                 data.table()
-
-  differences <- differences %>% filter(emission != "hist")
-
-  medians <- data.frame(differences) %>% 
-             group_by(location, time_period, emission) %>% 
-             summarise(medians = median(diff))  %>% 
-             data.table()
-
-  # to do percentages
-  obs_medians <- medians %>% 
-                 filter(emission == "observed") %>% 
-                 data.table()
-
-  obs_medians <- within(obs_medians, remove(time_period, emission))
-  setnames(obs_medians, old=c("medians"), new=c("obs_median"))
-
-  median_diffs <- merge(median_diffs, obs_medians, by="location", all.x=T)
-
-  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
-  median_diffs <- within(median_diffs, remove(medians, obs_median))
-  return(median_diffs)
+rain_portion <- function(dt){
+  dt$rain_portion <- apply(dt[, "tmean"], MARGIN=1, FUN=rain_p)
+  # dt$rain_portion <- unlist(lapply(data$tmean, FUN=rain_portion))
+  return(dt)
 }
 
-compute_median_of_diff_of_medians <- function(dt){
+rain_p <- function(tmean, Tt=2, Tr=13){
+  num <- tmean - Tt
+  denom <- 1.4 * Tr
+  frac <- num / denom
+
+  if (tmean <= Tt){
+      prain <- (5 * (frac^3)) + (6.76 * (frac^2)) + (3.19 * frac) + 0.5
+    } else {
+      prain <- (5 * (frac^3)) - (6.76 * (frac^2)) + (3.19 * frac) + 0.5
+  }
+  if (prain > 1){
+    prain <- 1
+  }
+  if (prain<0){
+    prain <- 0
+  }
+  return(prain)
+}
+########################################################################
+########################################################################
+#####
+#####         Diff from modeled historical
+#####         Do we have to do extra stuff for this?
+#####
+###########################################################################
+median_diff_4_map_obs_or_modeled <- function(dt, tgt_col, diff_from){
+  if (diff_from=="1979-2016"){
+    median_diffs <- compute_median_diff_4_map(dt, tgt_col, diff_from="1979-2016")
+    
+    } else {
+      # HERE we have: diff_from=="1950-2005"
+      median_diffs <- data.table()
+      
+      # The followins is not necessary, it is done in compute... function
+      dt <- dt %>% 
+            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            data.table()
+      all_mods <- unique(dt$model)
+      for (mod in all_mods){
+        curr_dt <- dt %>% filter(model == mod) %>% data.table()
+        curr_dt <- compute_median_diff_4_map(curr_dt, tgt_col, diff_from="1950-2005")
+        median_diffs <- rbind(median_diffs, curr_dt)
+      }
+      return(median_diffs)
+  }
+}
+###########################################################################
+median_of_diff_of_medians <- function(dt){
   #
   # tgt_col \in (diff, perc_diff)
   #
@@ -138,12 +119,17 @@ compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
   dt <- dt %>% filter(time_period != diff_from) %>% data.table()
   dt <- rbind(dt, dt_hist)
   
-  medians <- data.frame(dt) %>% 
-             group_by(location, time_period, emission, model) %>% 
-             summarise(medians = median(get(tgt_col)))  %>% 
-             data.table()
+  # med_per_loc_mod_TP_em <- data.frame(dt) %>% 
+  #                          group_by(location, time_period, 
+  #                                    emission, model) %>% 
+  #                          summarise(medians = median(get(tgt_col)))  %>% 
+  #                          data.table()
+  med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
+                               by = c("location", "time_period", 
+                                      "emission", "model")]
+  setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
-  median_diffs <- medians %>%
+  median_diffs <- med_per_loc_mod_TP_em %>%
                   group_by(location) %>%
                   mutate(diff = medians - medians[time_period == diff_from])%>%
                   data.table()
@@ -153,22 +139,16 @@ compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
                   data.table()
 
   # to do percentages
-  obs_medians <- medians %>% 
-                 filter(time_period == diff_from) %>% 
-                 data.table()
+  hist_meds_tl <- med_per_loc_mod_TP_em %>% 
+                  filter(time_period == diff_from) %>% 
+                  data.table()
 
-  obs_medians <- within(obs_medians, remove(time_period, emission, model))
+  hist_meds_tl <- within(hist_meds_tl, remove(time_period, emission, model))
+  setnames(hist_meds_tl, old=c("medians"), new="hist_median")
 
-  if (diff_from=="1979-2016"){
-    new_col_name <- "obs_median"
-    } else {
-     new_col_name <- "hist_median"
-  }
-  setnames(obs_medians, old=c("medians"), new=new_col_name)
+  median_diffs <- merge(median_diffs, hist_meds_tl, by="location", all.x=T)
 
-  median_diffs <- merge(median_diffs, obs_medians, by="location", all.x=T)
-
-  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$obs_median)
+  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
 }
 
@@ -219,21 +199,6 @@ read_min_file <- function(conn){
                 "precip", "evap", "runoff", "base_flow")
   colnames(RLData_df) <- col_name
   return(RLData_df)
-}
-
-cluster_yr_time_series <- function(observed_dt, no_clusters=4){
-  observed_dt <- subset(observed_dt, select=c(location, 
-                                              year, 
-                                              annual_cum_precip))
-  
-  observed_dt <- reshape(observed_dt, idvar = "location", 
-                                      timevar = "year", 
-                                      direction = "wide")
-  locations <- observed_dt$location
-  observed_dt <- within(observed_dt, remove(location))
-
-  ts_clusters <- kmeans(observed_dt, centers = no_clusters, nstart = 25)
-  return(ts_clusters)
 }
 
 cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
@@ -654,3 +619,23 @@ put_time_period <- function(data_tb, observed){
   return(data_tb)
 }
 
+#####################################
+#####################################    Not Used
+#####################################
+
+
+
+cluster_yr_time_series <- function(observed_dt, no_clusters=4){
+  observed_dt <- subset(observed_dt, select=c(location, 
+                                              year, 
+                                              annual_cum_precip))
+  
+  observed_dt <- reshape(observed_dt, idvar = "location", 
+                                      timevar = "year", 
+                                      direction = "wide")
+  locations <- observed_dt$location
+  observed_dt <- within(observed_dt, remove(location))
+
+  ts_clusters <- kmeans(observed_dt, centers = no_clusters, nstart = 25)
+  return(ts_clusters)
+}

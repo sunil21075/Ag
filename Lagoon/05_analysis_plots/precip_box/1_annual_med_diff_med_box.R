@@ -25,7 +25,7 @@ dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
 tgt_col <- "annual_cum_precip"
-meds <- compute_median_diff_4_map(dt_tb, 
+meds <- compute_median_diff_4_map(dt = dt_tb, 
                                   tgt_col=tgt_col, 
                                   diff_from="1979-2016")
 
