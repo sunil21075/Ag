@@ -24,7 +24,7 @@ head(dt_tb, 2)
 
 tgt_col <- "annual_cum_runbase"
 
-meds <- median_diff_4_map_obs_or_modeled(dt_tb, 
+meds <- median_diff_4_map_obs_or_modeled(dt = dt_tb, 
                                          tgt_col=tgt_col, 
                                          diff_from="1979-2016")
 meds <- median_of_diff_of_medians(meds)

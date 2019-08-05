@@ -32,7 +32,7 @@ for (sub in subdir){
      } else if (sub == "monthly/"){
        name_pref <- "month_"
      } else if (sub == "wtr_yr/"){
-       name_pref <- "wtr_yr_"
+       name_pref <- "wtr_yr_sept_"
   }
   print (files_list)
   for (file in files_list){

@@ -19,12 +19,10 @@ start_time <- Sys.time()
 lagoon_source_path = "/home/hnoorazar/lagoon_codes/core_lagoon.R"
 source(lagoon_source_path)
 
-data_dir <- "/data/hydro/users/Hossein/lagoon/00_raw_data/"
-
-lagoon_out = "/data/hydro/users/Hossein/lagoon/"
-main_out <- file.path(lagoon_out, "/01_storm_cumPrecip/cum_precip/")
-if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
-
+base_dir <- "/data/hydro/users/Hossein/lagoon/03_rain_vs_snow/"
+data_dir <- paste0(base_dir, "01_combined/")
+out_dir <- paste0(base_dir, "02_cum_rain/wtr_yr/")
+if (dir.exists(out_dir) == F) {dir.create(path = out_dir, recursive = T)}
 ######################################################################
 ##                                                                  ##
 ##                                                                  ##
@@ -41,35 +39,28 @@ obs_clusters <- subset(obs_clusters,
 ##                                                                  ##
 ##                                                                  ##
 ######################################################################
-raw_files <- c("raw_modeled_hist.rds", 
-               "raw_observed.rds", 
-               "raw_RCP45.rds", 
-               "raw_RCP85.rds")
+raw_files <- c("rain_modeled_hist.rds",
+               "rain_observed.rds",
+               "rain_RCP45.rds",
+               "rain_RCP85.rds")
 
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
+  curr_dt <- curr_dt %>% filter(time_period != "2006-2025")
+
   # replace negative precips
   curr_dt <- curr_dt[precip < 0, precip := 0]
   
   curr_dt <- create_wtr_calendar(curr_dt, wtr_yr_start=10)
-  curr_dt <- compute_wtr_yr_cum(curr_dt)
-
-  # curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
-  # saveRDS(curr_dt, paste0(main_out, "/wtr_yr/", 
-  #                         gsub("raw", "wtr_yr_sept_cum_precip", file)))
-  # do the following, because we do not know
-  # how that column will effect the outcome.
-  # curr_dt <- within(curr_dt, remove(cluster))
+  curr_dt <- wtr_yr_cum_rain(curr_dt)
 
   curr_dt <- curr_dt %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              filter(month==9 & day==30) %>%
              data.table()
   
-  suppressWarnings({ curr_dt <- within(curr_dt, remove(cluster, cluster.x, cluster.y))})
-  curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
-  saveRDS(curr_dt, paste0(main_out, "/wtr_yr/", 
-                          gsub("raw", "wtr_yr_cum_precip_LD", file)))
+  saveRDS(curr_dt, paste0(out_dir,
+                          gsub("rain", "wtr_yr_cum_rain_LD", file)))
 }
 
 end_time <- Sys.time()

@@ -5,6 +5,97 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
+monthly_cum_rain <- function(data_tb){
+  ##############################################################
+  # input: data_tb                                             #
+  #                                                            #
+  # output:                                                    #
+  #                                                            #
+  #                                                            #
+  ##############################################################
+  data_tb$rain <- data_tb$precip * data_tb$rain_portion
+
+  data_tb <- data_tb %>%
+            group_by(location, year, month, model, emission) %>%
+            mutate(monthly_cum_precip = cumsum(precip)) %>%
+            data.table()
+
+   data_tb <- data_tb %>%
+            group_by(location, year, month, model, emission) %>%
+            mutate(monthly_cum_rain = cumsum(rain)) %>%
+            data.table()
+  return (data_tb)
+}
+
+wtr_yr_cum_rain <- function(data_tb){
+  #
+  # input: data_tb has to have the water_year column in it
+  # output: cumulative precip in each water_year
+  #
+  data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(annual_cum_precip = cumsum(precip)) %>%
+             data.table()
+
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(annual_cum_rain = cumsum(rain)) %>%
+             data.table()
+  return (data_tb)
+}
+
+chunky_cum_rain <- function(data_tb, start_month, end_month){
+  #
+  # first, put water_calendar so proper months are grouped together
+  # second, toss out unwanted months.
+  # third, find, cumu. over a wtr_year
+  #
+  data_tb <- create_wtr_calendar(data_tb, wtr_yr_start = start_month)
+
+  data_tb <- data_tb %>%
+             filter(!(month %in% ((end_month+1):(start_month-1))))%>%
+             data.table()
+
+  data_tb$rain <- data_tb$precip * data_tb$rain_portion
+
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(chunk_cum_precip = cumsum(precip)) %>%
+             data.table()
+
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(chunk_cum_rain = cumsum(rain)) %>%
+             data.table()
+
+ return(data_tb)
+}
+
+annual_cum_rain <- function(data_tb){
+  ##############################################################
+  # input: data_tb                                             #
+  #                                                            #
+  # output:                                                    #
+  #                                                            #
+  #                                                            #
+  ##############################################################
+  data_tb <- data_tb %>%
+             group_by(location, year, model, emission, time_period) %>%
+             mutate(annual_cum_precip = cumsum(precip)) %>%
+             data.table()
+
+  data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  
+  data_tb <- data_tb %>%
+             group_by(location, year, model, emission, time_period) %>%
+             mutate(annual_cum_rain = cumsum(precip)) %>%
+             data.table()
+
+  return (data_tb)
+}
+
 rain_portion <- function(dt){
   dt$rain_portion <- apply(dt[, "tmean"], MARGIN=1, FUN=rain_p)
   # dt$rain_portion <- unlist(lapply(data$tmean, FUN=rain_portion))
@@ -36,27 +127,72 @@ rain_p <- function(tmean, Tt=2, Tr=13){
 #####         Do we have to do extra stuff for this?
 #####
 ###########################################################################
-median_diff_4_map_obs_or_modeled <- function(dt, tgt_col, diff_from){
+storm_diff_4_map_obs_or_modeled <- function(dt_dt, diff_from){
   if (diff_from=="1979-2016"){
-    median_diffs <- compute_median_diff_4_map(dt, tgt_col, diff_from="1979-2016")
-    
+      storm_diffs <- storm_diff_4_map(dt_dt, diff_from="1979-2016")
     } else {
       # HERE we have: diff_from=="1950-2005"
-      median_diffs <- data.table()
+      storm_diffs <- data.table()
       
       # The followins is not necessary, it is done in compute... function
-      dt <- dt %>% 
-            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
-            data.table()
-      all_mods <- unique(dt$model)
+      dt_dt <- dt_dt %>% 
+               filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+               data.table()
+      all_mods <- unique(dt_dt$model)
       for (mod in all_mods){
-        curr_dt <- dt %>% filter(model == mod) %>% data.table()
-        curr_dt <- compute_median_diff_4_map(curr_dt, tgt_col, diff_from="1950-2005")
-        median_diffs <- rbind(median_diffs, curr_dt)
+         curr_dt <- dt_dt %>% filter(model == mod) %>% data.table()
+         curr_dt <- storm_diff_4_map(curr_dt, diff_from="1950-2005")
+         storm_diffs <- rbind(storm_diffs, curr_dt)
       }
-      return(median_diffs)
   }
+  return(storm_diffs)
 }
+
+storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
+  #
+  # diff_from in {"1979-2016", "1950-2005"}
+  #
+  if (diff_from=="1979-2016"){
+      toss_rp <- "1950-2005"
+    } else {
+    toss_rp <- "1979-2016"
+  }
+  dt_dt <- dt_dt %>% 
+           filter(return_period != toss_rp & 
+                  return_period != "2006-2025")%>% 
+           data.table()
+
+  # we have to have unique historical to be able
+  # to subtract it from future stuff
+  dt_dt_hist <- dt_dt %>% 
+                filter(return_period == diff_from)%>% 
+                select(-c("emission")) %>%
+                unique() %>% 
+                data.table()
+  dt_dt_hist$emission = "hist"
+
+  dt_dt <- dt_dt %>% 
+           filter(return_period != diff_from)%>% 
+           data.table()
+  
+  dt_dt <- rbind(dt_dt, dt_dt_hist)
+
+  # melt to get differences
+  dt_dt <- melt(dt_dt, id = c("location", "model",
+                              "return_period", "emission",
+                              "cluster"))
+
+  setnames(dt_dt, old = c("variable", "value"), 
+                  new = c("time_interval", "storm_value"))
+
+  diffs <- dt_dt %>%
+           group_by(location, time_interval) %>%
+           mutate(storm_diff = storm_value - storm_value[return_period == diff_from])%>%
+           data.table()
+  return(diffs)
+}
+
+
 ###########################################################################
 median_of_diff_of_medians <- function(dt){
   #
@@ -78,6 +214,28 @@ median_of_diff_of_medians <- function(dt){
   cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
   diffs[,(cols) := round(.SD, 2), .SDcols=cols]
   return(diffs)
+}
+
+median_diff_4_map_obs_or_modeled <- function(dt, tgt_col, diff_from){
+  if (diff_from=="1979-2016"){
+    median_diffs <- compute_median_diff_4_map(dt, tgt_col, diff_from="1979-2016")
+    
+    } else {
+      # HERE we have: diff_from=="1950-2005"
+      median_diffs <- data.table()
+      
+      # The followins is not necessary, it is done in compute... function
+      dt <- dt %>% 
+            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            data.table()
+      all_mods <- unique(dt$model)
+      for (mod in all_mods){
+        curr_dt <- dt %>% filter(model == mod) %>% data.table()
+        curr_dt <- compute_median_diff_4_map(curr_dt, tgt_col, diff_from="1950-2005")
+        median_diffs <- rbind(median_diffs, curr_dt)
+      }
+  }
+  return(median_diffs)
 }
 
 compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
