@@ -41,8 +41,8 @@ obs_clusters <- subset(obs_clusters,
 ##                                                                  ##
 ##                                                                  ##
 ######################################################################
-raw_files <- c("raw_modeled_hist.rds", 
-               "raw_observed.rds", 
+raw_files <- c("raw_observed.rds",
+               "raw_modeled_hist.rds",
                "raw_RCP45.rds", 
                "raw_RCP85.rds")
 

@@ -25,30 +25,14 @@ out_dir <- paste0(base_dir, "02_cum_rain/monthly/")
 if (dir.exists(out_dir) == F) {dir.create(path = out_dir, recursive = T)}
 ######################################################################
 ##                                                                  ##
-##                                                                  ##
 ######################################################################
-param_dir <- "/home/hnoorazar/lagoon_codes/parameters/"
-obs_clusters <- read.csv(paste0(param_dir, "loc_fip_clust.csv"),
-                         header=T, as.is=T)
-obs_clusters <- subset(obs_clusters, 
-                       select = c("location", "cluster")) %>%
-                data.table()
-
-######################################################################
-##                                                                  ##
-##                                                                  ##
-##                                                                  ##
-######################################################################
-raw_files <- c("rain_modeled_hist.rds", 
-               "rain_observed.rds", 
-               "rain_RCP45.rds", 
-               "rain_RCP85.rds")
+raw_files <- c("rain_observed.rds", "rain_modeled_hist.rds",
+               "rain_RCP45.rds", "rain_RCP85.rds")
 
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
-  curr_dt <- curr_dt %>% filter(time_period != "2006-2025")
-  # replace negative precips
-  curr_dt <- curr_dt[precip < 0, precip := 0]
+  curr_dt <- curr_dt %>% filter(time_period != "2006-2025")%>%data.table()
+  curr_dt <- curr_dt[precip < 0, precip := 0]# replace negative precips
   
   curr_dt <- monthly_cum_rain(curr_dt)
   curr_dt <- curr_dt %>%

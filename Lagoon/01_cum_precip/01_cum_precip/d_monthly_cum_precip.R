@@ -40,10 +40,8 @@ obs_clusters <- subset(obs_clusters,
 ##                                                                  ##
 ##                                                                  ##
 ######################################################################
-raw_files <- c("raw_modeled_hist.rds", 
-               "raw_observed.rds", 
-               "raw_RCP45.rds", 
-               "raw_RCP85.rds")
+raw_files <- c("raw_observed.rds", "raw_modeled_hist.rds",
+               "raw_RCP45.rds", "raw_RCP85.rds")
 
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
