@@ -14,16 +14,14 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
+in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain/"
 plot_dir <- paste0(in_dir, "plots/chunky/")
-
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 ##############################
-fileN <- "all_chunk_cum_runoff_LD"
+fileN <- "Sept_March_cum_rain"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
-plot_col <- "chunk_cum_runbase"
-y_lab <- "runoff (mm)"
 ############################################################
 #
 # separate files 4 separate plots
@@ -34,12 +32,17 @@ dt_tb_85 <- dt_tb %>% filter(emission=="RCP 8.5") %>% data.table()
 # dt_tb_45_noMH <- dt_tb_noMH %>% filter(emission=="RCP 4.5") %>% data.table()
 # dt_tb_85_noMH <- dt_tb_noMH %>% filter(emission=="RCP 8.5") %>% data.table()
 ############################################################
-ttl <- "Sept. - Mar. cum. runoff"
+
+plot_col <- "chunk_cum_rain"
+y_lab <- "rain (mm)"
+
+ttl <- "Sept. - Mar. cum. rain"
 subttl <- " "
 chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                                y_lab = y_lab,
                                                tgt_col=plot_col,
                                                ttl, subttl)
+
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
 ggsave(filename = paste0(fileN, ".png"), 
        plot = chunk_box, 
@@ -52,6 +55,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                                 y_lab = y_lab,
                                                 tgt_col=plot_col,
                                                 ttl, subttl)
+
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
 ggsave(filename = paste0(fileN, "_45.png"), 
        plot = chunk_box, 

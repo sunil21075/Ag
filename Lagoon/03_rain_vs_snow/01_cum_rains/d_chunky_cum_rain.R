@@ -39,8 +39,9 @@ for(file in raw_files){
              group_by(location, wtr_yr, model, emission, time_period) %>%
              filter(month==3 & day==31) %>%
              data.table()
+  
   saveRDS(curr_dt, paste0(out_dir, 
-                          gsub("rain", "Sept_March_cum_rain_LD", file)))
+                          gsub("rain", "Sept_March_cum_rain", file)))
 }
 
 end_time <- Sys.time()

@@ -5,6 +5,24 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ########################################################################
+find_10_90_quantile_by_cluster <- function(dt_tba, tgt_col){
+  quan_90 <- dt_tba %>% 
+             group_by(time_period, emission, cluster) %>%
+             summarise(quan_90 = quantile(get(tgt_col), probs = 0.9)) %>%
+             data.table()
+  quan_10 <- dt_tba %>% 
+             group_by(time_period, emission, cluster) %>%
+             summarise(quan_10 = quantile(get(tgt_col), probs = 0.1)) %>%
+             data.table()
+  quans <- merge(quan_10, quan_90, 
+                 by=c("time_period", "emission", "cluster"))
+
+  cols <- c("quan_10", "quan_90")
+  quans[,(cols) := round(.SD, 2), .SDcols=cols]
+
+  return(quans)
+}
+########################################################################
 monthly_cum_rain <- function(data_tb){
   ##############################################################
   # input: data_tb                                             #
@@ -14,15 +32,21 @@ monthly_cum_rain <- function(data_tb){
   #                                                            #
   ##############################################################
   data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  data_tb$snow <- data_tb$precip * (1 - data_tb$rain_portion)
 
   data_tb <- data_tb %>%
-            group_by(location, year, month, model, emission) %>%
-            mutate(monthly_cum_precip = cumsum(precip)) %>%
-            data.table()
+             group_by(location, year, month, model, emission) %>%
+             mutate(monthly_cum_precip = cumsum(precip)) %>%
+             data.table()
 
    data_tb <- data_tb %>%
             group_by(location, year, month, model, emission) %>%
             mutate(monthly_cum_rain = cumsum(rain)) %>%
+            data.table()
+
+  data_tb <- data_tb %>%
+            group_by(location, year, month, model, emission) %>%
+            mutate(monthly_cum_snow = cumsum(snow)) %>%
             data.table()
   return (data_tb)
 }
@@ -33,6 +57,7 @@ wtr_yr_cum_rain <- function(data_tb){
   # output: cumulative precip in each water_year
   #
   data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  data_tb$snow <- data_tb$precip * (1 - data_tb$rain_portion)
   
   data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
@@ -43,6 +68,12 @@ wtr_yr_cum_rain <- function(data_tb){
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(annual_cum_rain = cumsum(rain)) %>%
              data.table()
+
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(annual_cum_snow = cumsum(snow)) %>%
+             data.table()
+
   return (data_tb)
 }
 
@@ -53,12 +84,12 @@ chunky_cum_rain <- function(data_tb, start_month, end_month){
   # third, find, cumu. over a wtr_year
   #
   data_tb <- create_wtr_calendar(data_tb, wtr_yr_start = start_month)
-
   data_tb <- data_tb %>%
              filter(!(month %in% ((end_month+1):(start_month-1))))%>%
              data.table()
 
   data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  data_tb$snow <- data_tb$precip * (1 - data_tb$rain_portion)
 
   data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
@@ -68,6 +99,10 @@ chunky_cum_rain <- function(data_tb, start_month, end_month){
   data_tb <- data_tb %>%
              group_by(location, wtr_yr, model, emission, time_period) %>%
              mutate(chunk_cum_rain = cumsum(rain)) %>%
+             data.table()
+  data_tb <- data_tb %>%
+             group_by(location, wtr_yr, model, emission, time_period) %>%
+             mutate(chunk_cum_snow = cumsum(snow)) %>%
              data.table()
 
  return(data_tb)
@@ -81,25 +116,37 @@ annual_cum_rain <- function(data_tb){
   #                                                            #
   #                                                            #
   ##############################################################
+  data_tb$rain <- data_tb$precip * data_tb$rain_portion
+  data_tb$snow <- data_tb$precip * (1 - data_tb$rain_portion)
+  
   data_tb <- data_tb %>%
              group_by(location, year, model, emission, time_period) %>%
              mutate(annual_cum_precip = cumsum(precip)) %>%
              data.table()
-
-  data_tb$rain <- data_tb$precip * data_tb$rain_portion
   
   data_tb <- data_tb %>%
              group_by(location, year, model, emission, time_period) %>%
-             mutate(annual_cum_rain = cumsum(precip)) %>%
+             mutate(annual_cum_rain = cumsum(rain)) %>%
+             data.table()
+
+  data_tb <- data_tb %>%
+             group_by(location, year, model, emission, time_period) %>%
+             mutate(annual_cum_snow = cumsum(snow)) %>%
              data.table()
 
   return (data_tb)
 }
 
-rain_portion <- function(dt){
-  dt$rain_portion <- apply(dt[, "tmean"], MARGIN=1, FUN=rain_p)
-  # dt$rain_portion <- unlist(lapply(data$tmean, FUN=rain_portion))
-  return(dt)
+rain_portion <- function(dt_dt){
+  # dt_dt$rain_portion <- apply(dt_dt[, "tmean"], MARGIN=1, FUN=rain_p)
+  # dt_dt$rain_portion <- unlist(lapply(data$tmean, FUN=rain_portion))
+
+  dt_dt <- dt_dt %>%
+           mutate(rain_portion = case_when(tmean <= 0.6 ~ 0,
+                                           (tmean < 3.6 & tmean> 0.6) ~ ((tmean/3) - 0.2),
+                                            tmean >= 3.6 ~ 1)) %>%
+           data.table()
+  return(dt_dt)
 }
 
 rain_p <- function(tmean, Tt=2, Tr=13){
@@ -192,8 +239,123 @@ storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
   return(diffs)
 }
 
-
 ###########################################################################
+median_of_diff_of_medians_month <- function(dt){
+  #
+  # tgt_col \in (diff, perc_diff)
+  #
+  diffs <- dt %>%
+           group_by(location, time_period, emission, month) %>%
+           transmute(med_of_diffs_of_meds = median(diff))%>%
+           unique() %>%
+           data.table()
+
+  perc_diffs <- dt %>%
+                group_by(location, time_period, emission, month) %>%
+                transmute(perc_med_of_diffs_of_meds = median(perc_diff))%>%
+                unique() %>%
+                data.table()
+
+  diffs <- merge(diffs, perc_diffs, 
+                 by=c("location", 'emission', "time_period", "month"))
+  cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
+  diffs[,(cols) := round(.SD, 2), .SDcols=cols]
+  return(diffs)
+}
+
+median_diff_4_map_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
+  if (diff_from=="1979-2016"){
+    median_diffs <- compute_median_diff_4_map_month(dt, tgt_col, diff_from="1979-2016")
+    
+    } else {
+      # HERE we have: diff_from=="1950-2005"
+      median_diffs <- data.table()
+      
+      # The followins is not necessary, it is done in compute... function
+      dt <- dt %>% 
+            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            data.table()
+      all_mods <- unique(dt$model)
+      for (mod in all_mods){
+        curr_dt <- dt %>% filter(model == mod) %>% data.table()
+        curr_dt <- compute_median_diff_4_map_month(curr_dt, tgt_col, diff_from="1950-2005")
+        median_diffs <- rbind(median_diffs, curr_dt)
+      }
+  }
+  return(median_diffs)
+}
+
+compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
+  #
+  # Clean unwanted data
+  #
+  if (diff_from == "1979-2016"){
+    unwanted_period <- "1950-2005"
+    } else {
+    unwanted_period <- "1979-2016"
+  }
+
+  dt <- dt %>% 
+        filter(time_period != unwanted_period & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  if ("evap" %in% colnames(dt)){
+    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+  }
+  if ("wtr_yr" %in% colnames(dt)) {
+    dt <- within(dt, remove(wtr_yr))
+  }
+  dt <- within(dt, remove(year, day, precip, cluster))
+
+  ################################################
+  #
+  # We need to do the following lines in order
+  # to make the subtraction within groups work.
+  #
+  dt_hist <- dt %>% 
+             filter(time_period == diff_from) %>%
+             select(-c("emission")) %>%
+             unique()%>%
+             data.table()
+
+  dt_hist$emission <- "hist"
+
+  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
+  dt <- rbind(dt, dt_hist)
+  
+  med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
+                               by = c("location", "time_period", 
+                                      "emission", "model", "month")]
+
+  setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
+
+  median_diffs <- med_per_loc_mod_TP_em %>%
+                  group_by(location) %>%
+                  mutate(diff = medians - medians[time_period == diff_from])%>%
+                  data.table()
+
+  median_diffs <- median_diffs %>% 
+                  filter(time_period != diff_from)%>%
+                  data.table()
+
+  # to do percentages
+  hist_meds_tl <- med_per_loc_mod_TP_em %>% 
+                  filter(time_period == diff_from) %>% 
+                  data.table()
+
+  hist_meds_tl <- within(hist_meds_tl, remove(time_period, emission, model))
+
+  setnames(hist_meds_tl, old=c("medians"), new="hist_median")
+
+  median_diffs <- merge(median_diffs, hist_meds_tl, 
+                        by=c("location", 'month'), all.x=T)
+
+  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
+  return(median_diffs)
+}
+
+##############################################################################
 median_of_diff_of_medians <- function(dt){
   #
   # tgt_col \in (diff, perc_diff)
@@ -282,6 +444,7 @@ compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
   #                                    emission, model) %>% 
   #                          summarise(medians = median(get(tgt_col)))  %>% 
   #                          data.table()
+  # print(colnames(dt))
   med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
                                by = c("location", "time_period", 
                                       "emission", "model")]
@@ -616,7 +779,6 @@ find_chunk_max_24_hr <- function(data_tb, start_month, end_month){
   return(data_tb)
 }
 
-
 ########################################################################
 #
 #        Cumulation of precipitation section
@@ -780,8 +942,6 @@ put_time_period <- function(data_tb, observed){
 #####################################
 #####################################    Not Used
 #####################################
-
-
 
 cluster_yr_time_series <- function(observed_dt, no_clusters=4){
   observed_dt <- subset(observed_dt, select=c(location, 

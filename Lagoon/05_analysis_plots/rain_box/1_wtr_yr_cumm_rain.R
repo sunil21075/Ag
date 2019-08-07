@@ -13,9 +13,11 @@ source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
 source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-plot_dir <- paste0(in_dir, "plots/wtr_yr/")
 
+
+in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain/"
+plot_dir <- paste0(in_dir, "plots/wtr_yr/")
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 ##############################
 fileN <- "all_wtr_yr_cum_runoff_LD"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))

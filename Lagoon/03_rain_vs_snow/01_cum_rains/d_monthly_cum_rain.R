@@ -40,7 +40,7 @@ for(file in raw_files){
              slice(which.max(day)) %>%
              data.table()
   saveRDS(curr_dt, paste0(out_dir,
-                          gsub("rain", "month_cum_in_LD", file)))
+                          gsub("rain", "month_cum_rain", file)))
 }
 
 end_time <- Sys.time()

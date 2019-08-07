@@ -28,8 +28,9 @@ module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
 cd /home/hnoorazar/lagoon_codes/02_med_diff_med_no_bias
-Rscript --vanilla ./d_med_diff_med_no_bias_runoff.R
-Rscript --vanilla ./d_med_diff_med_no_bias_precip.R
+Rscript --vanilla ./d_med_diff_med_no_bias_rain.R
+# Rscript --vanilla ./d_med_diff_med_no_bias_runoff.R
+# Rscript --vanilla ./d_med_diff_med_no_bias_precip.R
 
 
 echo

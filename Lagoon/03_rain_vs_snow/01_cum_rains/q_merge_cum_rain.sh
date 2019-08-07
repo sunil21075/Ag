@@ -1,18 +1,16 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N merge_doomsday
-#PBS -l mem=2gb
+#PBS -N collect_the_rain
+#PBS -l mem=10gb
 
 #PBS -l nodes=1:ppn=1,walltime=2:00:00
 #PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/error/doomsday_E
-#PBS -o /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/error/doomsday_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_rain_snow/02_cum_rain/error/doomsday_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_rain_snow/02_cum_rain/error/doomsday_O
 #PBS -m abe
-
-cd /home/hnoorazar/lagoon_codes/01_cum_storm/cum_precip/
 
 echo
 echo We are in $PWD.
@@ -27,6 +25,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
+cd /home/hnoorazar/lagoon_codes/01_rain_snow/02_cum_rain
 Rscript --vanilla ./d_merge_last_days.R
 
 echo

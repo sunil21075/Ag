@@ -9,8 +9,8 @@
 
 ## Define path for output & error logs
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01_rain_snow/error/obs_E
-#PBS -o /home/hnoorazar/lagoon_codes/01_rain_snow/error/obs_O
+#PBS -e /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/error/obs_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/error/obs_O
 
 #PBS -m abe
 
@@ -36,7 +36,7 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01_rain_snow/00_d_observed.R
+Rscript --vanilla /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/00_d_observed.R
 
 echo
 echo "----- DONE -----"

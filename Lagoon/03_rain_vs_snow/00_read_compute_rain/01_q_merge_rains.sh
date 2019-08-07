@@ -4,12 +4,13 @@
 #PBS -N meet_in_rain
 #PBS -l mem=2gb
 
-#PBS -l nodes=1:ppn=1,walltime=2:00:00
-#PBS -q fast
+#PBS -l nodes=1:ppn=1,walltime=6:00:00
+##PBS -q fast
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/01_rain_snow/error/merge_rain_E
-#PBS -o /home/hnoorazar/lagoon_codes/01_rain_snow/error/merge_rain_O
+
+#PBS -e /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/error/merge_rain_E
+#PBS -o /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/error/merge_rain_O
 #PBS -m abe
 
 echo
@@ -25,7 +26,8 @@ module load gcc/7.3.0
 module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
-Rscript --vanilla /home/hnoorazar/lagoon_codes/01_rain_snow/01_d_merge_rain.R
+cd /home/hnoorazar/lagoon_codes/01_rain_snow/01_rain_portions/
+Rscript --vanilla ./01_d_merge_rain.R
 
 echo
 echo "----- DONE -----"

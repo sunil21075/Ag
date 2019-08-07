@@ -23,9 +23,9 @@ dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
 month_names <- c("Jan.", "Feb.", "Mar.", 
-	             "Apr.", "May.", "Jun.", 
-	             "Jul.", "Aug.", "Sep.", 
-	             "Oct.", "Nov.", "Dec.")
+	               "Apr.", "May.", "Jun.", 
+	               "Jul.", "Aug.", "Sep.", 
+	               "Oct.", "Nov.", "Dec.")
 
 clusters <- subset(dt_tb, select=c(location, cluster))
 clusters <- unique(clusters)

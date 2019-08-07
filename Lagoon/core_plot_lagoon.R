@@ -20,7 +20,7 @@ options(digits=9)
 # color of stuff on the map.
 #
 
-Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
+Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
 
   suppressWarnings({dt <- within(dt, remove(day, precip, model))})
   if ("evap" %in% colnames(dt)){
@@ -30,14 +30,12 @@ Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
   dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
 
   dt <- dt %>% 
-        filter(time_period != "1950-2005" & 
+        filter(# time_period != "1950-2005" & 
                time_period != "2006-2025") %>% 
         data.table()
-  
-  time_lbl <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
-  color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
 
-  dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  time_label <- sort(unique(dt$time_period))
+  dt$time_period <- factor(dt$time_period, levels=time_label)
   suppressWarnings({dt <- within(dt, remove(year))})
 
   medians <- data.frame(dt) %>% 
@@ -48,6 +46,14 @@ Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
   melted <- melt(dt, id = c("location", "month",
                             "time_period", "emission",
                             "cluster"))
+  
+  if (length(unique(melted$time_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
   rm(dt)
   ax_txt_size <- 10; ax_ttl_size <- 12; box_width = 0.7
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -80,6 +86,7 @@ Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
   
   ggplot(data = melted, 
         aes(x=month, y=value, fill=time_period)) +
@@ -87,16 +94,17 @@ Nod_Dec_cum_box <- function(dt, y_lab, tgt_col){
   geom_boxplot(outlier.size = -0.3, notch=F, 
                width = box_width, lwd=.1,
                position = position_dodge(.8)) +
-  facet_grid(~ emission ~ cluster) +
+  facet_grid(~ emission ~ cluster, scales="free") +
   ylab(y_lab) +
   scale_fill_manual(values = color_ord,
                     name = "time\nperiod",
-                    labels = time_lbl) + 
+                    labels = time_label) + 
   scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
   geom_text(data = medians, 
-            aes(label = sprintf("%1.2f", medians$med), y = medians$med),
+            aes(label = sprintf(signif, medians$med), y = medians$med),
             size = 2.5, vjust = -.6, position = position_dodge(.8))
 }
+
 #
 # Following works are on both precip and runoffs
 #
@@ -112,12 +120,18 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
         data.table()
 
   suppressWarnings({dt <- within(dt, 
-                                 remove(month, day, year, precip, model, wtr_yr))})
+                                 remove(month, day, year, precip, 
+                                        model, wtr_yr, tmean, rain, snow, 
+                                        precip, rain_portion))})
   # dt <- cluster_numeric_2_str(dt)
   if ("diff" %in% colnames(dt)){
     dt <- subset(dt, select=c("location", "time_period", "emission",
                               "cluster", tgt_col))
   }
+
+  dt <- subset(dt, select=c("location", "time_period", "emission",
+                            "cluster", tgt_col))
+  
 
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -172,6 +186,9 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
                     )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+    
   ########
   ########    PLOT
   ########
@@ -182,15 +199,15 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                position = position_dodge(0.8)) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
-  facet_grid(~ emission) +
+  facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
-            aes(label = sprintf("%1.2f", medians$med), y = medians$med), 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6) + 
-  ggtitle(ttl, subtitle=subttl)
+            position = position_dodge(.8), vjust = -.6)#  + 
+  # ggtitle(ttl, subtitle=subttl)
 }
 
 box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab, tgt_col){
@@ -212,14 +229,16 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
           filter(# time_period != "1950-2005" & 
                  time_period != "2006-2025") %>% 
           data.table()
-    
-    time_lbl <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
-    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
- 
-    time_lbl <- c("1950-2005", "1979-2016", "2026-2050",
-                  "2051-2075", "2076-2099")
-    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
 
+
+    if (length(unique(dt$time_period)) == 3){
+      color_ord = c("dodgerblue2", "olivedrab4", "gold")
+      } else if (length(unique(dt$time_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+      } else if (length(unique(dt$time_period)) == 5){
+      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+    }
+    time_lbl <- sort(unique(dt$time_period))
     dt$time_period <- factor(dt$time_period, levels=time_lbl)
     suppressWarnings({dt <- within(dt, remove(year))})
 
@@ -272,7 +291,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
              # labs(x="", y="") + # theme_bw() + 
-             facet_grid(~ emission ~ cluster) +
+             facet_grid(~ emission ~ cluster, scales="free") +
              # xlab("month") + 
              ylab(y_lab) +
              scale_fill_manual(values = color_ord,
@@ -296,8 +315,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
     return(box_p)
 
   } else {
-    time_lbl <- c("1950-2005", "1979-2016", "2006-2025", 
-                  "2026-2050", "2051-2075", "2076-2099")
+    time_lbl <- sort(unique(dt$time_period))
     dt$time_period <- factor(dt$time_period, levels=time_lbl)
   
     if (trend_type=="median"){
@@ -361,14 +379,13 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
               geom_line() +
               the + 
               facet_grid(~ emission ~ cluster ~ month,
-                         labeller=labeller(month = month_names))+
+                         labeller=labeller(month = month_names), 
+                          scales="free")+
               ylab(y_lab)
 
       return(line_p)
   }
 }
-
-
 
 ############################################################
 #      
@@ -753,7 +770,7 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission) +
+           facet_grid(~ emission, scales="free") +
            xlab("precip. group") +
            ylab(y_lab) + 
            scale_fill_manual(values = color_ord,
@@ -826,7 +843,7 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission) +
+           facet_grid(~ emission, scales="free") +
            ylab(y_lab) + 
            scale_fill_manual(values = color_ord,
                              labels = time_label)
@@ -894,7 +911,7 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.6)) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission) +
+           facet_grid(~ emission, scales="free") +
            xlab("time period") + 
            ylab(y_lab) + 
            scale_fill_manual(values = color_ord,

@@ -44,7 +44,7 @@ for(file in raw_files){
              data.table()
   
   saveRDS(curr_dt, paste0(out_dir,
-                          gsub("rain", "wtr_yr_cum_rain_LD", file)))
+                          gsub("rain", "wtr_yr_cum_rain", file)))
 }
 
 end_time <- Sys.time()
