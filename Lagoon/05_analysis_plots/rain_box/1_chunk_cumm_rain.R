@@ -28,9 +28,6 @@ head(dt_tb, 2)
 dt_tb_45 <- dt_tb %>% filter(emission=="RCP 4.5") %>% data.table()
 dt_tb_85 <- dt_tb %>% filter(emission=="RCP 8.5") %>% data.table()
 
-# dt_tb_noMH <- dt_tb %>% filter(time_period != "1950-2005") %>% data.table()
-# dt_tb_45_noMH <- dt_tb_noMH %>% filter(emission=="RCP 4.5") %>% data.table()
-# dt_tb_85_noMH <- dt_tb_noMH %>% filter(emission=="RCP 8.5") %>% data.table()
 ############################################################
 
 plot_col <- "chunk_cum_rain"
@@ -44,12 +41,11 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                                ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0(fileN, ".png"), 
+ggsave(filename = paste0("rain_", fileN, ".png"), 
        plot = chunk_box, 
        width = 10, height = 3, units = "in", 
        dpi=400, device = "png",
        path = plot_dir)
-
 
 chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                                 y_lab = y_lab,
@@ -57,7 +53,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                                 ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0(fileN, "_45.png"), 
+ggsave(filename = paste0("rain_", fileN, "_45.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",
@@ -69,38 +65,54 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                                 tgt_col=plot_col,
                                                 ttl, subttl)
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0(fileN, "_85.png"), 
+ggsave(filename = paste0("rain_", fileN, "_85.png"), 
+       plot = chunk_box, 
+       width = 5.5, height = 3.5, units = "in", 
+       dpi=400, device = "png",
+       path = plot_dir)
+##################################################################
+#
+#      Snow
+#
+##################################################################
+
+plot_col <- "chunk_cum_snow"
+y_lab <- "snow (mm)"
+
+ttl <- "Sept. - Mar. cum. snow"
+subttl <- " "
+chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
+                                               y_lab = y_lab,
+                                               tgt_col=plot_col,
+                                               ttl, subttl)
+
+chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
+ggsave(filename = "Sept_March_cum_snow.png",
+       plot = chunk_box, 
+       width = 10, height = 3, units = "in", 
+       dpi=400, device = "png",
+       path = plot_dir)
+
+chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
+                                                y_lab = y_lab,
+                                                tgt_col=plot_col,
+                                                ttl, subttl)
+
+chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
+ggsave(filename = paste0("snow_", fileN, "_45.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",
        path = plot_dir)
 
-
-# chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_noMH,
-#                                                 y_lab = y_lab,
-#                                                 tgt_col=plot_col)
-# ggsave(filename = paste0(fileN, "_noMH.png"), 
-#        plot = chunk_box, 
-#        width = 9, height = 3, units = "in", 
-#        dpi=400, device = "png",
-#        path = plot_dir)
-
-# chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45_noMH,
-#                                                 y_lab = y_lab,
-#                                                 tgt_col=plot_col)
-# ggsave(filename = paste0(fileN, "_45_noMH.png"), 
-#        plot = chunk_box, 
-#        width = 5, height = 3, units = "in", 
-#        dpi=400, device = "png",
-#        path = plot_dir)
-
-
-# chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85_noMH,
-#                                                 y_lab = y_lab,
-#                                                 tgt_col=plot_col)
-# ggsave(filename = paste0(fileN, "_85_noMH.png"), 
-#        plot = chunk_box, 
-#        width = 5, height = 3, units = "in", 
-#        dpi=400, device = "png",
-#        path = plot_dir)
+chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
+                                                y_lab = y_lab,
+                                                tgt_col=plot_col,
+                                                ttl, subttl)
+chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
+ggsave(filename = paste0("snow_", fileN, "_85.png"), 
+       plot = chunk_box, 
+       width = 5.5, height = 3.5, units = "in", 
+       dpi=400, device = "png",
+       path = plot_dir)
 

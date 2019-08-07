@@ -109,30 +109,30 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
 # Following works are on both precip and runoffs
 #
 ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
-  if (tgt_col=="annual_cum_runbase" | tgt_col=="chunk_cum_runbase"){
-    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
-      base_flow, run_p_base))})
-  }
+  # if (tgt_col=="annual_cum_runbase" | tgt_col=="chunk_cum_runbase"){
+  #   suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+  #     base_flow, run_p_base))})
+  # }
+  # suppressWarnings({dt <- within(dt, 
+  #                                remove(month, day, year, precip, 
+  #                                       model, wtr_yr, tmean, rain, snow, 
+  #                                       precip, rain_portion))})
+  # dt <- cluster_numeric_2_str(dt)
+
   # toss unwanted time periods
   dt <- dt %>% 
         filter(# time_period != "1950-2005" & 
                time_period != "2006-2025") %>% 
         data.table()
 
-  suppressWarnings({dt <- within(dt, 
-                                 remove(month, day, year, precip, 
-                                        model, wtr_yr, tmean, rain, snow, 
-                                        precip, rain_portion))})
-  # dt <- cluster_numeric_2_str(dt)
-  if ("diff" %in% colnames(dt)){
-    dt <- subset(dt, select=c("location", "time_period", "emission",
-                              "cluster", tgt_col))
-  }
+  # if ("diff" %in% colnames(dt)){
+  #   dt <- subset(dt, select=c("location", "time_period", "emission",
+  #                             "cluster", tgt_col))
+  # }
 
   dt <- subset(dt, select=c("location", "time_period", "emission",
                             "cluster", tgt_col))
   
-
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission) %>% 
              summarise(med = median(get(tgt_col))) %>% 
