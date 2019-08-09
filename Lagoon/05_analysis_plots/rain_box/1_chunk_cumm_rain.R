@@ -41,7 +41,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                                ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0("rain_", fileN, ".png"), 
+ggsave(filename = paste0("AV_rain_", fileN, ".png"), 
        plot = chunk_box, 
        width = 10, height = 3, units = "in", 
        dpi=400, device = "png",
@@ -53,7 +53,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                                 ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0("rain_", fileN, "_45.png"), 
+ggsave(filename = paste0("AV_rain_", fileN, "_45.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",
@@ -65,7 +65,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                                 tgt_col=plot_col,
                                                 ttl, subttl)
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0("rain_", fileN, "_85.png"), 
+ggsave(filename = paste0("AV_rain_", fileN, "_85.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",
@@ -87,7 +87,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                                ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = "Sept_March_cum_snow.png",
+ggsave(filename = "AV_Sept_March_cum_snow.png",
        plot = chunk_box, 
        width = 10, height = 3, units = "in", 
        dpi=400, device = "png",
@@ -99,7 +99,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                                 ttl, subttl)
 
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0("snow_", fileN, "_45.png"), 
+ggsave(filename = paste0("AV_Snow_", fileN, "_45.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",
@@ -110,7 +110,7 @@ chunk_box <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                                 tgt_col=plot_col,
                                                 ttl, subttl)
 chunk_box <- chunk_box + ggtitle(ttl) # , , subtitle=subttl
-ggsave(filename = paste0("snow_", fileN, "_85.png"), 
+ggsave(filename = paste0("AV_Snow_", fileN, "_85.png"), 
        plot = chunk_box, 
        width = 5.5, height = 3.5, units = "in", 
        dpi=400, device = "png",

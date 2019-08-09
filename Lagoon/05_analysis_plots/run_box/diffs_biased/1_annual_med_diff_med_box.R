@@ -15,7 +15,7 @@ source(source_path_1)
 source(source_path_2)
 
 base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-in_dir <- paste0(base, "/02_med_diff_med_obs/box_data/")
+in_dir <- paste0(base, "/02_med_diff_med_obs/")
 plot_dir <- paste0(base, "plots/annual/")
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 
@@ -33,7 +33,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 b <- b + ggtitle(box_title, subtitle=box_subtitle)
-ggsave(filename = "biased_mag_med_diff_med_annual.png", 
+ggsave(filename = "biased_rain_mag_med_diff_med_annual.png", 
        plot = b, 
        width = 9.5, height = 5, units = "in", 
        dpi=300, device = "png",
@@ -45,7 +45,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 
-ggsave(filename = "biased_perc_med_diff_med_annual.png", 
+ggsave(filename = "biased_rain_perc_med_diff_med_annual.png", 
        plot = b, 
        width = 9.5, height = 5, units = "in", 
        dpi=300, device = "png",
@@ -64,7 +64,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 b <- b + ggtitle(box_title, subtitle=box_subtitle)
-ggsave(filename = "biased_mag_med_diff_med_annual_45.png", 
+ggsave(filename = "biased_rain_mag_med_diff_med_annual_45.png", 
        plot = b, 
        width = 4, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -76,7 +76,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 
-ggsave(filename = "biased_perc_med_diff_med_annual_45.png", 
+ggsave(filename = "biased_rain_perc_med_diff_med_annual_45.png", 
        plot = b, 
        width = 4, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -89,7 +89,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 b <- b + ggtitle(box_title, subtitle=box_subtitle)
-ggsave(filename = "biased_mag_med_diff_med_annual_85.png", 
+ggsave(filename = "biased_rain_mag_med_diff_med_annual_85.png", 
        plot = b, 
        width = 4, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -101,7 +101,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 
-ggsave(filename = "biased_perc_med_diff_med_annual_85.png", 
+ggsave(filename = "biased_rain_perc_med_diff_med_annual_85.png", 
        plot = b, 
        width = 4, height = 2.5, units = "in", 
        dpi=400, device = "png",

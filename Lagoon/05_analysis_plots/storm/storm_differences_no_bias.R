@@ -32,18 +32,18 @@ all_storms <- all_storms %>%
               data.table()
 
 storm_diffs <- storm_diff_4_map_obs_or_modeled(dt_dt =all_storms, 
-                                               diff_from="1979-2016")
+                                               diff_from="1950-2005")
 
 storm_diffs_box <- storm_diff_box_25yr(data_tb=storm_diffs, tgt_col="storm_diff")
 storm_diffs_percentage_box <- storm_diff_box_25yr(storm_diffs, tgt_col="perc_diff")
 
-ggsave(filename = "storm_diffs_box.png",
+ggsave(filename = "storm_diffs_no_bias.png",
        plot = storm_diffs_box, 
        width = 9, height = 3.5, units = "in", 
        dpi=400, device = "png",
        path = plot_dir)
 
-ggsave(filename = "storm_diffs_percentage_box.png",
+ggsave(filename = "storm_diffs_percentage_no_bias.png",
        plot = storm_diffs_percentage_box, 
        width = 9, height = 3.5, units = "in", 
        dpi=400, device = "png",
@@ -58,13 +58,13 @@ storm_diffs <- storm_diffs %>%
 storm_diffs_box <- storm_diff_box_25yr(storm_diffs, tgt_col="storm_diff")
 storm_diffs_percentage_box <- storm_diff_box_25yr(storm_diffs, tgt_col="perc_diff")
 
-ggsave(filename = "least_storm_diffs_box.png",
+ggsave(filename = "least_storm_diffs_no_bias.png",
        plot = storm_diffs_box, 
        width = 6, height = 3.5, units = "in", 
        dpi=400, device = "png",
        path = plot_dir)
 
-ggsave(filename = "least_storm_diffs_percentage_box.png",
+ggsave(filename = "least_storm_diffs_percentage_no_bias.png",
        plot = storm_diffs_percentage_box, 
        width = 6, height = 3.5, units = "in", 
        dpi=400, device = "png",

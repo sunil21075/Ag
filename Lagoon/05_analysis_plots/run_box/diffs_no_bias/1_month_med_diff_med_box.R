@@ -15,13 +15,9 @@ source(source_path_1)
 source(source_path_2)
 
 base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-in_dir <- paste0(base, "/02_med_diff_med_no_bias/box_data/")
+in_dir <- paste0(base, "/02_med_diff_med_no_bias/")
 plot_dir <- paste0(base, "plots/monthly/")
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-##############################
-param <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/loc_fip_clust.csv"
-clusters <- read.csv(param, header=T, as.is=T)
-clusters <- within(clusters, remove(ann_prec_mean, centroid, fips))
 ##############################
 
 fileN <- "detail_med_diff_med_month_runoff"

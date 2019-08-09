@@ -183,7 +183,7 @@ storm_diff_4_map_obs_or_modeled <- function(dt_dt, diff_from){
       
       # The followins is not necessary, it is done in compute... function
       dt_dt <- dt_dt %>% 
-               filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+               filter(return_period != "2006-2025" & return_period != "1979-2016") %>% 
                data.table()
       all_mods <- unique(dt_dt$model)
       for (mod in all_mods){
@@ -201,8 +201,8 @@ storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
   #
   if (diff_from=="1979-2016"){
       toss_rp <- "1950-2005"
-    } else {
-    toss_rp <- "1979-2016"
+     } else {
+     toss_rp <- "1979-2016"
   }
   dt_dt <- dt_dt %>% 
            filter(return_period != toss_rp & 
@@ -211,12 +211,13 @@ storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
 
   # we have to have unique historical to be able
   # to subtract it from future stuff
-  dt_dt_hist <- dt_dt %>% 
-                filter(return_period == diff_from)%>% 
-                select(-c("emission")) %>%
-                unique() %>% 
-                data.table()
+  suppressWarnings({ dt_dt_hist <- dt_dt %>% 
+                     filter(return_period == diff_from)%>% 
+                     select(-c("emission")) %>%
+                     unique() %>% 
+                     data.table()})
   dt_dt_hist$emission = "hist"
+  dt_dt_hist$model = "hist"
 
   dt_dt <- dt_dt %>% 
            filter(return_period != diff_from)%>% 
@@ -236,6 +237,20 @@ storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
            group_by(location, time_interval) %>%
            mutate(storm_diff = storm_value - storm_value[return_period == diff_from])%>%
            data.table()
+
+  # remove the historical data itself for which diffs. are zeros
+  diffs <- diffs %>% filter(model != "hist")
+
+  # to do percentages
+  #**** The following 4 lines can be replaced by the 5th one ****
+  # histor <- dt_dt %>% filter(model == "hist") %>% data.table()
+  # histor <- subset(histor, select=c("location", "time_interval", "storm_value"))
+  # setnames(histor, old="storm_value", new="hist_storm_val")
+  # diffs <- merge(diffs, histor, by= c("location", "time_interval"), all.x=T)
+  
+  diffs$hist_storm_val <- diffs$storm_value +  diffs$storm_diff
+
+  diffs$perc_diff <- (diffs$storm_diff * 100) / (diffs$hist_storm_val)
   return(diffs)
 }
 
@@ -294,7 +309,6 @@ compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
     } else {
     unwanted_period <- "1979-2016"
   }
-
   dt <- dt %>% 
         filter(time_period != unwanted_period & 
                time_period != "2006-2025") %>% 
@@ -322,7 +336,7 @@ compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
   dt_hist$emission <- "hist"
 
   dt <- dt %>% filter(time_period != diff_from) %>% data.table()
-  dt <- rbind(dt, dt_hist)
+  dt <- rbind(dt, dt_hist); rm(dt_hist)
   
   med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
                                by = c("location", "time_period", 
@@ -331,7 +345,7 @@ compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
   setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
   median_diffs <- med_per_loc_mod_TP_em %>%
-                  group_by(location) %>%
+                  group_by(location, month) %>%
                   mutate(diff = medians - medians[time_period == diff_from])%>%
                   data.table()
 
@@ -348,8 +362,10 @@ compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
 
   setnames(hist_meds_tl, old=c("medians"), new="hist_median")
 
-  median_diffs <- merge(median_diffs, hist_meds_tl, 
-                        by=c("location", 'month'), all.x=T)
+  # median_diffs <- merge(median_diffs, hist_meds_tl, 
+  #                       by=c("location", 'month'), all.x=T)
+
+  median_diffs$hist_median <- median_diffs$medians +  median_diffs$diff
 
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
@@ -460,15 +476,12 @@ compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
                   data.table()
 
   # to do percentages
-  hist_meds_tl <- med_per_loc_mod_TP_em %>% 
-                  filter(time_period == diff_from) %>% 
-                  data.table()
-
-  hist_meds_tl <- within(hist_meds_tl, remove(time_period, emission, model))
-  setnames(hist_meds_tl, old=c("medians"), new="hist_median")
-
-  median_diffs <- merge(median_diffs, hist_meds_tl, by="location", all.x=T)
-
+  # hist_meds_tl <- med_per_loc_mod_TP_em %>% filter(time_period == diff_from) %>% data.table()
+  # hist_meds_tl <- within(hist_meds_tl, remove(time_period, emission, model))
+  # setnames(hist_meds_tl, old=c("medians"), new="hist_median")
+  # median_diffs <- merge(median_diffs, hist_meds_tl, by="location", all.x=T)
+  median_diffs$hist_median <- diffs$medians +  diffs$diff
+  
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
 }

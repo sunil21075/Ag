@@ -42,12 +42,6 @@ ggsave(filename = "monthly_box.png",
 ##############################
 
 dt_tb <- dt_tb %>% filter(month %in% c(11, 12)) %>% data.table()
-# dt_tb <- dt_tb %>%
-#          filter(time_period != "1950-2005") %>% data.table()
-
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
-source(source_path_2)
-
 nov_Dec <- Nov_Dec_cum_box(dt=dt_tb, y_lab = y_labb, tgt_col= tg_col)
 
 nov_Dec <- nov_Dec +  ggtitle(ttl) # , , subtitle=subttl

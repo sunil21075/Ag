@@ -14,86 +14,70 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
-plot_dir <- paste0(in_dir, "plots/monthly/")
+base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain/"
+in_dir <- paste0(base, "/03_med_diff_med_no_bias/")
+plot_dir <- paste0(base, "plots/monthly/")
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-##############################
-fileN <- "month_all_last_days"
+############################################################
+
+
+fileN <- "detail_med_diff_med_month_snow"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
 month_names <- c("Jan.", "Feb.", "Mar.", 
-	               "Apr.", "May.", "Jun.", 
-	               "Jul.", "Aug.", "Sep.", 
-	               "Oct.", "Nov.", "Dec.")
+                 "Apr.", "May.", "Jun.", 
+                 "Jul.", "Aug.", "Sep.", 
+                 "Oct.", "Nov.", "Dec.")
 
-clusters <- subset(dt_tb, select=c(location, cluster))
-clusters <- unique(clusters)
-
-box_title_base <- "diff. of medians from median of obs."
+box_title_base <- "diff. of medians (w/ no bias)"
 box_subtitle <- "for each model median is taken over years, separately"
 
 for (mon in 1:12){
   box_title <- paste0(box_title_base, " (", month_names[mon], ")")
 
   curr_dt <- dt_tb %>% filter(month==mon) %>% data.table()
-  meds <- compute_median_diff_4_map(dt=curr_dt, tgt_col="monthly_cum_precip", diff_from="1979-2016")
-  meds <- merge(meds, clusters, all.x=T, by="location")
-  
   assign(x = paste0(month_names[mon], "_mag"),
-        value ={ann_wtrYr_chunk_cum_box_cluster_x(dt=meds,
-                                                  y_lab="magnitude of differences",
+        value ={ann_wtrYr_chunk_cum_box_cluster_x(dt=curr_dt,
+                                                  y_lab="magnitude of differences (mm)",
                                                   tgt_col="diff",
                                                   ttl=box_title, 
-                                                  subttl=box_subtitle)})
+                                                  subttl=box_subtitle)+
+                ggtitle(box_title, subtitle=box_subtitle)})
   assign(x = paste0(month_names[mon], "_perc"),
-    value ={ann_wtrYr_chunk_cum_box_cluster_x(dt=meds,
+    value ={ann_wtrYr_chunk_cum_box_cluster_x(dt=curr_dt,
                                               y_lab="differences (%)",
                                               tgt_col="perc_diff",
                                               ttl=box_title, 
-                                              subttl=box_subtitle)})
+                                              subttl=box_subtitle) +
+            ggtitle(box_title, subtitle=box_subtitle)})
 }
 
 jan <- ggarrange(plotlist = list(Jan._perc, Jan._mag),
-                ncol = 1, nrow = 2,
-                common.legend = TRUE, legend="bottom")
+                 ncol = 1, nrow = 2,
+                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "jan_diffs.png",
+ggsave(filename = "no_bias_01_jan_diffs_snow.png",
        plot = jan, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
        path = plot_dir)
-
-
-
-jan <- ggarrange(plotlist = list(Jan._perc, Jan._mag),
-                ncol = 1, nrow = 2,
-                common.legend = TRUE, legend="bottom")
-
-ggsave(filename = "01_jan_diffs.png",
-       plot = jan, 
-       width = 10, height = 6, units = "in",
-       dpi=300, device = "png",
-       path = plot_dir)
-
-
 
 Feb <- ggarrange(plotlist = list(Feb._perc, Feb._mag),
-                ncol = 1, nrow = 2,
-                common.legend = TRUE, legend="bottom")
+                 ncol = 1, nrow = 2,
+                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "02_Feb_diffs.png",
+ggsave(filename = "no_bias_02_Feb_diffs_snow.png",
        plot = Feb, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
        path = plot_dir)
 
-
 Mar <- ggarrange(plotlist = list(Mar._perc, Mar._mag),
                  ncol = 1, nrow = 2,
                  common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "03_Mar_diffs.png",
+ggsave(filename = "no_bias_03_Mar_diffs_snow.png",
        plot = Mar, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -103,7 +87,7 @@ Apr <- ggarrange(plotlist = list(Apr._perc, Apr._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "04_Apr_diffs.png",
+ggsave(filename = "no_bias_04_Apr_diffs_snow.png",
        plot = Apr, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -113,7 +97,7 @@ May <- ggarrange(plotlist = list(May._perc, May._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "05_May_diffs.png",
+ggsave(filename = "no_bias_05_May_diffs_snow.png",
        plot = May, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -124,7 +108,7 @@ Jun <- ggarrange(plotlist = list(Jun._perc, Jun._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "06_Jun_diffs.png",
+ggsave(filename = "no_bias_06_Jun_diffs_snow.png",
        plot = Jun, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -135,7 +119,7 @@ Jul <- ggarrange(plotlist = list(Jul._perc, Jul._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "07_Jul_diffs.png",
+ggsave(filename = "no_bias_07_Jul_diffs_snow.png",
        plot = Jul, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -146,7 +130,7 @@ Aug <- ggarrange(plotlist = list(Aug._perc, Aug._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "08_Aug_diffs.png",
+ggsave(filename = "no_bias_08_Aug_diffs_snow.png",
        plot = Aug, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -156,7 +140,7 @@ Sep <- ggarrange(plotlist = list(Sep._perc, Sep._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "09_Sep_diffs.png",
+ggsave(filename = "no_bias_09_Sep_diffs_snow.png",
        plot = Sep, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -166,7 +150,7 @@ Oct <- ggarrange(plotlist = list(Oct._perc, Oct._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "10_Oct_diffs.png",
+ggsave(filename = "no_bias_10_Oct_diffs_snow.png",
        plot = Oct, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -176,7 +160,7 @@ Nov <- ggarrange(plotlist = list(Nov._perc, Nov._mag),
                 ncol = 1, nrow = 2,
                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "11_Nov_diffs.png",
+ggsave(filename = "no_bias_11_Nov_diffs_snow.png",
        plot = Nov, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",
@@ -184,10 +168,10 @@ ggsave(filename = "11_Nov_diffs.png",
 
 
 Dec <- ggarrange(plotlist = list(Dec._perc, Dec._mag),
-                ncol = 1, nrow = 2,
-                common.legend = TRUE, legend="bottom")
+                 ncol = 1, nrow = 2,
+                 common.legend = TRUE, legend="bottom")
 
-ggsave(filename = "12_Dec_diffs.png",
+ggsave(filename = "no_bias_12_Dec_diffs_snow.png",
        plot = Dec, 
        width = 10, height = 6, units = "in",
        dpi=300, device = "png",

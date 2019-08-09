@@ -39,20 +39,20 @@ obs_clusters <- subset(obs_clusters,
 ##                                                                  ##
 ##                                                                  ##
 ######################################################################
-raw_files <- c("all_ann_cum_runoff_LD.rds", 
-               "all_chunk_cum_runoff_LD.rds", 
-               "all_monthly_cum_runoff_LD.rds", 
-               "all_wtr_yr_cum_runoff_LD.rds")
+raw_files <- c("all_ann_cum_runbase.rds", 
+               "all_chunk_cum_runbase.rds", 
+               "all_monthly_cum_runbase.rds", 
+               "all_wtr_yr_cum_runbase.rds")
 
 target_columns <- c("annual_cum_runbase", 
                     "chunk_cum_runbase", 
                     "monthly_cum_runbase", 
                     "annual_cum_runbase")
 
-output_names <- c("med_diff_med_ann_runoff.rds", 
-                  "med_diff_med_chunk_runoff.rds", 
-                  "med_diff_med_month_runoff.rds", 
-                  "med_diff_med_wtr_yr_runoff.rds")
+output_names <- c("med_diff_med_ann_runbase.rds", 
+                  "med_diff_med_chunk_runbase.rds", 
+                  "med_diff_med_month_runbase.rds", 
+                  "med_diff_med_wtr_yr_runbase.rds")
 
 for(ii in 1:length(raw_files)){
   if (grepl("month", raw_files[ii])){

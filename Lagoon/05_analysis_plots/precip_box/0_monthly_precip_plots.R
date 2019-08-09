@@ -35,7 +35,7 @@ tg_col <- "monthly_cum_precip"
 box_plt <- box_trend_monthly_cum(dt=dt_tb, p_type="box", 
                                  y_lab = y_lab, tgt_col= tg_col)
 
-ggsave(filename = "monthly_box.png", 
+ggsave(filename = "AV_monthly_box.png", 
        plot = box_plt, 
        width = 14, height = 6, units = "in", 
        dpi=300, device = "png",
@@ -46,12 +46,8 @@ ggsave(filename = "monthly_box.png",
 # Separate Nov and Dec.
 #
 dt_tb_NOV_Dec <- dt_tb %>% filter(month %in% c(11, 12)) %>% data.table()
-dt_tb_NOV_Dec <- dt_tb_NOV_Dec %>%
-                 filter(time_period != "1950-2005") %>% data.table()
-
-nov_Dec <- Nod_Dec_cum_box(dt=dt_tb_NOV_Dec, y_lab = y_lab, tgt_col= tg_col)
-
-ggsave(filename = "nov_Dec_box.png", 
+nov_Dec <- Nov_Dec_cum_box(dt=dt_tb_NOV_Dec, y_lab = y_lab, tgt_col= tg_col)
+ggsave(filename = "AV_Nov_Dec_box.png", 
        plot = nov_Dec, 
        width = 10, height = 6, units = "in", 
        dpi=300, device = "png",

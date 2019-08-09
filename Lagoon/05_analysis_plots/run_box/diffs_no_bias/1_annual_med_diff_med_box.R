@@ -15,23 +15,19 @@ source(source_path_1)
 source(source_path_2)
 
 base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-in_dir <- paste0(base, "/02_med_diff_med_no_bias/box_data/")
+in_dir <- paste0(base, "/02_med_diff_med_no_bias/")
 plot_dir <- paste0(base, "plots/annual/")
 if (dir.exists(plot_dir) == F){dir.create(path = plot_dir, recursive = T)}
 ##############################
-param <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/loc_fip_clust.csv"
-clusters <- read.csv(param, header=T, as.is=T)
-clusters <- within(clusters, remove(ann_prec_mean, centroid, fips))
-##############################
 
-fileN <- "detail_med_diff_med_ann_runoff"
+fileN <- "detail_med_diff_med_ann_rain"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
 box_title <- "diff. of medians (w/ no bias)"
 box_subtitle <- "for each model median is taken over years, separately"
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
-                                       y_lab="magnitude of runoff diff. (mm)",
+                                       y_lab="magnitude of rain diff. (mm)",
                                        tgt_col="diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
@@ -44,7 +40,7 @@ ggsave(filename = "no_bias_mag_med_diff_med_annual.png",
        path = plot_dir)
 
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
-                                       y_lab="runoff differences (%)",
+                                       y_lab="rain differences (%)",
                                        tgt_col="perc_diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
@@ -67,7 +63,7 @@ dt_tb_85 <- dt_tb %>% filter(emission == "RCP 8.5")
 #### RCP 4.5
 ####
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
-                                       y_lab="magnitude of runoff diff. (mm)",
+                                       y_lab="magnitude of rain diff. (mm)",
                                        tgt_col="diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
@@ -80,7 +76,7 @@ ggsave(filename = "no_bias_mag_med_diff_med_annual_45.png",
        path = plot_dir)
 
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
-                                       y_lab="runoff differences (%)",
+                                       y_lab="rain differences (%)",
                                        tgt_col="perc_diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
@@ -95,7 +91,7 @@ ggsave(filename = "no_bias_perc_med_diff_med_annual_45.png",
 #### RCP 4.5
 ####
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
-                                       y_lab="magnitude of runoff diff. (mm)",
+                                       y_lab="magnitude of rain diff. (mm)",
                                        tgt_col="diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
@@ -108,7 +104,7 @@ ggsave(filename = "no_bias_mag_med_diff_med_annual_85.png",
        path = plot_dir)
 
 b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
-                                       y_lab="runoff differences (%)",
+                                       y_lab="rain differences (%)",
                                        tgt_col="perc_diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)

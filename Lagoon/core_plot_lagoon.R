@@ -22,11 +22,15 @@ options(digits=9)
 
 Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
 
-  suppressWarnings({dt <- within(dt, remove(day, precip, model))})
-  if ("evap" %in% colnames(dt)){
-    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
-                                              base_flow, run_p_base))})
-  }
+  # suppressWarnings({dt <- within(dt, remove(day, precip, model))})
+  # if ("evap" %in% colnames(dt)){
+  #   suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+  #                                             base_flow, run_p_base))})
+  # }
+
+  dt <- subset(dt, select=c("location", "time_period", 
+                            "emission", "month",
+                            "cluster", tgt_col))
   dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
 
   dt <- dt %>% 
@@ -36,7 +40,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
 
   time_label <- sort(unique(dt$time_period))
   dt$time_period <- factor(dt$time_period, levels=time_label)
-  suppressWarnings({dt <- within(dt, remove(year))})
+  # suppressWarnings({dt <- within(dt, remove(year))})
 
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission, month) %>% 
@@ -216,11 +220,16 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
   #   trend_type is in {mean, median} (line plot)
   #
 
-  suppressWarnings({dt <- within(dt, remove(day, precip, model))})
-  if ("evap" %in% colnames(dt)){
-    suppressWarnings({dt <- within(dt, remove(evap, runoff, 
-                                             base_flow, run_p_base))})
-  }
+  # suppressWarnings({dt <- within(dt, remove(day, precip, model))})
+  # if ("evap" %in% colnames(dt)){
+  #   suppressWarnings({dt <- within(dt, remove(evap, runoff, 
+  #                                            base_flow, run_p_base))})
+  # }
+
+  dt <- subset(dt, select=c("location", "time_period", 
+                            "emission", "month",
+                            "cluster", tgt_col))
+
   dt <- cluster_numeric_2_str(dt)
   dt <- month_numeric_2_str(dt)
   
@@ -392,6 +401,98 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
 #            STORM
 #
 #
+storm_diff_box_25yr <- function(data_tb, tgt_col){
+  data_tb <- data_tb %>% 
+             filter(time_interval=="twenty_five_years") %>% 
+             data.table()
+
+  needed_cols <- c("return_period", "emission", "cluster", tgt_col)
+
+  data_tb <- subset(data_tb, select=needed_cols)
+
+  time_label <- sort(unique(data_tb$return_period))
+  data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
+  if (length(unique(data_tb$cluster))==4){
+    data_tb$cluster <- factor(data_tb$cluster, 
+                              levels=c("most precip", "less precip", 
+                                       "lesser precip", "least precip"))
+     } else {
+    data_tb$cluster <- factor(data_tb$cluster, 
+                              levels=c("lesser precip", "least precip"))
+  }
+  
+  if (length(time_label) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+  ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
+  
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.6, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                            margin = margin(.15, 0, .15, 0, "line")),
+               strip.text.y = element_text(size = ax_ttl_size, face = "bold",
+                                            margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                         face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                           face = "bold", color="black",
+                                           margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                           ),
+                axis.title.y = element_text(size = ax_ttl_size, 
+                                            face = "bold", 
+                                            margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  if (tgt_col=="perc_diff"){
+     y_labb <- "differences (%)"
+     } else {
+      y_labb <- "magnitude of differences"
+  }
+  box_title <- "diff. of 25 yr/24 hr. design storm"
+
+  medians <- data.frame(data_tb) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  
+  box_p <- ggplot(data = data_tb, 
+                  aes(x=cluster, y=get(tgt_col), fill=return_period)) +
+           geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+           # labs(x="", y="") + # theme_bw() + 
+           facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
+           ylab(y_labb) + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = time_label) + 
+           ggtitle(box_title) + 
+           the +
+           geom_text(data = medians, 
+           aes(label = sprintf("%1.2f", medians$med), y = medians$med),
+               size = 2.5, vjust = -.6, position = position_dodge(.8))
+           
+}
+
 one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FALSE){
   # Storm related
   # one_time_medians means one-time in the sense of 25 years
@@ -522,7 +623,6 @@ storm_box_plot <- function(data_tb){
                              labels = categ_lab) + 
            scale_y_continuous(breaks = 1:20) + 
            the
-
 }
 #####################################
 #####################################

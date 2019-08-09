@@ -14,15 +14,14 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-in_dir <- paste0(base, "/02_med_diff_med_obs/")
+base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain/"
+in_dir <- paste0(base, "/03_med_diff_med_obs/")
 plot_dir <- paste0(base, "plots/wtr_yr/")
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 
 ##############################
 
-fileN <- "detail_med_diff_med_wtr_yr_runoff"
-tgt_col <- "annual_cum_precip"
+fileN <- "detail_med_diff_med_wtr_yr_snow"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
@@ -34,8 +33,8 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                        tgt_col="diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
-
-ggsave(filename = "biased_mag_med_diff_med_wtr_yr.png", 
+b <- b + ggtitle(box_title, subtitle=box_subtitle)
+ggsave(filename = "biased_mag_diff_wtr_yr_snow.png", 
        plot = b, 
        width = 9.5, height = 5, units = "in", 
        dpi=300, device = "png",
@@ -46,8 +45,8 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb,
                                        tgt_col="perc_diff",
                                        ttl=box_title, 
                                        subttl=box_subtitle)
-
-ggsave(filename = "biased_perc_med_diff_med_wtr_yr.png", 
+b <- b + ggtitle(box_title, subtitle=box_subtitle)
+ggsave(filename = "biased_perc_diff_wtr_yr_snow.png", 
        plot = b, 
        width = 9.5, height = 5, units = "in", 
        dpi=300, device = "png",
@@ -67,7 +66,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 b <- b + ggtitle(box_title, subtitle=box_subtitle)
-ggsave(filename = "biased_mag_med_diff_med_wtr_yr_45.png", 
+ggsave(filename = "biased_mag_diff_wtr_yr_snow_45.png", 
        plot = b, 
        width = 5, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -79,7 +78,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_45,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 
-ggsave(filename = "biased_perc_med_diff_med_wtr_yr_45.png", 
+ggsave(filename = "biased_perc_diff_wtr_yr_snow_45.png", 
        plot = b, 
        width = 5, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -92,7 +91,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 b <- b + ggtitle(box_title, subtitle=box_subtitle)
-ggsave(filename = "biased_mag_med_diff_med_wtr_yr_85.png", 
+ggsave(filename = "biased_mag_diff_wtr_yr_snow_85.png", 
        plot = b, 
        width = 5, height = 2.5, units = "in", 
        dpi=400, device = "png",
@@ -104,7 +103,7 @@ b <- ann_wtrYr_chunk_cum_box_cluster_x(dt=dt_tb_85,
                                        ttl=box_title, 
                                        subttl=box_subtitle)
 
-ggsave(filename = "biased_perc_med_diff_med_wtr_yr_85.png", 
+ggsave(filename = "biased_perc_diff_wtr_yr_snow_85.png", 
        plot = b, 
        width = 5, height = 2.5, units = "in", 
        dpi=400, device = "png",

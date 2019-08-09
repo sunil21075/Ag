@@ -15,7 +15,7 @@ source(source_path_1)
 source(source_path_2)
 
 base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-in_dir <- paste0(base, "/02_med_diff_med_obs/box_data/")
+in_dir <- paste0(base, "/02_med_diff_med_obs/")
 plot_dir <- paste0(base, "plots/chunky/")
 
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}

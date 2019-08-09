@@ -64,7 +64,7 @@ for(file in raw_files){
   curr_dt <- merge(curr_dt, obs_clusters, by="location", all.x=T)
 
   saveRDS(curr_dt, paste0(main_out, 
-                          "month_cum_", curr_model_N, "_LD.rds" ))
+                          "month_cum_", curr_model_N, ".rds" ))
 
 }
 
