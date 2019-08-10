@@ -109,6 +109,91 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
             size = 2.5, vjust = -.6, position = position_dodge(.8))
 }
 
+Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
+  dt <- dt %>% 
+        filter(# time_period != "1950-2005" & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  dt <- subset(dt, select=c("location", "time_period", "emission",
+                            "month", "cluster", tgt_col))
+  dt <- month_numeric_2_str(dt)
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission, month) %>%
+             summarise(med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(dt, id = c("location", "emission", "month",
+                            "time_period", "cluster"))
+  rm(dt)
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(melted$time_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  categ_label <- c("most precip", "less precip", 
+                   "lesser precip", "least precip")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+  
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
+                                          face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+                    )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+    
+  ########
+  ########    PLOT
+  ########
+  ggplot(data = melted, aes(x=month, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.8)) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  facet_grid(~ emission, scales="free") +
+  xlab("precip. group") +
+  ylab(y_lab) + 
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.8), vjust = -.6)
+}
+
 #
 # Following works are on both precip and runoffs
 #
@@ -490,7 +575,6 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
            geom_text(data = medians, 
            aes(label = sprintf("%1.2f", medians$med), y = medians$med),
                size = 2.5, vjust = -.6, position = position_dodge(.8))
-           
 }
 
 one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FALSE){
