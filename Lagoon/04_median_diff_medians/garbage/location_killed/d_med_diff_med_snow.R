@@ -22,8 +22,8 @@ source(lagoon_source_path)
 data_dir <- "/data/hydro/users/Hossein/lagoon/03_rain_vs_snow/"
 in_dir <- paste0(data_dir, "02_cum_rain/")
 
-out_dir_no_bias <- file.path(data_dir, "03_med_diff_med_no_bias/")
-out_dir_obs <- file.path(data_dir, "03_med_diff_med_obs/")
+out_dir_no_bias <- file.path(data_dir, "03_med_diff_med_no_bias_loc_killed/")
+out_dir_obs <- file.path(data_dir, "03_med_diff_med_obs_loc_killed/")
 if (dir.exists(out_dir_no_bias) == F) {dir.create(path = out_dir_no_bias, recursive = T)}
 if (dir.exists(out_dir_obs) == F) {dir.create(path = out_dir_obs, recursive = T)}
 ######################################################################
@@ -43,64 +43,55 @@ raw_files <- c("ann_cum_rain.rds",
                "month_cum_rain.rds", 
                "wtr_yr_cum_rain.rds")
 
-target_columns <- c("annual_cum_rain", 
-                    "chunk_cum_rain", 
-                    "monthly_cum_rain", 
-                    "annual_cum_rain")
+target_columns <- c("annual_cum_snow", 
+                    "chunk_cum_snow", 
+                    "monthly_cum_snow", 
+                    "annual_cum_snow")
 
-output_names <- c("med_diff_med_ann_rain.rds", 
-                  "med_diff_med_chunk_rain.rds", 
-                  "med_diff_med_month_rain.rds", 
-                  "med_diff_med_wtr_yr_rain.rds")
+output_names <- c("med_diff_med_ann_snow.rds", 
+                  "med_diff_med_chunk_snow.rds", 
+                  "med_diff_med_month_snow.rds", 
+                  "med_diff_med_wtr_yr_snow.rds")
 
 for(ii in 1:length(raw_files)){
   if (grepl("month", raw_files[ii])){
     curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
-    meds_detail_no_bias <- median_diff_obs_or_modeled_month(dt = curr_dt, 
-                                                                  tgt_col=target_columns[ii], 
-                                                                  diff_from="1950-2005")
-    meds_detail_obs <- median_diff_obs_or_modeled_month(dt = curr_dt, 
-                                                              tgt_col=target_columns[ii], 
-                                                              diff_from="1979-2016")
-      
-    meds_no_bias <- median_of_diff_of_medians_month(meds_detail_no_bias)
-    meds_obs <- median_of_diff_of_medians_month(meds_detail_obs)
+    if (!("cluster" %in% colnames(curr_dt))){
+        curr_dt <- merge(curr_dt, obs_clusters, all.x=T, by="location")
+    }
 
-    meds_detail_obs <- merge(meds_detail_obs, obs_clusters, all.x=T, by="location")
-    meds_detail_no_bias <- merge(meds_detail_no_bias, obs_clusters, all.x=T, by="location")
-    meds_no_bias <- merge(meds_no_bias, obs_clusters, all.x=T, by="location")
-    meds_obs <- merge(meds_obs, obs_clusters, all.x=T, by="location")
-      
+    meds_detail_no_bias <- median_diff_obs_or_modeled_month(dt = curr_dt, 
+                                                            tgt_col=target_columns[ii], 
+                                                            diff_from="1950-2005",
+                                                            kill="location")
+    meds_detail_obs <- median_diff_obs_or_modeled_month(dt = curr_dt, 
+                                                        tgt_col=target_columns[ii], 
+                                                        diff_from="1979-2016",
+                                                        kill="location")
+
     saveRDS(meds_detail_no_bias, paste0(out_dir_no_bias, "detail_", output_names[ii]))
-    saveRDS(meds_no_bias, paste0(out_dir_no_bias, output_names[ii]))
     saveRDS(meds_detail_obs, paste0(out_dir_obs, "detail_", output_names[ii]))
-    saveRDS(meds_obs, paste0(out_dir_obs, output_names[ii]))
 
     } else{
       curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
+      if (!("cluster" %in% colnames(curr_dt))){
+        curr_dt <- merge(curr_dt, obs_clusters, all.x=T, by="location")
+      }
+
       meds_detail_no_bias <- median_diff_obs_or_modeled(dt = curr_dt, 
-                                                              tgt_col=target_columns[ii], 
-                                                              diff_from="1950-2005")
+                                                        tgt_col=target_columns[ii], 
+                                                        diff_from="1950-2005",
+                                                        kill="location")
       meds_detail_obs <- median_diff_obs_or_modeled(dt = curr_dt, 
-                                                          tgt_col=target_columns[ii], 
-                                                          diff_from="1979-2016")
+                                                    tgt_col=target_columns[ii], 
+                                                    diff_from="1979-2016",
+                                                    kill="location")
       
       meds_no_bias <- median_of_diff_of_medians(meds_detail_no_bias)
-      meds_obs <- median_of_diff_of_medians(meds_detail_obs)
-
-      meds_detail_obs <- merge(meds_detail_obs, obs_clusters, all.x=T, by="location")
-      meds_detail_no_bias <- merge(meds_detail_no_bias, obs_clusters, all.x=T, by="location")
-      meds_no_bias <- merge(meds_no_bias, obs_clusters, all.x=T, by="location")
-      meds_obs <- merge(meds_obs, obs_clusters, all.x=T, by="location")
-      
       saveRDS(meds_detail_no_bias, paste0(out_dir_no_bias, "detail_", output_names[ii]))
-      saveRDS(meds_no_bias, paste0(out_dir_no_bias, output_names[ii]))
-
       saveRDS(meds_detail_obs, paste0(out_dir_obs, "detail_", output_names[ii]))
-      saveRDS(meds_obs, paste0(out_dir_obs, output_names[ii]))
   }
 }
-
 
 end_time <- Sys.time()
 print( end_time - start_time)

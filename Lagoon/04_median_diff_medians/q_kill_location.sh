@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -V
-#PBS -N med_diff_med
+#PBS -N kill_location
 #PBS -l mem=40gb
 
 ## PBS -l nodes=1:ppn=1,walltime=02:00:00
@@ -10,8 +10,8 @@
 #PBS -l nodes=1:ppn=1,walltime=6:00:00
 
 #PBS -k o
-#PBS -e /home/hnoorazar/lagoon_codes/02_med_diff_med/error/med_diff_med_E
-#PBS -o /home/hnoorazar/lagoon_codes/02_med_diff_med/error/med_diff_med_O
+#PBS -e /home/hnoorazar/lagoon_codes/02_med_diff_med/error/kill_location_E
+#PBS -o /home/hnoorazar/lagoon_codes/02_med_diff_med/error/kill_location_O
 #PBS -m abe
 
 echo
@@ -28,10 +28,7 @@ module load r/3.5.1/gcc/7.3.0
 module load r/3.5.1
 
 cd /home/hnoorazar/lagoon_codes/02_med_diff_med
-Rscript --vanilla ./d_med_diff_med_rain.R
-Rscript --vanilla ./d_med_diff_med_runoff.R
-Rscript --vanilla ./d_med_diff_med_precip.R
-Rscript --vanilla ./d_med_diff_med_snow.R
+Rscript --vanilla ./d_kill_location.R
 
 
 echo

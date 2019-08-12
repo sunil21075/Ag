@@ -177,7 +177,7 @@ rain_p <- function(tmean, Tt=2, Tr=13){
 storm_diff_obs_or_modeled <- function(dt_dt, diff_from){
   if (diff_from=="1979-2016"){
       storm_diffs <- storm_diff(dt_dt, diff_from="1979-2016")
-    } else {
+     } else {
       # HERE we have: diff_from=="1950-2005"
       storm_diffs <- data.table()
       
@@ -372,10 +372,134 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
 }
 
 ##############################################################################
+# median_diff_obs_or_modeled_kill <- function(dt_dt, tgt_col, diff_from, kill){
+#   if (kill== "location"){
+#     dt_dt <- within(dt_dt, remove(location))
+#     } else if (kill== "model"){
+#     dt_dt <- within(dt_dt, remove(model))
+#   }
+
+#   if (diff_from=="1979-2016"){
+#     median_diffs <- compute_median_diff_kill(dt_dt, tgt_col, diff_from="1979-2016", kill)
+    
+#     } else {
+#       # HERE we have: diff_from=="1950-2005"
+#       median_diffs <- data.table()
+      
+#       # The followins is not necessary, it is done in compute... function
+#       dt_dt <- dt_dt %>% 
+#             filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+#             data.table()
+#       all_mods <- unique(dt_dt$model)
+#       for (mod in all_mods){
+#         curr_dt <- dt_dt %>% filter(model == mod) %>% data.table()
+#         curr_dt <- compute_median_diff_kill(curr_dt, tgt_col, diff_from="1950-2005", kill)
+#         median_diffs <- rbind(median_diffs, curr_dt)
+#       }
+#   }
+#   return(median_diffs)
+# }
+
+# compute_median_diff_kill <- function(dt_dt, tgt_col, diff_from="1979-2016", kill){
+#   #
+#   # Clean unwanted data
+#   #
+#   if (diff_from == "1979-2016"){
+#      unwanted_period <- "1950-2005"
+#      } else {
+#      unwanted_period <- "1979-2016"
+#   }
+
+#   dt_dt <- dt_dt %>% 
+#            filter(time_period != unwanted_period & 
+#                   time_period != "2006-2025") %>% 
+#            data.table()
+
+#   if ("evap" %in% colnames(dt_dt)){
+#     dt_dt <- within(dt_dt, remove(evap, runoff, base_flow, run_p_base))
+#   }
+#   if ("wtr_yr" %in% colnames(dt_dt)) {
+#     dt_dt <- within(dt_dt, remove(wtr_yr))
+#   }
+#   dt_dt <- within(dt_dt, remove(year, month, day, precip, cluster))
+
+#   ################################################
+#   #
+#   # We need to do the following lines in order
+#   # to make the subtraction within groups work.
+#   #
+#   dt_hist <- dt_dt %>% 
+#              filter(time_period == diff_from) %>%
+#              select(-c("emission")) %>%
+#              unique()%>%
+#              data.table()
+
+#   dt_hist$emission <- "hist"
+
+#   dt_dt <- dt_dt %>% filter(time_period != diff_from) %>% data.table()
+#   dt_dt <- rbind(dt_dt, dt_hist)
+
+#   if (kill == "location"){
+#      med_per_loc_mod_TP_em <- dt_dt[, .( tgt_col = median(get(tgt_col))), 
+#                                     by = c("time_period", "cluster",
+#                                            "emission", "model")]
+#      setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
+#      median_diffs <- med_per_loc_mod_TP_em %>%
+#                      group_by(cluster) %>%
+#                      mutate(diff = medians - medians[time_period == diff_from])%>%
+#                      data.table()
+
+#      } else if (kill == "model"){
+#       med_per_loc_mod_TP_em <- dt_dt[, .( tgt_col = median(get(tgt_col))), 
+#                                      by = c("location", "time_period", "emission")]
+#       setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
+
+#       median_diffs <- med_per_loc_mod_TP_em %>%
+#                   group_by(location) %>%
+#                   mutate(diff = medians - medians[time_period == diff_from])%>%
+#                   data.table()
+#      } else {
+#       med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
+#                                   by = c("location", "time_period", 
+#                                          "emission", "model")]
+#       setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
+
+#       median_diffs <- med_per_loc_mod_TP_em %>%
+#                       group_by(location) %>%
+#                       mutate(diff = medians - medians[time_period == diff_from])%>%
+#                       data.table()
+#    }
+
+#   median_diffs <- median_diffs %>% 
+#                   filter(time_period != diff_from)%>%
+#                   data.table()
+
+#   median_diffs$hist_median <- diffs$medians +  diffs$diff
+  
+#   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
+#   return(median_diffs)
+# }
+############################################################
+median_of_diff_of_medians_kill_location <- function(dt_dt){
+  diffs <- dt_dt %>%
+           group_by(model, time_period, emission, cluster) %>%
+           transmute(med_of_diffs_of_meds = median(diff))%>%
+           unique() %>%
+           data.table()
+
+  perc_diffs <- dt_dt %>%
+                group_by(model, time_period, emission, cluster) %>%
+                transmute(perc_med_of_diffs_of_meds = median(perc_diff))%>%
+                unique() %>%
+                data.table()
+
+  diffs <- merge(diffs, perc_diffs, by=c("model", 'emission', "time_period", "cluster"))
+  cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
+  diffs[,(cols) := round(.SD, 2), .SDcols=cols]
+  return(diffs)
+}
+
 median_of_diff_of_medians <- function(dt){
-  #
-  # tgt_col \in (diff, perc_diff)
-  #
   diffs <- dt %>%
            group_by(location, time_period, emission) %>%
            transmute(med_of_diffs_of_meds = median(diff))%>%
