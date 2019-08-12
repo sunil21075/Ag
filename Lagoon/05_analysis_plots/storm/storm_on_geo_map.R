@@ -45,9 +45,8 @@ storm <- storm %>%
 ######
 ######
 ######
-return_levels <- c("1979-2016", "2026-2050", 
-                   "2051-2075", "2076-2099")
-
+# return_levels <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
+return_levels <- sort(unique(storm$return_period))
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 
 storm$return_period <- factor(storm$return_period, 

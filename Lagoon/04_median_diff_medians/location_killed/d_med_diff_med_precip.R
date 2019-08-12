@@ -58,7 +58,7 @@ print (1:length(raw_files))
 for(ii in 1:length(raw_files)){
   if (grepl("month", raw_files[ii])){
     curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
-    meds_detail <- median_diff_4_map_obs_or_modeled_month(dt = curr_dt, 
+    meds_detail <- median_diff_obs_or_modeled_month(dt = curr_dt, 
                                                           tgt_col=target_columns[ii], 
                                                           diff_from="1950-2005")
     meds <- median_of_diff_of_medians_month(meds_detail)
@@ -68,7 +68,7 @@ for(ii in 1:length(raw_files)){
     saveRDS(meds_detail, paste0(out_dir_no_bias, "detail_", output_names[ii]))
     saveRDS(meds, paste0(out_dir_no_bias, output_names[ii]))
 
-    meds_detail <- median_diff_4_map_obs_or_modeled_month(dt = curr_dt, 
+    meds_detail <- median_diff_obs_or_modeled_month(dt = curr_dt, 
                                                           tgt_col=target_columns[ii], 
                                                           diff_from="1979-2016")
     meds <- median_of_diff_of_medians_month(meds_detail)
@@ -84,7 +84,7 @@ for(ii in 1:length(raw_files)){
       curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
       print (head(curr_dt, 2))
 
-      meds_detail <- median_diff_4_map_obs_or_modeled(dt = curr_dt, 
+      meds_detail <- median_diff_obs_or_modeled(dt = curr_dt, 
                                                       tgt_col=target_columns[ii], 
                                                       diff_from="1950-2005")
       meds <- median_of_diff_of_medians(meds_detail)
@@ -94,7 +94,7 @@ for(ii in 1:length(raw_files)){
       saveRDS(meds_detail, paste0(out_dir_no_bias, "detail_", output_names[ii]))
       saveRDS(meds, paste0(out_dir_no_bias, output_names[ii]))
 
-      meds_detail <- median_diff_4_map_obs_or_modeled(dt = curr_dt, 
+      meds_detail <- median_diff_obs_or_modeled(dt = curr_dt, 
                                                       tgt_col=target_columns[ii], 
                                                       diff_from="1979-2016")
       meds <- median_of_diff_of_medians(meds_detail)

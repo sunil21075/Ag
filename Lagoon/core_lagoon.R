@@ -174,9 +174,9 @@ rain_p <- function(tmean, Tt=2, Tr=13){
 #####         Do we have to do extra stuff for this?
 #####
 ###########################################################################
-storm_diff_4_map_obs_or_modeled <- function(dt_dt, diff_from){
+storm_diff_obs_or_modeled <- function(dt_dt, diff_from){
   if (diff_from=="1979-2016"){
-      storm_diffs <- storm_diff_4_map(dt_dt, diff_from="1979-2016")
+      storm_diffs <- storm_diff(dt_dt, diff_from="1979-2016")
     } else {
       # HERE we have: diff_from=="1950-2005"
       storm_diffs <- data.table()
@@ -188,14 +188,14 @@ storm_diff_4_map_obs_or_modeled <- function(dt_dt, diff_from){
       all_mods <- unique(dt_dt$model)
       for (mod in all_mods){
          curr_dt <- dt_dt %>% filter(model == mod) %>% data.table()
-         curr_dt <- storm_diff_4_map(curr_dt, diff_from="1950-2005")
+         curr_dt <- storm_diff(curr_dt, diff_from="1950-2005")
          storm_diffs <- rbind(storm_diffs, curr_dt)
       }
   }
   return(storm_diffs)
 }
 
-storm_diff_4_map <- function(dt_dt, diff_from="1979-2016"){
+storm_diff <- function(dt_dt, diff_from="1979-2016"){
   #
   # diff_from in {"1979-2016", "1950-2005"}
   #
@@ -278,9 +278,9 @@ median_of_diff_of_medians_month <- function(dt){
   return(diffs)
 }
 
-median_diff_4_map_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
+median_diff_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
   if (diff_from=="1979-2016"){
-    median_diffs <- compute_median_diff_4_map_month(dt, tgt_col, diff_from="1979-2016")
+    median_diffs <- compute_median_diff_month(dt, tgt_col, diff_from="1979-2016")
     
     } else {
       # HERE we have: diff_from=="1950-2005"
@@ -293,14 +293,14 @@ median_diff_4_map_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
       all_mods <- unique(dt$model)
       for (mod in all_mods){
         curr_dt <- dt %>% filter(model == mod) %>% data.table()
-        curr_dt <- compute_median_diff_4_map_month(curr_dt, tgt_col, diff_from="1950-2005")
+        curr_dt <- compute_median_diff_month(curr_dt, tgt_col, diff_from="1950-2005")
         median_diffs <- rbind(median_diffs, curr_dt)
       }
   }
   return(median_diffs)
 }
 
-compute_median_diff_4_map_month <- function(dt, tgt_col, diff_from="1979-2016"){
+compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   #
   # Clean unwanted data
   #
@@ -394,9 +394,9 @@ median_of_diff_of_medians <- function(dt){
   return(diffs)
 }
 
-median_diff_4_map_obs_or_modeled <- function(dt, tgt_col, diff_from){
+median_diff_obs_or_modeled <- function(dt, tgt_col, diff_from){
   if (diff_from=="1979-2016"){
-    median_diffs <- compute_median_diff_4_map(dt, tgt_col, diff_from="1979-2016")
+    median_diffs <- compute_median_diff(dt, tgt_col, diff_from="1979-2016")
     
     } else {
       # HERE we have: diff_from=="1950-2005"
@@ -409,14 +409,14 @@ median_diff_4_map_obs_or_modeled <- function(dt, tgt_col, diff_from){
       all_mods <- unique(dt$model)
       for (mod in all_mods){
         curr_dt <- dt %>% filter(model == mod) %>% data.table()
-        curr_dt <- compute_median_diff_4_map(curr_dt, tgt_col, diff_from="1950-2005")
+        curr_dt <- compute_median_diff(curr_dt, tgt_col, diff_from="1950-2005")
         median_diffs <- rbind(median_diffs, curr_dt)
       }
   }
   return(median_diffs)
 }
 
-compute_median_diff_4_map <- function(dt, tgt_col, diff_from="1979-2016"){
+compute_median_diff <- function(dt, tgt_col, diff_from="1979-2016"){
   #
   # Clean unwanted data
   #

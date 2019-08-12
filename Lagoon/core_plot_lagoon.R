@@ -19,6 +19,49 @@ options(digits=9)
 # lets say one column is location, and one column determines
 # color of stuff on the map.
 #
+geo_map_perc_diff <- function(dt_dt, col_col, color_limit, ttl, subttl){
+  x <- sapply(dt_dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt_dt$lat <- lat; dt_dt$long <- long;
+
+  WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()  
+  
+  dt_dt %>%
+  ggplot() +
+  geom_polygon(data = WA_counties, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_polygon(data = WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "grey60", size=.3) + 
+  geom_point(aes_string(x = "long", y = "lat", color = col_col), 
+             alpha = 1, size=.3) +
+  guides(fill = guide_colourbar(barwidth = .1, barheight = 20)) +
+  scale_color_gradient2(midpoint = 0, mid = "white", 
+                        high = muted("blue"), low = muted("red"), 
+                        guide = "colourbar", space = "Lab",
+                        limit = c(-color_limit, color_limit),
+                        breaks = c(-200, -100, -50, -25, -10, -5, 0,
+                                    5, 10, 25, 50, 100, 200)) + 
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 8, face="plain"),
+        legend.title = element_blank(),
+        legend.position = "top",
+        strip.text = element_text(size=14, face="bold")) +
+  ggtitle(label=ttl, subtitle=subttl)
+}
 
 Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
 
@@ -98,7 +141,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   geom_boxplot(outlier.size = -0.3, notch=F, 
                width = box_width, lwd=.1,
                position = position_dodge(.8)) +
-  facet_grid(~ emission ~ cluster, scales="free") +
+  facet_grid(~ cluster ~ emission, scales="free") +
   ylab(y_lab) +
   scale_fill_manual(values = color_ord,
                     name = "time\nperiod",
@@ -246,6 +289,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
   ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
 
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
@@ -486,6 +530,71 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
 #            STORM
 #
 #
+box_dt_25 <- function(dt_25){
+  categ_lab <- sort(unique(dt_25$return_period))
+  
+  if (length(unique(dt_25$return_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  medians <- data.frame(dt_25) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise(med_25 = median(twenty_five_years)) %>% 
+             data.table()
+
+  melted <- melt(dt_25, id = c("cluster", "return_period", "emission"))
+
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.65
+  # ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(1.2, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold", vjust=2),
+               plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+  box_p <- ggplot(data = melted, 
+                  aes(x=cluster, y=value, fill=return_period)) +
+           geom_boxplot(outlier.size = -0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.85)) +
+           facet_grid(~ emission) +
+           xlab("precip. group") + 
+           ylab("design storm intensity (mm/hr)") + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = categ_lab) + 
+           scale_y_continuous(breaks = seq(0, 20, by=5)) + 
+           the +
+           geom_text(data = medians, 
+                     aes(label = sprintf("%1.2f", medians$med_25), 
+                          y = medians$med_25),
+                     size = 2.2, vjust = -.6, fontface="bold",
+                     position = position_dodge(.85))
+}
+
 storm_diff_box_25yr <- function(data_tb, tgt_col){
   data_tb <- data_tb %>% 
              filter(time_interval=="twenty_five_years") %>% 
@@ -513,7 +622,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
     } else if (length(time_label) == 5){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
-  ax_txt_size <- 5; ax_ttl_size <- 6; box_width = 0.53
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.53
   
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
@@ -521,28 +630,25 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
                legend.position = "bottom", 
-               legend.key.size = unit(.6, "line"),
+               legend.key.size = unit(1.2, "line"),
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size = ax_ttl_size),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold"),
-               plot.subtitle = element_text(face = "bold"),
+               plot.title = element_text(size = ax_ttl_size, face = "bold", vjust=2),
+               plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
-                                            margin = margin(.15, 0, .15, 0, "line")),
+                                           margin = margin(.15, 0, .15, 0, "line")),
                strip.text.y = element_text(size = ax_ttl_size, face = "bold",
-                                            margin = margin(.15, 0, .15, 0, "line")),
+                                           margin = margin(.15, 0, .15, 0, "line")),
                axis.ticks = element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
-                                         face = "bold", color = "black"),
-               axis.text.x = element_text(size = ax_txt_size, 
-                                           face = "bold", color="black",
-                                           margin=margin(t=.05, r=5, l=5, b=0,"pt")
-                                           ),
-                axis.title.y = element_text(size = ax_ttl_size, 
-                                            face = "bold", 
-                                            margin = margin(t=0, r=2, b=0, l=0)),
+                                          face = "bold", color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, 
+                                           face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
 
@@ -551,30 +657,30 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
      } else {
       y_labb <- "magnitude of differences"
   }
-  box_title <- "diff. of 25 yr/24 hr. design storm"
+  # box_title <- "diff. of 25 yr/24 hr. design storm"
 
   medians <- data.frame(data_tb) %>% 
              group_by(return_period, emission, cluster) %>% 
              summarise( med = median(get(tgt_col))) %>% 
              data.table()
 
-  
   box_p <- ggplot(data = data_tb, 
                   aes(x=cluster, y=get(tgt_col), fill=return_period)) +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6)) +
+                        position = position_dodge(0.8)) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
            ylab(y_labb) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = time_label) + 
-           ggtitle(box_title) + 
            the +
            geom_text(data = medians, 
-           aes(label = sprintf("%1.2f", medians$med), y = medians$med),
-               size = 2.5, vjust = -.6, position = position_dodge(.8))
+                     aes(label = sprintf("%1.2f", medians$med), y = medians$med),
+                     size = 2.5, vjust = -.6, fontface="bold",
+                     position = position_dodge(.8))
+           # ggtitle(box_title) + 
 }
 
 one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FALSE){

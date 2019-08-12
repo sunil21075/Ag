@@ -56,10 +56,10 @@ output_names <- c("med_diff_med_ann_snow.rds",
 for(ii in 1:length(raw_files)){
   if (grepl("month", raw_files[ii])){
     curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
-    meds_detail_no_bias <- median_diff_4_map_obs_or_modeled_month(dt = curr_dt, 
+    meds_detail_no_bias <- median_diff_obs_or_modeled_month(dt = curr_dt, 
                                                                   tgt_col=target_columns[ii], 
                                                                   diff_from="1950-2005")
-    meds_detail_obs <- median_diff_4_map_obs_or_modeled_month(dt = curr_dt, 
+    meds_detail_obs <- median_diff_obs_or_modeled_month(dt = curr_dt, 
                                                               tgt_col=target_columns[ii], 
                                                               diff_from="1979-2016")
       
@@ -78,10 +78,10 @@ for(ii in 1:length(raw_files)){
 
     } else{
       curr_dt <- data.table(readRDS(paste0(in_dir, raw_files[ii])))
-      meds_detail_no_bias <- median_diff_4_map_obs_or_modeled(dt = curr_dt, 
+      meds_detail_no_bias <- median_diff_obs_or_modeled(dt = curr_dt, 
                                                               tgt_col=target_columns[ii], 
                                                               diff_from="1950-2005")
-      meds_detail_obs <- median_diff_4_map_obs_or_modeled(dt = curr_dt, 
+      meds_detail_obs <- median_diff_obs_or_modeled(dt = curr_dt, 
                                                           tgt_col=target_columns[ii], 
                                                           diff_from="1979-2016")
       
