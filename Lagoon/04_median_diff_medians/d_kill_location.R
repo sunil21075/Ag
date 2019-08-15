@@ -42,8 +42,12 @@ for (sub in sub_dir){
   	curr_file <- readRDS(paste0(curr_dir, file)) %>% data.table()
   	curr_file <- within(curr_file, remove(location))
   	
-  	loc_killed <- median_of_diff_of_medians_kill_location(curr_file)
-
+    if (grepl("month", file)){
+        loc_killed <- median_of_diff_of_medians_kill_location_month(curr_file)
+       } else {
+  	    loc_killed <- median_of_diff_of_medians_kill_location(curr_file)
+                  median_of_diff_of_medians_month
+    }
 
   	saveRDS(loc_killed, 
   		    paste0(out_dir, gsub("detail", "loc_killed",  file)))

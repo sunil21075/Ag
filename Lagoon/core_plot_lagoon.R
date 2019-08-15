@@ -71,7 +71,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   #                                             base_flow, run_p_base))})
   # }
 
-  dt <- subset(dt, select=c("location", "time_period", 
+  dt <- subset(dt, select=c( "time_period", # "location",
                             "emission", "month",
                             "cluster", tgt_col))
   dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
@@ -90,7 +90,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
              summarise( med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("location", "month",
+  melted <- melt(dt, id = c("month", # "location", 
                             "time_period", "emission",
                             "cluster"))
   
@@ -158,7 +158,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
                time_period != "2006-2025") %>% 
         data.table()
 
-  dt <- subset(dt, select=c("location", "time_period", "emission",
+  dt <- subset(dt, select=c("time_period", "emission", # "location",
                             "month", "cluster", tgt_col))
   dt <- month_numeric_2_str(dt)
   medians <- data.frame(dt) %>% 
@@ -166,7 +166,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("location", "emission", "month",
+  melted <- melt(dt, id = c("emission", "month", # "location", 
                             "time_period", "cluster"))
   rm(dt)
   
@@ -262,7 +262,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   #                             "cluster", tgt_col))
   # }
 
-  dt <- subset(dt, select=c("location", "time_period", "emission",
+  dt <- subset(dt, select=c("time_period", "emission", # "location",
                             "cluster", tgt_col))
   
   medians <- data.frame(dt) %>% 
@@ -270,7 +270,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("location", "emission",
+  melted <- melt(dt, id = c("emission", # "location", 
                             "time_period", "cluster"))
   rm(dt)
   

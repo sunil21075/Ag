@@ -32,7 +32,7 @@ raw_files <- c("rain_observed.rds", "rain_modeled_hist.rds",
 for(file in raw_files){
   curr_dt <- data.table(readRDS(paste0(data_dir, file)))
   curr_dt <- curr_dt %>% filter(time_period != "2006-2025") %>% data.table()
-  curr_dt <- curr_dt[precip < 0, precip := 0] # replace negative precips
+  # curr_dt <- curr_dt[precip < 0, precip := 0] # replace negative precips
   
   curr_dt <- annual_cum_rain(curr_dt)
   curr_dt <- curr_dt %>%
