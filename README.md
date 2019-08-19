@@ -1,1 +1,1 @@
-# The codes supporting the hydro projects.
+# These codes support the hydro projects.
