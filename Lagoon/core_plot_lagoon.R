@@ -71,7 +71,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   #                                             base_flow, run_p_base))})
   # }
 
-  dt <- subset(dt, select=c( "time_period", # "location",
+  dt <- subset(dt, select=c("time_period", # "location",
                             "emission", "month",
                             "cluster", tgt_col))
   dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
@@ -102,7 +102,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
   rm(dt)
-  ax_txt_size <- 10; ax_ttl_size <- 12; box_width = 0.7
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.7
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
                panel.grid.major = element_line(size = 0.05),
@@ -146,7 +146,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   scale_fill_manual(values = color_ord,
                     name = "time\nperiod",
                     labels = time_label) + 
-  scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
+  # scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med),
             size = 2.5, vjust = -.6, position = position_dodge(.8))
@@ -184,7 +184,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
-  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.5
 
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
@@ -233,7 +233,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
-            size = 2, fontface = "bold",
+            size = 3, fontface = "bold",
             position = position_dodge(.8), vjust = -.6)
 }
 
@@ -380,10 +380,10 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
     dt$time_period <- factor(dt$time_period, levels=time_lbl)
     suppressWarnings({dt <- within(dt, remove(year))})
 
-    # medians <- data.frame(dt) %>% 
-    #            group_by(cluster, time_period, emission, month) %>% 
-    #            summarise( med = median(get(tgt_col))) %>% 
-    #            data.table()
+    medians <- data.frame(dt) %>% 
+               group_by(cluster, time_period, emission, month) %>% 
+               summarise( med = median(get(tgt_col))) %>% 
+               data.table()
 
     melted <- melt(dt, id = c("location", "month",
                               "time_period", "emission",
@@ -422,7 +422,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  axis.title.x = element_blank()
                 )
     
-    box_p <- ggplot(data = melted, 
+    if (length(unique(melted$time_period)) == 3){
+      box_p <- ggplot(data = melted, 
                     aes(x=month, y=value, fill=time_period)) +
              the + 
              geom_boxplot(outlier.size = - 0.3, notch=F, 
@@ -435,8 +436,27 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
              scale_fill_manual(values = color_ord,
                                name = "time\nperiod", 
                                labels = time_lbl) + 
-             scale_y_continuous(breaks=c(125, 250, 500, 1000, 
-                                         1500, 2000, 2500)) 
+             geom_text(data = medians, 
+                       aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
+                       size = 2.5, vjust = -.4, position = position_dodge(.6)
+                       # hjust = 1
+                       )
+
+      } else {
+        box_p <- ggplot(data = melted, 
+                    aes(x=month, y=value, fill=time_period)) +
+             the + 
+             geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.6)) +
+             # labs(x="", y="") + # theme_bw() + 
+             facet_grid(~ emission ~ cluster, scales="free") +
+             # xlab("month") + 
+             ylab(y_lab) +
+             scale_fill_manual(values = color_ord,
+                               name = "time\nperiod", 
+                               labels = time_lbl) # + 
+             # scale_y_continuous(breaks=c(125, 250, 500, 1000, 1500, 2000, 2500)) 
              # +
              # geom_text(data = medians, 
              #           aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
@@ -449,6 +469,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
              # geom_hline(yintercept= 125, color = "white", size=.2)+
              # geom_hline(yintercept= 250, color = "white", size=.2)+
              # geom_hline(yintercept= 500, color = "white", size=.2)
+    }
             
     return(box_p)
 

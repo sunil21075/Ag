@@ -67,6 +67,7 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
     }
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% data.table()
+    
     AVs <- AVs %>% filter(month %in% c(11, 12))%>% data.table()
     AVs <- AVs %>% filter(time_period != "2006-2025") %>% data.table()
 
@@ -83,7 +84,12 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
                                   "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", 
                                   dt_type, ".rds")) %>% data.table()
+    
     unbias_diff <- unbias_diff %>% filter(month %in% c(11, 12))%>% data.table()
+    plot_dir <- paste0(in_dir, "new_2_", dt_type, "/month/")
+    if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
+    print (plot_dir)
+      
     unbias_diff <- unbias_diff %>% filter(time_period != "2006-2025") %>% data.table()
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
@@ -220,10 +226,6 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
                                 ncol = 3, nrow = 1, widths = c(1.25, 1, 1),
                                 common.legend = TRUE, legend="bottom")
 
-      plot_dir <- paste0(in_dir, "new_2_", dt_type, "/")
-      if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-      print (plot_dir)
-      
       ggsave(filename = paste0(gsub("\ ", "_", clust_g), "_", 
                                timeP_ty_middN[timeP_ty], "_unbiased_RCP45.png"),
              plot = unbiased_RCP45, 
