@@ -14,8 +14,12 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
-
 data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain_snow_fractions/"
+plot_dir <- paste0(data_base, "narrowed_rain_snow_fractions/seasonal/clust_x/")
+if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
+print (plot_dir)
+############################################################################
+
 AV_fileNs <- "seasonal_fracs"
 
 AV_y_lab <- "cum. precip. (mm)"
@@ -50,11 +54,6 @@ for (season_g in season_types){
   #########
   ######### rain plot
   #########
-  plot_dir <- paste0(data_base, "narrowed_rain_snow_fractions/seasonal/clust_x/")
-  if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-  print (plot_dir)
-
-
   box_title <- paste0("rain fracion (", season_g, ")")
   rain_frac_85 <- seasonal_fraction_clust_x(data_tb = curr_AVs_85,
                                     y_lab = "rain fraction (%)", 
@@ -77,7 +76,8 @@ for (season_g in season_types){
   ggsave(filename = paste0(season_g, "_rain_45.png"),
          plot = rain_45, width = 6, height = 5, units = "in", 
          dpi=400, device = "png", path = plot_dir)
-
+  ##################################################################################
+  ##################################################################################
   box_title <- paste0("snow fracion (", season_g, ")")
   snow_frac_85 <- seasonal_fraction_clust_x(data_tb = curr_AVs_85,
                                     y_lab = "snow fraction (%)", 

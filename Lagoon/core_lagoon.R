@@ -99,23 +99,14 @@ put_season <- function(data){
   return(data)
 }
 ##########################################################################
+find_10_90_quantiles <- function(dt_tba){
+  # dt_tba is of type melted.
+  return(quantile(dt_tba$value, probs = c(0.1, 0.9)))
+}
 
-find_10_90_quantile_by_cluster <- function(dt_tba, tgt_col){
-  quan_90 <- dt_tba %>% 
-             group_by(time_period, emission, cluster) %>%
-             summarise(quan_90 = quantile(get(tgt_col), probs = 0.9)) %>%
-             data.table()
-  quan_10 <- dt_tba %>% 
-             group_by(time_period, emission, cluster) %>%
-             summarise(quan_10 = quantile(get(tgt_col), probs = 0.1)) %>%
-             data.table()
-  quans <- merge(quan_10, quan_90, 
-                 by=c("time_period", "emission", "cluster"))
-
-  cols <- c("quan_10", "quan_90")
-  quans[,(cols) := round(.SD, 2), .SDcols=cols]
-
-  return(quans)
+find_5_95_quantiles <- function(dt_tba){
+  # dt_tba is of type melted.
+  return(quantile(dt_tba$value, probs = c(0.05, 0.95)))
 }
 ########################################################################
 monthly_cum_rain <- function(data_tb){

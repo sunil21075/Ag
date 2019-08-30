@@ -32,16 +32,22 @@ timeP_ty <- 1
 for (timeP_ty in 1:4){ # annual or wtr_yr or seasonal or monthly?
   precip_tg_col <- paste0(av_tg_col_pref[timeP_ty], "precip")
   rain_tg_col <- paste0(av_tg_col_pref[timeP_ty], "rain")
+  snow_tg_col <- paste0(av_tg_col_pref[timeP_ty], "snow")
   AVs <- readRDS(paste0(in_dir, rain_AV_fileNs[timeP_ty], ".rds")) %>% data.table()
   if (timeP_ty_middN[timeP_ty] == "seasonal"){
     # we are missing cum. precip. in order to compute
     # fractions! so, we need to add them here.
     seasonal_precip <- readRDS(paste0(data_dir, "/precip/seasonal_cum_precip.rds"))
     AVs <- merge(AVs, seasonal_precip)
+    AVs$seasonal_cum_snow <- AVs$seasonal_cum_precip - AVs$seasonal_cum_rain
   }
 
   AVs$rain_fraction <- AVs[, get(rain_tg_col)] / AVs[, get(precip_tg_col)]
-  AVs$snow_fraction <- 1 - AVs$rain_fraction
+  AVs$snow_fraction <- AVs[, get(snow_tg_col)] / AVs[, get(precip_tg_col)]
+  # do not do the following, it is possible that
+  # all precip falls as snow. so, if NaN is produced for rain
+  # we will by mistake produce NaN for snow as well!!!
+  # AVs$snow_fraction <- 1 - AVs$rain_fraction
   saveRDS(AVs, paste0(out_dir, timeP_ty_middN[timeP_ty], "_fracs.rds"))
 }
 

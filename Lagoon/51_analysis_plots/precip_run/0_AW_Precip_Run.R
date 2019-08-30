@@ -29,7 +29,6 @@ emissions <- c("RCP 4.5", "RCP 8.5")
 dt_type <-  in_dir_ext[1]
 in_dir <- paste0(data_base, dt_type, "/")
 timeP_ty <- 1
-clust_g <- cluster_types[1]
 
 for (dt_type in in_dir_ext){ # precip or runoff?
   in_dir <- paste0(data_base, dt_type, "/")

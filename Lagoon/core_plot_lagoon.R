@@ -97,6 +97,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -186,6 +187,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -193,7 +195,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
             position = position_dodge(.8), vjust = -.6)
 }
 ########################
-annual_fraction<-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
+annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
   data_tb$rain_fraction <- data_tb$rain_fraction * 100
   data_tb$snow_fraction <- data_tb$snow_fraction * 100
   if (tgt_col=="rain_fraction"){
@@ -274,7 +276,8 @@ annual_fraction<-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fracti
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
-  ylab(y_lab) + 
+  ylab(y_lab) +
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -344,7 +347,6 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=4, b=0, l=0)),
                axis.title.x = element_blank()
               )
-
   signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
   ########
   ########    PLOT
@@ -358,7 +360,8 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
-  ylab(y_lab) + 
+  ylab(y_lab) +
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +  
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y=medians$med), 
@@ -423,9 +426,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=4, b=0, l=0)),
                axis.title.x = element_blank()
               )
-
   signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
-    
   ########
   ########    PLOT
   ########
@@ -439,6 +440,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   ylab(y_lab) + 
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y=medians$med), 
@@ -522,7 +524,6 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
              group_by(cluster, time_period, emission, month) %>% 
              summarise( med = median(get(tgt_col))) %>% 
              data.table()
-
   melted <- melt(dt, id = c("month", # "location", 
                             "time_period", "emission",
                             "cluster"))
@@ -577,6 +578,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
                ) +
   facet_grid(~ cluster ~ emission, scales="free") +
   ylab(y_lab) +
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord,
                     name = "time\nperiod",
                     labels = time_label) + 
@@ -665,6 +667,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -699,15 +702,13 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
 
   dt <- subset(dt, select=c("time_period", "emission", # "location",
                             "cluster", tgt_col))
-  
+
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission) %>% 
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
-
   melted <- melt(dt, id = c("emission", # "location", 
-                            "time_period", "cluster"))
-  rm(dt)
+                            "time_period", "cluster")); rm(dt)
   
   time_label <- sort(unique(melted$time_period))
   if (length(unique(melted$time_period)) == 3){
@@ -753,9 +754,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
-
   signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
-    
   ########
   ########    PLOT
   ########
@@ -770,11 +769,12 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
+  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6)#  + 
+            position = position_dodge(.8), vjust = -.6) # + 
   # ggtitle(ttl, subtitle=subttl)
 }
 
@@ -865,6 +865,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                facet_grid(~ emission ~ cluster, scales="free") +
                  # xlab("month") + 
                ylab(y_lab) +
+               ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
                scale_fill_manual(values = color_ord,
                                  name = "time\nperiod", 
                                  labels = time_lbl) + 
@@ -886,6 +887,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  facet_grid(~ emission ~ cluster, scales="free") +
                  # xlab("month") + 
                  ylab(y_lab) +
+                 ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
                  scale_fill_manual(values = color_ord,
                                    name = "time\nperiod", 
                                    labels = time_lbl) # + 
@@ -1036,6 +1038,7 @@ box_dt_25 <- function(dt_25){
            facet_grid(~ emission) +
            xlab("precip. group") + 
            ylab("design storm intensity (mm/hr)") + 
+           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
@@ -1126,6 +1129,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
            ylab(y_labb) + 
+
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = time_label) + 
@@ -1263,6 +1267,7 @@ storm_box_plot <- function(data_tb){
                                      "twenty_five_years" = "25")) + 
            xlab("time interval (years)") + 
            ylab("24 hr design storm intensity (mm/hr)") + 
+           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
@@ -1465,12 +1470,8 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
   #            summarise( medians = median(get(tgt_col)))  %>% 
   #            data.table()
 
-  melted <- melt(dt, id = c("location", "year", 
-                            "time_period", "emission",
-                            "cluster"))
-
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")
+  melted <- melt(dt, id = c("location", "year", "time_period", "emission", "cluster"))
+  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
   time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
@@ -1519,6 +1520,7 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
            facet_grid(~ emission, scales="free") +
            xlab("precip. group") +
            ylab(y_lab) + 
+           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              labels = time_label)
   return(box_p)
@@ -1592,6 +1594,7 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") +
            ylab(y_lab) + 
+           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              labels = time_label)
   
@@ -1662,6 +1665,7 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
            facet_grid(~ emission, scales="free") +
            xlab("time period") + 
            ylab(y_lab) + 
+           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "precip\nlevel")
            

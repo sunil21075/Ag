@@ -121,12 +121,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       
       ggsave(filename = paste0(gsub("\ ", "_", clust_g), "_", 
                                timeP_ty_middN[timeP_ty], "_unbiased_RCP45.png"),
-             plot = unbiased_RCP45, width = 9, height = 6, units = "in", 
+             plot = unbiased_RCP45, width = 6, height = 5, units = "in", 
              dpi=400, device = "png", path = plot_dir)
       
       ggsave(filename = paste0(gsub("\ ", "_", clust_g), "_", 
                                timeP_ty_middN[timeP_ty], "_unbiased_RCP85.png"),
-             plot = unbiased_RCP85, width = 9, height = 6, units = "in", 
+             plot = unbiased_RCP85, width = 6, height = 5, units = "in", 
              dpi=400, device = "png", path = plot_dir)
     }
   }

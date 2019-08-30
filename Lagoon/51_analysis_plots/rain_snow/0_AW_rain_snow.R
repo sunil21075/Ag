@@ -35,7 +35,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   AV_tg_col <- "annual_cum_precip"
   
   ###############################################################
-
+  ##################################################################################
   AVs <- readRDS(paste0(data_base, AV_fileNs[timeP_ty], ".rds")) %>% data.table()
   AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period", 
                                 "model", "emission",
@@ -75,6 +75,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   ####################################################################################
+  ##################################################################################
   box_title <- paste0("snow fracion", " (", title_time, ")")
   snow_frac_85 <- annual_fraction(data_tb = AVs_85,
                                   y_lab = "snow fraction (%)", 

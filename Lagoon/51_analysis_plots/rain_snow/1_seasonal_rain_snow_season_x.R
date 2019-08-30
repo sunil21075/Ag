@@ -79,7 +79,8 @@ for (clust_g in cluster_types){
   ggsave(filename = paste0(clust_g, "_rain_45.png"),
          plot = rain_45, width = 6, height = 5, units = "in", 
          dpi=400, device = "png", path = plot_dir)
-
+  ##############################################################################
+  ##############################################################################
   box_title <- paste0("snow fracion (", clust_g, ")")
   snow_frac_85 <- seasonal_fraction_season_x(data_tb = curr_AVs_85,
                                     y_lab = "snow fraction (%)", 
