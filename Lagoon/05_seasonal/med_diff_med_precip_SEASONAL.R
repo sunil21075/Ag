@@ -14,7 +14,7 @@ source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ######################################################################
-
+start_time <- Sys.time()
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/precip/"
 out_dir_no_bias <- file.path(in_dir, "02_med_diff_med_no_bias/")
 if (dir.exists(out_dir_no_bias) == F) {dir.create(path = out_dir_no_bias, recursive = T)}

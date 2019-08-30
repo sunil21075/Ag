@@ -23,7 +23,7 @@ precip_AV_fileNs <- c("ann_all_last_days", "wtr_yr_sept_all_last_days")
 runoff_AV_fileNs <- c("ann_cum_runbase", "wtr_yr_cum_runbase")
 timeP_ty_middN <- c("ann", "wtr_yr")
 av_tg_col_pref <- c("annual_cum_", "annual_cum_")
-av_titles <- c("ann. cum. ", "wtr. yr. cum. ")
+av_titles <- c("ann. cum. ", "ann. cum. ")
 emissions <- c("RCP 4.5", "RCP 8.5")
 
 dt_type <-  in_dir_ext[1]
@@ -40,7 +40,7 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     if (timeP_ty_middN[timeP_ty]== "ann"){
       title_time <- "calendar year"
       } else if (timeP_ty_middN[timeP_ty]== "wtr_yr"){
-        title_time <- "water year calendar"
+        title_time <- "water year"
     }
 
     if (dt_type=="precip"){

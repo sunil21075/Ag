@@ -91,8 +91,8 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size=-0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8),
-               outlier.shape=NA) +
+               position = position_dodge(0.8) # , outlier.shape=NA
+               ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
@@ -171,8 +171,8 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8),
-               outlier.shape=NA) +
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
@@ -311,8 +311,8 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   the + 
   geom_boxplot(outlier.size = -0.3, notch=F, 
                width = box_width, lwd=.1,
-               position = position_dodge(.8),
-               outlier.shape=NA) +
+               position = position_dodge(.8)# , outlier.shape=NA
+               ) +
   facet_grid(~ cluster ~ emission, scales="free") +
   ylab(y_lab) +
   scale_fill_manual(values = color_ord,
@@ -396,8 +396,8 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8), 
-               outlier.shape=NA) +
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
@@ -475,7 +475,8 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.text = element_text(size = ax_ttl_size, face="bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold"),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -500,8 +501,8 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8), 
-               outlier.shape=NA) +
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
@@ -538,8 +539,6 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
           filter(# time_period != "1950-2005" & 
                  time_period != "2006-2025") %>% 
           data.table()
-
-
     if (length(unique(dt$time_period)) == 3){
       color_ord = c("dodgerblue2", "olivedrab4", "gold")
       } else if (length(unique(dt$time_period)) == 4){
@@ -598,8 +597,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                the + 
                geom_boxplot(outlier.size = - 0.3, notch=F, 
                             width = box_width, lwd=.1, 
-                            position = position_dodge(0.6),
-                            outlier.shape=NA) +
+                            position = position_dodge(0.6)# , outlier.shape=NA
+                            ) +
                  # labs(x="", y="") + # theme_bw() + 
                facet_grid(~ emission ~ cluster, scales="free") +
                  # xlab("month") + 
@@ -619,8 +618,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  the + 
                  geom_boxplot(outlier.size = - 0.3, notch=F, 
                               width = box_width, lwd=.1, 
-                              position = position_dodge(0.6),
-                              outlier.shape=NA) +
+                              position = position_dodge(0.6)# ,outlier.shape=NA
+                              ) +
                  # labs(x="", y="") + # theme_bw() + 
                  facet_grid(~ emission ~ cluster, scales="free") +
                  # xlab("month") + 
@@ -770,8 +769,8 @@ box_dt_25 <- function(dt_25){
                   aes(x=cluster, y=value, fill=return_period)) +
            geom_boxplot(outlier.size = -0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.85),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.85)# , outlier.shape=NA
+                        ) +
            facet_grid(~ emission) +
            xlab("precip. group") + 
            ylab("design storm intensity (mm/hr)") + 
@@ -860,8 +859,8 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                   aes(x=cluster, y=get(tgt_col), fill=return_period)) +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.8),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.8) #, outlier.shape=NA
+                        ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
            ylab(y_labb) + 
@@ -991,8 +990,8 @@ storm_box_plot <- function(data_tb){
                   aes(x=variable, y=value, fill=return_period)) +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.6) # ,outlier.shape=NA
+                        ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission ~ cluster, scales="free") + # , ncol=4 goes with facet_wrap
            scale_x_discrete(labels=c("five_years" = "5", 
@@ -1252,8 +1251,8 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
            the + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.6)# , outlier.shape=NA
+                        ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") +
            xlab("precip. group") +
@@ -1326,8 +1325,8 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
            the + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.6)# , outlier.shape=NA
+                        ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") +
            ylab(y_lab) + 
@@ -1395,8 +1394,8 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
            the +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6),
-                        outlier.shape=NA) +
+                        position = position_dodge(0.6) # , outlier.shape=NA
+                        ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") +
            xlab("time period") + 

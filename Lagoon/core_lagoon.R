@@ -46,6 +46,7 @@ seasonal_cum <- function(data_tb, material){
 }
 
 seasonal_cum_precip <- function(data_tb){
+  
   data_tb <- data_tb %>% 
              group_by(location, year, season, 
                       model, emission, time_period,
@@ -376,9 +377,9 @@ compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
   # Clean unwanted data
   #
   if (diff_from == "1979-2016"){
-    unwanted_period <- "1950-2005"
-    } else {
-    unwanted_period <- "1979-2016"
+     unwanted_period <- "1950-2005"
+     } else {
+     unwanted_period <- "1979-2016"
   }
 
   dt <- dt %>% 
@@ -406,9 +407,8 @@ compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
              data.table()
 
   dt_hist$emission <- "hist"
-
   dt <- dt %>% filter(time_period != diff_from) %>% data.table()
-  dt <- rbind(dt, dt_hist)
+  dt <- rbind(dt, dt_hist); rm(dt_hist)
 
   med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
                                by = c("location", "time_period", 
@@ -416,15 +416,12 @@ compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
   setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
   median_diffs <- med_per_loc_mod_TP_em %>%
-                  group_by(location) %>%
+                  group_by(location, season) %>%
                   mutate(diff = medians - medians[time_period == diff_from])%>%
-                  data.table()
-
-  median_diffs <- median_diffs %>% 
                   filter(time_period != diff_from)%>%
                   data.table()
 
-  median_diffs$hist_median <- median_diffs$medians -  median_diffs$diff
+  median_diffs$hist_median <- median_diffs$medians - median_diffs$diff
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
 }
@@ -479,9 +476,9 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   # Clean unwanted data
   #
   if (diff_from == "1979-2016"){
-    unwanted_period <- "1950-2005"
-    } else {
-    unwanted_period <- "1979-2016"
+     unwanted_period <- "1950-2005"
+     } else {
+     unwanted_period <- "1979-2016"
   }
   dt <- dt %>% 
         filter(time_period != unwanted_period & 
@@ -521,9 +518,6 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   median_diffs <- med_per_loc_mod_TP_em %>%
                   group_by(location, month) %>%
                   mutate(diff = medians - medians[time_period == diff_from])%>%
-                  data.table()
-
-  median_diffs <- median_diffs %>% 
                   filter(time_period != diff_from)%>%
                   data.table()
 
@@ -533,14 +527,9 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
                   data.table()
 
   hist_meds_tl <- within(hist_meds_tl, remove(time_period, emission, model))
-
   setnames(hist_meds_tl, old=c("medians"), new="hist_median")
 
-  # median_diffs <- merge(median_diffs, hist_meds_tl, 
-  #                       by=c("location", 'month'), all.x=T)
-
-  median_diffs$hist_median <- median_diffs$medians +  median_diffs$diff
-
+  median_diffs$hist_median <- median_diffs$medians -  median_diffs$diff
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
 }

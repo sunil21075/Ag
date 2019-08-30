@@ -70,16 +70,16 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       ######### Actual value plots
       #########
       AV_box_85 <- seasonal_cum_box_season_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
-                                             y_lab = paste0("seasonal ", AV_y_lab))+ 
+                                             y_lab = AV_y_lab)+ 
                    ggtitle(label= paste0(AV_title, " ", subttl)) 
 
       AV_box_45 <- seasonal_cum_box_season_x(dt = curr_AVs_45, tgt_col = AV_tg_col,
-                                             y_lab = paste0("seasonal ", AV_y_lab)) + 
+                                             y_lab = AV_y_lab) + 
                    ggtitle(label= paste0(AV_title, " ", subttl))
       #########
       ######### difference plot
       #########
-      box_title <- paste0("unbiased differences", subttl)
+      box_title <- paste0("unbiased differences ", subttl)
       box_subtitle <- "for each model median is\ntaken over years, separately"
       unbias_perc_diff_85 <- seasonal_cum_box_season_x(dt = curr_diff_85,
                                                       y_lab = "differences (%)",

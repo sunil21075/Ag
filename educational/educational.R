@@ -175,7 +175,7 @@ x <- sapply(all_us_locations_cod_moth,
 lat = x[1, ]
 long = x[2, ]
 
-A <- subset(A, col_names)
+A <- subset(A, select=col_names)
 # not in, opposite of %in%
 D2 = subset(local_locs, !(local_locs %in% local_files))
 
