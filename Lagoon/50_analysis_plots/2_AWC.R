@@ -16,7 +16,6 @@ source(source_path_2)
 ############################################################################
 
 data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-
 in_dir_ext <- c("precip", "rain", "snow", "runbase")
 
 bias_dir_ext <- "/02_med_diff_med_obs/"
@@ -26,17 +25,11 @@ precip_AV_fileNs <- c("ann_all_last_days",
                       "Sept_March_all_last_days",
                       "wtr_yr_sept_all_last_days")
 
-rain_AV_fileNs <- c("ann_cum_rain", 
-                    "Sept_March_cum_rain",
-                    "wtr_yr_cum_rain")
+rain_AV_fileNs <- c("ann_cum_rain", "Sept_March_cum_rain", "wtr_yr_cum_rain")
 
-snow_AV_fileNs <- c("ann_cum_snow", 
-                    "Sept_March_cum_snow",
-                    "wtr_yr_cum_snow")
+snow_AV_fileNs <- c("ann_cum_snow", "Sept_March_cum_snow", "wtr_yr_cum_snow")
 
-runoff_AV_fileNs <- c("ann_cum_runbase", 
-                      "chunk_cum_runbase",
-                      "wtr_yr_cum_runbase")
+runoff_AV_fileNs <- c("ann_cum_runbase", "chunk_cum_runbase", "wtr_yr_cum_runbase")
 
 cluster_types <- c("least precip", "lesser precip", "less precip", "most precip")
 timeP_ty_middN <- c("ann", "chunk", "wtr_yr")
@@ -73,7 +66,7 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
       AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
       AV_title <- paste0(av_titles[timeP_ty], "snow.")
 
-     }else if (dt_type=="runbase"){
+     } else if (dt_type=="runbase"){
       files <- runoff_AV_fileNs
       AV_y_lab <- "cum. runoff (mm)"
       AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")

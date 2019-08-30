@@ -1,10 +1,104 @@
 options(digits=9)
 options(digits=9)
 
-########################################################################
+####################
+#
+# Lots of stuff here are inefficient.
+# I did do cumulative sum of different things
+# and then had to do extra step of filtering the
+# last rows corresponding to a particular column or time period
+# 
+# I did that because there are a lot of unpredictable
+# things that may come up!!!!!!
+#
+# Instead of cum. sum, we could just sum stuff in a given
+# column for a given time period or else, like so:
+# data <- data %>% 
+#              group_by(location, year, season, model, emission) %>% 
+#              summarise(seasonal_cum_precip = sum(monthly_cum_precip)) %>% 
+#              data.table()
+
+# However, the advantage of the first period is that it will
+# retain more information, that for debugging purposes can be used.
+#
+####################
+
+##########################################################################
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
-########################################################################
+##########################################################################
+############
+############ seasonal
+############
+seasonal_cum <- function(data_tb, material){
+  # input : material \in {precip, rain, snow, runbase}
+  data_tb <- put_season(data_tb)
+
+  if (material == "precip"){
+    return(seasonal_cum_precip(data_tb))
+    } else if (material == "rain"){
+    return(seasonal_cum_rain(data_tb))
+    } else if (material == "snow"){
+      return(seasonal_cum_snow(data_tb))
+    } else if (material == "runbase"){
+      return(seasonal_cum_runoff(data_tb))
+  }
+}
+
+seasonal_cum_precip <- function(data_tb){
+  data_tb <- data_tb %>% 
+             group_by(location, year, season, 
+                      model, emission, time_period,
+                      cluster) %>% 
+             summarise(seasonal_cum_precip = sum(monthly_cum_precip)) %>% 
+             data.table()
+  return(data_tb)
+}
+
+seasonal_cum_rain <- function(data_tb){
+  data_tb <- data_tb %>% 
+             group_by(location, year, season, 
+                      model, emission, time_period,
+                      cluster) %>% 
+             summarise(seasonal_cum_rain = sum(monthly_cum_rain)) %>% 
+             data.table()
+  return(data_tb)
+}
+
+seasonal_cum_snow <- function(data_tb){
+  data_tb <- data_tb %>% 
+             group_by(location, year, season, 
+                      model, emission, time_period,
+                      cluster) %>% 
+             summarise(seasonal_cum_snow = sum(monthly_cum_snow)) %>% 
+             data.table()
+  return(data_tb)
+}
+
+seasonal_cum_runoff <- function(data_tb){
+  data_tb <- data_tb %>% 
+             group_by(location, year, season, 
+                      model, emission, time_period,
+                      cluster) %>% 
+             summarise(seasonal_cum_runbase = sum(monthly_cum_runbase)) %>% 
+             data.table()
+  return(data_tb)
+}
+
+put_season <- function(data){
+  data <- data %>%
+          mutate(season = case_when(month %in% c(9, 10, 11) ~ "fall",
+                                    month %in% c(12, 1, 2) ~ "winter",
+                                    month %in% c(3, 4, 5) ~ "spring",
+                                    month %in% c(6, 7, 8) ~ "summer")
+                ) %>% data.table()
+
+  season_order <- c(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+  # data$month <- factor(data$month, levels=season_order)
+  return(data)
+}
+##########################################################################
+
 find_10_90_quantile_by_cluster <- function(dt_tba, tgt_col){
   quan_90 <- dt_tba %>% 
              group_by(time_period, emission, cluster) %>%
@@ -254,7 +348,87 @@ storm_diff <- function(dt_dt, diff_from="1979-2016"){
   return(diffs)
 }
 
-###########################################################################
+####################################################################################
+median_diff_obs_or_modeled_seasonal <- function(dt, tgt_col, diff_from){
+  if (diff_from=="1979-2016"){
+    median_diffs <- compute_median_diff_seasonal(dt, tgt_col, diff_from="1979-2016")
+    
+    } else {
+      # HERE we have: diff_from=="1950-2005"
+      median_diffs <- data.table()
+      
+      # The followings is not necessary, it is done in compute... function
+      dt <- dt %>% 
+            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            data.table()
+      all_mods <- unique(dt$model)
+      for (mod in all_mods){
+        curr_dt <- dt %>% filter(model == mod) %>% data.table()
+        curr_dt <- compute_median_diff_seasonal(curr_dt, tgt_col, diff_from="1950-2005")
+        median_diffs <- rbind(median_diffs, curr_dt)
+      }
+  }
+  return(median_diffs)
+}
+
+compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
+  #
+  # Clean unwanted data
+  #
+  if (diff_from == "1979-2016"){
+    unwanted_period <- "1950-2005"
+    } else {
+    unwanted_period <- "1979-2016"
+  }
+
+  dt <- dt %>% 
+        filter(time_period != unwanted_period & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  if ("evap" %in% colnames(dt)){
+    dt <- within(dt, remove(evap, runoff, base_flow, run_p_base))
+  }
+  if ("wtr_yr" %in% colnames(dt)) {
+    dt <- within(dt, remove(wtr_yr))
+  }
+  suppressWarnings({dt <- within(dt, remove(year, month, day, precip, cluster))})
+
+  ################################################
+  #
+  # We need to do the following lines in order
+  # to make the subtraction within groups work.
+  #
+  dt_hist <- dt %>% 
+             filter(time_period == diff_from) %>%
+             select(-c("emission")) %>%
+             unique()%>%
+             data.table()
+
+  dt_hist$emission <- "hist"
+
+  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
+  dt <- rbind(dt, dt_hist)
+
+  med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
+                               by = c("location", "time_period", 
+                                      "emission", "model", "season")]
+  setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
+
+  median_diffs <- med_per_loc_mod_TP_em %>%
+                  group_by(location) %>%
+                  mutate(diff = medians - medians[time_period == diff_from])%>%
+                  data.table()
+
+  median_diffs <- median_diffs %>% 
+                  filter(time_period != diff_from)%>%
+                  data.table()
+
+  median_diffs$hist_median <- median_diffs$medians -  median_diffs$diff
+  median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
+  return(median_diffs)
+}
+####################################################################################
 median_of_diff_of_medians_month <- function(dt){
   #
   # tgt_col \in (diff, perc_diff)
@@ -286,7 +460,7 @@ median_diff_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
       # HERE we have: diff_from=="1950-2005"
       median_diffs <- data.table()
       
-      # The followins is not necessary, it is done in compute... function
+      # The followings is not necessary, it is done in compute... function
       dt <- dt %>% 
             filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
             data.table()
@@ -370,8 +544,7 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   median_diffs$perc_diff <- (median_diffs$diff * 100) / (median_diffs$hist_median)
   return(median_diffs)
 }
-
-##############################################################################
+####################################################################################
 median_of_diff_of_medians <- function(dt){
   diffs <- dt %>%
            group_by(location, time_period, emission) %>%
@@ -399,7 +572,7 @@ median_diff_obs_or_modeled <- function(dt, tgt_col, diff_from){
       # HERE we have: diff_from=="1950-2005"
       median_diffs <- data.table()
       
-      # The followins is not necessary, it is done in compute... function
+      # The followings is not necessary, it is done in compute... function
       dt <- dt %>% 
             filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
             data.table()

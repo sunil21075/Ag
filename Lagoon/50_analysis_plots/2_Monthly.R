@@ -16,7 +16,6 @@ source(source_path_2)
 ############################################################################
 
 data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-
 in_dir_ext <- c("precip", "rain", "snow", "runbase")
 
 bias_dir_ext <- "/02_med_diff_med_obs/"

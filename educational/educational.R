@@ -67,7 +67,7 @@ all_data_dt[, lapply(.SD, function(x) sum(is.na(x))), .SDcols = 1:9]
 vector2[order(vector1, decreasing=TRUE)]
 
 
-# change order of columns of data table
+# change order of columns of data table, reorder
 setcolorder(x, c("c", "b", "a"))
 
 # reshape a vector into matrix
@@ -520,3 +520,24 @@ str_labels <- c("4" = "most precip.",
 facet_grid(~ emission ~ cluster,
            labeller=labeller(cluster = str_labels)
                         ) 
+
+
+A <- ann_all_last_days %>%
+     group_by(year, time_period, emission, cluster) %>%
+     mutate(quan_90 = findInterval(get("annual_cum_precip"), 
+                                    quantile(get("annual_cum_precip"), probs=0.9))) %>%
+     data.table()
+A <- A %>% filter(quan_90 == 1)
+
+B <- ann_all_last_days %>% 
+     group_by(year, time_period, emission, cluster) %>% 
+     summarise(quan_90 = quantile(get("annual_cum_precip"), probs = 0.9)) %>% 
+     data.table()
+
+B <- merge(ann_all_last_days, B)
+B <- B %>% filter(get("annual_cum_precip") >= quan_90)
+
+setcolorder(B, colnames(A))
+
+setorderv(B, colnames(B))
+setorderv(A, colnames(A))

@@ -55,30 +55,30 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
   in_dir <- paste0(data_base, dt_type, "/")
   for (timeP_ty in 1:3){ # annual or chunk or wtr_yr?
 
-    if (dt_type=="precip"){
-     files <- precip_AV_fileNs
-     AV_y_lab <- "cum. precip. (mm)"
-     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
-     AV_title <- paste0(av_titles[timeP_ty], "precip.")
+    # if (dt_type=="precip"){
+    #  files <- precip_AV_fileNs
+    #  AV_y_lab <- "cum. precip. (mm)"
+    #  AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
+    #  AV_title <- paste0(av_titles[timeP_ty], "precip.")
 
-     } else if (dt_type=="rain"){
-      files <- rain_AV_fileNs
-      AV_y_lab <- "cum. rain (mm)"
-      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
-      AV_title <- paste0(av_titles[timeP_ty], "rain.")
+    #  } else if (dt_type=="rain"){
+    #   files <- rain_AV_fileNs
+    #   AV_y_lab <- "cum. rain (mm)"
+    #   AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
+    #   AV_title <- paste0(av_titles[timeP_ty], "rain.")
 
-     } else if (dt_type=="snow"){
-      files <- snow_AV_fileNs
-      AV_y_lab <- "cum. snow (mm)"
-      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
-      AV_title <- paste0(av_titles[timeP_ty], "snow.")
+    #  } else if (dt_type=="snow"){
+    #   files <- snow_AV_fileNs
+    #   AV_y_lab <- "cum. snow (mm)"
+    #   AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
+    #   AV_title <- paste0(av_titles[timeP_ty], "snow.")
 
-     }else if (dt_type=="runbase"){
-      files <- runoff_AV_fileNs
-      AV_y_lab <- "cum. runoff (mm)"
-      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-      AV_title <- paste0(av_titles[timeP_ty], "runoff.")
-    }
+    #  }else if (dt_type=="runbase"){
+    #   files <- runoff_AV_fileNs
+    #   AV_y_lab <- "cum. runoff (mm)"
+    #   AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
+    #   AV_title <- paste0(av_titles[timeP_ty], "runoff.")
+    # }
     bias_diff <- readRDS(paste0(in_dir, 
                                 bias_dir_ext, 
                                 "detail_med_diff_med_", 
@@ -145,11 +145,19 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
     #########
     if (dt_type=="runbase"){
       x <- "runoff"
-    } else{
+      } else {
       x <- dt_type
     }
-    box_title <- paste0("unbiased differences (", 
-                        timeP_ty_middN[timeP_ty], ".", ", ", x, ".)")
+
+    if (timeP_ty_middN[timeP_ty]=="ann"){
+      y <- "annual"
+       } else if (timeP_ty_middN[timeP_ty]=="chunk"){
+      y <- "seasonal"
+       } else{
+      y <- "water year"
+    }
+
+    box_title <- paste0("unbiased differences (", y, ", ", x, ".)")
     box_subtitle <- "for each model median is\ntaken over years, separately"
 
     unbias_perc_diff_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = unbias_diff_45,
@@ -170,13 +178,7 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
     ######### biased Percentage diffs
     #########
     perc_y_lab <- "differences (%)"
-    if (timeP_ty_middN[timeP_ty]=="runbase"){
-      x <- "runoff"
-    } else{
-      x <- timeP_ty_middN[timeP_ty]
-    }
-    box_title <- paste0("biased differences (", 
-                        timeP_ty_middN[timeP_ty], ".", ", ", x, ".)")
+    box_title <- paste0("biased differences (", y, ", ", x, ".)")
     box_subtitle <- "for each model median is\ntaken over years, separately"
 
     bias_perc_diff_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = bias_diff_45,
@@ -203,7 +205,7 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
            dpi=400, device = "png",
            path = plot_dir)
     
-    ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_biased_ddiffs_RCP45.png"),
+    ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_biased_diffs_RCP45.png"),
            plot = bias_perc_diff_45, 
            width = 6, height = 2.5, units = "in", 
            dpi=400, device = "png",

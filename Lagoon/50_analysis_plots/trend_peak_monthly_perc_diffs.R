@@ -148,7 +148,7 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
                       ggtitle(box_title)
                       })
 
-      assign(x = paste0("bias_", unlist(strsplit(clust_g, " "))[1], "perc_diff_85"),
+      assign(x = paste0("bias_", unlist(strsplit(clust_g, " "))[1], "_perc_diff_85"),
              value = {box_trend_monthly_cum(dt = curr_bias_diff_85, p_type="box",
                                             y_lab = "differences (%)",
                                             tgt_col = "perc_diff") + 
@@ -188,27 +188,27 @@ for (dt_type in in_dir_ext){ # precip or rain or runoff?
                               common.legend = TRUE, legend="bottom")
 
 
-    ggsave(filename = "unbiased_RCP45",
+    ggsave(filename = "unbiased_RCP45.png",
              plot = unbiased_RCP45, 
-             width = 9, height = 8, units = "in", 
+             width = 8, height = 7, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
     
-    ggsave(filename = "unbiased_RCP85",
+    ggsave(filename = "unbiased_RCP85.png",
              plot = unbiased_RCP85, 
-             width = 9, height = 8, units = "in", 
+             width = 8, height = 7, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
 
-    ggsave(filename = "biased_RCP45",
+    ggsave(filename = "biased_RCP45.png",
              plot = biased_RCP45, 
-             width = 9, height = 8, units = "in", 
+             width = 8, height = 7, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
 
-    ggsave(filename = "biased_RCP85",
+    ggsave(filename = "biased_RCP85.png",
              plot = biased_RCP85, 
-             width = 9, height = 8, units = "in", 
+             width = 8, height = 7, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
   }
