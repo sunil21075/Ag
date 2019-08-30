@@ -13,22 +13,284 @@ options(digits=9)
 #                         Functions
 #
 ############################################################
-fractions_box_not_seasonal <- function(data_tb, y_lab, tgt_col){
-  region_lavels <- c("most precip", "less precip", "lesser precip", "least precip")
-  data_tb$cluster <- factor(data_tb$cluster, levels=region_lavels, order=T)
+############################################################
+############################################################
+seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
+  data_tb$rain_fraction <- data_tb$rain_fraction * 100
+  data_tb$snow_fraction <- data_tb$snow_fraction * 100
+  if (tgt_col=="rain_fraction"){
+     data_tb <- within(data_tb, remove(model, year, location, 
+                                       seasonal_cum_precip, snow_fraction))
+     } else {
+       data_tb <- within(data_tb, remove(model, year, location, 
+                                         seasonal_cum_precip, rain_fraction))
+  }
+  season_levels <- c("fall", "winter", "spring", "summer")
+  data_tb$season <- factor(data_tb$season, levels=season_levels, order=T)
   
-  medians <- data.frame(dt) %>% 
+  medians <- data.frame(data_tb) %>% 
+             group_by(cluster, time_period, emission, season) %>% 
+             summarise(med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(data_tb, id = c("emission", "time_period", "cluster", "season"))
+  rm(data_tb)
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+  
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
+
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", 
+                                          color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  ########################################################################
+  ######
+  ###### plot
+  ######
+  ggplot(data = melted, aes(x=season, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  facet_grid(~ emission, scales="free") +
+  xlab("precip. group") +
+  ylab(y_lab) + 
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.8), vjust = -.6)
+}
+####
+seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
+  data_tb$rain_fraction <- data_tb$rain_fraction * 100
+  data_tb$snow_fraction <- data_tb$snow_fraction * 100
+  if (tgt_col=="rain_fraction"){
+     data_tb <- within(data_tb, remove(model, year, location, 
+                                       seasonal_cum_precip, snow_fraction))
+     } else {
+       data_tb <- within(data_tb, remove(model, year, location, 
+                                         seasonal_cum_precip, rain_fraction))
+  }
+
+  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
+  medians <- data.frame(data_tb) %>% 
+             group_by(cluster, time_period, emission, season) %>% 
+             summarise(med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(data_tb, id = c("emission", "time_period", "cluster", "season"))
+  rm(data_tb)
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+  
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
+
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", 
+                                          color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  ########################################################################
+  ######
+  ###### plot
+  ######
+  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  facet_grid(~ emission, scales="free") +
+  xlab("precip. group") +
+  ylab(y_lab) + 
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.8), vjust = -.6)
+}
+########################
+annual_fraction<-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
+  data_tb$rain_fraction <- data_tb$rain_fraction * 100
+  data_tb$snow_fraction <- data_tb$snow_fraction * 100
+  if (tgt_col=="rain_fraction"){
+     data_tb <- within(data_tb, remove(model, year, location, 
+                                       annual_cum_precip, snow_fraction))
+     } else {
+       data_tb <- within(data_tb, remove(model, year, location, 
+                                         annual_cum_precip, rain_fraction))
+   }
+
+  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
+  medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
+
+  melted <- melt(data_tb, id = c("emission", "time_period", "cluster"))
+  rm(data_tb)
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+  
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
+
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", 
+                                          color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  ########################################################################
+  ######
+  ###### plot
+  ######
+  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+  the + 
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.8)# , outlier.shape=NA
+               ) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  facet_grid(~ emission, scales="free") +
+  xlab("precip. group") +
+  ylab(y_lab) + 
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.8), vjust = -.6)
 }
+############################################################
+############################################################
+############################################################
 
 seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
-  season_lavels <- c("fall", "winter", "spring", "summer")
-  dt$season <- factor(dt$season, levels=season_lavels, order=T)
+  season_levels <- c("fall", "winter", "spring", "summer")
+  dt$season <- factor(dt$season, levels=season_levels, order=T)
   
-  region_lavels <- c("most precip", "less precip", "lesser precip", "least precip")
-  dt$cluster <- factor(dt$cluster, levels=region_lavels, order=T)
+  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  dt$cluster <- factor(dt$cluster, levels=region_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
   dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
   
@@ -105,8 +367,8 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
 }
 
 seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
-  season_lavels <- c("fall", "winter", "spring", "summer")
-  dt$season <- factor(dt$season, levels=season_lavels, order=T)
+  season_levels <- c("fall", "winter", "spring", "summer")
+  dt$season <- factor(dt$season, levels=season_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
   dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
   
@@ -411,7 +673,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
 }
 
 #
-# Following works are on both precip and runoffs
+# Following works on both precip and runoffs
 #
 ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   # if (tgt_col=="annual_cum_runbase" | tgt_col=="chunk_cum_runbase"){
@@ -449,11 +711,11 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   
   time_label <- sort(unique(melted$time_period))
   if (length(unique(melted$time_period)) == 3){
-    color_ord = c("dodgerblue2", "olivedrab4", "gold")
-    } else if (length(unique(melted$time_period)) == 4){
-      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
-    } else if (length(unique(melted$time_period)) == 5){
-    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
   categ_label <- c("most precip", "less precip", "lesser precip", "least precip")

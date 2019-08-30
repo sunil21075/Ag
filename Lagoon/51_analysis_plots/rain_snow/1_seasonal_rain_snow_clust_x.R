@@ -15,122 +15,101 @@ source(source_path_1)
 source(source_path_2)
 ############################################################################
 
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-in_dir_ext <- c("precip", "runbase")
-unbias_dir_ext <- "/02_med_diff_med_no_bias/"
+data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain_snow_fractions/"
+AV_fileNs <- "seasonal_fracs"
 
-precip_AV_fileNs <- c("seasonal_cum_precip")
-runoff_AV_fileNs <- c("seasonal_cum_runbase")
+AV_y_lab <- "cum. precip. (mm)"
+AV_title <- paste0("seasonal cum. precip.")
+AV_tg_col <- "seasonal_cum_precip"
+
+AVs <- readRDS(paste0(data_base,"seasonal_fracs.rds")) %>% data.table()
+AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period", 
+                              "model", "emission",
+                              "seasonal_cum_precip", "rain_fraction", "snow_fraction",
+                              "season"))
+
+AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
+AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)
+
 season_types <- c("fall", "winter", "spring", "summer")
-timeP_ty_middN <- c("seasonal")
+for (season_g in season_types){
+  subttl <- paste0(" (", season_g, " season)")
+  curr_AVs_85 <- AVs_85 %>% filter(season == season_g) %>% data.table()
+  curr_AVs_45 <- AVs_45 %>% filter(season == season_g) %>% data.table()
 
-av_tg_col_pref <- c("seasonal_cum_")
-av_titles <- c("seasonal cum. ")
+  #########
+  ######### Actual value plots
+  #########
+  AV_box_85 <- seasonal_cum_box_clust_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
+                                        y_lab = AV_y_lab) +
+               ggtitle(label= paste0(AV_title, subttl)) 
 
-dt_type <-  in_dir_ext[1]
-in_dir <- paste0(data_base, dt_type, "/")
-timeP_ty <- 1
-season_g <- season_types[1]
-
-for (dt_type in in_dir_ext){ # precip or runoff?
-  in_dir <- paste0(data_base, dt_type, "/")
-  for (timeP_ty in 1:1){
-
-    if (dt_type=="precip"){
-     files <- precip_AV_fileNs
-     AV_y_lab <- "cum. precip. (mm)"
-     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
-     AV_title <- paste0(av_titles[timeP_ty], "precip.")
-
-     } else if (dt_type=="runbase"){
-      files <- runoff_AV_fileNs
-      AV_y_lab <- "cum. runoff (mm)"
-      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-      AV_title <- paste0(av_titles[timeP_ty], "runoff.")
-    }
-
-    AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% data.table()
-    unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
-                                  timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
-                   data.table()
-
-    AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
-    AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
-
-    unbias_diff_45 <- unbias_diff %>% filter(emission=="RCP 4.5") %>% data.table()
-    unbias_diff_85 <- unbias_diff %>% filter(emission=="RCP 8.5") %>% data.table(); 
-    rm(AVs, unbias_diff)
-
-    for (season_g in season_types){
-      subttl <- paste0(" (", season_g, " season)")
-      
-      curr_AVs_85 <- AVs_85 %>% filter(season == season_g) %>% data.table()
-      curr_AVs_45 <- AVs_45 %>% filter(season == season_g) %>% data.table()
-
-      curr_diff_45 <- unbias_diff_45 %>% filter(season == season_g) %>% data.table()
-      curr_diff_85 <- unbias_diff_85 %>% filter(season == season_g) %>% data.table()
-      
-      #########
-      ######### Actual value plots
-      #########
-      AV_box_85 <- seasonal_cum_box_clust_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
-                                            y_lab = AV_y_lab) +
-                   ggtitle(label= paste0(AV_title, subttl)) 
-
-      AV_box_45 <- seasonal_cum_box_clust_x(dt = curr_AVs_45, tgt_col = AV_tg_col,
-                                            y_lab = AV_y_lab)+
-                   ggtitle(label= paste0(AV_title, subttl))
-      #########
-      ######### difference plot
-      #########
-      box_title <- paste0("unbiased differences ", subttl)
-      box_subtitle <- "for each model median is\ntaken over years, separately"
-      unbias_perc_diff_85 <- seasonal_cum_box_clust_x(dt = curr_diff_85,
-                                                      y_lab = "differences (%)",
-                                                      tgt_col = "perc_diff") + 
-                             ggtitle(box_title)
-
-      unbias_perc_diff_45 <- seasonal_cum_box_clust_x(dt = curr_diff_45,
-                                                      y_lab = "differences (%)",
-                                                      tgt_col = "perc_diff") + 
-                             ggtitle(box_title)
-
-      RCP45 <- ggarrange(plotlist = list(AV_box_45, unbias_perc_diff_45),
-                         ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
-
-      RCP85 <- ggarrange(plotlist = list(AV_box_85, unbias_perc_diff_85),
-                         ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
-      
-      plot_dir <- paste0(in_dir, "narrowed_", dt_type, "/seasonal/clust_x/")
-      if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-
-      ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
-                               timeP_ty_middN[timeP_ty], "_RCP45.png"),
-             plot = RCP45, width = 6, height = 3.5, units = "in", 
-             dpi=400, device = "png", path = plot_dir)
-
-      ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
-                               timeP_ty_middN[timeP_ty], "_RCP85.png"),
-             plot = RCP85,  width = 6, height = 4, units = "in", 
-             dpi = 400, device = "png", path = plot_dir)
+  AV_box_45 <- seasonal_cum_box_clust_x(dt = curr_AVs_45, tgt_col = AV_tg_col,
+                                        y_lab = AV_y_lab)+
+               ggtitle(label= paste0(AV_title, subttl))
+  #########
+  ######### rain plot
+  #########
+  plot_dir <- paste0(data_base, "narrowed_rain_snow_fractions/seasonal/clust_x/")
+  if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
+  print (plot_dir)
 
 
-      # ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
-      #                          timeP_ty_middN[timeP_ty], "_RCP85.png"),
-      #        plot = AV_box_85, 
-      #        width = 6, height = 2.5, units = "in", 
-      #        dpi = 400, device = "png",
-      #        path = plot_dir)
+  box_title <- paste0("rain fracion (", season_g, ")")
+  rain_frac_85 <- seasonal_fraction_clust_x(data_tb = curr_AVs_85,
+                                    y_lab = "rain fraction (%)", 
+                                    tgt_col="rain_fraction") +
+                  ggtitle(box_title)
 
-      # ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
-      #                          timeP_ty_middN[timeP_ty], "_RCP45.png"),
-      #        plot = AV_box_45, 
-      #        width = 6, height = 2.5, units = "in", 
-      #        dpi = 400, device = "png",
-      #        path = plot_dir)
-    }
-    print (plot_dir)
-  }
+  rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ggsave(filename = paste0(season_g, "_rain_85.png"),
+         plot = rain_85, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
+
+  rain_frac_45 <- seasonal_fraction_clust_x(data_tb = curr_AVs_45,
+                                    y_lab = "rain fraction (%)", 
+                                    tgt_col="rain_fraction") +
+                  ggtitle(box_title)
+
+  rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ggsave(filename = paste0(season_g, "_rain_45.png"),
+         plot = rain_45, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
+
+  box_title <- paste0("snow fracion (", season_g, ")")
+  snow_frac_85 <- seasonal_fraction_clust_x(data_tb = curr_AVs_85,
+                                    y_lab = "snow fraction (%)", 
+                                    tgt_col="snow_fraction") +
+                  ggtitle(box_title)
+
+  snow_85 <- ggarrange(plotlist = list(AV_box_85, snow_frac_85),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ggsave(filename = paste0(season_g, "_snow_85.png"),
+         plot = snow_85, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
+
+  snow_frac_45 <- seasonal_fraction_clust_x(data_tb = curr_AVs_45,
+                                    y_lab = "snow fraction (%)", 
+                                    tgt_col="snow_fraction") +
+                  ggtitle(box_title)
+
+  snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ggsave(filename = paste0(season_g, "_snow_45.png"),
+         plot = snow_45, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)    
 }
+
+
+
+
+
+
+
+
+
+
 
 

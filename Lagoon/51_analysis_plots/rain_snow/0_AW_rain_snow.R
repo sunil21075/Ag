@@ -42,8 +42,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                 "annual_cum_precip", "rain_fraction", "snow_fraction"))
   
   AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
-  AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
-  rm(AVs)
+  AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)
 
   AV_box_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_85, y_lab = AV_y_lab, 
                                                  tgt_col = AV_tg_col) + ggtitle(AV_title)
@@ -52,47 +51,71 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
 
   ###################################
   #####
-  ##### difference plots
+  ##### fraction plots
   #####
   ###################################
-  box_title <- "unbiased differences"
-  box_subtitle <- "for each model median is\ntaken over years, separately"
-  unbias_perc_diff_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = unbias_diff_85,
-                                                           y_lab = "differences (%)",
-                                                           tgt_col = "perc_diff",
-                                                           ttl = box_title, 
-                                                           subttl = box_subtitle) + 
-                         ggtitle(box_title)
+  ######################################################################
+  ######################################################################
+  box_title <- paste0("rain fracion", " (", title_time, ")")
+  rain_frac_85 <- annual_fraction(data_tb = AVs_85,
+                                  y_lab = "rain fraction (%)", 
+                                  tgt_col="rain_fraction") +
+                  ggtitle(box_title)
 
-  unbias_perc_diff_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = unbias_diff_45,
-                                                           y_lab = "differences (%)",
-                                                           tgt_col = "perc_diff",
-                                                           ttl = box_title, 
-                                                           subttl = box_subtitle) + 
-                         ggtitle(box_title)
+  rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ######
+  ######
+  ######
+  rain_frac_45 <- annual_fraction(data_tb = AVs_45,
+                                  y_lab = "rain fraction (%)", 
+                                  tgt_col="rain_fraction") +
+                  ggtitle(box_title)
+
+  rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  ####################################################################################
+  box_title <- paste0("snow fracion", " (", title_time, ")")
+  snow_frac_85 <- annual_fraction(data_tb = AVs_85,
+                                  y_lab = "snow fraction (%)", 
+                                  tgt_col="snow_fraction") +
+                  ggtitle(box_title)
+  snow_85 <- ggarrange(plotlist = list(AV_box_85, snow_frac_85),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  
+
+  snow_frac_45 <- annual_fraction(data_tb = AVs_45,
+                                  y_lab = "snow fraction (%)", 
+                                  tgt_col="snow_fraction") +
+                  ggtitle(box_title)
+  snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
+                       ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
+  
   ###################################
   #####
-  ##### arrange plots
+  ##### save plots
   #####
   ###################################
-
-  RCP45 <- ggarrange(plotlist = list(AV_box_45, unbias_perc_diff_45),
-                     ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
-
-  RCP85 <- ggarrange(plotlist = list(AV_box_85, unbias_perc_diff_85),
-                     ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
     
-  plot_dir <- paste0(in_dir, "narrowed_", d_type, "/", timeP_ty_middN[timeP_ty], "/")
+  plot_dir <- paste0(data_base, "narrowed_rain_snow_fractions", "/", timeP_ty_middN[timeP_ty], "/")
   if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-    
-  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_RCP45.png"),
-         plot = RCP45, width = 6, height = 3, units = "in", 
+  print (plot_dir)
+
+  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_rain_45.png"),
+         plot = rain_45, width = 6, height = 5, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
-  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_RCP85.png"),
-         plot = RCP85,  width = 6, height = 3, units = "in", 
-         dpi = 400, device = "png", path = plot_dir)
-  print (plot_dir)
+  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_rain_85.png"),
+         plot = rain_85, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
+
+  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_snow_45.png"),
+         plot = snow_45, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
+
+  ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_snow_85.png"),
+         plot = snow_85, width = 6, height = 5, units = "in", 
+         dpi=400, device = "png", path = plot_dir)
 }
 
 
