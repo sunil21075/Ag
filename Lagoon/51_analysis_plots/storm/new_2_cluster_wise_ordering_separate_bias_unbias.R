@@ -17,7 +17,7 @@ options(digits=9)
 ########################################################################
 ########################################################################
 in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/storm/"
-plot_dir <- paste0(in_dir, "new_2_plots/")
+plot_dir <- paste0(in_dir, "new_2_storm/")
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
@@ -43,49 +43,58 @@ for (clust in clusters){
   ################## Actual Values
   ################## 
   AV_title <- paste0("cites w/ ", clust, ". (25 yr, 24 hr)")
-  AV_45 <- box_dt_25(within(curr_dt_45, remove(location, model))) + 
-           ggtitle(label = AV_title) # 
+
+  quans_85 <- find_quantiles(AVs_85, tgt_col= AV_tg_col, time_type="annual")
+  quans_45 <- find_quantiles(curr_dt_45, tgt_col= AV_tg_col, time_type="annual")
+
   AV_85 <- box_dt_25(within(curr_dt_85, remove(location, model))) + 
-           ggtitle(label = AV_title) # 
+           ggtitle(label = AV_title) +
+           coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+
+  AV_45 <- box_dt_25(within(curr_dt_45, remove(location, model))) + 
+           ggtitle(label = AV_title) +
+           coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+
   ##################
   ################## Biased
   ##################
-  bias_diffs_45 <- storm_diff_4_map_obs_or_modeled(dt_dt =curr_dt_45, 
-                                                   diff_from="1979-2016")
+  # bias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_45, 
+  #                                                  diff_from="1979-2016")
   
-  bias_diffs_box_45 <- storm_diff_box_25yr(data_tb=bias_diffs_45, 
-                                           tgt_col="storm_diff") + 
-                       ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
-                               label="biased differences") #
+  # bias_diffs_box_45 <- storm_diff_box_25yr(data_tb=bias_diffs_45, 
+  #                                          tgt_col="storm_diff") + 
+  #                      ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
+  #                              label="biased differences") #
   
-  bias_diffs_perc_box_45 <- storm_diff_box_25yr(data_tb = bias_diffs_45,
-                                                tgt_col="perc_diff") + 
-                            ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
-                                    label="biased differences") #
+  # bias_diffs_perc_box_45 <- storm_diff_box_25yr(data_tb = bias_diffs_45,
+  #                                               tgt_col="perc_diff") + 
+  #                           ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
+  #                                   label="biased differences") #
   
 
-  bias_diffs_85 <- storm_diff_4_map_obs_or_modeled(dt_dt =curr_dt_85, 
-                                                   diff_from="1979-2016")
-  bias_diffs_box_85 <- storm_diff_box_25yr(data_tb=bias_diffs_85, 
-                                           tgt_col="storm_diff") +
-                       ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
-                               label ="biased differences") #
-  bias_diffs_perc_box_85 <- storm_diff_box_25yr(bias_diffs_85, 
-                                                tgt_col="perc_diff") + 
-                            ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
-                                    label="biased differences") #
+  # bias_diffs_85 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_85, 
+  #                                                  diff_from="1979-2016")
+  # bias_diffs_box_85 <- storm_diff_box_25yr(data_tb=bias_diffs_85, 
+  #                                          tgt_col="storm_diff") +
+  #                      ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
+  #                              label ="biased differences") #
+  # bias_diffs_perc_box_85 <- storm_diff_box_25yr(bias_diffs_85, 
+  #                                               tgt_col="perc_diff") + 
+  #                           ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
+  #                                   label="biased differences") #
   ##################
   ################## Unbias
   ##################
   ###
   ### 45
   ###
-  unbias_diffs_45 <- storm_diff_4_map_obs_or_modeled(dt_dt =curr_dt_45, 
+  unbias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_45, 
                                                      diff_from="1950-2005")
-  unbias_diffs_box_45 <- storm_diff_box_25yr(data_tb=unbias_diffs_45, 
-                                             tgt_col="storm_diff") + 
-                         ggtitle(# subtitle ="diff. of 25 yr/24 hr. design storm", 
-                                 label ="unbiased differences") # 
+  # unbias_diffs_box_45 <- storm_diff_box_25yr(data_tb=unbias_diffs_45, 
+  #                                            tgt_col="storm_diff") + 
+  #                        ggtitle(# subtitle ="diff. of 25 yr/24 hr. design storm", 
+  #                                label ="unbiased differences") # 
+
   unbias_diffs_perc_box_45 <- storm_diff_box_25yr(unbias_diffs_45, 
                                                   tgt_col="perc_diff") + 
                               ggtitle(# subtitle ="diff. of 25 yr/24 hr. design storm", 
@@ -93,63 +102,58 @@ for (clust in clusters){
   ###
   ### 85
   ###
-  unbias_diffs_85 <- storm_diff_4_map_obs_or_modeled(dt_dt =curr_dt_85, 
+  unbias_diffs_85 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_85, 
                                                      diff_from="1950-2005")
-  unbias_diffs_box_85 <- storm_diff_box_25yr(data_tb=unbias_diffs_85, 
-                                             tgt_col="storm_diff") +
-                         ggtitle(# subtitle="diff. of 25 yr/24 hr. design storm", 
-                                 label ="unbiased differences") # 
+  # unbias_diffs_box_85 <- storm_diff_box_25yr(data_tb=unbias_diffs_85, 
+  #                                            tgt_col="storm_diff") +
+  #                        ggtitle(# subtitle="diff. of 25 yr/24 hr. design storm", 
+  #                                label ="unbiased differences") # 
+
   unbias_diffs_perc_box_85 <- storm_diff_box_25yr(unbias_diffs_85, 
                                                   tgt_col="perc_diff") +
                               ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
                                       label="unbiased differences") # 
   
-  plt_45_bias <- ggarrange(plotlist = list(AV_45, bias_diffs_box_45, 
-                                                  bias_diffs_perc_box_45),
-                           ncol = 3, nrow = 1, widths = c(1.25, 1, 1),
-                           common.legend = TRUE, legend="bottom")
+  # plt_45_bias <- ggarrange(plotlist = list(AV_45, bias_diffs_perc_box_45),
+  #                          ncol = 2, nrow = 1, widths = c(1.25, 1),
+  #                          common.legend = TRUE, legend="bottom")
 
-  plt_45_unbias <- ggarrange(plotlist = list(AV_45, unbias_diffs_box_45,
-                                                    unbias_diffs_perc_box_45),
-                             ncol = 3, nrow = 1, widths = c(1.25, 1, 1),
+  plt_45_unbias <- ggarrange(plotlist = list(AV_45, unbias_diffs_perc_box_45),
+                             ncol = 2, nrow = 1, widths = c(1.25, 1, 1),
                              common.legend = TRUE, legend="bottom")
 
-  plt_85_bias <- ggarrange(plotlist = list(AV_85, bias_diffs_box_85, 
-                                                  bias_diffs_perc_box_85),
-                           ncol = 3, nrow = 1, widths = c(1.25, 1, 1),
-                           common.legend = TRUE, legend="bottom")
+  # plt_85_bias <- ggarrange(plotlist = list(AV_85, bias_diffs_perc_box_85),
+  #                          ncol = 2, nrow = 1, widths = c(1.25, 1, 1),
+  #                          common.legend = TRUE, legend="bottom")
 
-  plt_85_unbias <- ggarrange(plotlist = list(AV_85, unbias_diffs_box_85,
-                                                    unbias_diffs_perc_box_85),
-                             ncol = 3, nrow = 1, widths = c(1.25, 1, 1),
+  plt_85_unbias <- ggarrange(plotlist = list(AV_85, unbias_diffs_perc_box_85),
+                             ncol = 2, nrow = 1, widths = c(1.25, 1, 1),
                              common.legend = TRUE, legend="bottom")
 
-
-  
-  ggsave(filename = paste0(gsub("\ ", "_", clust), "_45_bias_storm.png"),
-             plot = plt_45_bias, 
-             width = 8, height = 4, units = "in", 
-             dpi=400, device = "png",
-             path = plot_dir)
+  # ggsave(filename = paste0(gsub("\ ", "_", clust), "_45_bias_storm.png"),
+  #            plot = plt_45_bias, 
+  #            width = 6, height = 4, units = "in", 
+  #            dpi=400, device = "png",
+  #            path = plot_dir)
 
   ggsave(filename = paste0(gsub("\ ", "_", clust), "_45_unbias_storm.png"),
              plot = plt_45_unbias, 
-             width = 8, height = 4, units = "in", 
+             width = 6, height = 4, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
 
-  ggsave(filename = paste0(gsub("\ ", "_", clust), "_85_bias_storm.png"),
-             plot = plt_85_bias, 
-             width = 8, height = 4, units = "in", 
-             dpi=400, device = "png",
-             path = plot_dir)
+  # ggsave(filename = paste0(gsub("\ ", "_", clust), "_85_bias_storm.png"),
+  #            plot = plt_85_bias, 
+  #            width = 6, height = 4, units = "in", 
+  #            dpi=400, device = "png",
+  #            path = plot_dir)
 
   ggsave(filename = paste0(gsub("\ ", "_", clust), "_85_unbias_storm.png"),
              plot = plt_85_unbias, 
-             width = 8, height = 4, units = "in", 
+             width = 6, height = 4, units = "in", 
              dpi=400, device = "png",
              path = plot_dir)
-
+  print (plot_dir)
 }
 
 

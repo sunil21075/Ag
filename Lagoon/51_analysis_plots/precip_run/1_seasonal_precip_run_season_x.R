@@ -51,6 +51,8 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
                    data.table()
+    AVs <- na.omit(AVs)
+    unbias_diff <- na.omit(unbias_diff)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
@@ -69,27 +71,39 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       #########
       ######### Actual value plots
       #########
+      quans_85 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="seasonal")
+      quans_45 <- find_quantiles(curr_AVs_45, tgt_col= AV_tg_col, time_type="seasonal")
+  
       AV_box_85 <- seasonal_cum_box_season_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
                                              y_lab = AV_y_lab)+ 
-                   ggtitle(label= paste0(AV_title, " ", subttl)) 
+                   ggtitle(label= paste0(AV_title, " ", subttl)) +
+                   coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
       AV_box_45 <- seasonal_cum_box_season_x(dt = curr_AVs_45, tgt_col = AV_tg_col,
                                              y_lab = AV_y_lab) + 
-                   ggtitle(label= paste0(AV_title, " ", subttl))
+                   ggtitle(label= paste0(AV_title, " ", subttl)) +
+                   coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
       #########
       ######### difference plot
       #########
       box_title <- paste0("unbiased differences ", subttl)
       box_subtitle <- "for each model median is\ntaken over years, separately"
+
+      quans_85 <- find_quantiles(curr_diff_85, tgt_col= "perc_diff", time_type="seasonal")
+      quans_45 <- find_quantiles(curr_diff_45, tgt_col= "perc_diff", time_type="seasonal")
+
       unbias_perc_diff_85 <- seasonal_cum_box_season_x(dt = curr_diff_85,
                                                       y_lab = "differences (%)",
                                                       tgt_col = "perc_diff") + 
-                             ggtitle(box_title)
+                             ggtitle(box_title) +
+                             coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
       unbias_perc_diff_45 <- seasonal_cum_box_season_x(dt = curr_diff_45,
                                                       y_lab = "differences (%)",
                                                       tgt_col = "perc_diff") + 
-                             ggtitle(box_title)
+                             ggtitle(box_title) + 
+                             coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+
       RCP45 <- ggarrange(plotlist = list(AV_box_45, unbias_perc_diff_45),
                          ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
 

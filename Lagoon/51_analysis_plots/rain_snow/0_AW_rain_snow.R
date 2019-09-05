@@ -43,11 +43,19 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   
   AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
   AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)
+  
+  quans_85 <- find_quantiles(AVs_85, tgt_col= AV_tg_col, time_type="annual")
+  quans_45 <- find_quantiles(AVs_45, tgt_col= AV_tg_col, time_type="annual")
 
   AV_box_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_85, y_lab = AV_y_lab, 
-                                                 tgt_col = AV_tg_col) + ggtitle(AV_title)
+                                                 tgt_col = AV_tg_col) + 
+               ggtitle(AV_title) +
+               coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+
   AV_box_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_45, y_lab = AV_y_lab, 
-                                                 tgt_col = AV_tg_col) + ggtitle(AV_title)
+                                                 tgt_col = AV_tg_col) + 
+               ggtitle(AV_title) + 
+               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
 
   ###################################
   #####
@@ -57,11 +65,16 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   ######################################################################
   ######################################################################
   box_title <- paste0("rain fracion", " (", title_time, ")")
+
+  quans_85 <- 100 * find_quantiles(AVs_85, tgt_col= "rain_fraction", time_type="annual")
+  quans_45 <- 100 * find_quantiles(AVs_45, tgt_col= "rain_fraction", time_type="annual")
+  
   rain_frac_85 <- annual_fraction(data_tb = AVs_85,
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
-                  ggtitle(box_title)
-
+                  ggtitle(box_title) + 
+                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+  
   rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   ######
@@ -70,25 +83,33 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   rain_frac_45 <- annual_fraction(data_tb = AVs_45,
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
-                  ggtitle(box_title)
+                  ggtitle(box_title) + 
+                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
 
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   ####################################################################################
   ##################################################################################
   box_title <- paste0("snow fracion", " (", title_time, ")")
+
+  quans_85 <- 100 * find_quantiles(AVs_85, tgt_col= "snow_fraction", time_type="annual")
+  quans_45 <- 100 * find_quantiles(AVs_45, tgt_col= "snow_fraction", time_type="annual")
+
   snow_frac_85 <- annual_fraction(data_tb = AVs_85,
                                   y_lab = "snow fraction (%)", 
                                   tgt_col="snow_fraction") +
-                  ggtitle(box_title)
+                  ggtitle(box_title) + 
+                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+
   snow_85 <- ggarrange(plotlist = list(AV_box_85, snow_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
-  
 
   snow_frac_45 <- annual_fraction(data_tb = AVs_45,
                                   y_lab = "snow fraction (%)", 
                                   tgt_col="snow_fraction") +
-                  ggtitle(box_title)
+                  ggtitle(box_title) + 
+                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+
   snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   
@@ -117,6 +138,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_snow_85.png"),
          plot = snow_85, width = 6, height = 5, units = "in", 
          dpi=400, device = "png", path = plot_dir)
+  print(paste0(timeP_ty_middN[timeP_ty], "_snow_85.png"))
 }
 
 

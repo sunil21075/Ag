@@ -15,6 +15,205 @@ options(digits=9)
 ############################################################
 ############################################################
 ############################################################
+plot_fractions_separately <- function(dt, y_lab, tgt_col){
+  month_order <- c(9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8)
+  for (mon in month_order){
+    curr_month <- dt %>% filter(month==mon) %>% data.table()
+    if (mon != 9){
+      y_lab <- ""
+    }
+    if (tgt_col == "rain_fraction"){
+       assign(x = paste0("month_", mon),
+              value ={frac_rain(dt=curr_month, y_lab, tgt_col)})
+      } else {
+       assign(x = paste0("month_", mon),
+              value ={frac_snow(dt=curr_month, y_lab, tgt_col)})
+    }
+  }
+  plt <- ggarrange(plotlist = list(month_9, month_10, month_11, month_12,
+                                   month_1, month_2, month_3, month_4, month_5,
+                                   month_6, month_7, month_8),
+                   ncol = 12, nrow = 1)
+  return(plt)
+}
+
+frac_rain <- function(dt, y_lab, tgt_col){
+  ### This function is meant to be used for 
+  ### data with 1 emission and 1 cluster type
+  ###
+  ###
+  dt <- na.omit(dt)
+  dt <- subset(dt, select=c("location", "time_period", "emission", "month",
+                            "cluster", tgt_col))
+  dt <- month_numeric_2_str(dt)
+  dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
+  if (length(unique(dt$time_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt$time_period)) == 4){
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt$time_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+  time_lbl <- sort(unique(dt$time_period))
+  dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  suppressWarnings({dt <- within(dt, remove(year))})
+
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission, month) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(dt, id = c("location", "month", "time_period", "emission", "cluster"))
+  rm(dt)
+
+  ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
+  the <- theme(plot.margin = unit(c(t=.1, r=0.1, b=.1, l=0), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"), panel.spacing.y = unit(.5, 'line'),
+               legend.title = element_blank(),
+               legend.position = "none",
+               # legend.position = "bottom", legend.spacing.x = unit(.1, 'line'),
+               # legend.key.size = unit(1, "line"), legend.title = element_blank(),
+               # legend.text = element_text(size = ax_ttl_size, face="bold"),
+               # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               strip.text.y = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", color = "black", angle = 90),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+  
+  if (length(unique(melted$time_period)) == 3){
+    box_p <- ggplot(data = melted, 
+                  aes(x=month, y=value, fill=time_period)) +
+             the + ylab(y_lab) +
+             geom_hline(yintercept= 0, color = "red", size=.3) +
+             geom_boxplot(outlier.size=-0.3, notch=F, 
+                          width = box_width, lwd=.1, 
+                          position = position_dodge(0.6)) +
+             facet_grid(~ emission ~ cluster, scales="free") +
+             scale_fill_manual(values = color_ord, name = "time\nperiod", 
+                               labels = time_lbl) + 
+             geom_text(data = medians, 
+                       aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
+                       size = 2.5, vjust = -.4, position = position_dodge(.6))
+                       # + coord_cartesian(ylim = c(boxplot.stats(melted$value)$stats[c(1)])*0.95, 100)
+    } else {
+      box_p <- ggplot(data = melted, 
+                      aes(x=month, y=value, fill=time_period)) +
+               the + ylab(y_lab) +
+               geom_hline(yintercept= 0, color = "red", size=.3) +
+               geom_boxplot(outlier.size=- 0.3, notch=F, width = box_width, lwd=.1, 
+                            position = position_dodge(0.6)) +
+               facet_grid(~ emission ~ cluster, scales="free") +
+               scale_fill_manual(values = color_ord,
+                                 name = "time\nperiod", 
+                                 labels = time_lbl) 
+               # + coord_cartesian(ylim = c(boxplot.stats(melted$value)$stats[c(1)]*.95, 100))
+  }       
+  return(box_p)
+}
+
+frac_snow <- function(dt, y_lab, tgt_col){
+  ### This function is meant to be used for 
+  ### data with 1 emission and 1 cluster type
+  dt <- na.omit(dt)
+  dt <- subset(dt, select=c("location", "time_period", "emission", "month",
+                            "cluster", tgt_col))
+  dt <- month_numeric_2_str(dt)
+  dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
+  if (length(unique(dt$time_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt$time_period)) == 4){
+    color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt$time_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+  time_lbl <- sort(unique(dt$time_period))
+  dt$time_period <- factor(dt$time_period, levels=time_lbl)
+  suppressWarnings({dt <- within(dt, remove(year))})
+
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission, month) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(dt, id = c("location", "month", "time_period", "emission", "cluster"))
+  rm(dt)
+
+  ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
+  the <- theme(plot.margin = unit(c(t=.1, r=0.1, b=.1, l=0), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.title = element_blank(),
+               legend.position = "none",
+               # legend.position = "bottom", 
+               # legend.key.size = unit(1, "line"), legend.spacing.x = unit(.1, 'line'),
+               # legend.text = element_text(size = ax_ttl_size, face="bold"),
+               # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               # legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.subtitle = element_text(face = "bold"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               strip.text.y = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", color = "black", angle = 90),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+  
+  if (length(unique(melted$time_period)) == 3){
+    box_p <- ggplot(data = melted, aes(x=month, y=value, fill=time_period)) +
+             the + ylab(y_lab) +
+             geom_hline(yintercept= 0, color = "red", size=.3) +
+             geom_boxplot(outlier.size=-0.3, notch=F, width = box_width, lwd=.1, 
+                          position = position_dodge(0.6)) +
+             facet_grid(~ emission ~ cluster, scales="free") +
+             scale_fill_manual(values = color_ord, name = "time\nperiod", 
+                               labels = time_lbl) + 
+             geom_text(data = medians, y = medians$med, 
+                       aes(label = sprintf("%1.0f", medians$med)), 
+                       size = 2.5, vjust = -.4, position = position_dodge(.6))
+             # + coord_cartesian(ylim = c(0, boxplot.stats(melted$value)$stats[c(5)])*1.05)
+
+    } else {
+      box_p <- ggplot(data = melted, aes(x=month, y=value, fill=time_period)) +
+               the + ylab(y_lab) +
+               geom_hline(yintercept= 0, color = "red", size=.3) +
+               geom_boxplot(outlier.size=-0.3, notch=F, width = box_width, lwd=.1, 
+                            position = position_dodge(0.6)) +
+               facet_grid(~ emission ~ cluster, scales="free") +
+               scale_fill_manual(values = color_ord, name = "time\nperiod", 
+                                 labels = time_lbl)
+               # + coord_cartesian(ylim = c(0, boxplot.stats(melted$value)$stats[c(5)])*1.05)
+  }
+  if (tgt_col == "perc_diff"){
+    box_p <- box_p + geom_hline(yintercept= 0, color = "red", size=.2)
+  }
+          
+  return(box_p)
+}
+############################################################
 seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
   data_tb$rain_fraction <- data_tb$rain_fraction * 100
   data_tb$snow_fraction <- data_tb$snow_fraction * 100
@@ -88,16 +287,17 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
   ######
   ggplot(data = melted, aes(x=season, y=value, fill=time_period)) +
   the + 
+  geom_hline(yintercept= 0, color = "red", size=.3)+
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -178,21 +378,23 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
   ######
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
+  geom_hline(yintercept= 0, color = "red", size=.3) + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
             position = position_dodge(.8), vjust = -.6)
+  # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
 }
 ########################
 annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
@@ -268,21 +470,23 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
   ######
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
+  geom_hline(yintercept= 0, color = "red", size=.3) +
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) +
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
             position = position_dodge(.8), vjust = -.6)
+  # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
 }
 ############################################################
 ############################################################
@@ -355,13 +559,14 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size=-0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8) # , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   ylab(y_lab) +
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +  
+  geom_hline(yintercept= 0, color = "red", size=.3) +
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +  
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y=medians$med), 
@@ -434,18 +639,20 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   the + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   ylab(y_lab) + 
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+  geom_hline(yintercept= 0, color = "red", size=.3) +
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y=medians$med), 
             size = 2, fontface = "bold",
             position = position_dodge(.8), vjust = -.6)
+  # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
 }
 
 #
@@ -571,18 +778,16 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   
   ggplot(data = melted, 
         aes(x=month, y=value, fill=time_period)) +
-  the + 
+  the + geom_hline(yintercept= 0, color = "red", size=.3) +
   geom_boxplot(outlier.size = -0.3, notch=F, 
                width = box_width, lwd=.1,
-               position = position_dodge(.8)# , outlier.shape=NA
+               position = position_dodge(.8), outlier.shape=NA
                ) +
   facet_grid(~ cluster ~ emission, scales="free") +
   ylab(y_lab) +
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord,
                     name = "time\nperiod",
                     labels = time_label) + 
-  # scale_y_continuous(breaks=c(250, 500, 1000, 1500, 2000, 2500)) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med),
             size = 2.5, vjust = -.6, position = position_dodge(.8))
@@ -658,16 +863,17 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
   ########
   ggplot(data = melted, aes(x=month, y=value, fill=time_period)) +
   the + 
+  geom_hline(yintercept= 0, color = "red", size=.3) + 
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
@@ -760,22 +966,20 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   ########
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
+  geom_hline(yintercept= 0, color = "red", size=.3) +
   geom_boxplot(outlier.size = - 0.3, notch=F, 
-               width = box_width, lwd=.1, 
-               position = position_dodge(0.8)# , outlier.shape=NA
+               width = box_width, lwd=.1,
+               position = position_dodge(0.8), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
-  # labs(x="", y="") + # theme_bw() + 
   facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
-  ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6) # + 
-  # ggtitle(ttl, subtitle=subttl)
+            position = position_dodge(.8), vjust = -.6)
 }
 
 box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab, tgt_col){
@@ -792,9 +996,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
 
   dt <- subset(dt, select=c("location", "time_period", "emission", "month",
                             "cluster", tgt_col))
-
-  dt <- cluster_numeric_2_str(dt)
-  dt <- month_numeric_2_str(dt)
+  dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
   
   if (p_type=="box"){
     dt <- dt %>% 
@@ -857,58 +1059,32 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
       box_p <- ggplot(data = melted, 
                     aes(x=month, y=value, fill=time_period)) +
                the + 
+               geom_hline(yintercept= 0, color = "red", size=.3) + 
                geom_boxplot(outlier.size = - 0.3, notch=F, 
                             width = box_width, lwd=.1, 
-                            position = position_dodge(0.6)# , outlier.shape=NA
-                            ) +
-                 # labs(x="", y="") + # theme_bw() + 
+                            position = position_dodge(0.6), outlier.shape=NA) +
                facet_grid(~ emission ~ cluster, scales="free") +
-                 # xlab("month") + 
                ylab(y_lab) +
-               ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+               # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
                scale_fill_manual(values = color_ord,
                                  name = "time\nperiod", 
                                  labels = time_lbl) + 
                geom_text(data = medians, 
                          aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
-                         size = 2.5, vjust = -.4, position = position_dodge(.6)
-                         # hjust = 1
-                         )
-
+                         size = 2.5, vjust = -.4, position = position_dodge(.6))
       } else {
         box_p <- ggplot(data = melted, 
                     aes(x=month, y=value, fill=time_period)) +
                  the + 
+                 geom_hline(yintercept= 0, color = "red", size=.3) + 
                  geom_boxplot(outlier.size = - 0.3, notch=F, 
-                              width = box_width, lwd=.1, 
-                              position = position_dodge(0.6)# ,outlier.shape=NA
-                              ) +
-                 # labs(x="", y="") + # theme_bw() + 
+                              width = box_width, lwd=.1, outlier.shape=NA,
+                              position = position_dodge(0.6)) +
                  facet_grid(~ emission ~ cluster, scales="free") +
-                 # xlab("month") + 
                  ylab(y_lab) +
-                 ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
-                 scale_fill_manual(values = color_ord,
-                                   name = "time\nperiod", 
-                                   labels = time_lbl) # + 
-             # scale_y_continuous(breaks=c(125, 250, 500, 1000, 1500, 2000, 2500)) 
-             # +
-             # geom_text(data = medians, 
-             #           aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
-             #           size = 2, vjust = -1.4,
-             #           position = position_dodge(.9)
-             #           # hjust = 1
-             #           )
-
-             # + 
-             # geom_hline(yintercept= 125, color = "white", size=.2)+
-             # geom_hline(yintercept= 250, color = "white", size=.2)+
-             # geom_hline(yintercept= 500, color = "white", size=.2)
-    }
-    if (tgt_col == "perc_diff"){
-      box_p <- box_p + geom_hline(yintercept= 0, color = "red", size=.2)
-    }
-            
+                 scale_fill_manual(values = color_ord, name = "time\nperiod", 
+                                   labels = time_lbl)
+    }            
     return(box_p)
 
   } else {
@@ -932,8 +1108,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
     dt$month <- as.character(dt$month)
     dt$month <- factor(dt$month, 
                        levels=as.character(c(9, 10, 11, 12, 
-                                             1, 2, 3, 4, 5,
-                                             6, 7, 8)))
+                                             1, 2, 3, 4, 5, 6, 7, 8)))
 
     ax_txt_size <- 15; ax_ttl_size <- 17;
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -1031,14 +1206,15 @@ box_dt_25 <- function(dt_25){
               )
   box_p <- ggplot(data = melted, 
                   aes(x=cluster, y=value, fill=return_period)) +
+           geom_hline(yintercept= 0, color = "red", size=.3) +
            geom_boxplot(outlier.size = -0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.85)# , outlier.shape=NA
+                        position = position_dodge(0.85), outlier.shape=NA
                         ) +
            facet_grid(~ emission) +
            xlab("precip. group") + 
            ylab("design storm intensity (mm/hr)") + 
-           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+           # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
@@ -1122,9 +1298,10 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
 
   box_p <- ggplot(data = data_tb, 
                   aes(x=cluster, y=get(tgt_col), fill=return_period)) +
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.8) #, outlier.shape=NA
+                        position = position_dodge(0.8), outlier.shape=NA
                         ) +
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
@@ -1138,7 +1315,6 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                      aes(label = sprintf("%1.2f", medians$med), y = medians$med),
                      size = 2.5, vjust = -.6, fontface="bold",
                      position = position_dodge(.8))
-           # ggtitle(box_title) + 
 }
 
 one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FALSE){
@@ -1254,11 +1430,10 @@ storm_box_plot <- function(data_tb){
   
   box_p <- ggplot(data = melted, 
                   aes(x=variable, y=value, fill=return_period)) +
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6) # ,outlier.shape=NA
-                        ) +
-           # labs(x="", y="") + # theme_bw() + 
+                        position = position_dodge(0.6), outlier.shape=NA) +
            facet_grid(~ emission ~ cluster, scales="free") + # , ncol=4 goes with facet_wrap
            scale_x_discrete(labels=c("five_years" = "5", 
                                      "ten_years" = "10",
@@ -1267,7 +1442,7 @@ storm_box_plot <- function(data_tb){
                                      "twenty_five_years" = "25")) + 
            xlab("time interval (years)") + 
            ylab("24 hr design storm intensity (mm/hr)") + 
-           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+           # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
@@ -1512,17 +1687,14 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
   box_p <- ggplot(data = melted, 
                   aes(x=cluster, y=value, fill=time_period)) +
            the + 
+           geom_hline(yintercept= 0, color = "red", size=.3) +
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6)# , outlier.shape=NA
-                        ) +
-           # labs(x="", y="") + # theme_bw() + 
+                        position = position_dodge(0.6), outlier.shape=NA) +
            facet_grid(~ emission, scales="free") +
            xlab("precip. group") +
            ylab(y_lab) + 
-           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
-           scale_fill_manual(values = color_ord,
-                             labels = time_label)
+           scale_fill_manual(values = color_ord, labels = time_label)
   return(box_p)
 }
 
@@ -1587,16 +1759,14 @@ cum_box_cluster_x <- function(dt, tgt_col, y_lab){
   box_p <- ggplot(data = melted, 
                   aes(x=cluster, y=value, fill=time_period)) +
            the + 
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6)# , outlier.shape=NA
-                        ) +
-           # labs(x="", y="") + # theme_bw() + 
+                        position = position_dodge(0.6), outlier.shape=NA) +
            facet_grid(~ emission, scales="free") +
            ylab(y_lab) + 
-           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
-           scale_fill_manual(values = color_ord,
-                             labels = time_label)
+           scale_fill_manual(values = color_ord, labels = time_label)
+           
   
   return(box_p)
 }
@@ -1657,17 +1827,14 @@ cum_clust_box_plots <- function(dt, tgt_col, y_lab){
   box_p <- ggplot(data = melted, 
                   aes(x=time_period, y=value, fill=cluster)) +
            the +
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
            geom_boxplot(outlier.size = - 0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.6) # , outlier.shape=NA
-                        ) +
-           # labs(x="", y="") + # theme_bw() + 
+                        position = position_dodge(0.6), outlier.shape=NA) +
            facet_grid(~ emission, scales="free") +
            xlab("time period") + 
            ylab(y_lab) + 
-           ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
-           scale_fill_manual(values = color_ord,
-                             name = "precip\nlevel")
+           scale_fill_manual(values = color_ord, name = "precip\nlevel")
            
   return(box_p)
 }
@@ -1698,8 +1865,12 @@ geo_map_of_clusters <- function(obs_w_clusters){
                  data.table()
 
   # color_ord = c("red", "purple", "dodgerblue2", "blue4")
-  color_ord = c("royalblue3", "steelblue1", "maroon3", "red")
-
+  if (length(unique(obs_w_clusters$cluster))==4){
+     color_ord = c("royalblue3", "steelblue1", "maroon3", "red")
+     } else if(length(unique(obs_w_clusters$cluster))== 5){
+     color_ord = c("royalblue3", "steelblue1", "maroon3", "red", "black")
+  }
+  
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
                      legend.position = "bottom",
@@ -1726,15 +1897,14 @@ geo_map_of_clusters <- function(obs_w_clusters){
                                aes(x=long, y=lat,group = group), 
                                fill = NA, colour = "black", size=0.0000001) + 
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
-                            alpha = 1, size=0.8) + 
-                  scale_color_manual(values = color_ord,
-                                   name = "Precip.\n") + 
+                            alpha = 1, size=2) + 
+                  scale_color_manual(values = color_ord, name = "Precip.\n") + 
                   the_theme +
                   # size of dot inside the legend
                   guides(colour = guide_legend(override.aes = list(size=3))) + 
-                  labs(title = "Groups of grids based on annual precip.",
-                       subtitle = "averaged over 38 years.") + 
-                  ggtitle("Groups of grids") + 
+                  # labs(title = "Groups of grids based on annual precip.",
+                  #      subtitle = "averaged over 38 years.") + 
+                  # ggtitle("Groups of grids") + 
                   # size of dot inside the legend box
                   guides(colour = guide_legend(override.aes = list(size=2.5)))
 
@@ -1805,9 +1975,8 @@ satellite_map_of_clusters <- function(obs_w_clusters){
                                   fill = "grey", color = "black", size=0.5) +
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
                              alpha = 1, size=0.8) + 
-                  scale_color_manual(values = color_ord,
-                                    name = "Precip.\n", 
-                                    labels = categ_lab) + 
+                  scale_color_manual(values = color_ord, name = "Precip.\n", 
+                                     labels = categ_lab) + 
                   the_theme +
                   # size of dot inside the legend
                   guides(colour = guide_legend(override.aes = list(size=3))) + 
@@ -1816,5 +1985,184 @@ satellite_map_of_clusters <- function(obs_w_clusters){
                   ggtitle("Groups of grids")
   return(cluster_plot)
 }
+##########################################################################
+#####                                                         ############
+#####    after meeting with Nichole and changing clusters     ############
+#####                                                         ############
+#####                                                         ############
+##########################################################################
+geo_map_of_precip <- function(data_dt){
+  data_dt <- unique(data_dt)
+
+  x <- sapply(data_dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = as.numeric(x[1, ]); long = as.numeric(x[2, ])
+
+  data_dt$lat <- lat
+  data_dt$long <- long
+  data_dt <- within(data_dt, remove(location))
+
+  WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()
+
+  the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                     panel.border = element_rect(fill=NA, size=.3),
+                     # legend.position = "right",
+                     legend.position = c(0.8, 0.2),
+                     legend.key.size = unit(.6, "line"),
+                     legend.spacing.x = unit(.1, 'line'),
+                     panel.spacing.y = unit(.5, 'line'),
+                     legend.text = element_text(size = 9, face="bold"),
+                     legend.margin = margin(t=.4, r=0, b=0, l=0, unit = 'line'),
+                     legend.title = element_blank(),
+                     plot.title = element_text(size = 13, face = "bold"),
+                     plot.subtitle = element_text(size = 10, face = "bold"),
+                     axis.ticks = element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank())
+
+  data_dt %>%
+  ggplot() +
+  geom_polygon(data = WA_counties, 
+               aes(x=long, y=lat, group = group),
+               fill = "grey", color = "black", size=0.5) +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "black", size=0.0000001) + 
+  geom_point(aes_string(x = "long", y = "lat", color="ann_prec_mean"), 
+            alpha = 1, size=0.8) + 
+  the_theme +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(500, 5000),
+                        breaks = pretty_breaks(n = 4)) + 
+  labs(title = "avg. annual precip.") # subtitle = "averaged over 38 years."
+}
+
+geo_map_of_elevation <- function(data_dt){
+  x <- sapply(data_dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = as.numeric(x[1, ]); long = as.numeric(x[2, ])
+
+  data_dt$lat <- lat; data_dt$long <- long
+  data_dt <- within(data_dt, remove(location))
+
+  data_dt <- unique(data_dt)
+  WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island")) %>% data.table()
+
+  the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                     panel.border = element_rect(fill=NA, size=.3),
+                     # legend.position = "right",
+                     legend.position = c(0.8, 0.2),
+                     legend.key.size = unit(.6, "line"),
+                     legend.spacing.x = unit(.1, 'line'),
+                     panel.spacing.y = unit(.5, 'line'),
+                     legend.text = element_text(size = 9, face="bold"),
+                     legend.margin = margin(t=.4, r=0, b=0, l=0, unit = 'line'),
+                     legend.title = element_blank(),
+                     plot.title = element_text(size = 13, face = "bold"),
+                     plot.subtitle = element_text(size = 10, face = "bold"),
+                     axis.ticks = element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank())
+
+  data_dt %>%
+  ggplot() +
+  geom_polygon(data = WA_counties, 
+               aes(x=long, y=lat, group = group),
+               fill = "grey", color = "black", size=0.5) +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "black", size=0.0000001) + 
+  geom_point(aes_string(x = "long", y = "lat", color="elevation"), 
+            alpha = 1, size=0.8) + 
+  the_theme +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(-100, 4000),
+                        breaks = pretty_breaks(n = 4)) + 
+  labs(title = "map of elevations")
+}
+
+geo_map_of_rain_frac <- function(data_dt){
+  data_dt <- unique(data_dt)
+
+  x <- sapply(data_dt$location, 
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = as.numeric(x[1, ]); long = as.numeric(x[2, ])
+
+  data_dt$lat <- lat
+  data_dt$long <- long
+  data_dt <- within(data_dt, remove(location))
+
+  WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", 
+                                         "snohomish", "okanogan",
+                                         "chelan", "island"))%>% 
+                 data.table()
+
+  the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                     panel.border = element_rect(fill=NA, size=.3),
+                     # legend.position = "right",
+                     legend.position = c(0.8, 0.2),
+                     legend.key.size = unit(.6, "line"),
+                     legend.spacing.x = unit(.1, 'line'),
+                     panel.spacing.y = unit(.5, 'line'),
+                     legend.text = element_text(size = 9, face="bold"),
+                     legend.margin = margin(t=.4, r=0, b=0, l=0, unit = 'line'),
+                     legend.title = element_blank(),
+                     plot.title = element_text(size = 13, face = "bold"),
+                     plot.subtitle = element_text(size = 10, face = "bold"),
+                     axis.ticks = element_blank(),
+                     axis.text.y = element_blank(),
+                     axis.text.x = element_blank(),
+                     axis.title.y = element_blank(),
+                     axis.title.x = element_blank())
+  data_dt$avg_rain_frac <- data_dt$avg_rain_frac*100
+
+  data_dt %>%
+  ggplot() +
+  geom_polygon(data = WA_counties, 
+               aes(x=long, y=lat, group = group),
+               fill = "grey", color = "black", size=0.5) +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "black", size=0.0000001) + 
+  geom_point(aes_string(x = "long", y = "lat", color="avg_rain_frac"), 
+            alpha = 1, size=0.8) + 
+  the_theme +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(0, 100),
+                        breaks = pretty_breaks(n = 4)) + 
+  labs(title = paste0("avg. rain fraction (", unique(data_dt$time_period), ")"))
+}
+
+
+
+
+
+
+
+
+
+
+
 
 

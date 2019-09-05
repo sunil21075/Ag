@@ -27,6 +27,63 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ##########################################################################
+# find 25th and 75th percentiles per groups
+find_quantiles <- function(data, tgt_col, time_type){
+  if (time_type=="annual"){
+     v <- annual_quantiles(data, tgt_col)
+     } else if(time_type=="wtr_yr"){
+      v <- annual_quantiles(data, tgt_col)
+     }
+      else if(time_type=="seasonal"){
+      v <- seasonal_quantiles(data, tgt_col)
+     } else if(time_type=="monthly"){
+      v <- monthly_quantiles(data, tgt_col)
+  }
+  v[2] <- v[2] + .2 * abs(v[2])
+  v[1] <- v[1] - .4 * abs(v[1])
+  return (v)
+}
+
+monthly_quantiles <- function(data, tgt_col){
+  quan_25 <- data %>% 
+             group_by(time_period, emission, cluster, month) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             data.table()
+  quan_75 <- data %>% 
+             group_by(time_period, emission, cluster, month) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             data.table()
+  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+  return(v)
+}
+
+seasonal_quantiles <- function(data, tgt_col){
+  quan_25 <- data %>% 
+             group_by(time_period, emission, cluster, season) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             data.table()
+  quan_75 <- data %>% 
+             group_by(time_period, emission, cluster, season) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             data.table()
+  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+  return(v)
+}
+
+annual_quantiles <- function(data, tgt_col){
+  quan_25 <- data %>% 
+             group_by(time_period, emission, cluster) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             data.table()
+  quan_75 <- data %>% 
+             group_by(time_period, emission, cluster) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             data.table()
+  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+  return(v)
+}
+
+##########################################################################
 ############
 ############ seasonal
 ############
@@ -684,6 +741,71 @@ read_min_file <- function(conn){
   colnames(RLData_df) <- col_name
   return(RLData_df)
 }
+#########################################################
+cluster_by_precip_elev <- function(observed_dt, scale=FALSE, no_clusters=4){
+  #
+  # max_clusters: maximum number of clusters to try and pick
+  #               the best.
+  #
+  # for_elbow = data.table(no_clusters = c(1:max_clusters),
+  #                        total_within_cluster_ss = rep(-666, max_clusters))
+  set.seed(100)
+  clust_data <- subset(observed_dt, select=c(elevation, ann_prec_mean))
+  clusters_obj <- kmeans(clust_data, centers = no_clusters, nstart = 50)
+  
+  centroids <- data.table(clusters_obj$centers)
+  centroids$cluster_label <- c(1:dim(centroids)[1])
+  setnames(centroids, old=c("elevation", "ann_prec_mean"), 
+                      new=c("elev_centriod", "prec_centroid"))
+  
+  # for_elbow[k, "total_within_cluster_ss"] <- clusters$betweenss
+  clusters = data.table(location = observed_dt$location,
+                        elevation = observed_dt$elevation,
+                        ann_prec_mean = observed_dt$ann_prec_mean,
+                        cluster_label = clusters_obj$cluster)
+ # 1st method
+  clusters <- merge(clusters, centroids)
+  
+  # re-order cluster labels so that the max label 
+  # corresponds to max rain and so on
+  # clusters <- clusters %>% 
+  #             mutate("cluster" = frankv(centroid, 
+  #                                       ties.method = "dense"))
+
+  # clusters <- within(clusters, remove(cluster_label))
+  setnames(clusters, old=c("cluster_label"), new=c("cluster"))
+  return(list(clusters, clusters_obj))
+}
+
+cluster_by_elevation <- function(observed_dt, scale=FALSE, no_clusters=4){
+  #
+  # max_clusters: maximum number of clusters to try and pick
+  #               the best.
+  #
+  # for_elbow = data.table(no_clusters = c(1:max_clusters),
+  #                        total_within_cluster_ss = rep(-666, max_clusters))
+  set.seed(100)
+  clusters_obj <- kmeans(observed_dt$elevation, centers = no_clusters, nstart = 50)
+
+  # for_elbow[k, "total_within_cluster_ss"] <- clusters$betweenss
+  clusters = data.table(location = observed_dt$location,
+                        elevation = observed_dt$elevation,
+                        cluster_label = clusters_obj$cluster)
+ # 1st method
+  clusters <- clusters %>% 
+              group_by(cluster_label) %>% #create the centroids variable
+              mutate(centroid = mean(elevation)) %>%
+              data.table()
+  
+  # re-order cluster labels so that the max label 
+  # corresponds to max rain and so on
+  clusters <- clusters %>% 
+              mutate("cluster" = frankv(centroid, 
+                                        ties.method = "dense"))
+
+  clusters <- within(clusters, remove(cluster_label))
+  return(list(clusters, clusters_obj))
+}
 
 cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   #
@@ -691,7 +813,7 @@ cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   #               the best.
   #
   if (scale == FALSE){
-    observed_dt <- observed_dt %>% 
+     observed_dt <- observed_dt %>% 
                    group_by(location) %>% 
                    summarise(target_col = mean(annual_cum_precip)) %>% 
                    data.table()
@@ -706,15 +828,12 @@ cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   # for_elbow = data.table(no_clusters = c(1:max_clusters),
   #                        total_within_cluster_ss = rep(-666, max_clusters))
   set.seed(100)
-  clusters_obj <- kmeans(observed_dt$target_col, 
-                         centers = no_clusters, 
-                         nstart = 50)
+  clusters_obj <- kmeans(observed_dt$target_col, centers = no_clusters, nstart = 50)
 
   # for_elbow[k, "total_within_cluster_ss"] <- clusters$betweenss
   clusters = data.table(location = observed_dt$location,
                         ann_prec_mean = observed_dt$target_col,
-                        cluster_label = clusters_obj$cluster
-                        )
+                        cluster_label = clusters_obj$cluster)
 
   ##### Sort according descending order 4 is most rainy, 1 least
   # centroids_dt <- data.table(centroid=as.vector(clusters_obj$centers),
@@ -732,8 +851,7 @@ cluster_yr_avging <- function(observed_dt, scale=FALSE, no_clusters=4){
   # re-order cluster labels so that the max label 
   # corresponds to max rain and so on
   clusters <- clusters %>% 
-              mutate("cluster" = frankv(centroid, 
-                                        ties.method = "dense"))
+              mutate("cluster" = frankv(centroid, ties.method = "dense"))
 
   clusters <- within(clusters, remove(cluster_label))
   return(list(clusters, clusters_obj))

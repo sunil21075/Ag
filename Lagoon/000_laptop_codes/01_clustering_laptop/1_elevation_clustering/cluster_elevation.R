@@ -17,27 +17,27 @@ options(digit=9)
 options(digits=9)
 
 ##### read file
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/cum_precip/"
-file_name <- "ann_cum_precip_last_day_observed.rds"
+in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
+observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
+head(observed, 2)
+observed <- within(observed, remove(centroid, ann_prec_mean, cluster, fips))
+head(observed, 2)
 
-observed_dt <- readRDS(paste0(in_dir, file_name)) %>% data.table()
-head(observed_dt, 2)
-
-outputs <- cluster_yr_avging(observed_dt, scale=FALSE, no_clusters=4)
-
+outputs <- cluster_by_elevation(observed_dt=observed, scale=FALSE, no_clusters=4)
 clusters <- outputs[[1]]
 cluster_obj <- outputs[[2]]
 head(clusters, 2)
-head(observed_dt, 2)
+head(observed, 2)
 
 ################################################
 #
 # Check whether truely 1 through 4 
 # are most to least precip
+# sanity check OCD 
 #
-dt <- observed_dt %>% 
+dt <- observed %>% 
       group_by(location) %>% 
-      summarise(target_col = mean(annual_cum_precip)) %>% 
+      summarise(target_col = mean(elevation)) %>% 
       data.table()
 
 dt <- merge(dt, clusters, by="location", all.x=TRUE)
@@ -52,32 +52,25 @@ c4_mean <- mean(cluster_4$target_col)
 cluster_means <- c(c1_mean, c2_mean, c3_mean, c4_mean)
 
 ########################
-
-observed_dt <- merge(x=observed_dt, y=clusters, by = "location", all.x=TRUE)
-head(observed_dt, 2)
-
 # Do the following so in the map they are discrete 
 # for sake of coloring.
 clusters$cluster <- factor(clusters$cluster)
-
-cluster_plt <- geo_map_of_clusters(clusters)
+cluster_plt <- geo_map_of_clusters(clusters) + ggtitle("clustering by elevation")
 
 plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-ggsave(filename = "precip_clusters.png", 
+ggsave(filename = "elevation_clusters.png", 
        plot = cluster_plt, device = "png",
-       width = 8, height = 6, units = "in", dpi=400,
+       width = 6, height = 6, units = "in", dpi=400,
        path=plot_dir)
 
-
 # round columns to 2 decimal
-
 clusters <- clusters %>% 
-            mutate_at(vars(ann_prec_mean, centroid), funs(round(., 2)))
+            mutate_at(vars(elevation, centroid), funs(round(., 2)))
 
 # save in parameter
 out_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
 write.table(clusters, 
-            file = paste0(out_dir, "observed_clusters.csv"),
+            file = paste0(out_dir, "elevation_clusters.csv"),
             row.names = FALSE, na="", 
             col.names=TRUE, sep=",")
 

@@ -11,6 +11,11 @@
 #        value = {plot_dens(data=data_45, month_name=month)})
 
 ##########################################
+# round decimal 
+cols <- names(mydf)[1:2]
+mydf[,(cols) := round(.SD,1), .SDcols=cols]
+mydf
+
 # df[4, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
 
 A_filtered <- A %>% filter_all(any_vars(is.na(.)))
@@ -31,6 +36,7 @@ a <- observed_dt %>%
      group_by(location) %>%
      summarise_at(vars(annual_cum_precip), funs(mean(., na.rm=TRUE)))%>%
      data.table()
+
 b <- observed_dt %>% 
      group_by(location)%>% 
      summarise(mean=mean(annual_cum_precip), sd=sd(annual_cum_precip))

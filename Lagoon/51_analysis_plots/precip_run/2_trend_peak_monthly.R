@@ -48,6 +48,7 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     }
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% data.table()
+    AVs <- na.omit(AVs)
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", 
                                   dt_type, ".rds")) %>% data.table()
@@ -79,35 +80,45 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       #########
       ######### Actual value plots
       #########
+      quans_85 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="monthly")
+      quans_45 <- find_quantiles(curr_AVs_45, tgt_col= AV_tg_col, time_type="monthly")
+
       assign(x = "AV_box_85",
              value = {box_trend_monthly_cum(dt = curr_AVs_85, p_type="box",
                                             y_lab = AV_y_lab, tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthy cum. ", dt_type, "."))
+                      ggtitle(paste0("monthy cum. ", dt_type, ".")) +
+                      coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
                       })
 
       assign(x = "AV_box_45",
              value = {box_trend_monthly_cum(dt = curr_AVs_45, p_type="box",
                                             y_lab = AV_y_lab, tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthy cum. ", dt_type, "."))
+                      ggtitle(paste0("monthy cum. ", dt_type, ".")) + 
+                      coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
                       })
       #########
       ######### unbiased Percentage diffs
       #########
       box_title <- "unbiased differences"
       box_subtitle <- "for each model median is\ntaken over years, separately"
-
-      assign(x = "unbias_perc_diff_45",
-             value = {box_trend_monthly_cum(dt = curr_unbias_diff_45, p_type="box",
-                                            y_lab = "differences (%)",
-                                            tgt_col = "perc_diff") + 
-                      ggtitle(box_title)
-                      })
+      
+      quans_85 <- find_quantiles(curr_unbias_diff_85, tgt_col= "perc_diff", time_type="monthly")
+      quans_45 <- find_quantiles(curr_unbias_diff_45, tgt_col= "perc_diff", time_type="monthly")
 
       assign(x = "unbias_perc_diff_85",
              value = {box_trend_monthly_cum(dt = curr_unbias_diff_85, p_type="box",
                                             y_lab = "differences (%)", 
                                             tgt_col = "perc_diff") + 
-                      ggtitle(box_title)
+                      ggtitle(box_title) + 
+                      coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                      })
+
+      assign(x = "unbias_perc_diff_45",
+             value = {box_trend_monthly_cum(dt = curr_unbias_diff_45, p_type="box",
+                                            y_lab = "differences (%)",
+                                            tgt_col = "perc_diff") + 
+                      ggtitle(box_title) + 
+                      coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
                       })
       ##################################################################################
       ##################################################################################
@@ -121,13 +132,15 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       
       ggsave(filename = paste0(gsub("\ ", "_", clust_g), "_", 
                                timeP_ty_middN[timeP_ty], "_unbiased_RCP45.png"),
-             plot = unbiased_RCP45, width = 6, height = 5, units = "in", 
+             plot = unbiased_RCP45, width = 9, height = 5, units = "in", 
              dpi=400, device = "png", path = plot_dir)
       
       ggsave(filename = paste0(gsub("\ ", "_", clust_g), "_", 
                                timeP_ty_middN[timeP_ty], "_unbiased_RCP85.png"),
-             plot = unbiased_RCP85, width = 6, height = 5, units = "in", 
+             plot = unbiased_RCP85, width = 9, height = 5, units = "in", 
              dpi=400, device = "png", path = plot_dir)
+      print(paste0(gsub("\ ", "_", clust_g), "_", 
+                   timeP_ty_middN[timeP_ty], "_unbiased_RCP85.png"))
     }
   }
 }
