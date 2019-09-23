@@ -27,59 +27,100 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ##########################################################################
+update_clusters <- function(data_tb, new_clusters){
+  if (length(unique(data_tb$cluster)) == 4){
+    # some of the locations are absent in the Min's data
+    data_tb <- data_tb %>% filter(location %in% new_clusters$location) %>% data.table()
+    data_tb <- within(data_tb, remove(cluster))
+    data_tb <- merge(data_tb, new_clusters, by="location", all.x=TRUE)
+  }
+  return(data_tb)
+}
+
 # find 25th and 75th percentiles per groups
-find_quantiles <- function(data, tgt_col, time_type){
+find_quantiles <- function(data_table, tgt_col, time_type){
+
   if (time_type=="annual"){
-     v <- annual_quantiles(data, tgt_col)
+     v <- annual_quantiles(data_table, tgt_col)
      } else if(time_type=="wtr_yr"){
-      v <- annual_quantiles(data, tgt_col)
+      v <- annual_quantiles(data_table, tgt_col)
      }
       else if(time_type=="seasonal"){
-      v <- seasonal_quantiles(data, tgt_col)
+      v <- seasonal_quantiles(data_table, tgt_col)
      } else if(time_type=="monthly"){
-      v <- monthly_quantiles(data, tgt_col)
+      v <- monthly_quantiles(data_table, tgt_col)
   }
-  v[2] <- v[2] + .2 * abs(v[2])
-  v[1] <- v[1] - .4 * abs(v[1])
   return (v)
 }
 
 monthly_quantiles <- function(data, tgt_col){
   quan_25 <- data %>% 
              group_by(time_period, emission, cluster, month) %>% 
-             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.25)) %>% 
              data.table()
+
   quan_75 <- data %>% 
              group_by(time_period, emission, cluster, month) %>% 
-             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.75)) %>% 
              data.table()
-  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+
+  both_quans <- merge(quan_25, quan_75, 
+                      by=c("time_period", "emission", "cluster", "month"),
+                      all.x=TRUE)
+
+  both_quans$IQR = both_quans$quan_75 - both_quans$quan_25
+  
+  both_quans$quan_25 <- both_quans$quan_25 - (1.52 * both_quans$IQR)
+  both_quans$quan_75 <- both_quans$quan_75 + (1.52 * both_quans$IQR)
+
+  v <- c(min(both_quans$quan_25), max(both_quans$quan_75))
   return(v)
 }
 
 seasonal_quantiles <- function(data, tgt_col){
   quan_25 <- data %>% 
              group_by(time_period, emission, cluster, season) %>% 
-             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.25)) %>% 
              data.table()
+
   quan_75 <- data %>% 
              group_by(time_period, emission, cluster, season) %>% 
-             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.75)) %>% 
              data.table()
-  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+
+  both_quans <- merge(quan_25, quan_75, 
+                      by=c("time_period", "emission", "cluster", "season"),
+                      all.x=TRUE)
+
+  both_quans$IQR = both_quans$quan_75 - both_quans$quan_25
+  
+  both_quans$quan_25 <- both_quans$quan_25 - (1.52 * both_quans$IQR)
+  both_quans$quan_75 <- both_quans$quan_75 + (1.52 * both_quans$IQR)
+
+  v <- c(min(both_quans$quan_25), max(both_quans$quan_75))
   return(v)
 }
 
-annual_quantiles <- function(data, tgt_col){
-  quan_25 <- data %>% 
+annual_quantiles <- function(data_tbl, tgt_col){
+  quan_25 <- data_tbl %>% 
              group_by(time_period, emission, cluster) %>% 
-             summarise(quan_25 = quantile(get(tgt_col), probs = 0.05)) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.25)) %>% 
              data.table()
-  quan_75 <- data %>% 
+
+  quan_75 <- data_tbl %>% 
              group_by(time_period, emission, cluster) %>% 
-             summarise(quan_75 = quantile(get(tgt_col), probs = 0.95)) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.75)) %>% 
              data.table()
-  v <- c(min(quan_25$quan_25), max(quan_75$quan_75))
+
+  both_quans <- merge(quan_25, quan_75, 
+                      by=c("time_period", "emission", "cluster"),
+                      all.x=TRUE)
+  both_quans$IQR = both_quans$quan_75 - both_quans$quan_25
+  
+  both_quans$quan_25 <- both_quans$quan_25 - (1.52 * both_quans$IQR)
+  both_quans$quan_75 <- both_quans$quan_75 + (1.52 * both_quans$IQR)
+
+  v <- c(min(both_quans$quan_25), max(both_quans$quan_75))
   return(v)
 }
 
@@ -719,12 +760,13 @@ month_numeric_2_str <- function(B){
 
 cluster_numeric_2_str <- function(B){
   B$cluster <- as.character(B$cluster)
-  B$cluster <- recode(B$cluster, "4" = "most precip",
-                                 "3" = "less precip",
-                                 "2" = "lesser precip",
-                                 "1" = "least precip")
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")  
+  B$cluster <- recode(B$cluster, "5" = "5", 
+                                 "4" = "4",
+                                 "3" = "3",
+                                 "2" = "2",
+                                 "1" = "1")
+
+  categ_label <- c("1", "2", "3", "4", "5")  
   B$cluster <- factor(B$cluster, levels=categ_label)
 
   return(B)

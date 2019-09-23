@@ -9,13 +9,13 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
 
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain_snow_fractions/"
+data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/rain_snow_fractions/"
 AV_fileNs <- "seasonal_fracs"
 
 AV_y_lab <- "cum. precip. (mm)"
@@ -28,10 +28,15 @@ AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period",
                               "seasonal_cum_precip", "rain_fraction", "snow_fraction",
                               "season"))
 
+# update clusters to 5 
+param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
+AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+
 AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
 AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)
 
-cluster_types <- c("least precip", "lesser precip", "less precip", "most precip")
+cluster_types <- c("1", "2", "3", "4", "5")
 
 clust_g <- cluster_types[1]
 
@@ -47,7 +52,7 @@ for (clust_g in cluster_types){
   quans_45 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="seasonal")
   
   AV_box_85 <- seasonal_cum_box_season_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
-                                        y_lab = AV_y_lab) +
+                                         y_lab = AV_y_lab) +
                ggtitle(label= paste0(AV_title, subttl)) +
                coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
@@ -70,7 +75,7 @@ for (clust_g in cluster_types){
                                              y_lab = "rain fraction (%)", 
                                              tgt_col="rain_fraction") +
                   ggtitle(box_title) +
-                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                  coord_cartesian(ylim = c(quans_85[1], 110))
 
   rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -79,10 +84,10 @@ for (clust_g in cluster_types){
          dpi=400, device = "png", path = plot_dir)
 
   rain_frac_45 <- seasonal_fraction_season_x(data_tb = curr_AVs_45,
-                                    y_lab = "rain fraction (%)", 
-                                    tgt_col="rain_fraction") +
+                                             y_lab = "rain fraction (%)", 
+                                             tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                  coord_cartesian(ylim = c(quans_45[1], 110))
 
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -96,10 +101,10 @@ for (clust_g in cluster_types){
   quans_45 <- 100 * find_quantiles(curr_AVs_85, tgt_col= "snow_fraction", time_type="seasonal")
 
   snow_frac_85 <- seasonal_fraction_season_x(data_tb = curr_AVs_85,
-                                    y_lab = "snow fraction (%)", 
-                                    tgt_col="snow_fraction") +
+                                             y_lab = "snow fraction (%)", 
+                                             tgt_col="snow_fraction") +
                   ggtitle(box_title) +
-                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                  coord_cartesian(ylim = c(quans_85[1], 110))
 
   snow_85 <- ggarrange(plotlist = list(AV_box_85, snow_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -108,10 +113,10 @@ for (clust_g in cluster_types){
          dpi=400, device = "png", path = plot_dir)
 
   snow_frac_45 <- seasonal_fraction_season_x(data_tb = curr_AVs_45,
-                                    y_lab = "snow fraction (%)", 
-                                    tgt_col="snow_fraction") +
+                                             y_lab = "snow fraction (%)", 
+                                             tgt_col="snow_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                  coord_cartesian(ylim = c(quans_45[1], 110))
 
   snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -119,6 +124,7 @@ for (clust_g in cluster_types){
          plot = snow_45, width = 6, height = 5, units = "in",
          dpi=400, device = "png", path = plot_dir)
   print(paste0(clust_g, "_snow_45.png"))
+  print(plot_dir)
 }
 
 

@@ -9,19 +9,19 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
 start_time <- Sys.time()
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 in_dir_ext <- c("precip", "runbase")
 unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
 precip_AV_fileNs <- c("month_all_last_days")
 runoff_AV_fileNs <- c("monthly_cum_runbase")
-cluster_types <- c("least precip", "lesser precip", "less precip", "most precip")
+cluster_types <- c(1, 2, 3, 4, 5)
 timeP_ty_middN <- c("month")
 
 av_tg_col_pref <- c("monthly_cum_")
@@ -55,11 +55,21 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
     AVs <- AVs %>% filter(time_period != "2006-2025") %>% data.table()  
     unbias_diff <- unbias_diff %>% filter(time_period != "2006-2025") %>% data.table()
+
     #
     # remove those rows whose perc diff is more than 1000%
     #
     unbias_diff <- unbias_diff %>% filter(perc_diff < 600) %>% data.table()
     unbias_diff <- unbias_diff %>% filter(perc_diff > -600) %>% data.table()
+    
+    # update clusters to 5 
+    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
+    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
+
+    AVs <- AVs[, cluster:=as.character(cluster)]
+    unbias_diff <- unbias_diff[, cluster:=as.character(cluster)]
   
     plot_dir <- paste0(in_dir, "narrowed_", dt_type, "/monthly", "_", dt_type, "/peak/")
     if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
@@ -80,8 +90,8 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       #########
       ######### Actual value plots
       #########
-      quans_85 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="monthly")
-      quans_45 <- find_quantiles(curr_AVs_45, tgt_col= AV_tg_col, time_type="monthly")
+      quans_85 <- find_quantiles(data_table=curr_AVs_85, tgt_col= AV_tg_col, time_type="monthly")
+      quans_45 <- find_quantiles(data_table=curr_AVs_45, tgt_col= AV_tg_col, time_type="monthly")
 
       assign(x = "AV_box_85",
              value = {box_trend_monthly_cum(dt = curr_AVs_85, p_type="box",

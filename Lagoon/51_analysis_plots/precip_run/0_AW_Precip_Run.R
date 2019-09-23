@@ -9,13 +9,13 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
 
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 in_dir_ext <- c("precip", "runbase")
 unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
@@ -59,6 +59,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
                    data.table()
+    
+    # update clusters to 5 
+    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
+    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
@@ -66,8 +72,8 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff_85 <- unbias_diff %>% filter(emission=="RCP 8.5") %>% data.table()
     rm(AVs, unbias_diff)
 
-    av_quans_85 <- find_quantiles(AVs_85, tgt_col= AV_tg_col, time_type="annual")
-    av_quans_45 <- find_quantiles(AVs_45, tgt_col= AV_tg_col, time_type="annual")
+    av_quans_85 <- find_quantiles(data_table=AVs_85, tgt_col= AV_tg_col, time_type="annual")
+    av_quans_45 <- find_quantiles(data_table=AVs_45, tgt_col= AV_tg_col, time_type="annual")
 
     AV_box_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_85, y_lab = AV_y_lab, 
                                                    tgt_col = AV_tg_col) + 

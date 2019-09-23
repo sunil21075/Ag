@@ -9,13 +9,13 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
 
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 in_dir_ext <- c("precip", "runbase")
 unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
@@ -55,6 +55,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
                    data.table()
     AVs <- na.omit(AVs)
     unbias_diff <- na.omit(unbias_diff)
+
+    # update clusters to 5 
+    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
+    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()

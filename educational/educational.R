@@ -5,6 +5,11 @@
 # Chill_season != "chill_2025-2026" &
 # Chill_season != "chill_2055-2056") %>% 
 # group_by(Chill_season) %>%
+
+main_out <- file.path(lagoon_out, "/01_storm_cumPrecip/cum_precip/")
+if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
+
+
 ##########################################
 
 # assign(x = paste0(month, "_density_plot_", "rcp45"),

@@ -244,7 +244,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -316,7 +316,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                                          seasonal_cum_precip, rain_fraction))
   }
 
-  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  region_levels <- c("1", "2", "3", "4", "5")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission, season) %>% 
@@ -335,7 +335,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -408,7 +408,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                                          annual_cum_precip, rain_fraction))
    }
 
-  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  region_levels <- c("1", "2", "3", "4", "5")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -427,7 +427,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -496,7 +496,7 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   season_levels <- c("fall", "winter", "spring", "summer")
   dt$season <- factor(dt$season, levels=season_levels, order=T)
   
-  region_levels <- c("most precip", "less precip", "lesser precip", "least precip")
+  region_levels <- c("1", "2", "3", "4", "5")
   dt$cluster <- factor(dt$cluster, levels=region_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
   dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
@@ -596,7 +596,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -820,8 +820,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", 
-                   "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -913,6 +912,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
              group_by(cluster, time_period, emission) %>% 
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
+
   melted <- melt(dt, id = c("emission", # "location", 
                             "time_period", "cluster")); rm(dt)
   
@@ -925,7 +925,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -1238,14 +1238,9 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
 
   time_label <- sort(unique(data_tb$return_period))
   data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
-  if (length(unique(data_tb$cluster))==4){
-    data_tb$cluster <- factor(data_tb$cluster, 
-                              levels=c("most precip", "less precip", 
-                                       "lesser precip", "least precip"))
-     } else {
-    data_tb$cluster <- factor(data_tb$cluster, 
-                              levels=c("lesser precip", "least precip"))
-  }
+  data_tb$cluster <- factor(data_tb$cluster, 
+                            levels=c("1", "2", "3", "4", "5"))
+     
   
   if (length(time_label) == 3){
     color_ord = c("dodgerblue2", "olivedrab4", "gold")
@@ -1646,7 +1641,7 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
   #            data.table()
 
   melted <- melt(dt, id = c("location", "year", "time_period", "emission", "cluster"))
-  categ_label <- c("most precip", "less precip", "lesser precip", "least precip")
+  categ_label <- c("1", "2", "3", "4", "5")
   time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
@@ -1947,8 +1942,7 @@ satellite_map_of_clusters <- function(obs_w_clusters){
 
   # "grey47",
   color_ord = c("blue4", "dodgerblue2", "purple", "red") 
-  categ_lab = c("most precip", "less precip", 
-                "lesser precip", "least precip")
+  categ_lab = c("1", "2", "3", "4", "5")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),

@@ -2,8 +2,8 @@
 options(digits=9)
 options(digits=9)
 
-source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
-source(source_path)
+# source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
+# source(source_path)
 ##################################################################
 
 form_chill_season_day_of_year_observed <- function(data){
@@ -145,12 +145,12 @@ count_years_threshs_met_all_locations <- function(dataT, due){
   f2_year_count <- length(unique(dataT[dataT$time_period== "2051_2075",]$chill_season))
   f3_year_count <- length(unique(dataT[dataT$time_period== "2076_2099",]$chill_season))
   if (due == "Jan"){
-    col_name = "sum_J1"
-    } else if(due == "Feb"){
+     col_name = "sum_J1"
+     } else if(due == "Feb"){
       col_name = "sum_F1"
-    } else if(due =="Mar"){
+     } else if(due =="Mar"){
       col_name = "sum_M1"
-    } else if(due =="Apr"){
+     } else if(due =="Apr"){
       col_name = "sum_A1"
   }
 
@@ -189,9 +189,7 @@ count_years_threshs_met_all_locations <- function(dataT, due){
   result_85 <- rbind(result_85, result_H)
   result_45 <- rbind(result_45, result_H)
 
-  result_85$scenario <- "RCP 8.5"
-  result_45$scenario <- "RCP 4.5"
-
+  result_85$scenario <- "RCP 8.5"; result_45$scenario <- "RCP 4.5"
   result <- rbind(result_45, result_85)
 
   time_periods = c("Historical", "2025_2050", "2051_2075", "2076_2099")

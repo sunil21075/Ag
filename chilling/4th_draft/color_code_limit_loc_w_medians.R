@@ -88,6 +88,9 @@ output_85 <- data.table(row_count = 1:(no_threshs*no_cities))
 output_45 <- data.table(row_count = 1:(no_threshs*no_cities))
 
 begins <- c("sept", "mid_sept", "oct", "mid_oct", "nov", "mid_nov")
+begin <- "sept"
+begin <- "mid_sept"
+
 for (begin in begins){
 
   mdata <- data.table(readRDS(paste0(main_in_dir, begin, "_summary_comp.rds")))
@@ -118,7 +121,7 @@ for (begin in begins){
   ######****************************
 
   quan_per_jan <- jan_result %>% 
-                  group_by(time_period, city, scenario, thresh_range) %>% 
+                  group_by(time_period, city, scenario, thresh_range, model) %>% 
                   summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                   data.table()
 
@@ -130,11 +133,18 @@ for (begin in begins){
                      filter(scenario == "RCP 4.5") %>%
                      data.table()
 
+  quan_per_jan_85 = quan_per_jan_85[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
+  quan_per_jan_45 = quan_per_jan_45[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+  
+
   quan_per_jan_85 <- quan_per_jan_85[order(time_period, thresh_range), ]
   quan_per_jan_45 <- quan_per_jan_45[order(time_period, thresh_range), ]
 
-  quan_per_jan_85 <- quan_per_jan_85 %>% spread(time_period, quan_25)
-  quan_per_jan_45 <- quan_per_jan_45 %>% spread(time_period, quan_25)
+  quan_per_jan_85 <- quan_per_jan_85 %>% spread(time_period, median_quan_25)
+  quan_per_jan_45 <- quan_per_jan_45 %>% spread(time_period, median_quan_25)
 
   start <- data.table(start=rep(begin, nrow(quan_per_jan_85)))
   end <- data.table(end=rep("Jan_1", nrow(quan_per_jan_85)))
@@ -145,12 +155,11 @@ for (begin in begins){
   quan_per_jan_45 <- cbind(start, quan_per_jan_45)
   quan_per_jan_45 <- cbind(quan_per_jan_45, end)
 
-
   ######****************************
   ################################## FEB
   ######****************************
   quan_per_feb <- feb_result %>% 
-                  group_by(time_period, city, scenario, thresh_range) %>% 
+                  group_by(time_period, city, scenario, thresh_range, model) %>% 
                   summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                   data.table()
 
@@ -162,11 +171,17 @@ for (begin in begins){
                      filter(scenario == "RCP 4.5") %>%
                      data.table()
 
+  quan_per_feb_85 = quan_per_feb_85[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
+  quan_per_feb_45 = quan_per_feb_45[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
   quan_per_feb_85 <- quan_per_feb_85[order(time_period, thresh_range), ]
   quan_per_feb_45 <- quan_per_feb_45[order(time_period, thresh_range), ]
 
-  quan_per_feb_85 <- quan_per_feb_85 %>% spread(time_period, quan_25)
-  quan_per_feb_45 <- quan_per_feb_45 %>% spread(time_period, quan_25)
+  quan_per_feb_85 <- quan_per_feb_85 %>% spread(time_period, median_quan_25)
+  quan_per_feb_45 <- quan_per_feb_45 %>% spread(time_period, median_quan_25)
 
   start <- data.table(start=rep(begin, nrow(quan_per_jan_85)))
   end <- data.table(end=rep("Feb_1", nrow(quan_per_jan_85)))
@@ -177,13 +192,12 @@ for (begin in begins){
   quan_per_feb_45 <- cbind(start, quan_per_feb_45)
   quan_per_feb_45 <- cbind(quan_per_feb_45, end)
   
-
   ######****************************
   ################################## MARCH
   ######****************************
 
   quan_per_mar <- mar_result %>% 
-                  group_by(time_period, city, scenario, thresh_range) %>% 
+                  group_by(time_period, city, scenario, thresh_range, model) %>% 
                   summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                   data.table()
 
@@ -195,11 +209,17 @@ for (begin in begins){
                      filter(scenario == "RCP 4.5") %>%
                      data.table()
 
+  quan_per_mar_85 = quan_per_mar_85[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
+  quan_per_mar_45 = quan_per_mar_45[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
   quan_per_mar_85 <- quan_per_mar_85[order(time_period, thresh_range), ]
   quan_per_mar_45 <- quan_per_mar_45[order(time_period, thresh_range), ]
 
-  quan_per_mar_85 <- quan_per_mar_85 %>% spread(time_period, quan_25)
-  quan_per_mar_45 <- quan_per_mar_45 %>% spread(time_period, quan_25)
+  quan_per_mar_85 <- quan_per_mar_85 %>% spread(time_period, median_quan_25)
+  quan_per_mar_45 <- quan_per_mar_45 %>% spread(time_period, median_quan_25)
 
   start <- data.table(start=rep(begin, nrow(quan_per_mar_85)))
   end <- data.table(end=rep("Mar_1", nrow(quan_per_mar_85)))
@@ -215,7 +235,7 @@ for (begin in begins){
   ################################## April
   ######****************************
   quan_per_apr <- apr_result %>% 
-                  group_by(time_period, city, scenario, thresh_range) %>% 
+                  group_by(time_period, city, scenario, thresh_range, model) %>% 
                   summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
                   data.table()
 
@@ -227,12 +247,17 @@ for (begin in begins){
                      filter(scenario == "RCP 4.5") %>%
                      data.table()
 
+  quan_per_apr_85 = quan_per_apr_85[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
+  quan_per_apr_45 = quan_per_apr_45[, .(median_quan_25 = median(quan_25)), 
+                      by = c("time_period", "city", "scenario", "thresh_range")]
+
   quan_per_apr_85 <- quan_per_apr_85[order(time_period, thresh_range), ]
   quan_per_apr_45 <- quan_per_apr_45[order(time_period, thresh_range), ]
 
-  quan_per_apr_85 <- quan_per_apr_85 %>% spread(time_period, quan_25)
-  quan_per_apr_45 <- quan_per_apr_45 %>% spread(time_period, quan_25)
-
+  quan_per_apr_85 <- quan_per_apr_85 %>% spread(time_period, median_quan_25)
+  quan_per_apr_45 <- quan_per_apr_45 %>% spread(time_period, median_quan_25)
 
   start <- data.table(start=rep(begin, nrow(quan_per_apr_85)))
   end <- data.table(end=rep("Apr_1", nrow(quan_per_apr_85)))
@@ -246,11 +271,11 @@ for (begin in begins){
   output_85 <- cbind(output_85, quan_per_jan_85, quan_per_feb_85, quan_per_mar_85, quan_per_apr_85)
   output_45 <- cbind(output_45, quan_per_jan_45, quan_per_feb_45, quan_per_mar_45, quan_per_apr_45)
 }
-
-out_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/color_code_tables/limited_locs/"
-
 set(output_85, , "row_count", NULL)
 set(output_45, , "row_count", NULL)
+
+out_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/color_code_tables/limited_locs_w_medians/"
+if (dir.exists(out_dir) == F) {dir.create(path = out_dir, recursive = T)}
 
 write.csv(output_85, file = paste0(out_dir, "table_for_color_code_85.csv"), row.names=FALSE)
 write.csv(output_45, file = paste0(out_dir, "table_for_color_code_45.csv"), row.names=FALSE)

@@ -9,13 +9,13 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 ############################################################################
 
-data_base <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain_snow_fractions/"
+data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/rain_snow_fractions/"
 
 AV_fileNs <- c("annual_fracs", "wtr_yr_fracs")
 timeP_ty_middN <- c("ann", "wtr_yr")
@@ -40,7 +40,12 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period", 
                                 "model", "emission",
                                 "annual_cum_precip", "rain_fraction", "snow_fraction"))
-  
+
+  # update clusters to 5 
+  param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+  new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
+  AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+
   AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
   AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)
   
@@ -73,7 +78,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                  coord_cartesian(ylim = c(quans_85[1], 110))
   
   rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -84,7 +89,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                  coord_cartesian(ylim = c(quans_45[1], 110))
 
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -99,7 +104,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "snow fraction (%)", 
                                   tgt_col="snow_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                  coord_cartesian(ylim = c(quans_85[1], 110))
 
   snow_85 <- ggarrange(plotlist = list(AV_box_85, snow_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
@@ -108,7 +113,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "snow fraction (%)", 
                                   tgt_col="snow_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                  coord_cartesian(ylim = c(quans_45[1], 110))
 
   snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
