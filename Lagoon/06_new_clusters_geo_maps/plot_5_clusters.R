@@ -53,7 +53,6 @@ cluster_info$cluster <- factor(cluster_info$cluster)
 cluster_plt <- geo_map_of_clusters(cluster_info) + 
                ggtitle("clustering by both precip and elevation")
 
-
 write.table(cluster_info, 
             file = paste0(in_dir, "precip_elev_5_clusters.csv"),
             row.names = FALSE, na="", 

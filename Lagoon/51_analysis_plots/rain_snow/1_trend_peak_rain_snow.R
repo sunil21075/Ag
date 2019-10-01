@@ -27,26 +27,24 @@ AV_y_lab <- "cum. precip. (mm)"
 AV_tg_col <- "monthly_cum_precip"
 
 AVs <- readRDS(paste0(in_dir, "monthly_fracs.rds")) %>% data.table()
+
+AVs <- remove_observed(AVs)
+AVs <- remove_current_timeP(AVs) # remove 2006-2025
+AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)# update clusters labels
 AVs <- na.omit(AVs)
 # AVs <- AVs %>% filter(!(month %in% c(5, 6, 7, 8)))
 plot_dir <- paste0(in_dir, "narrowed_rain_snow_fractions/monthly/final//") # 5-8-gone
 if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
 print (plot_dir)
 
-AVs <- AVs %>% filter(time_period != "2006-2025") %>% data.table()
 AVs <- within(AVs, remove(day, rain_portion, monthly_cum_rain, monthly_cum_snow))
 AVs$rain_fraction <- AVs$rain_fraction * 100
 AVs$snow_fraction <- AVs$snow_fraction * 100
 
-# update clusters to 5 
-param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
-new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
-AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
-
 AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
 AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
 
-cluster_types <- c("1", "2", "3", "4", "5")
+cluster_types <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
 timeP_ty <- 1
 clust_g <- cluster_types[1]
 

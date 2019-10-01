@@ -385,7 +385,7 @@ navbarPage(title = div("",
                                  ####### Adult Flight start
                                  tabPanel("Adult Flight",
                                           fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot"), height = 700),
-                                                          tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot"), height = 900),
+                                                          # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot"), height = 900), # hossein
                                                           tabPanel("Number of Generations", imageOutput("ag_bplot"), height = 900),
                                                           width = 12
                                                           )
@@ -396,7 +396,7 @@ navbarPage(title = div("",
                                  ####### Egg Hatch into Larva start
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop")),
-                                                          tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot"), height = 900),
+                                                          # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot"), height = 900), # Hossein
                                                           tabPanel("Number of Generations", imageOutput("lg_bplot"), height = 900),
                                                           width = 12
                                                           )
@@ -406,7 +406,7 @@ navbarPage(title = div("",
 
                                  ####### DIAPAUSE start
                                  tabPanel("Diapause",
-                                          fluidRow(tabBox(tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd")),
+                                          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd")), # Hossein
                                                           tabPanel("Absolute Population Vs Cumulative DD", imageOutput("abs_pop_cumdd")),
                                                           width = 12
                                                           )
@@ -425,7 +425,7 @@ navbarPage(title = div("",
                                  ####### Adult Flight 45 start
                                  tabPanel("Adult Flight",
                                           fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot_rcp45"), height = 700),
-                                                          tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot_rcp45"), height = 900),
+                                                          # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot_rcp45"), height = 900), # Hossein
                                                           tabPanel("Number of Generations", imageOutput("ag_bplot_rcp45"), height = 900),
                                                           width = 12
                                                           )
@@ -436,7 +436,7 @@ navbarPage(title = div("",
                                  ####### Egg Hatch 45 start
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop_rcp45")),
-                                                          tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot_rcp45"), height = 900),
+                                                          # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot_rcp45"), height = 900), # Hossein
                                                           tabPanel("Number of Generations", imageOutput("lg_bplot_rcp45"), height = 900),
                                                           width = 12
                                                           )
@@ -446,7 +446,7 @@ navbarPage(title = div("",
 
                                  ####### Diapause 45 START
                                  tabPanel("Diapause",
-                                          fluidRow(tabBox(tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd_rcp45")),
+                                          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd_rcp45")), # Hossein
                                                           tabPanel("Absolute Population Vs Cumulative DD", imageOutput("abs_pop_cumdd_rcp45")),
                                                           width = 12
                                                           )

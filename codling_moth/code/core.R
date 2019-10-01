@@ -986,28 +986,54 @@ generate_vertdd <- function(input_dir,
 
   return(data)
 }
-###############################################################################################################
-###############################################################################################################
-bloom <- function(data, bloom_cut_off){
+###################################################################
+###################################################################
+
+bloom_per_year <- function(data, bloom_cut_off){
   print (paste0("bloom_cut_off: ", bloom_cut_off))
 
   data = subset(data, select = c("ClimateGroup", "latitude", "longitude", 
-                                 "County", "ClimateScenario", "year", "month", 
+                                 "ClimateScenario", "year", "month", 
                                  "day", "dayofyear", "cripps_pink", "gala", "red_deli"))
   
   data = melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
-                                "County", "ClimateScenario", "year", 
-                                "month", "day", "dayofyear"), variable.name = "apple_type")
+                                "ClimateScenario", "year", 
+                                "month", "day", "dayofyear"), 
+              variable.name = "apple_type")
   
   # data = data[value >= 1.000000e+00,]
   print (paste0("line 1004 of bloom dim(data) = ", dim(data)))
   data = data[value >= bloom_cut_off, ]
-  data = data[, head(.SD, 1), by = c("ClimateGroup", "latitude", "longitude", "County", "ClimateScenario", "year", "apple_type")]
-  data = data[, .(medDoY = as.integer(median(dayofyear))), by = c("ClimateGroup", "latitude", "longitude", "County", "apple_type")]
+  data = data[, head(.SD, 1), 
+                by = c("ClimateGroup", "latitude", "longitude", "ClimateScenario", "year", "apple_type")]
+  data = data[, .(medDoY = as.integer(median(dayofyear))), 
+                by = c("ClimateGroup", "latitude", "longitude", "apple_type", "year")]
   return (data)
 }
-###############################################################################################################
-###############################################################################################################
+
+bloom <- function(data, bloom_cut_off){
+  print (paste0("bloom_cut_off: ", bloom_cut_off))
+
+  data = subset(data, select = c("ClimateGroup", "latitude", "longitude", 
+                                 "ClimateScenario", "year", "month", 
+                                 "day", "dayofyear", "cripps_pink", "gala", "red_deli"))
+  
+  data = melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
+                                "ClimateScenario", "year", 
+                                "month", "day", "dayofyear"), 
+              variable.name = "apple_type")
+  
+  # data = data[value >= 1.000000e+00,]
+  print (paste0("line 1004 of bloom dim(data) = ", dim(data)))
+  data = data[value >= bloom_cut_off, ]
+  data = data[, head(.SD, 1), 
+                by = c("ClimateGroup", "latitude", "longitude", "ClimateScenario", "year", "apple_type")]
+  data = data[, .(medDoY = as.integer(median(dayofyear))), 
+                by = c("ClimateGroup", "latitude", "longitude", "apple_type")]
+  return (data)
+}
+#######################################################################################
+#######################################################################################
 # Generation Generator
 ##################################
 generations_func <- function(input_dir, file_name){

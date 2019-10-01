@@ -7,8 +7,8 @@ library(data.table)
 library(dplyr)
 library(ggplot2)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
@@ -17,10 +17,11 @@ options(digits=9)
 ########################################################################
 ########################################################################
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/storm/"
+in_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/storm/"
 plot_dir <- paste0(in_dir, "plots/")
            
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
+all_storms <- convert_5_numeric_clusts_to_alphabet(data_tb = all_storms)
 head(all_storms, 2)
 
 # all_storms <- cluster_numeric_2_str(all_storms)
@@ -30,14 +31,19 @@ head(all_storms, 2)
 #                                                "2051-2075", "2076-2099"))
 
 all_storms <- all_storms %>%
-              filter(return_period != "2006-2025")%>%
+              filter(return_period != "1979-2016")%>%
               data.table()
 
-storm_diffs <- storm_diff_4_map_obs_or_modeled(dt_dt =all_storms, 
-                                               diff_from="1979-2016")
+storm_diffs <- storm_diff_obs_or_modeled(dt_dt =all_storms, diff_from="2006-2025")
 
-storm_diffs_box <- storm_diff_box_25yr(data_tb=storm_diffs, tgt_col="storm_diff")
-storm_diffs_percentage_box <- storm_diff_box_25yr(storm_diffs, tgt_col="perc_diff")
+diff_quan <- storm_25_quantiles(storm_diffs, tgt_col= "storm_diff") 
+perc_diff_quan <- storm_25_quantiles(storm_diffs, tgt_col= "perc_diff")
+
+storm_diffs_box <- storm_diff_box_25yr(data_tb=storm_diffs, tgt_col="storm_diff") + 
+                   coord_cartesian(ylim = c(diff_quan[1], diff_quan[2]))
+
+storm_diffs_percentage_box <- storm_diff_box_25yr(storm_diffs, tgt_col="perc_diff") + 
+                              coord_cartesian(ylim = c(perc_diff_quan[1], perc_diff_quan[2]))
 
 ggsave(filename = "storm_diffs_box.png",
        plot = storm_diffs_box, 
@@ -50,27 +56,4 @@ ggsave(filename = "storm_diffs_percentage_box.png",
        width = 9, height = 3.5, units = "in", 
        dpi=400, device = "png",
        path = plot_dir)
-
-
-##########3 Leasts
-storm_diffs <- storm_diffs %>% 
-               filter(cluster %in% c("least precip", "lesser precip"))%>% 
-               data.table()
-
-storm_diffs_box <- storm_diff_box_25yr(storm_diffs, tgt_col="storm_diff")
-storm_diffs_percentage_box <- storm_diff_box_25yr(storm_diffs, tgt_col="perc_diff")
-
-ggsave(filename = "least_storm_diffs_box.png",
-       plot = storm_diffs_box, 
-       width = 6, height = 3.5, units = "in", 
-       dpi=400, device = "png",
-       path = plot_dir)
-
-ggsave(filename = "least_storm_diffs_percentage_box.png",
-       plot = storm_diffs_percentage_box, 
-       width = 6, height = 3.5, units = "in", 
-       dpi=400, device = "png",
-       path = plot_dir)
-
-
 

@@ -53,14 +53,16 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
                    data.table()
-    AVs <- na.omit(AVs)
-    unbias_diff <- na.omit(unbias_diff)
+    
+    AVs <- remove_observed(AVs)
+    unbias_diff <- remove_observed(unbias_diff)
 
-    # update clusters to 5 
-    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
-    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
-    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
-    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
+    AVs <- remove_current_timeP(AVs) # remove 2006-2025
+    unbias_diff <- remove_current_timeP(unbias_diff) # remove 2006-2025
+    
+    # update clusters labels
+    AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
+    unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
@@ -70,7 +72,7 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     rm(AVs, unbias_diff)
 
     for (season_g in season_types){
-      subttl <- paste0(" (", season_g, " season)")
+      subttl <- paste0(" (", season_g, ")")
       curr_AVs_85 <- AVs_85 %>% filter(season == season_g) %>% data.table()
       curr_AVs_45 <- AVs_45 %>% filter(season == season_g) %>% data.table()
 
@@ -124,12 +126,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
       ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
                                timeP_ty_middN[timeP_ty], "_RCP45.png"),
-             plot = RCP45, width = 6, height = 3.5, units = "in", 
+             plot = RCP45, width = 4.5, height = 3.5, units = "in", 
              dpi=400, device = "png", path = plot_dir)
 
       ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
                                timeP_ty_middN[timeP_ty], "_RCP85.png"),
-             plot = RCP85,  width = 6, height = 4, units = "in", 
+             plot = RCP85,  width = 4.5, height = 4, units = "in", 
              dpi = 400, device = "png", path = plot_dir)
 
 

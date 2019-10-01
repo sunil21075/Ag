@@ -22,7 +22,7 @@ filename <- paste0(data_dir, "vertdd_combined_CMPOP_", version, ".rds")
 data <- data.table(readRDS(filename))
 
 st_time <- Sys.time()
-data = bloom(data, bloom_cut_off)
+data <- bloom(data, bloom_cut_off)
 
 saveRDS(data, paste0(write_dir, "bloom_", version, "_", bloom_cut_off, "_new.rds"))
 print(  Sys.time() - st_time )

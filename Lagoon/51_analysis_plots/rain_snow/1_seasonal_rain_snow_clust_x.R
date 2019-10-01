@@ -32,10 +32,10 @@ AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period",
                               "seasonal_cum_precip", "rain_fraction", "snow_fraction",
                               "season"))
 
-# update clusters to 5 
-param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
-new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
-AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
+
+AVs <- remove_observed(AVs)
+AVs <- remove_current_timeP(AVs) # remove 2006-2025
+AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs) # update clusters labels
 
 AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
 AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table(); rm(AVs)

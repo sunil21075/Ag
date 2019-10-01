@@ -244,7 +244,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -280,7 +280,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
                axis.title.x = element_blank()
               )
 
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########################################################################
   ######
   ###### plot
@@ -316,7 +316,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                                          seasonal_cum_precip, rain_fraction))
   }
 
-  region_levels <- c("1", "2", "3", "4", "5")
+  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission, season) %>% 
@@ -335,7 +335,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -371,7 +371,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                axis.title.x = element_blank()
               )
 
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########################################################################
   ######
   ###### plot
@@ -408,7 +408,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                                          annual_cum_precip, rain_fraction))
    }
 
-  region_levels <- c("1", "2", "3", "4", "5")
+  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -427,8 +427,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
-  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$cluster <- factor(melted$cluster, levels=region_levels)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
   ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
@@ -463,7 +462,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                axis.title.x = element_blank()
               )
 
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########################################################################
   ######
   ###### plot
@@ -496,7 +495,7 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   season_levels <- c("fall", "winter", "spring", "summer")
   dt$season <- factor(dt$season, levels=season_levels, order=T)
   
-  region_levels <- c("1", "2", "3", "4", "5")
+  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   dt$cluster <- factor(dt$cluster, levels=region_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
   dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
@@ -551,7 +550,7 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=4, b=0, l=0)),
                axis.title.x = element_blank()
               )
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########
   ########    PLOT
   ########
@@ -596,7 +595,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -631,7 +630,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=4, b=0, l=0)),
                axis.title.x = element_blank()
               )
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########
   ########    PLOT
   ########
@@ -716,7 +715,8 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
   dt <- subset(dt, select=c("time_period", # "location",
                             "emission", "month",
                             "cluster", tgt_col))
-  dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
+  # dt <- cluster_numeric_2_str(dt); 
+  dt <- month_numeric_2_str(dt)
 
   dt <- dt %>% 
         filter(# time_period != "1950-2005" & 
@@ -774,7 +774,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   
   ggplot(data = melted, 
         aes(x=month, y=value, fill=time_period)) +
@@ -820,7 +820,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -855,7 +855,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
                axis.title.x = element_blank()
                     )
 
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
     
   ########
   ########    PLOT
@@ -925,7 +925,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("1", "2", "3", "4", "5")
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -960,7 +960,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
-  signif <- if (grepl("diff", tgt_col)) "%1.2f" else "%1.0f"
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
   ########
   ########    PLOT
   ########
@@ -996,7 +996,8 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
 
   dt <- subset(dt, select=c("location", "time_period", "emission", "month",
                             "cluster", tgt_col))
-  dt <- cluster_numeric_2_str(dt); dt <- month_numeric_2_str(dt)
+  # dt <- cluster_numeric_2_str(dt); 
+  dt <- month_numeric_2_str(dt)
   
   if (p_type=="box"){
     dt <- dt %>% 
@@ -1198,7 +1199,7 @@ box_dt_25 <- function(dt_25){
                axis.ticks = element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
-               axis.text.x = element_blank(),
+               # axis.text.x = element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
@@ -1221,9 +1222,9 @@ box_dt_25 <- function(dt_25){
            scale_y_continuous(breaks = seq(0, 20, by=5)) + 
            the +
            geom_text(data = medians, 
-                     aes(label = sprintf("%1.2f", medians$med_25), 
-                          y = medians$med_25),
-                     size = 2.2, vjust = -.6, fontface="bold",
+                     aes(label = sprintf("%1.1f", medians$med_25), 
+                         y = medians$med_25),
+                     size = 4, vjust = -.6, fontface="bold",
                      position = position_dodge(.85))
 }
 
@@ -1233,15 +1234,13 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
              data.table()
 
   needed_cols <- c("return_period", "emission", "cluster", tgt_col)
-
   data_tb <- subset(data_tb, select=needed_cols)
 
   time_label <- sort(unique(data_tb$return_period))
   data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
   data_tb$cluster <- factor(data_tb$cluster, 
-                            levels=c("1", "2", "3", "4", "5"))
+                            levels=c("WCLL", "CFH", "NWCWS", "NCC", "NCLS"))
      
-  
   if (length(time_label) == 3){
     color_ord = c("dodgerblue2", "olivedrab4", "gold")
     } else if (length(time_label) == 4){
@@ -1272,7 +1271,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                axis.ticks = element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
-               axis.text.x = element_blank(),
+               axis.text.x = element_text(face="bold", color = "black"), # element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
@@ -1301,14 +1300,13 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
            # labs(x="", y="") + # theme_bw() + 
            facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
            ylab(y_labb) + 
-
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = time_label) + 
            the +
            geom_text(data = medians, 
-                     aes(label = sprintf("%1.2f", medians$med), y = medians$med),
-                     size = 2.5, vjust = -.6, fontface="bold",
+                     aes(label = sprintf("%1.1f", medians$med), y = medians$med),
+                     size = 2, vjust = -.6, fontface="bold",
                      position = position_dodge(.8))
 }
 
@@ -1400,7 +1398,7 @@ storm_box_plot <- function(data_tb){
                legend.key.size = unit(.6, "line"),
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size = ax_ttl_size),
+               legend.text = element_text(size = ax_ttl_size, face = "bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold"),
@@ -1634,14 +1632,15 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
         data.table()
 
   dt <- within(dt, remove(month, day, precip, model, wtr_yr))
-  dt <- cluster_numeric_2_str(dt)
+  # dt <- cluster_numeric_2_str(dt)
   # medians <- data.frame(dt) %>% 
   #            group_by(cluster, time_period, emission) %>% 
   #            summarise( medians = median(get(tgt_col)))  %>% 
   #            data.table()
 
   melted <- melt(dt, id = c("location", "year", "time_period", "emission", "cluster"))
-  categ_label <- c("1", "2", "3", "4", "5")
+  
+  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
   time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
@@ -1942,7 +1941,7 @@ satellite_map_of_clusters <- function(obs_w_clusters){
 
   # "grey47",
   color_ord = c("blue4", "dodgerblue2", "purple", "red") 
-  categ_lab = c("1", "2", "3", "4", "5")
+  categ_lab = c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),

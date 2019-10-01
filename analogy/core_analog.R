@@ -841,20 +841,20 @@ find_NN_info_biofix_county_avgs <- function(ICV, historical_dt, future_dt, n_nei
     Cj.sd[Cj.sd<(10^-10)] = 1
 
     A_prime <- A
-    print ("line 606")
-    print (dim(A_prime))
-    print (class(Cj.sd))
-    print (length(Cj.sd))
+    # print ("line 606")
+    # print (dim(A_prime))
+    # print (class(Cj.sd))
+    # print (length(Cj.sd))
     A_prime[, numeric_cols] <- sweep(A_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`) 
-    print ("line 618 of core")
+    # print ("line 618 of core")
     # standardize the analog pool
     Bj_prime <- Bj
     Bj_prime[, numeric_cols] <-sweep(Bj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
-    print ("line 622 of core")
+    # print ("line 622 of core")
     # standardize the reference ICV
     Cj_prime <- Cj
     Cj_prime[, numeric_cols] <-sweep(Cj_prime[, numeric_cols], MARGIN=2, STATS=Cj.sd, FUN = `/`)
-    print ("line 626 of core")
+    
     ## Step 2: Extract the principal components (PCs) of 
     ##         the reference period ICV and project all data onto these PCs
 
@@ -862,7 +862,7 @@ find_NN_info_biofix_county_avgs <- function(ICV, historical_dt, future_dt, n_nei
     # term is there simply to select all years with complete observations in all variables. 
     #  ZZ[!is.na(apply(ZZ, 1, mean)) ,] selects the rows whose mean is not NaN
     PCA <- prcomp(Cj_prime[, numeric_cols][!is.na(apply(Cj_prime[, numeric_cols], 1, mean)) ,])
-    print ("line 634 of core")
+    # print ("line 634 of core")
     # find the number of PCs to retain using the PC truncation
     # rule of eigenvector stdev > the truncation threshold
     PCs <- max(which(unlist(summary(PCA)[1])>trunc.SDs))

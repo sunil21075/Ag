@@ -21,7 +21,7 @@ unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
 precip_AV_fileNs <- c("month_all_last_days")
 runoff_AV_fileNs <- c("monthly_cum_runbase")
-cluster_types <- c(1, 2, 3, 4, 5)
+cluster_types <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
 timeP_ty_middN <- c("month")
 
 av_tg_col_pref <- c("monthly_cum_")
@@ -48,28 +48,25 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     }
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% data.table()
-    AVs <- na.omit(AVs)
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", 
                                   dt_type, ".rds")) %>% data.table()
+    AVs <- na.omit(AVs); unbias_diff <- na.omit(unbias_diff)
 
-    AVs <- AVs %>% filter(time_period != "2006-2025") %>% data.table()  
-    unbias_diff <- unbias_diff %>% filter(time_period != "2006-2025") %>% data.table()
+    AVs <- remove_observed(AVs)
+    unbias_diff <- remove_observed(unbias_diff)
+    
+    AVs <- remove_current_timeP(AVs)
+    unbias_diff <- remove_current_timeP(unbias_diff)
 
+    # update clusters labels
+    AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
+    unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff)
     #
     # remove those rows whose perc diff is more than 1000%
     #
     unbias_diff <- unbias_diff %>% filter(perc_diff < 600) %>% data.table()
     unbias_diff <- unbias_diff %>% filter(perc_diff > -600) %>% data.table()
-    
-    # update clusters to 5 
-    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
-    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
-    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
-    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
-
-    AVs <- AVs[, cluster:=as.character(cluster)]
-    unbias_diff <- unbias_diff[, cluster:=as.character(cluster)]
   
     plot_dir <- paste0(in_dir, "narrowed_", dt_type, "/monthly", "_", dt_type, "/peak/")
     if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}

@@ -27,6 +27,33 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ##########################################################################
+remove_current_timeP <- function(data_tb){
+ data_tb %>% filter(time_period != "2006-2025") %>% data.table()
+}
+
+remove_modeled_hist <- function(data_tb){
+  data_tb %>% filter(time_period != "1950-2005")%>%data.table()
+}
+remove_observed <- function(data_tb){
+  data_tb %>% filter(time_period != "1979-2016")%>%data.table()
+}
+
+convert_5_numeric_clusts_to_alphabet <- function(data_tb){
+  data_tb <- data_tb %>%
+             mutate(alph_clust = case_when(cluster == 1 ~ "WCLL",
+                                           cluster == 2 ~ "CFH",
+                                           cluster == 3 ~ "NWCWS",
+                                           cluster == 4 ~ "NCC",
+                                           cluster == 5 ~ "NCLS")) %>% 
+             data.table()
+  data_tb <- within(data_tb, remove(cluster))
+  setnames(data_tb, old=c("alph_clust"), new=c("cluster"))
+  cluster_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  data_tb$cluster <- factor(data_tb$cluster, levels=cluster_levels)
+
+  return(data_tb)
+}
+
 update_clusters <- function(data_tb, new_clusters){
   if (length(unique(data_tb$cluster)) == 4){
     # some of the locations are absent in the Min's data
@@ -34,6 +61,11 @@ update_clusters <- function(data_tb, new_clusters){
     data_tb <- within(data_tb, remove(cluster))
     data_tb <- merge(data_tb, new_clusters, by="location", all.x=TRUE)
   }
+  data_tb <- na.omit(data_tb) # some locations were missing in Min's data
+
+  data_tb <- data_tb[, cluster:=as.character(cluster)]
+  cluster_levels <- c("1", "2", "3", "4", "5")
+  data_tb$cluster <- factor(data_tb$cluster, levels=cluster_levels)
   return(data_tb)
 }
 
@@ -124,6 +156,28 @@ annual_quantiles <- function(data_tbl, tgt_col){
   return(v)
 }
 
+storm_25_quantiles <- function(data_tbl, tgt_col="twenty_five_years"){
+  quan_25 <- data_tbl %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise(quan_25 = quantile(get(tgt_col), probs = 0.25)) %>% 
+             data.table()
+
+  quan_75 <- data_tbl %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise(quan_75 = quantile(get(tgt_col), probs = 0.75)) %>% 
+             data.table()
+
+  both_quans <- merge(quan_25, quan_75, 
+                      by=c("return_period", "emission", "cluster"),
+                      all.x=TRUE)
+  both_quans$IQR = both_quans$quan_75 - both_quans$quan_25
+  
+  both_quans$quan_25 <- both_quans$quan_25 - (1.52 * both_quans$IQR)
+  both_quans$quan_75 <- both_quans$quan_75 + (1.52 * both_quans$IQR)
+
+  v <- c(min(both_quans$quan_25), max(both_quans$quan_75))
+  return(v)
+}
 ##########################################################################
 ############
 ############ seasonal
@@ -534,7 +588,7 @@ median_of_diff_of_medians_month <- function(dt){
   diffs <- merge(diffs, perc_diffs, 
                  by=c("location", 'emission', "time_period", "month"))
   cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
-  diffs[,(cols) := round(.SD, 2), .SDcols=cols]
+  diffs[,(cols) := round(.SD, 1), .SDcols=cols]
   return(diffs)
 }
 
@@ -638,7 +692,7 @@ median_of_diff_of_medians <- function(dt){
 
   diffs <- merge(diffs, perc_diffs, by=c("location", 'emission', "time_period"))
   cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
-  diffs[,(cols) := round(.SD, 2), .SDcols=cols]
+  diffs[,(cols) := round(.SD, 1), .SDcols=cols]
   return(diffs)
 }
 
@@ -758,19 +812,19 @@ month_numeric_2_str <- function(B){
   return(B)
 }
 
-cluster_numeric_2_str <- function(B){
-  B$cluster <- as.character(B$cluster)
-  B$cluster <- recode(B$cluster, "5" = "5", 
-                                 "4" = "4",
-                                 "3" = "3",
-                                 "2" = "2",
-                                 "1" = "1")
+# cluster_numeric_2_str <- function(B){
+#   B$cluster <- as.character(B$cluster)
+#   B$cluster <- recode(B$cluster, "5" = "5", 
+#                                  "4" = "4",
+#                                  "3" = "3",
+#                                  "2" = "2",
+#                                  "1" = "1")
 
-  categ_label <- c("1", "2", "3", "4", "5")  
-  B$cluster <- factor(B$cluster, levels=categ_label)
+#   categ_label <- c("1", "2", "3", "4", "5")  
+#   B$cluster <- factor(B$cluster, levels=categ_label)
 
-  return(B)
-}
+#   return(B)
+# }
 
 read_min_file <- function(conn){
   RLData <- readLines(conn)

@@ -59,12 +59,16 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
                    data.table()
+
+    AVs <- remove_observed(AVs)
+    unbias_diff <- remove_observed(unbias_diff)
+
+    AVs <- remove_current_timeP(AVs) # remove 2006-2025
+    unbias_diff <- remove_current_timeP(unbias_diff) # remove 2006-2025
     
-    # update clusters to 5 
-    param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
-    new_clust <- read.csv(paste0(param_dir, "/precip_elev_5_clusters.csv"), as.is=TRUE)
-    AVs <- update_clusters(data_tb = AVs, new_clusters = new_clust)
-    unbias_diff <- update_clusters(data_tb = unbias_diff, new_clusters = new_clust)
+    # update clusters labels
+    AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
+    unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
@@ -127,11 +131,11 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
       
     ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_RCP45.png"),
-           plot = RCP45, width = 6, height = 3, units = "in", 
+           plot = RCP45, width = 5.5, height = 3, units = "in", 
            dpi=400, device = "png", path = plot_dir)
 
     ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_RCP85.png"),
-           plot = RCP85,  width = 6, height = 3, units = "in", 
+           plot = RCP85,  width = 5.5, height = 3, units = "in", 
            dpi = 400, device = "png", path = plot_dir)
     print (plot_dir)
   }
