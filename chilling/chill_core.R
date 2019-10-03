@@ -5,6 +5,63 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
 # source(source_path)
 ##################################################################
+thresh_median_4_frost_bloom_thresh_plot <- function(data_tb, colname){
+  colnames(data_tb)[colnames(data_tb)==colname] <- "thresh"
+  data_tb <- data_tb[, .(thresh_median_DoY = median(thresh)), 
+                    by = c("city", "year", "chill_season", "emission", "time_period")]
+  return(data_tb)
+}
+
+remove_F0 <- function(data_tb){
+  if ("year" %in% colnames(data_tb)){
+    data_tb <- data_tb %>% 
+               filter(!(year %in% c(2015:2025))) %>%
+               data.table() 
+  } else if ("time_period" %in% colnames(data_tb)){
+    data_tb <- data_tb %>% 
+               filter(time_period != "2015-2025") %>%
+               data.table() 
+  }
+  return(data_tb)
+}
+
+remove_modeled_historical_add_time_period <- function(data_tb){
+  # here we try to remove modeled historical from a data table
+  # that does not have time_period in it.
+  # and all RCPs along with models are binded together 
+  # 
+  setnames(data_tb, old=c("scenario"), new=c("emission"))
+  
+  data_tb_observed <- data_tb %>% 
+                      filter(model %in% c("observed", "Observed")) %>% 
+                      data.table()
+
+  data_tb_observed_45 <- data_tb_observed
+  data_tb_observed_85 <- data_tb_observed
+
+  data_tb_observed_45$emission <- "RCP 4.5"
+  data_tb_observed_85$emission <- "RCP 8.5"
+  data_tb_observed <- rbind(data_tb_observed_45, data_tb_observed_85)
+  data_tb_observed$time_period <- "observed"
+
+
+  data_tb_modeled <- data_tb %>% 
+                     filter(!(model %in% c("observed", "Observed"))) %>% 
+                     data.table()
+
+  # we can go up to 2015 to make the plots continuous.
+  data_tb_modeled <- data_tb_modeled %>% 
+                     filter(!(year %in% c(1950:2025))) %>% 
+                     data.table()
+
+  data_tb_modeled$time_period <- "future"
+
+  data_tb <- rbind(data_tb_observed, data_tb_modeled)
+  data_tb$emission[data_tb$emission=="rcp45"] <- "RCP 4.5"
+  data_tb$emission[data_tb$emission=="rcp85"] <- "RCP 8.5"
+  return(data_tb)
+}
+
 #
 #  Bloom DoY that bloom is completed by X% (e.g. 50%)
 #

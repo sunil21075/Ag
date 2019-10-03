@@ -105,6 +105,38 @@ data <- setNames(data.table(matrix(nrow = 3, ncol = 6)),
                  c("future_fip",  "model", "time_period", 
                    "top_1_fip", "top_2_fip", "top_3_fip"))
 
+convert_vect <- c(244, 258, 
+                  274, 288, 
+                  305, 319, 
+                  335, 349)
+convert_vect <- convert_vect %% 243
+
+first_half <- c(1, 15, 
+                32, 46, 
+                60, 74, 
+                91, 105, 
+                121, 135, 
+                152, 166, 
+                182, 196, 
+                213, 227)
+first_half <- first_half + 122
+
+convert_vect <- c(convert_vect, first_half)
+
+letter_vect <- c("Sep. 1", "Sep. 15", "Oct. 1", "Oct. 15",
+                 "Nov. 1", "Nov. 15", "Dec. 1", "Dec. 15",
+                 "Jan. 1", "Jan. 15", "Feb. 1", "Feb. 15", 
+                 "Mar. 1", "Mar 15", "Apr. 1", "Apr 15.", 
+                 "May 1", "May 15", "Jun. 1", "Jun. 15", 
+                 "Jul. 1", "Jul. 15", "Aug. 1", "Aug. 15")
+
+data = data.table(day_count_since_sept = convert_vect,
+                  letter_day = letter_vect
+                  )
+
+write.table(data, file = "/Users/hn/Documents/GitHub/Ag/chill_DoY_map.csv", 
+            row.names=FALSE, na="", col.names=TRUE, sep=",")
+
 data = data.table(future_fip = c(target_fip, target_fip, target_fip),
                   model = c(model_n, model_n, model_n),
                   time_period = c("F1", "F2", "F3"),

@@ -1,3 +1,36 @@
+
+
+
+cloudy_frost <- function(d1, colname="chill_dayofyear", fil){
+  ggplot(d1, aes(x=year, y=get(colname), fill=fil, group=time_period)) +
+  labs(x = "year", y = "day of year") + #, fill = "Climate Group"
+  # guides(fill=guide_legend(title="Time period")) + 
+  facet_grid(. ~ emission ~ city) + # scales = "free"
+  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.1) }, 
+               fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
+  stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
+               fun.ymin=function(z) { quantile(z,0.25) }, 
+               fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
+  stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) }, size = 1)+       
+  scale_x_continuous(breaks=seq(1970, 2100, 10)) +
+  scale_y_continuous(breaks = chill_doy_map$day_count_since_sept, 
+                     labels = chill_doy_map$letter_day) +
+  scale_color_manual(values=c(rgb(29, 67, 111, max=255))) +
+  scale_fill_manual(values =c(rgb(29, 67, 111, max=255))) +
+  theme(panel.grid.major = element_line(size=0.2),
+        panel.spacing=unit(.5, "cm"),
+        legend.text=element_text(size=12, face="bold"),
+        legend.title = element_blank(),
+        strip.text = element_text(face="bold", size=16, color="black"),
+        legend.position = "bottom",
+        axis.text = element_text(face="bold", size=10, color="black"),
+        axis.ticks = element_line(color = "black", size = .2),
+        axis.title.x = element_text(face="bold", size=16, margin=margin(t=10, r=0, b=0, l=0)),
+        axis.title.y = element_text(face="bold", size=16, margin=margin(t=0, r=10, b=0, l=0)),
+        plot.title = element_text(lineheight=.8, face="bold")
+        )
+}
 ####################################################################################
 plot_bloom_box <- function(dt, colname, ct){
   color_ord = c("grey40", "dodgerblue", "olivedrab4", "red")
@@ -78,10 +111,10 @@ plot_frost_TS <- function(dt, colname, title_){ # This is used for plotting
                # axis.ticks.y = element_blank()
               ) + 
        # labs(y = "day count (starting Sept. 1)") +
-       scale_y_continuous(breaks = c(1, 31, 62, 92, 123, 154, 183), 
-                          labels = c("Sept. 1", "Oct. 1", "Nov. 1", 
-                          "Dec. 1", "Jan. 1", "Feb. 1", "Mar. 1")) + 
-       ggtitle(lab=title_)
+         scale_y_continuous(breaks = c(1, 31, 62, 92, 123, 154, 183), 
+                            labels = c("Sept. 1", "Oct. 1", "Nov. 1", 
+                            "Dec. 1", "Jan. 1", "Feb. 1", "Mar. 1")) + 
+         ggtitle(lab=title_)
 
   	 } else {
       p <- ggplot(data=dt) + 
@@ -106,11 +139,11 @@ plot_frost_TS <- function(dt, colname, title_){ # This is used for plotting
                  axis.title.y = element_blank(), #element_text(size = 28, face = "bold", margin = margin(t=0, r=12, b=0, l=0)),
                  # axis.ticks.y = element_blank()
                  ) + 
-       # labs(y = "day count (starting Sept. 1)") +
-       scale_y_continuous(breaks = c(1, 31, 62, 92, 123, 154, 183), 
-                          labels = c("Sept. 1", "Oct. 1", "Nov. 1", 
-                          "Dec. 1", "Jan. 1", "Feb. 1", "Mar. 1")) + 
-       ggtitle(lab=title_)
+           # labs(y = "day count (starting Sept. 1)") +
+           scale_y_continuous(breaks = c(1, 31, 62, 92, 123, 154, 183), 
+                              labels = c("Sept. 1", "Oct. 1", "Nov. 1", 
+                              "Dec. 1", "Jan. 1", "Feb. 1", "Mar. 1")) + 
+           ggtitle(lab=title_)
   }
   return (p)
 }
