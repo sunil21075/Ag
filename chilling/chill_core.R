@@ -5,6 +5,38 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"
 # source(source_path)
 ##################################################################
+add_time_periods_model <- function(dt){
+  time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2099")
+  dt$time_period <- 0L
+  dt$time_period[dt$year <= 2005] <- time_periods[1]
+  dt$time_period[dt$year >= 2006 & dt$year <= 2025] <- time_periods[2]
+  dt$time_period[dt$year >= 2026 & dt$year <= 2050] <- time_periods[3]
+  dt$time_period[dt$year >= 2051 & dt$year <= 2075] <- time_periods[4]
+  dt$time_period[dt$year >= 2076] <- time_periods[5]
+  return(dt)
+}
+
+add_time_periods_observed <- function(dt){
+  time_periods <- c("1979-2015")
+  dt$time_period <- time_periods[1]
+  return(dt)
+}
+
+put_time_period <- function(data_tb, observed){
+  if (observed==TRUE){
+     data_tb$time_period <- "1979-2016"
+     } else {
+      data_tb <- data_tb %>%
+                 mutate(time_period = case_when(year %in% c(1950:2005) ~ "1950-2005",
+                                                year %in% c(2006:2025) ~ "2006-2025",
+                                                year %in% c(2026:2050) ~ "2026-2050",
+                                                year %in% c(2051:2075) ~ "2051-2075",
+                                                year %in% c(2076:2099) ~ "2076-2099")
+                        )
+  }
+  return(data_tb)
+}
+
 thresh_median_4_frost_bloom_thresh_plot <- function(data_tb, colname){
   colnames(data_tb)[colnames(data_tb)==colname] <- "thresh"
   data_tb <- data_tb[, .(thresh_median_DoY = median(thresh)), 
@@ -150,23 +182,6 @@ form_chill_season_day_of_year_modeled <- function(data){
   data[, chill_dayofyear := cumsum(chill_dayofyear), by=list(year)]
   data <- data.table(data)
   return(data)
-}
-
-add_time_periods_model <- function(dt){
-  time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2099")
-  dt$time_period <- 0L
-  dt$time_period[dt$year <= 2005] <- time_periods[1]
-  dt$time_period[dt$year >= 2006 & dt$year <= 2025] <- time_periods[2]
-  dt$time_period[dt$year >= 2026 & dt$year <= 2050] <- time_periods[3]
-  dt$time_period[dt$year >= 2051 & dt$year <= 2075] <- time_periods[4]
-  dt$time_period[dt$year >= 2076] <- time_periods[5]
-  return(dt)
-}
-
-add_time_periods_observed <- function(dt){
-  time_periods <- c("1979-2015")
-  dt$time_period <- time_periods[1]
-  return(dt)
 }
 
 kth_smallest_in_group <- function(dt, target_column, k){
@@ -393,25 +408,25 @@ count_years_threshs_met_limit_location <- function(dataT, due){
 ########################################
 
 grab_coord <- function(A){
-    out_put <- A %>%
-               transmute(lat = as.numeric(substr(x = .id, start = 19, stop = 26)),
-               long = as.numeric(substr(x = .id, start = 28, stop = 37)),
-               median_20 = median_20,
-               median_25 = median_25,
-               median_30 = median_30,
-               median_35 = median_35,
-               median_40 = median_40,
-               median_45 = median_45,
-               median_50 = median_50,
-               median_55 = median_55,
-               median_60 = median_60,
-               median_65 = median_65,
-               median_70 = median_70,
-               median_75 = median_75,
-               median_J1 = median_J1,
-               median_F1 = median_F1,
-               median_M1 = median_M1,
-               median_A1 = median_A1)
+  out_put <- A %>%
+             transmute(lat = as.numeric(substr(x = .id, start = 19, stop = 26)),
+                       long = as.numeric(substr(x = .id, start = 28, stop = 37)),
+                       median_20 = median_20,
+                       median_25 = median_25,
+                       median_30 = median_30,
+                       median_35 = median_35,
+                       median_40 = median_40,
+                       median_45 = median_45,
+                       median_50 = median_50,
+                       median_55 = median_55,
+                       median_60 = median_60,
+                       median_65 = median_65,
+                       median_70 = median_70,
+                       median_75 = median_75,
+                       median_J1 = median_J1,
+                       median_F1 = median_F1,
+                       median_M1 = median_M1,
+                       median_A1 = median_A1)
     return (out_put)
 }
 
@@ -493,28 +508,37 @@ process_data <- function(file, time_period) { # this is for overlapping data, wh
 #####                                        #####
 ##################################################
 process_data_non_overlap <- function(file, time_period) {
-  if (time_period == "2025_2050"){
-    processed_data <- file %>%
-                      filter(year >= 2025 & year <= 2050,
-                             chill_season != "chill_2025-2026" &
-                             chill_season != "chill_2050-2051")
-   } else if (time_period == "2051_2075"){
-    processed_data <- file %>%
-                      filter(year > 2050 & year <= 2075,
-                             chill_season != "chill_2050-2051" &
-                             chill_season != "chill_2075-2076")
-   } else if (time_period == "2076_2100") {
-     processed_data <- file %>%
-                       filter(year > 2075 & year <= 2099,
-                              chill_season != "chill_2075-2076" &
-                              chill_season != "chill_2099-2100")
+  # if (time_period == "2025_2050"){
+  #   processed_data <- file %>%
+  #                      filter(year >= 2025 & year <= 2050,
+  #                             chill_season != "chill_2025-2026" &
+  #                             chill_season != "chill_2050-2051"
+  #                             )
+  #   } else if (time_period == "2051_2075"){
+  #    processed_data <- file %>%
+  #                      filter(year > 2050 & year <= 2075,
+  #                             chill_season != "chill_2050-2051" &
+  #                             chill_season != "chill_2075-2076"
+  #                             )
+  #   } else if (time_period == "2076_2100") {
+  #     processed_data <- file %>%
+  #                       filter(year > 2075 & year <= 2099,
+  #                              chill_season != "chill_2075-2076" &
+  #                              chill_season != "chill_2099-2100"
+  #                             )
    
-   } else if (time_period == "2005_2024") {
-    processed_data <- file %>%
-                      filter(year >= 2005 & year <= 2024,
-                             chill_season != "chill_2005-2006" &
-                             chill_season != "chill_2024-2025")
-  }
+  #   } else if (time_period == "2005_2024") {
+  #    processed_data <- file %>%
+  #                      filter(year >= 2005 & year <= 2024 ,
+  #                             chill_season != "chill_2005-2006" &
+  #                             chill_season != "chill_2024-2025"
+  #                             )
+  #  }
+  processed_data <- file %>%
+                    # Only want complete seasons of data
+                    filter(chill_season != "chill_2005-2006" &
+                           chill_season != "chill_2099-2100")
+
   processed_data <- threshold_func(processed_data, data_type="modeled")
   return(processed_data)
 }

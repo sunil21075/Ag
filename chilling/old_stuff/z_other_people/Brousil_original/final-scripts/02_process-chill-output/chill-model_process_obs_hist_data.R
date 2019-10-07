@@ -27,11 +27,7 @@ main_out <- file.path("/fastscratch",
                       "chill-figs/")
 
 # Create a figures-specific output pathway if it doesn't exist
-if (dir.exists(file.path(main_out)) == F) {
-  
-  dir.create(path = main_out, recursive = T)
-  
-}
+if (dir.exists(file.path(main_out)) == F) {dir.create(path = main_out, recursive = T)}
 
 # 3. Some set up ----------------------------------------------------------
 
@@ -115,11 +111,8 @@ medians <- function(thresh_50, thresh_75, sum_J1, sum_F1, sum_M1, sum_A1) {
     
   }
   
-  
-  
   # 5b. Process gathered historical data ------------------------------------
-  
-  
+
   # Get medians for each location during historical period
   summary_data_historical <- ldply(.data = data_list_historical,
                                    .fun = function(x) medians(thresh_50 = x[, "thresh_50"],

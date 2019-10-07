@@ -162,8 +162,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                              "ClimateScenario", "year", "dayofyear"))
 
     plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
-                  aes(x=dayofyear, y=value, fill=factor(variable))
-                  ) +
+                  aes(x=dayofyear, y=value, fill=factor(variable))) +
            labs(x = "Julian day", y = "cumulative population fraction", fill = "larva generation") +
            facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
           # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +

@@ -44,7 +44,6 @@ data_list_2080 <- vector(mode = "list", length = 295)
 # Check whether historical data or not
 hist <- basename(getwd()) == "historical"
 
-
 # 4. Set up functions -----------------------------------------------------
 
 # A function to check against a threshold
@@ -59,8 +58,6 @@ medians <- function(thresh_50, thresh_75, sum_J1, sum_F1, sum_M1, sum_A1) {
     median_M1 = median(sum_M1),
     median_A1 = median(sum_A1))
 }
-
-
 
 # 5. Iterate through files and process ------------------------------------
 
@@ -84,7 +81,7 @@ if(hist){
     data_list_historical[[i]] <-  file %>%
       # Only want complete seasons of data
       filter(Chill_season != "chill_1949-1950" &
-               Chill_season != "chill_2005-2006") %>% 
+             Chill_season != "chill_2005-2006") %>% 
       # Within a season
       group_by(Chill_season) %>%
       # Mutate output is the row index of the first time where it meets threshold
@@ -214,7 +211,7 @@ if(hist){
     data_list_2040[[i]] <-  file %>%
       filter(Year > 2025 & Year <= 2055,
              Chill_season != "chill_2025-2026" &
-               Chill_season != "chill_2055-2056") %>% 
+             Chill_season != "chill_2055-2056") %>% 
       group_by(Chill_season) %>%
       # Mutate output is the row index of the first time where it meets threshold
       # within the group. (Index is the same as counting the start date as day = 1)
@@ -284,7 +281,7 @@ if(hist){
     data_list_2080[[i]] <-  file %>%
       filter(Year > 2065 & Year <= 2095,
              Chill_season != "chill_2065-2066" &
-               Chill_season != "chill_2095-2096") %>% 
+             Chill_season != "chill_2095-2096") %>% 
       group_by(Chill_season) %>%
       mutate(thresh_50 = detect_index(.x = Cume_portions,
                                       .f = chill_thresh,
@@ -310,8 +307,6 @@ if(hist){
       data.frame() # to allow for ldply() later
     
     names(data_list_2080)[i] <- the_dir[i]
-    
-    
     rm(file)
     
   }

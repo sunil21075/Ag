@@ -1,3 +1,16 @@
+# We turned back to working again!!!!
+# What the fuck is going on?
+
+# It is not clear why the hell did stopped working
+# Things is the same as before. But somehow, when
+# the data is broken to 3 time periods, then SUM_J1 becomes problematic
+# something similar to this: 
+# https://stackoverflow.com/questions/50781829/column-rate-must-be-length-1-a-summary-value-not-22906
+# So, in the driver and core, I got rid of breaking down stuff into three time periods: 
+# the function is core is process_data_non_overlap(.) and I wrote the new driver.
+#
+#
+
 
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
@@ -70,7 +83,6 @@ data_list_F1 <- vector(mode = "list", length = no_sites) # 2025-2050
 data_list_F2 <- vector(mode = "list", length = no_sites) # 2051-2075
 data_list_F3 <- vector(mode = "list", length = no_sites) # 2076-2099
 
-
 # Check whether historical data or not
 hist <- basename(getwd()) == "historical"
 
@@ -78,75 +90,78 @@ hist <- basename(getwd()) == "historical"
 # If historical data, then run a simpler data cleaning routine
 
 if(hist){
-  # 5a. Iterate through historical files ----------------------------------
+    # 5a. Iterate through historical files ----------------------------------
+    for(i in 1:length(the_dir)){
+      file <- read.table(file = the_dir[i],
+                         header = T,
+                         colClasses = c("factor", "numeric", "numeric", "numeric",
+                                        "numeric", "numeric"))
+      
+      names(data_list_hist)[i] <- the_dir[i]
+      
+      # Append it to a list following some processing
+      data_list_hist[[i]] <-  threshold_func(file, data_type="modeled")
+      rm(file)
+    }
+
+    # 5b. Process gathered historical data ------------------------------------
+    # Get medians for each location during historical period
+    summary_data_historical <- get_medians(data_list_hist)
+    
+    # Briefly want to export the raw data from the lists for use in other figs
+    data_historical <- ldply(data_list_hist, function(x) data.frame(x))
+
+    data_historical$year <- as.numeric(substr(x = data_historical$chill_season,
+                                              start = 7, stop = 10))
+    data_historical$model <- basename(dirname(getwd()))
+    data_historical$scenario <- basename(getwd())
+    data_historical$lat <- as.numeric(substr(x = data_historical$.id, start = 19, stop = 26))
+    data_historical$long<- as.numeric(substr(x = data_historical$.id, start = 28, stop = 37))
+    data_historical <- unique(data_historical)
+    
+    # No longer needed
+    rm(data_list_hist)
+    print("line 112 of d modeled")
+    # .id row contains originating filename of this data
+    write.table(x = data_historical,
+                file = file.path(main_out,
+                                 paste0("summary_",
+                                        gsub("-", "_", basename(dirname(getwd()))), # model name
+                                        "_",
+                                        basename(getwd()), # scenario
+                                        ".txt")),
+                row.names = F)
+    
+    rm(data_historical)
+    
+    # Grab lat/long
+    summary_data_historical <- grab_coord(summary_data_historical)
+    
+    summary_data_historical$model <- basename(dirname(getwd()))
+    summary_data_historical$scenario <- basename(getwd())
+
+    write.table(x = summary_data_historical,
+                file = file.path(main_out,
+                                 paste0("summary_stats_",
+                                        gsub("-", "_",basename(dirname(getwd()))), # model name
+                                        "_",
+                                        basename(getwd()), # scenario
+                                        ".txt")),
+                row.names = F)
+
+    # If future data, then proceed with decadal calculations:
+    
+    # 5c. Iterate through future files ----------------------------------------
+  } else {
+  print("line 144")
+  print(length(the_dir))
   for(i in 1:length(the_dir)){
     file <- read.table(file = the_dir[i],
                        header = T,
                        colClasses = c("factor", "numeric", "numeric", "numeric",
                                       "numeric", "numeric"))
-    
-    names(data_list_hist)[i] <- the_dir[i]
-    
-    # Append it to a list following some processing
-    data_list_hist[[i]] <-  threshold_func(file, data_type="modeled")
-    rm(file)
-  }
-
-  # 5b. Process gathered historical data ------------------------------------
-  # Get medians for each location during historical period
-  summary_data_historical <- get_medians(data_list_hist)
-  
-  # Briefly want to export the raw data from the lists for use in other figs
-  data_historical <- ldply(data_list_hist, function(x) data.frame(x))
-
-  data_historical$year <- as.numeric(substr(x = data_historical$chill_season,
-                                            start = 12, stop = 15))
-  data_historical$model <- basename(dirname(getwd()))
-  data_historical$scenario <- basename(getwd())
-  data_historical$lat = as.numeric(substr(x = data_historical$.id, start = 19, stop = 26))
-  data_historical$long= as.numeric(substr(x = data_historical$.id, start = 28, stop = 37))
-  data_historical <- unique(data_historical)
-  
-  # No longer needed
-  rm(data_list_hist)
-  
-  # .id row contains originating filename of this data
-  write.table(x = data_historical,
-              file = file.path(main_out,
-                               paste0("summary_",
-                                      gsub("-", "_", basename(dirname(getwd()))), # model name
-                                      "_",
-                                      basename(getwd()), # scenario
-                                      ".txt")),
-              row.names = F)
-  
-  rm(data_historical)
-  
-  # Grab lat/long
-  summary_data_historical <- grab_coord(summary_data_historical)
-  
-  summary_data_historical$model <- basename(dirname(getwd()))
-  summary_data_historical$scenario <- basename(getwd())
-
-  write.table(x = summary_data_historical,
-              file = file.path(main_out,
-                               paste0("summary_stats_",
-                                      gsub("-", "_",basename(dirname(getwd()))), # model name
-                                      "_",
-                                      basename(getwd()), # scenario
-                                      ".txt")),
-              row.names = F)
-
-  # If future data, then proceed with decadal calculations:
-  
-  # 5c. Iterate through future files ----------------------------------------
-} else {
-  for(i in 1:length(the_dir)){
-    file <- read.table(file = the_dir[i],
-                       header = T,
-                       colClasses = c("factor", "numeric", "numeric", "numeric",
-                                      "numeric", "numeric"))
-
+    print("line 151 of d modeled")
+    print(dim(file))
     if (overlap_type == "overlap"){
       # 2005-2025
       data_list_F0[[i]] <- process_data(file, time_period="2015")
@@ -166,25 +181,30 @@ if(hist){
 
       rm(file) 
     } else if (overlap_type == "non_overlap"){
+      print("line 170")
       # 2005_2024
-      data_list_F0[[i]] <- process_data_non_overlap(file, time_period="2005_2024")
+      data_list_F0[[i]] <- process_data_non_overlap(file, time_period="2005-2024")
       names(data_list_F0)[i] <- the_dir[i]
- 
+      print(paste0("line 176", dim(data_list_F0[[i]]))
+
       # 2025_2050
-      data_list_F1[[i]] <- process_data_non_overlap(file, time_period="2025_2050")
+      data_list_F1[[i]] <- process_data_non_overlap(file, time_period="2025-2050")
+      print(paste0("line 176", dim(data_list_F1[[i]]))
       names(data_list_F1)[i] <- the_dir[i]
  
       # 2051_2075
-      data_list_F2[[i]] <- process_data_non_overlap(file, time_period="2051_2075")
+      data_list_F2[[i]] <- process_data_non_overlap(file, time_period="2051-2075")
       names(data_list_F2)[i] <- the_dir[i]
+      print(paste0("line 176", dim(data_list_F2[[i]]))
 
       # 2076_2100
-      data_list_F3[[i]] <- process_data_non_overlap(file, time_period="2076_2100")
+      data_list_F3[[i]] <- process_data_non_overlap(file, time_period="2076-2100")
       names(data_list_F3)[i] <- the_dir[i]
+      print(paste0("line 176", dim(data_list_F3[[i]]))
 
       rm(file)
     }
-  }
+}
   
   # 5d. Process gathered future data ----------------------------------------
   
@@ -206,11 +226,11 @@ if(hist){
   rm(list = c("data_list_F0", "data_list_F1", "data_list_F2", "data_list_F3"))
 
   all_years$year <- as.numeric(substr(x = all_years$chill_season,
-                                      start = 12, stop = 15))
+                                      start = 7, stop = 10))
   all_years$model <- basename(dirname(getwd()))
   all_years$scenario <- basename(getwd())
-  all_years$lat = as.numeric(substr(x = all_years$.id, start = 19, stop = 26))
-  all_years$long = as.numeric(substr(x = all_years$.id, start = 28, stop = 37))
+  all_years$lat <- as.numeric(substr(x = all_years$.id, start = 19, stop = 26))
+  all_years$long <- as.numeric(substr(x = all_years$.id, start = 28, stop = 37)) 
   all_years <- unique(all_years)
  
   # .id row contains originating filename of this data
@@ -233,10 +253,10 @@ if(hist){
   
   # Combine dfs for plotting ease
   if (overlap_type == "non_overlap"){
-    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2005_2024")
-    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2025_2050")
-    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2051_2075")
-    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2076_2100")
+    summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2005-2024")
+    summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2025-2050")
+    summary_data_F2 <- summary_data_F2 %>% mutate(time_period = "2051-2075")
+    summary_data_F3 <- summary_data_F3 %>% mutate(time_period = "2076-2100")
   } else if (overlap_type == "overlap"){
     summary_data_F0 <- summary_data_F0 %>% mutate(time_period = "2015s")
     summary_data_F1 <- summary_data_F1 %>% mutate(time_period = "2040s")

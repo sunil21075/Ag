@@ -47,6 +47,7 @@ for (i in 1:len(direcs)){
   summary_comp <- do.call(bind_rows, summary_comp)
   print (colnames(summary_comp))
   summary_comp <- within(summary_comp, remove(.id))
+  summary_comp <- na.omit(summary_comp)
 
   summary_comp$start = start
   saveRDS(summary_comp, paste0(write_dir, "/", specific_dir, "_summary_comp.rds"))
