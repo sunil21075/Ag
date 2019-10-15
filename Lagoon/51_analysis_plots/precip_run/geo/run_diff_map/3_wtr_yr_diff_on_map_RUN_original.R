@@ -9,17 +9,18 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-plot_dir <- paste0(in_dir, "plots/")
-
+in_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/runbase/"
+plot_dir <- paste0(in_dir, "narrowed_runbase/geo/")
+if(dir.exists(plot_dir) == F){ dir.create(path=plot_dir,
+                                          recursive = T)}
 ##############################
 
-fileN <- "all_wtr_yr_cum_runoff_LD"
+fileN <- "wtr_yr_cum_runbase"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 dim(dt_tb)

@@ -505,7 +505,8 @@ median_diff_obs_or_modeled_seasonal <- function(dt, tgt_col, diff_from){
       
       # The followings is not necessary, it is done in compute... function
       dt <- dt %>% 
-            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            filter(time_period != "2006-2025" & 
+                   time_period != "1979-2016") %>% 
             data.table()
       all_mods <- unique(dt$model)
       for (mod in all_mods){
@@ -538,7 +539,7 @@ compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
   if ("wtr_yr" %in% colnames(dt)) {
     dt <- within(dt, remove(wtr_yr))
   }
-  suppressWarnings({dt <- within(dt, remove(year, month, day, precip, cluster))})
+  suppressWarnings({dt <- within(dt, remove(year, month, day, precip))})
 
   ################################################
   #
@@ -555,9 +556,10 @@ compute_median_diff_seasonal <- function(dt, tgt_col, diff_from="1979-2016"){
   dt <- dt %>% filter(time_period != diff_from) %>% data.table()
   dt <- rbind(dt, dt_hist); rm(dt_hist)
 
-  med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
+  med_per_loc_mod_TP_em <- dt[, .(tgt_col=median(get(tgt_col))), 
                                by = c("location", "time_period", 
-                                      "emission", "model", "season")]
+                                      "emission", "model", "season",
+                                      "cluster")]
   setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
   median_diffs <- med_per_loc_mod_TP_em %>%
@@ -604,7 +606,8 @@ median_diff_obs_or_modeled_month <- function(dt, tgt_col, diff_from){
       
       # The followings is not necessary, it is done in compute... function
       dt <- dt %>% 
-            filter(time_period != "2006-2025" & time_period != "1979-2016") %>% 
+            filter(time_period != "2006-2025" & 
+                   time_period != "1979-2016") %>% 
             data.table()
       all_mods <- unique(dt$model)
       for (mod in all_mods){
@@ -636,7 +639,7 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   if ("wtr_yr" %in% colnames(dt)) {
     dt <- within(dt, remove(wtr_yr))
   }
-  dt <- within(dt, remove(year, day, precip, cluster))
+  dt <- within(dt, remove(year, day, precip))
 
   ################################################
   #
@@ -656,7 +659,8 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
   
   med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
                                by = c("location", "time_period", 
-                                      "emission", "model", "month")]
+                                      "emission", "model", "month",
+                                      "cluster")]
 
   setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
@@ -681,18 +685,20 @@ compute_median_diff_month <- function(dt, tgt_col, diff_from="1979-2016"){
 ####################################################################################
 median_of_diff_of_medians <- function(dt){
   diffs <- dt %>%
-           group_by(location, time_period, emission) %>%
+           group_by(location, time_period, emission, cluster) %>%
            transmute(med_of_diffs_of_meds = median(diff))%>%
            unique() %>%
            data.table()
 
   perc_diffs <- dt %>%
-                group_by(location, time_period, emission) %>%
+                group_by(location, time_period, emission, cluster) %>%
                 transmute(perc_med_of_diffs_of_meds = median(perc_diff))%>%
                 unique() %>%
                 data.table()
 
-  diffs <- merge(diffs, perc_diffs, by=c("location", 'emission', "time_period"))
+  diffs <- merge(diffs, perc_diffs, 
+                 by=c("location", 'emission', 
+                       "time_period", "cluster"))
   cols <- c("med_of_diffs_of_meds", "perc_med_of_diffs_of_meds")
   diffs[,(cols) := round(.SD, 1), .SDcols=cols]
   return(diffs)
@@ -741,7 +747,7 @@ compute_median_diff <- function(dt, tgt_col, diff_from="1979-2016"){
   if ("wtr_yr" %in% colnames(dt)) {
     dt <- within(dt, remove(wtr_yr))
   }
-  dt <- within(dt, remove(year, month, day, precip, cluster))
+  dt <- within(dt, remove(year, month, day, precip))
 
   ################################################
   #
@@ -756,7 +762,8 @@ compute_median_diff <- function(dt, tgt_col, diff_from="1979-2016"){
 
   dt_hist$emission <- "hist"
 
-  dt <- dt %>% filter(time_period != diff_from) %>% data.table()
+  dt <- dt %>% filter(time_period != diff_from) %>% 
+        data.table()
   dt <- rbind(dt, dt_hist)
   
   # med_per_loc_mod_TP_em <- data.frame(dt) %>% 
@@ -767,7 +774,7 @@ compute_median_diff <- function(dt, tgt_col, diff_from="1979-2016"){
   # print(colnames(dt))
   med_per_loc_mod_TP_em <- dt[, .( tgt_col = median(get(tgt_col))), 
                                by = c("location", "time_period", 
-                                      "emission", "model")]
+                                      "emission", "model", "cluster")]
   setnames(med_per_loc_mod_TP_em, old="tgt_col", new="medians")
 
   median_diffs <- med_per_loc_mod_TP_em %>%
@@ -1335,4 +1342,39 @@ cluster_yr_time_series <- function(observed_dt, no_clusters=4){
 
   ts_clusters <- kmeans(observed_dt, centers = no_clusters, nstart = 25)
   return(ts_clusters)
+}
+
+make_percentage_column_discrete <- function(dta){
+  tps <- unique(dta$time_period)
+  emissions <- c("RCP 4.5", "RCP 8.5")
+  result <- data.table()
+  for (tp in tps){
+    for (em in emissions){
+      dt <- dta %>% filter(emission == em & time_period==tp) %>% data.table()
+      minn <- min(dt$perc_diff)
+      maxx <- max(dt$perc_diff)
+      # c(0, 0.01, 0.02, 0.03, 0.05, 0.1, 0.15, 0.20, 0.40, 0.80)
+      dt$perc_diff <- dt$perc_diff/100
+
+      dt <- dt %>% 
+            mutate(tagt_perc = case_when((perc_diff >= 0   & perc_diff <= 0.05) ~ 5,
+                                         (perc_diff > 0.05 & perc_diff <= 0.1)  ~ 10,
+                                         (perc_diff > 0.1  & perc_diff <= 0.15) ~ 15,
+                                         (perc_diff > 0.15 & perc_diff <= 0.2)  ~ 20,
+                                         (perc_diff > 0.2  & perc_diff <= 0.5)  ~ 50,
+                                         (perc_diff > 0.5) ~ 100,
+                                         (perc_diff < 0     & perc_diff >= -0.05) ~ -5,
+                                         (perc_diff < -0.05 & perc_diff >= -0.1)  ~ -10,
+                                         (perc_diff < -0.1  & perc_diff >= -0.15) ~ -15,
+                                         (perc_diff < -0.15 & perc_diff >= -0.2)  ~ -20,
+                                         (perc_diff < -0.2  & perc_diff >= -0.5)  ~ -50,
+                                         (perc_diff < -.5) ~ -100
+                                         )
+                  ) %>%
+            data.table()
+    result <- rbind(result, dt)
+
+    }
+  }
+  return(result)
 }

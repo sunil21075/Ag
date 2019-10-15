@@ -1489,9 +1489,9 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
                legend.text = element_text(size = 8, face="plain"),
                legend.title = element_blank(),
                # legend.justification = c(.93, .9),
-               # legend.position = c(.93, .9),
-               legend.position = "top",
+               legend.position=c(.93, .2),
                strip.text = element_text(size=14, face="bold"))
+
   dt %>%
   ggplot() +
   geom_polygon(data=WA_counties, 
@@ -1502,7 +1502,8 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
                fill = NA, colour="grey60", size=.3) + 
   geom_point(aes_string(x="long", y="lat", color=col_col), 
              alpha = 1, size=.3) +
-  guides(fill = guide_colourbar(barwidth = .1, barheight = 20))+
+  guides(fill = guide_colourbar(barwidth=.1, barheight=2),
+         direction = "vertical")+
   # scale_color_viridis_c(option = "plasma", 
   #                       name = "storm", direction = -1,
   #                       limits = c(min, max),
@@ -1633,7 +1634,7 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
         legend.text = element_text(size = 12, face="plain"),
         legend.title = element_blank(),
         legend.justification = c(.93, .9),
-        legend.position = c(.93, .9),
+        legend.position=c(.93, .9),
         strip.text = element_text(size=14, face="bold"))
   # +
   # geom_polygon(fill = "transparent", color = "red", size = .1, 
@@ -2169,15 +2170,75 @@ geo_map_of_rain_frac <- function(data_dt){
   labs(title = paste0("avg. rain fraction (", unique(data_dt$time_period), ")"))
 }
 
+geo_map_of_diffs_discrete_cuts <- function(dt, col_col, ttl, subttl){
+  disc_colors <- c("white", "lightskyblue","deepskyblue",
+                   "dodgeblue3", "dodgerblue4", "blue4")
+  x <- sapply(dt$location,
+              function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
 
-
-
-
-
-
-
-
-
-
-
-
+  lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
+  dt$lat <- lat; dt$long <- long;
+  
+  states <- map_data("state")
+  states_cluster <- subset(states, 
+                           region %in% c("washington"))
+  WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         # , "okanogan", "chelan"
+                                         ))%>% 
+                 data.table() 
+  
+  dt %>%
+  ggplot() +
+  geom_polygon(data = WA_counties, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group), 
+               fill = NA, colour = "grey60", size=.3) + 
+  geom_point(aes_string(x = "long", y = "lat", color = col_col), 
+             alpha = 1, size=.3) +
+  scale_color_manual(name = "qsec",
+                     values = c("(-Inf,-0.5]"= "red4",
+                                "(-0.5,-0.2]" = "red",
+                                "(-0.2,-0.15]" = "brown1",
+                                "(-0.15,-0.1]" = "tomato1",
+                                "(-0.1,-0.05]" = "hotpink1",
+                                "(-0.05,0]" = "white",
+                                "(0,0.05]"  = "white",
+                                "(0.05,0.1]" = "yellow",
+                                "(0.1,0.15]" = "deepskyblue",
+                                "(0.15,0.2]" = "dodgerblue3",
+                                "(0.2,0.5]"  = "dodgerblue4",
+                                "(0.5, Inf]"  = "blue4"
+                                ),
+                     # labels = c("<= -50%", 
+                     #            "-50% < . <= -20%",
+                     #            "-20% < . <= -15%",
+                     #            "-15% < . <= -10%",
+                     #            "-10% < . <= -5%",
+                     #            "-5% < . <= 0%",
+                     #            "0% < . <= 5%",
+                     #            "5% < . <= 10%",
+                     #            "10% < . <= 15%",
+                     #            "15% < . <= 20%",
+                     #            "20% < . <= 50%",
+                     #            ">= 50%"
+                     #            )
+                     )+
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text = element_blank(),
+        plot.title = element_text(size = 14, face = "bold"),
+        legend.text = element_text(size = 10, face="plain"),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        strip.text = element_text(size=14, face="bold")) +  
+  guides(colour = guide_legend(override.aes = list(size=2))) +
+  ggtitle(ttl, subtitle=subttl)
+  
+}

@@ -9,24 +9,27 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/runoff/"
-plot_dir <- paste0(in_dir, "plots/")
+in_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/runoff/"
+plot_dir <- paste0(in_dir, "narrowed_runbase/geo/")
+if (dir.exists(plot_dir)==F){
+  dir.create(path=plot_dir, recursive = T)}
+print (plot_dir)
+############################################################
 
-##############################
-
-fileN <- "all_chunk_cum_runoff_LD"
+fileN <- "chunk_cum_runbase"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
 head(dt_tb, 2)
 
 tgt_col <- "chunk_cum_runbase"
-meds <- compute_median_diff_4_map(dt_tb, tgt_col=tgt_col)
+meds <- compute_median_diff(dt_tb, tgt_col=tgt_col)
 
-meds_45_99 <- meds %>% filter(emission=="RCP 8.5" & time_period=="2076-2099")
+meds_85_99 <- meds %>% filter(emission=="RCP 8.5" & 
+                              time_period=="2076-2099")
 
 # make the goddamn perc. diff into discrete values
 meds <- make_percentage_column_discrete(meds)
@@ -40,8 +43,8 @@ max_diff_perc <- max(meds$tagt_perc)
 emissions <- c("RCP 4.5", "RCP 8.5")
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 
-em <- emissions[1]
-rp <- future_rn_pr[1]
+em <- emissions[2]
+rp <- future_rn_pr[3]
 #######
 #######     Percentage perc_difference of medians of annual precip
 
@@ -61,7 +64,7 @@ for (em in emissions){
                            replacement = "_", 
                            x = rp)),
            value ={geo_map_of_diffs(dt = curr_dt, 
-                                    col_col = "tagt_perc" , 
+                                    col_col = "tagt_perc",
                                     minn = min_diff_perc, maxx = max_diff_perc,
                                     ttl = title, 
                                     subttl= subtitle)})

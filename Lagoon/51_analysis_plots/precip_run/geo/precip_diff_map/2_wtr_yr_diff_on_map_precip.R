@@ -30,8 +30,8 @@ if (dir.exists(diff_plot_dir) == F) {
 
 fileN <- "wtr_yr_sept_all_last_days"
 dt_tb <- data.table(readRDS(paste0(in_dir, fileN, ".rds")))
+dt_tb <- convert_5_numeric_clusts_to_alphabet(data_tb=dt_tb)
 head(dt_tb, 2)
-
 tgt_col <- "annual_cum_precip"
 
 meds <- median_diff_obs_or_modeled(dt_tb, tgt_col=tgt_col, 
@@ -39,7 +39,6 @@ meds <- median_diff_obs_or_modeled(dt_tb, tgt_col=tgt_col,
 meds <- median_of_diff_of_medians(meds)
 dim(meds)
 
-meds <- merge(meds, fip_clust, all.x=TRUE, by="location")
 emissions <- c("RCP 4.5", "RCP 8.5")
 future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 
@@ -48,7 +47,6 @@ future_rn_pr <- c("2026-2050", "2051-2075", "2076-2099")
 #######
 subtitle <- "Diff. of medians of precip. (Water Year, in %)"
 clusters <- unique(meds$cluster)
-
 clust <- clusters[1]; em <- emissions[1]; rp <- future_rn_pr[1]
 
 for (clust in clusters){
@@ -66,23 +64,23 @@ for (clust in clusters){
                         gsub(pattern = "-", replacement = "_", x = rp)),
              value ={geo_map_of_diffs(dt = curr_dt, 
                                       col_col = "perc_med_of_diffs_of_meds" , 
-                                      min=min_diff_perc, max=max_diff_perc,
-                                      ttl=title, subttl= subtitle)})
+                                      minn=min_diff_perc, 
+                                      maxx=max_diff_perc,
+                                      ttl=title, 
+                                      subttl= subtitle)})
     }
   }
   assign(x = paste0("perc_diff_figs_45_", gsub("\ ", "_", clust)),
          value = ggarrange(plotlist = list(rcp45_2026_2050,
                                            rcp45_2051_2075,
                                            rcp45_2076_2099),
-                           ncol=3, nrow=1, common.legend=TRUE, 
-                           legend="bottom"))
+                           ncol=3, nrow=1, common.legend=FALSE))
 
   assign(x = paste0("perc_diff_figs_85_", gsub("\ ", "_", clust)),
          value = ggarrange(plotlist = list(rcp85_2026_2050,
                                            rcp85_2051_2075,
                                            rcp85_2076_2099),
-                           ncol=3, nrow=1, common.legend=TRUE, 
-                           legend="bottom"))
+                           ncol=3, nrow=1, common.legend=FALSE))
 }
 
 perc_diff_85 <- ggarrange(plotlist = list(perc_diff_figs_85_Western_coastal,
@@ -90,25 +88,23 @@ perc_diff_85 <- ggarrange(plotlist = list(perc_diff_figs_85_Western_coastal,
                                           perc_diff_figs_85_Northwest_Cascades,
                                           perc_diff_figs_85_Northcentral_Cascades,
                                           perc_diff_figs_85_Northeast_Cascades),
-                   ncol=1, nrow=5, common.legend=TRUE, 
-                   legend="bottom")
+                   ncol=1, nrow=5, common.legend=FALSE)
 
 perc_diff_45 <- ggarrange(plotlist = list(perc_diff_figs_45_Western_coastal,
                                           perc_diff_figs_45_Cascade_foothills,
                                           perc_diff_figs_45_Northwest_Cascades,
                                           perc_diff_figs_45_Northcentral_Cascades,
                                           perc_diff_figs_45_Northeast_Cascades),
-                   ncol=1, nrow=5, common.legend=TRUE, 
-                   legend="bottom")
+                   ncol=1, nrow=5, common.legend=FALSE)
 
 ggsave(filename = paste0("perc_diff_85_sep_clust.png"), 
        plot=perc_diff_85, 
-       width=8, height=10, units="in", 
+       width=11, height=15, units="in", 
        dpi=600, device="png", path=diff_plot_dir)
 
 ggsave(filename = paste0("perc_diff_45_sep_clust.png"), 
        plot=perc_diff_45, 
-       width=8, height=10, units="in", 
+       width=11, height=15, units="in", 
        dpi=600, device="png", path=diff_plot_dir)
 
 ######################################################################
