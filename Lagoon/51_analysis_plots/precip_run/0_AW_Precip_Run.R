@@ -23,7 +23,7 @@ precip_AV_fileNs <- c("ann_all_last_days", "wtr_yr_sept_all_last_days")
 runoff_AV_fileNs <- c("ann_cum_runbase", "wtr_yr_cum_runbase")
 timeP_ty_middN <- c("ann", "wtr_yr")
 av_tg_col_pref <- c("annual_cum_", "annual_cum_")
-av_titles <- c("ann. cum. ", "ann. cum. ")
+av_titles <- c("ann. ", "ann. ")
 emissions <- c("RCP 4.5", "RCP 8.5")
 
 dt_type <-  in_dir_ext[1]
@@ -44,12 +44,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
     if (dt_type=="precip"){
      files <- precip_AV_fileNs
-     AV_y_lab <- "cum. precip. (mm)"
+     AV_y_lab <- "cum. precip.(mm)"
      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
      AV_title <- paste0(av_titles[timeP_ty], "precip.", " (", title_time, ")")
      } else if (dt_type=="runbase"){
       files <- runoff_AV_fileNs
-      AV_y_lab <- "cum. runoff (mm)"
+      AV_y_lab <- "cum. runoff(mm)"
       AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
       AV_title <- paste0(av_titles[timeP_ty], "runoff.", " (", title_time, ")")
     }
@@ -94,7 +94,7 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     ##### difference plots
     #####
     ###################################
-    box_title <- "unbiased differences"
+    box_title <- "differences"
     box_subtitle <- "for each model median is\ntaken over years, separately"
 
     quans_85 <- find_quantiles(unbias_diff_85, tgt_col= "perc_diff", time_type="annual")

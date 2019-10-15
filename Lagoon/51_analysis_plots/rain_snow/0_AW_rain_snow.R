@@ -16,7 +16,6 @@ source(source_path_2)
 ############################################################################
 
 data_base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/rain_snow_fractions/"
-
 AV_fileNs <- c("annual_fracs", "wtr_yr_fracs")
 timeP_ty_middN <- c("ann", "wtr_yr")
 timeP_ty <- 1
@@ -31,7 +30,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
      title_time <- "water year"
   }
   AV_y_lab <- "cum. precip. (mm)"
-  AV_title <- paste0("ann. cum. precip.", " (", title_time, ")")
+  AV_title <- paste0("ann. precip.", " (", title_time, ")")
   AV_tg_col <- "annual_cum_precip"
   
   ###############################################################
@@ -77,8 +76,8 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_85[1], 110))
-  
+                  coord_cartesian(ylim = c(max(-2, quans_85[1]), 
+                                           min(quans_85[2], 110)))  
   rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   ######
@@ -88,11 +87,12 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
                                   y_lab = "rain fraction (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_45[1], 110))
+                  coord_cartesian(ylim = c(max(-2, quans_45[1]), 
+                                           min(quans_45[2], 110)))
 
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
-  ####################################################################################
+  ##################################################################################
   ##################################################################################
   box_title <- paste0("snow fracion", " (", title_time, ")")
 
@@ -128,19 +128,19 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   print (plot_dir)
 
   ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_rain_45.png"),
-         plot = rain_45, width = 6, height = 5, units = "in", 
+         plot = rain_45, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
   ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_rain_85.png"),
-         plot = rain_85, width = 6, height = 5, units = "in", 
+         plot = rain_85, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
   ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_snow_45.png"),
-         plot = snow_45, width = 6, height = 5, units = "in", 
+         plot = snow_45, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
   ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_snow_85.png"),
-         plot = snow_85, width = 6, height = 5, units = "in", 
+         plot = snow_85, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
   print(paste0(timeP_ty_middN[timeP_ty], "_snow_85.png"))
 }

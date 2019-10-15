@@ -23,7 +23,7 @@ print (plot_dir)
 AV_fileNs <- "seasonal_fracs"
 
 AV_y_lab <- "cum. precip. (mm)"
-AV_title <- paste0("seasonal cum. precip.")
+AV_title <- paste0("seasonal precip.")
 AV_tg_col <- "seasonal_cum_precip"
 
 AVs <- readRDS(paste0(data_base,"seasonal_fracs.rds")) %>% data.table()
@@ -44,7 +44,7 @@ season_types <- c("fall", "winter", "spring", "summer")
 season_g <- "fall"
 
 for (season_g in season_types){
-  subttl <- paste0(" (", season_g, " season)")
+  subttl <- paste0(" (", season_g, ")")
   curr_AVs_85 <- AVs_85 %>% filter(season == season_g) %>% data.table()
   curr_AVs_45 <- AVs_45 %>% filter(season == season_g) %>% data.table()
 
@@ -74,26 +74,28 @@ for (season_g in season_types){
                                             y_lab = "rain fraction (%)", 
                                             tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
-                  coord_cartesian(ylim = c(quans_85[1], 110))
+                  coord_cartesian(ylim = c(max(-2, quans_85[1]), 
+                                           min(quans_85[2], 110)))
 
   rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
 
   ggsave(filename = paste0(season_g, "_rain_85.png"),
-         plot = rain_85, width = 6, height = 5, units = "in", 
+         plot = rain_85, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
   rain_frac_45 <- seasonal_fraction_clust_x(data_tb = curr_AVs_45,
                                             y_lab = "rain fraction (%)", 
                                             tgt_col="rain_fraction") +
                   ggtitle(box_title) +
-                  coord_cartesian(ylim = c(quans_45[1], 110))
+                  coord_cartesian(ylim = c(max(-2, quans_45[1]), 
+                                           min(quans_45[2], 110)))
 
   rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
 
   ggsave(filename = paste0(season_g, "_rain_45.png"),
-         plot = rain_45, width = 6, height = 5, units = "in", 
+         plot = rain_45, width =5.5, height =3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
   ##################################################################################
   ##################################################################################
@@ -111,7 +113,7 @@ for (season_g in season_types){
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
 
   ggsave(filename = paste0(season_g, "_snow_85.png"),
-         plot = snow_85, width = 6, height = 5, units = "in", 
+         plot = snow_85, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)
 
   snow_frac_45 <- seasonal_fraction_clust_x(data_tb = curr_AVs_45,
@@ -123,7 +125,7 @@ for (season_g in season_types){
   snow_45 <- ggarrange(plotlist = list(AV_box_45, snow_frac_45),
                        ncol = 1, nrow = 2, common.legend = TRUE, legend="bottom")
   ggsave(filename = paste0(season_g, "_snow_45.png"),
-         plot = snow_45, width = 6, height = 5, units = "in", 
+         plot = snow_45, width=5.5, height=3, units = "in", 
          dpi=400, device = "png", path = plot_dir)  
   print(paste0(season_g, "_snow_45.png"))
   print(plot_dir)

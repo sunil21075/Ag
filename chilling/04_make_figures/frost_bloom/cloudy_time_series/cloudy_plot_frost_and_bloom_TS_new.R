@@ -99,8 +99,6 @@ chill_limited <- chill_limited %>% filter(city %in% cities) %>% data.table()
 
 thresh_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/"
 thresh_dt <- readRDS(paste0(thresh_dir, "/sept_summary_comp.rds"))
-thresh_dt$year <- thresh_dt$year - 1
-thresh_dt$location <- paste0(thresh_dt$lat, "_", thresh_dt$long)
 thresh_dt <- thresh_dt %>% 
                 filter(location %in% chill_limited$location # & model %in% all_models_observed
                        ) %>% 
@@ -159,7 +157,7 @@ for (due in dues){
   app_tp <- apple_types[1]
   lim <- 20
 
-  for (lim in seq(20, 75, 5)){
+  for (lim in seq(50, 75, 5)){
     col_name <- paste0("thresh_", lim)
     frost_plot_dir <- paste0(frost_dir, "cloudy/", fruit_type, "/w_obs/just_frost/")
     if (dir.exists(frost_plot_dir) == F) {dir.create(path = frost_plot_dir, recursive = T)}
@@ -193,7 +191,7 @@ for (due in dues){
         #
         if (remove_NA == "yes"){
           curr_thresh <- curr_thresh %>% 
-                       filter(get(col_name)>0) %>% 
+                       filter(get(col_name)<365) %>% 
                        data.table()
         }
         ######################################################################

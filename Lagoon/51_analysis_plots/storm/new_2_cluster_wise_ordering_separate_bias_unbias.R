@@ -93,7 +93,7 @@ for (clust in clusters){
   unbias_diffs_perc_box_45 <- storm_diff_box_25yr(unbias_diffs_45, 
                                                   tgt_col="perc_diff") + 
                               ggtitle(# subtitle ="diff. of 25 yr/24 hr. design storm", 
-                                      label ="unbiased differences") + # 
+                                      label ="differences") + # 
                               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
   ###
   ### 85
@@ -110,7 +110,7 @@ for (clust in clusters){
   unbias_diffs_perc_box_85 <- storm_diff_box_25yr(unbias_diffs_85, 
                                                   tgt_col="perc_diff") +
                               ggtitle(# label="diff. of 25 yr/24 hr. design storm", 
-                                      label="unbiased differences") + #
+                                      label="differences") + #
                               coord_cartesian(ylim = c(quans_85[1], quans_85[2])) 
 
   plt_45_unbias <- ggarrange(plotlist = list(AV_45, unbias_diffs_perc_box_45),

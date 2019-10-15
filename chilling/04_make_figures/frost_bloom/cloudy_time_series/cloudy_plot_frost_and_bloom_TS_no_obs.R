@@ -85,6 +85,10 @@ if (fruit_type == "Cherry"){
     # apple_types <- c("Cripps Pink") # This is done just for purpose of for loop
 }
 
+setcolorder(bloom_LC, c("city", "year", "time_period", "emission", "apple_type", "dayofyear", "model"))
+setnames(bloom_LC, old=c("dayofyear"), new=c("fifty_perc_DoY"))
+bloom_LC <- data.table(bloom_LC)
+
 # obs_years <- c(1979:2015)
 # future_years <- c(2026:2095)
 # complete_1st_frost <- CJ(years, cities, six_models, emission)
@@ -103,7 +107,6 @@ thresh_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/"
 thresh_dt <- readRDS(paste0(thresh_dir, "/sept_summary_comp.rds"))
 thresh_dt$year <- thresh_dt$year - 1
 thresh_dt <- thresh_dt %>% filter(year >= 2025) %>% data.table()
-thresh_dt$location <- paste0(thresh_dt$lat, "_", thresh_dt$long)
 thresh_dt <- thresh_dt %>% 
                 filter(location %in% chill_limited$location # & model %in% all_models_observed
                        ) %>% 
@@ -111,7 +114,7 @@ thresh_dt <- thresh_dt %>%
 
 thresh_dt <- merge(thresh_dt, chill_limited, all.x=TRUE)
 suppressWarnings({ thresh_dt <- within(thresh_dt, 
-                       remove(location, lat, long, start, sum_J1, sum_F1, sum_M1,
+                       remove(location, start, sum_J1, sum_F1, sum_M1,
                               sum_A1, sum))})
 
 thresh_dt <- remove_modeled_historical_add_time_period(thresh_dt)
@@ -151,9 +154,9 @@ for (due in dues){
   first_frost$time_period[first_frost$time_period == "2026-2050"] <- "future"
   first_frost$time_period[first_frost$time_period == "2051-2075"] <- "future"
 
-  setcolorder(bloom_LC, c("city", "year", "time_period", "emission", "apple_type", "dayofyear", "model"))
-  setnames(bloom_LC, old=c("dayofyear"), new=c("fifty_perc_DoY"))
-  bloom_LC <- data.table(bloom_LC)
+  # setcolorder(bloom_LC, c("city", "year", "time_period", "emission", "apple_type", "dayofyear", "model"))
+  # setnames(bloom_LC, old=c("dayofyear"), new=c("fifty_perc_DoY"))
+  # bloom_LC <- data.table(bloom_LC)
   
   # change the days so they match chill calendar year thing!!! dammit
   # bloom_LC$fifty_perc_DoY <- bloom_LC$fifty_perc_DoY + 365
@@ -163,7 +166,7 @@ for (due in dues){
   app_tp <- apple_types[1]
   lim <- 20
 
-  for (lim in seq(20, 75, 5)){
+  for (lim in seq(50, 75, 5)){
     col_name <- paste0("thresh_", lim)
     frost_plot_dir <- paste0(frost_dir, "cloudy/", fruit_type, "/no_obs/just_frost/")
     if (dir.exists(frost_plot_dir) == F) {dir.create(path = frost_plot_dir, recursive = T)}
@@ -197,7 +200,7 @@ for (due in dues){
         #
         if (remove_NA == "yes"){
           curr_thresh <- curr_thresh %>% 
-                       filter(get(col_name)>0) %>% 
+                       filter(get(col_name)<365) %>% 
                        data.table()
         }
         ######################################################################

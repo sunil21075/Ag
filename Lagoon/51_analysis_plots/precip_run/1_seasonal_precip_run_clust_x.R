@@ -25,7 +25,7 @@ season_types <- c("fall", "winter", "spring", "summer")
 timeP_ty_middN <- c("seasonal")
 
 av_tg_col_pref <- c("seasonal_cum_")
-av_titles <- c("seasonal cum. ")
+av_titles <- c("seasonal ")
 
 dt_type <-  in_dir_ext[1]
 in_dir <- paste0(data_base, dt_type, "/")
@@ -38,13 +38,13 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
     if (dt_type=="precip"){
      files <- precip_AV_fileNs
-     AV_y_lab <- "cum. precip. (mm)"
+     AV_y_lab <- "cum. precip.(mm)"
      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
      AV_title <- paste0(av_titles[timeP_ty], "precip.")
 
      } else if (dt_type=="runbase"){
       files <- runoff_AV_fileNs
-      AV_y_lab <- "cum. runoff (mm)"
+      AV_y_lab <- "cum. runoff(mm)"
       AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
       AV_title <- paste0(av_titles[timeP_ty], "runoff.")
     }
@@ -53,6 +53,9 @@ for (dt_type in in_dir_ext){ # precip or runoff?
     unbias_diff <- readRDS(paste0(in_dir, unbias_dir_ext, "detail_med_diff_med_", 
                                   timeP_ty_middN[timeP_ty], "_", dt_type, ".rds")) %>% 
                    data.table()
+    
+    AVs <- na.omit(AVs)
+    unbias_diff <- na.omit(unbias_diff)
     
     AVs <- remove_observed(AVs)
     unbias_diff <- remove_observed(unbias_diff)
@@ -97,7 +100,7 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       #########
       ######### difference plot
       #########
-      box_title <- paste0("unbiased differences ", subttl)
+      box_title <- paste0("differences", subttl)
       box_subtitle <- "for each model median is\ntaken over years, separately"
 
       quans_85 <- find_quantiles(curr_diff_85, tgt_col= "perc_diff", time_type="seasonal")
@@ -126,12 +129,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
       ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
                                timeP_ty_middN[timeP_ty], "_RCP45.png"),
-             plot = RCP45, width = 4.5, height = 3.5, units = "in", 
+             plot = RCP45, width = 5.5, height = 3, units = "in", 
              dpi=400, device = "png", path = plot_dir)
 
       ggsave(filename = paste0(gsub("\ ", "_", season_g), "_", 
                                timeP_ty_middN[timeP_ty], "_RCP85.png"),
-             plot = RCP85,  width = 4.5, height = 4, units = "in", 
+             plot = RCP85,  width = 5.5, height = 3, units = "in", 
              dpi = 400, device = "png", path = plot_dir)
 
 

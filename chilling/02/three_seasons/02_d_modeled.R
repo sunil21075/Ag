@@ -64,7 +64,7 @@ the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 # Pre-allocate lists to be used
 param_dir <- "/Users/hn/Documents/GitHub/Ag/chilling/parameters/"
-param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
+param_dir <- file.path("/home/hnoorazar/chilling_codes/parameters/")
 local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
 local_files <- as.vector(local_files$V1)
 no_sites <- length(local_files)
@@ -107,7 +107,7 @@ if(hist){
 
   rm(data_list_hist)
   # .id row contains originating filename of this data
-  data_historical <- put_time_period(data_historical, observed=FALSE)
+  data_historical <- add_time_periods_model(data_historical)
   data_historical <- na.omit(data_historical)
   write.table(x = data_historical,
               file = file.path(main_out,
@@ -180,11 +180,11 @@ if(hist){
   print ("line 177")
   summary_data_F$model <- basename(dirname(getwd()))
   print(head(summary_data_F, 2))
-  print ("line 179")
+  print ("line 183")
   summary_data_F$scenario <- basename(getwd())
-  print ("line 179")
+  print ("line 185")
   summary_data_F <- add_time_periods_model(summary_data_F)
-  print ("line 181")
+  print ("line 187")
   summary_data_F <- na.omit(summary_data_F)
   write.table(x = summary_data_F,
               file = file.path(main_out,
@@ -194,8 +194,9 @@ if(hist){
                                       basename(getwd()), # scenario
                                       ".txt")),
               row.names = F) 
-  print ("line 182")  
+  print ("line 182")
 }
+print (main_out)
 # How long did it take?
 end_time <- Sys.time()
 print( end_time - start_time)

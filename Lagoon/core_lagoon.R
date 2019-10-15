@@ -40,15 +40,17 @@ remove_observed <- function(data_tb){
 
 convert_5_numeric_clusts_to_alphabet <- function(data_tb){
   data_tb <- data_tb %>%
-             mutate(alph_clust = case_when(cluster == 1 ~ "WCLL",
-                                           cluster == 2 ~ "CFH",
-                                           cluster == 3 ~ "NWCWS",
-                                           cluster == 4 ~ "NCC",
-                                           cluster == 5 ~ "NCLS")) %>% 
+             mutate(alph_clust = case_when(cluster == 1 ~ "Western coastal",
+                                           cluster == 2 ~ "Cascade foothills",
+                                           cluster == 3 ~ "Northwest Cascades",
+                                           cluster == 4 ~ "Northcentral Cascades",
+                                           cluster == 5 ~ "Northeast Cascades")) %>% 
              data.table()
   data_tb <- within(data_tb, remove(cluster))
   setnames(data_tb, old=c("alph_clust"), new=c("cluster"))
-  cluster_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  cluster_levels <- c("Western coastal", "Cascade foothills", 
+                      "Northwest Cascades", "Northcentral Cascades", 
+                      "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=cluster_levels)
 
   return(data_tb)

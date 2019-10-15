@@ -21,15 +21,13 @@ unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
 precip_AV_fileNs <- c("month_all_last_days")
 runoff_AV_fileNs <- c("monthly_cum_runbase")
-cluster_types <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
 timeP_ty_middN <- c("month")
 
 av_tg_col_pref <- c("monthly_cum_")
-av_titles <- c("monthly cum. ")
+av_titles <- c("monthly ")
 
 dt_type <- in_dir_ext[1]
 timeP_ty <- 1
-clust_g <- cluster_types[1]
 
 for (dt_type in in_dir_ext){ # precip or runoff?
   in_dir <- paste0(data_base, dt_type, "/")
@@ -37,12 +35,12 @@ for (dt_type in in_dir_ext){ # precip or runoff?
 
     if (dt_type=="precip"){
      files <- precip_AV_fileNs
-     AV_y_lab <- "cum. precip. (mm)"
+     AV_y_lab <- "cum. precip.(mm)"
      AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], dt_type)
      AV_title <- paste0(av_titles[timeP_ty], "precip.")
      } else if (dt_type=="runbase"){
       files <- runoff_AV_fileNs
-      AV_y_lab <- "cum. runoff (mm)"
+      AV_y_lab <- "cum. runoff(mm)"
       AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
       AV_title <- paste0(av_titles[timeP_ty], "runoff.")
     }
@@ -53,15 +51,16 @@ for (dt_type in in_dir_ext){ # precip or runoff?
                                   dt_type, ".rds")) %>% data.table()
     AVs <- na.omit(AVs); unbias_diff <- na.omit(unbias_diff)
 
-    AVs <- remove_observed(AVs)
+    AVs <- remove_observed(AVs); AVs <- remove_current_timeP(AVs)
     unbias_diff <- remove_observed(unbias_diff)
-    
-    AVs <- remove_current_timeP(AVs)
     unbias_diff <- remove_current_timeP(unbias_diff)
-
+    
     # update clusters labels
     AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
     unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff)
+
+    cluster_types <- unique(AVs$cluster)
+    clust_g <- cluster_types[1]
     #
     # remove those rows whose perc diff is more than 1000%
     #
@@ -93,20 +92,20 @@ for (dt_type in in_dir_ext){ # precip or runoff?
       assign(x = "AV_box_85",
              value = {box_trend_monthly_cum(dt = curr_AVs_85, p_type="box",
                                             y_lab = AV_y_lab, tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthy cum. ", dt_type, ".")) +
+                      ggtitle(paste0("monthy ", dt_type, ".")) +
                       coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
                       })
 
       assign(x = "AV_box_45",
              value = {box_trend_monthly_cum(dt = curr_AVs_45, p_type="box",
                                             y_lab = AV_y_lab, tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthy cum. ", dt_type, ".")) + 
+                      ggtitle(paste0("monthy ", dt_type, ".")) + 
                       coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
                       })
       #########
       ######### unbiased Percentage diffs
       #########
-      box_title <- "unbiased differences"
+      box_title <- "differences"
       box_subtitle <- "for each model median is\ntaken over years, separately"
       
       quans_85 <- find_quantiles(curr_unbias_diff_85, tgt_col= "perc_diff", time_type="monthly")

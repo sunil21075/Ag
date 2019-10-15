@@ -78,7 +78,7 @@ frac_rain <- function(dt, y_lab, tgt_col){
                # legend.key.size = unit(1, "line"), legend.title = element_blank(),
                # legend.text = element_text(size = ax_ttl_size, face="bold"),
                # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -166,7 +166,7 @@ frac_snow <- function(dt, y_lab, tgt_col){
                # legend.text = element_text(size = ax_ttl_size, face="bold"),
                # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                # legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -244,7 +244,8 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", 
+                   "Northcentral Cascades", "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -261,9 +262,9 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -287,7 +288,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
   ######
   ggplot(data = melted, aes(x=season, y=value, fill=time_period)) +
   the + 
-  geom_hline(yintercept= 0, color = "red", size=.3)+
+  # geom_hline(yintercept= 0, color = "red", size=.3)+
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
                position = position_dodge(0.8), outlier.shape=NA
@@ -316,7 +317,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                                          seasonal_cum_precip, rain_fraction))
   }
 
-  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission, season) %>% 
@@ -335,7 +336,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -352,9 +353,9 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size = 8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -377,8 +378,7 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
   ###### plot
   ######
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
-  the + 
-  geom_hline(yintercept= 0, color = "red", size=.3) + 
+  the +
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
                position = position_dodge(0.8), outlier.shape=NA
@@ -408,7 +408,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                                          annual_cum_precip, rain_fraction))
    }
 
-  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -443,9 +443,9 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-0.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -469,7 +469,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
   ######
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
-  geom_hline(yintercept= 0, color = "red", size=.3) +
+  # geom_hline(yintercept= 0, color = "red", size=.3) +
   geom_boxplot(outlier.size = - 0.3, notch=F, 
                width = box_width, lwd=.1, 
                position = position_dodge(0.8), outlier.shape=NA
@@ -495,7 +495,7 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   season_levels <- c("fall", "winter", "spring", "summer")
   dt$season <- factor(dt$season, levels=season_levels, order=T)
   
-  region_levels <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   dt$cluster <- factor(dt$cluster, levels=region_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
   dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
@@ -531,9 +531,9 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size = 8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -554,23 +554,26 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   ########
   ########    PLOT
   ########
-  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
-  the + 
-  geom_boxplot(outlier.size=-0.3, notch=F, 
-               width = box_width, lwd=.1, 
-               position = position_dodge(0.8), outlier.shape=NA
-               ) +
-  scale_x_discrete(expand=c(0.1, 0)) + 
-  # labs(x="", y="") + # theme_bw() + 
-  facet_grid(~ emission, scales="free") +
-  ylab(y_lab) +
-  geom_hline(yintercept= 0, color = "red", size=.3) +
-  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +  
-  scale_fill_manual(values = color_ord, labels = time_label) +
-  geom_text(data = medians, 
-            aes(label = sprintf(signif, medians$med), y=medians$med), 
-            size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6)
+  bx <- ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+        the + 
+        geom_boxplot(outlier.size=-0.3, notch=F, 
+                     width = box_width, lwd=.1, 
+                     position = position_dodge(0.8), outlier.shape=NA
+                     ) +
+        scale_x_discrete(expand=c(0.1, 0)) + 
+        # labs(x="", y="") + # theme_bw() + 
+        facet_grid(~ emission, scales="free") +
+        ylab(y_lab) +
+        # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +  
+        scale_fill_manual(values = color_ord, labels = time_label) +
+        geom_text(data = medians, 
+                  aes(label = sprintf(signif, medians$med), y=medians$med), 
+                  size = 2, fontface = "bold",
+                  position = position_dodge(.8), vjust = -.6)
+  if(tgt_col == "perc_diff"){
+    bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
+  }
+  return(bx)
 }
 
 seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
@@ -585,7 +588,6 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
              data.table()
 
   melted <- melt(dt, id = c("emission", "season", "time_period", "cluster")); rm(dt)
-  
   time_label <- sort(unique(melted$time_period))
   if (length(unique(melted$time_period)) == 3){
     color_ord = c("dodgerblue2", "olivedrab4", "gold")
@@ -594,11 +596,9 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
     } else if (length(unique(melted$time_period)) == 5){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
-
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
-  
   ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
   ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
 
@@ -612,9 +612,9 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold",
+               plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -634,23 +634,25 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   ########
   ########    PLOT
   ########
-  ggplot(data = melted, aes(x=season, y=value, fill=time_period)) +
-  the + 
-  geom_boxplot(outlier.size = - 0.3, notch=F, 
-               width = box_width, lwd=.1, 
-               position = position_dodge(0.8), outlier.shape=NA
-               ) +
-  scale_x_discrete(expand=c(0.1, 0)) + 
-  # labs(x="", y="") + # theme_bw() + 
-  facet_grid(~ emission, scales="free") +
-  ylab(y_lab) + 
-  geom_hline(yintercept= 0, color = "red", size=.3) +
-  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
-  scale_fill_manual(values = color_ord, labels = time_label) +
-  geom_text(data = medians, 
-            aes(label = sprintf(signif, medians$med), y=medians$med), 
-            size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6)
+  bx <- ggplot(data = melted, aes(x=season, y=value, fill=time_period)) +
+        the + 
+        geom_boxplot(outlier.size = - 0.3, notch=F, 
+                     width = box_width, lwd=.1, 
+                     position = position_dodge(0.8), outlier.shape=NA) +
+        scale_x_discrete(expand=c(0.1, 0)) + 
+        # labs(x="", y="") + # theme_bw() + 
+        facet_grid(~ emission, scales="free") +
+        ylab(y_lab) + 
+        # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
+        scale_fill_manual(values = color_ord, labels = time_label) +
+        geom_text(data = medians, 
+                  aes(label = sprintf(signif, medians$med), y=medians$med), 
+                  size = 2, fontface = "bold",
+                  position = position_dodge(.8), vjust = -.6)
+  if (tgt_col == "perc_diff"){
+    bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
+  }
+  return(bx)
   # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
 }
 
@@ -660,7 +662,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
 # lets say one column is location, and one column determines
 # color of stuff on the map.
 #
-geo_map_perc_diff <- function(dt_dt, col_col, color_limit, ttl, subttl){
+geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
   x <- sapply(dt_dt$location, 
               function(x) strsplit(x, "_")[[1]], 
               USE.NAMES=FALSE)
@@ -669,9 +671,9 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit, ttl, subttl){
 
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         # , "okanogan", "chelan"
+                                         ))%>% 
                  data.table()  
   
   dt_dt %>%
@@ -696,12 +698,12 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit, ttl, subttl){
         axis.ticks.y = element_blank(), 
         axis.ticks.x = element_blank(),
         axis.text = element_blank(),
-        plot.title = element_text(size = 14, face = "bold"),
-        legend.text = element_text(size = 8, face="plain"),
+        plot.title=element_text(size=14, face="bold"),
+        # margin = margin(t=.15, r=.1, b=-.2, l=0, "line")),
+        legend.text = element_text(size=8, face="plain"),
         legend.title = element_blank(),
         legend.position = "top",
-        strip.text = element_text(size=14, face="bold")) +
-  ggtitle(label=ttl, subtitle=subttl)
+        strip.text = element_text(size=14, face="bold"))
 }
 
 Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
@@ -754,7 +756,7 @@ Nov_Dec_cum_box <- function(dt, y_lab, tgt_col){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold"),
                plot.subtitle = element_text(face = "bold"),
@@ -820,7 +822,7 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -899,7 +901,6 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
         filter(# time_period != "1950-2005" & 
                time_period != "2006-2025") %>% 
         data.table()
-
   # if ("diff" %in% colnames(dt)){
   #   dt <- subset(dt, select=c("location", "time_period", "emission",
   #                             "cluster", tgt_col))
@@ -907,15 +908,12 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
 
   dt <- subset(dt, select=c("time_period", "emission", # "location",
                             "cluster", tgt_col))
-
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission) %>% 
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
-
   melted <- melt(dt, id = c("emission", # "location", 
                             "time_period", "cluster")); rm(dt)
-  
   time_label <- sort(unique(melted$time_period))
   if (length(unique(melted$time_period)) == 3){
      color_ord = c("dodgerblue2", "olivedrab4", "gold")
@@ -925,13 +923,12 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
-  
+
   ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
   ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
-
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                panel.border = element_rect(fill=NA, size=.3),
                panel.grid.major = element_line(size = 0.05),
@@ -942,7 +939,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold",
                                          margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
@@ -964,22 +961,26 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   ########
   ########    PLOT
   ########
-  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
-  the + 
-  geom_hline(yintercept= 0, color = "red", size=.3) +
-  geom_boxplot(outlier.size = - 0.3, notch=F, 
-               width = box_width, lwd=.1,
-               position = position_dodge(0.8), outlier.shape=NA
-               ) +
-  scale_x_discrete(expand=c(0.1, 0)) + 
-  facet_grid(~ emission, scales="free") +
-  xlab("precip. group") +
-  ylab(y_lab) + 
-  scale_fill_manual(values = color_ord, labels = time_label) +
-  geom_text(data = medians, 
-            aes(label = sprintf(signif, medians$med), y = medians$med), 
-            size = 2, fontface = "bold",
-            position = position_dodge(.8), vjust = -.6)
+  bx <- ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+        the + 
+    # geom_hline(yintercept= 0, color = "red", size=.3) +
+    geom_boxplot(outlier.size = - 0.3, notch=F, 
+                 width = box_width, lwd=.1,
+                 position = position_dodge(0.8), outlier.shape=NA) +
+    scale_x_discrete(expand=c(0.1, 0)) + 
+    facet_grid(~ emission, scales="free") +
+    xlab("precip. group") +
+    ylab(y_lab) + 
+    scale_fill_manual(values = color_ord, labels = time_label) +
+    geom_text(data = medians, 
+              aes(label = sprintf(signif, medians$med), y = medians$med), 
+              size = 2, fontface = "bold",
+              position = position_dodge(.8), vjust = -.6)
+
+  if (tgt_col=="perc_diff"){
+   bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
+  }
+   return(bx)  
 }
 
 box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab, tgt_col){
@@ -1058,9 +1059,9 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
     
     if (length(unique(melted$time_period)) == 3){
       box_p <- ggplot(data = melted, 
-                    aes(x=month, y=value, fill=time_period)) +
+                     aes(x=month, y=value, fill=time_period)) +
                the + 
-               geom_hline(yintercept= 0, color = "red", size=.3) + 
+               # geom_hline(yintercept= 0, color = "red", size=.3) + 
                geom_boxplot(outlier.size = - 0.3, notch=F, 
                             width = box_width, lwd=.1, 
                             position = position_dodge(0.6), outlier.shape=NA) +
@@ -1073,11 +1074,15 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                geom_text(data = medians, 
                          aes(label = sprintf("%1.0f", medians$med), y = medians$med), 
                          size = 2.5, vjust = -.4, position = position_dodge(.6))
+      if (tgt_col == "perc_diff"){
+        box_p <- box_p + geom_hline(yintercept= 0, color = "red", size=.3)
+      }
+              
       } else {
         box_p <- ggplot(data = melted, 
                     aes(x=month, y=value, fill=time_period)) +
                  the + 
-                 geom_hline(yintercept= 0, color = "red", size=.3) + 
+                 # geom_hline(yintercept= 0, color = "red", size=.3) + 
                  geom_boxplot(outlier.size = - 0.3, notch=F, 
                               width = box_width, lwd=.1, outlier.shape=NA,
                               position = position_dodge(0.6)) +
@@ -1085,6 +1090,9 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  ylab(y_lab) +
                  scale_fill_manual(values = color_ord, name = "time\nperiod", 
                                    labels = time_lbl)
+        if (tgt_col == "perc_diff"){
+        box_p <- box_p + geom_hline(yintercept= 0, color = "red", size=.3)
+      }
     }            
     return(box_p)
 
@@ -1189,15 +1197,17 @@ box_dt_25 <- function(dt_25){
                legend.key.size = unit(1.2, "line"),
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.text = element_text(size=ax_ttl_size, face="bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold", vjust=2),
                plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
-               axis.ticks = element_line(size = .1, color = "black"),
+               axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
+                                          face = "bold", color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
                # axis.text.x = element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
@@ -1239,7 +1249,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
   time_label <- sort(unique(data_tb$return_period))
   data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
   data_tb$cluster <- factor(data_tb$cluster, 
-                            levels=c("WCLL", "CFH", "NWCWS", "NCC", "NCLS"))
+                            levels=c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades"))
      
   if (length(time_label) == 3){
     color_ord = c("dodgerblue2", "olivedrab4", "gold")
@@ -1268,7 +1278,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                                            margin = margin(.15, 0, .15, 0, "line")),
                strip.text.y = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
-               axis.ticks = element_line(size = .1, color = "black"),
+               axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
                axis.text.x = element_text(face="bold", color = "black"), # element_blank(),
@@ -1325,13 +1335,21 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
   states <- map_data("state")
   states_cluster <- subset(states, 
                            region %in% c("washington"))
+  
   WA_counties <- map_data("county", "washington")
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         #, "okanogan", "chelan"
+                                         ))%>% 
+                 data.table()
 
   th <- theme(axis.title.y = element_blank(),
                axis.title.x = element_blank(),
                axis.ticks.y = element_blank(), 
                axis.ticks.x = element_blank(),
                axis.text = element_blank(),
+               # plot.title=element_text(size = 14, face = "bold",
+               #              margin = margin(t=.15, r=.1, b=-.5, l=0, "line")),
                plot.title = element_text(size = 14, face = "bold"),
                legend.text = element_text(size = 12, face="plain"),
                legend.title = element_blank(),
@@ -1342,40 +1360,39 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
   color_limit <- max(abs(minn), abs(maxx))
   if (differ==TRUE){
     bbb <- dt %>%
-          ggplot() +
-          geom_polygon(data = states_cluster, 
-                       aes(x = long, y = lat, group = group),
-                       fill = "grey", color = "black") +
-          geom_polygon(data=WA_counties, 
-                       aes(x=long, y=lat,group = group), 
-                       fill = NA, colour = "grey60", size=0.3) + 
-          geom_point(aes_string(x = "long", y = "lat",
-                                color = tgt_col), 
-                     alpha = 1, size=.3) +
-          scale_color_gradient2(midpoint = 0, mid = "white", 
-                                high = muted("blue"), low = muted("red"), 
-                                guide = "colourbar", space = "Lab",
-                                limits = c(-color_limit, color_limit)) +
+           ggplot() +
+           geom_polygon(data = WA_counties, 
+                        aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black") +
+           geom_polygon(data=WA_counties, 
+                        aes(x=long, y=lat,group = group), 
+                        fill = NA, colour = "grey60", size=0.3) + 
+           geom_point(aes_string(x="long", y="lat",
+                                 color = tgt_col), 
+                      alpha = 1, size=.3) +
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = muted("blue"), low = muted("red"), 
+                                 guide = "colourbar", space = "Lab",
+                                 limits = c(-color_limit, color_limit)) +
           th +
-          ggtitle(ttl, subtitle=subttl)
+          ggtitle(ttl) #, subtitle=subttl
       } else{
        bbb <- dt %>%
               ggplot() +
-              geom_polygon(data = states_cluster, 
+              geom_polygon(data = WA_counties, 
                            aes(x = long, y = lat, group = group),
                            fill = "grey", color = "black") +
               geom_polygon(data=WA_counties, 
                            aes(x=long, y=lat,group = group), 
                           fill = NA, colour = "grey60") + 
-              geom_point(aes_string(x = "long", y = "lat",
-                                    color = tgt_col), 
+              geom_point(aes_string(x="long", y="lat", color = tgt_col), 
                          alpha = 1, size=.3) +
               scale_color_viridis_c(option = "plasma", 
                                     name = "storm", direction = -1,
-                                    limits = c(min, max),
+                                    limits = c(minn, maxx),
                                     breaks = pretty_breaks(n = 4)) +
               th +
-              ggtitle(ttl, subtitle=subttl)
+              ggtitle(ttl) #, subtitle=subttl
     }
     return(bbb)
 }
@@ -1457,16 +1474,33 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   states_cluster <- subset(states, 
                            region %in% c("washington"))
   WA_counties <- map_data("county", "washington")
-  
+  WA_counties <- WA_counties %>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         #, "okanogan" "chelan"
+                                         ))%>% data.table()
+
+  the <- theme(axis.title.y = element_blank(),
+               axis.title.x = element_blank(),
+               axis.ticks.y = element_blank(), 
+               axis.ticks.x = element_blank(),
+               axis.text = element_blank(),
+               plot.title=element_text(size = 14, face = "bold",
+                                       margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               legend.text = element_text(size = 8, face="plain"),
+               legend.title = element_blank(),
+               # legend.justification = c(.93, .9),
+               # legend.position = c(.93, .9),
+               legend.position = "top",
+               strip.text = element_text(size=14, face="bold"))
   dt %>%
   ggplot() +
-  geom_polygon(data = states_cluster, 
-               aes(x = long, y = lat, group = group),
+  geom_polygon(data=WA_counties, 
+               aes(x=long, y=lat, group = group),
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group), 
-               fill = NA, colour = "grey60", size=.3) + 
-  geom_point(aes_string(x = "long", y = "lat", color = col_col), 
+               fill = NA, colour="grey60", size=.3) + 
+  geom_point(aes_string(x="long", y="lat", color=col_col), 
              alpha = 1, size=.3) +
   guides(fill = guide_colourbar(barwidth = .1, barheight = 20))+
   # scale_color_viridis_c(option = "plasma", 
@@ -1501,25 +1535,14 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   #       breaks = c(20, 30, 40, 50, 60, 70, 80, 90, 100))
 
   scale_color_gradient2(midpoint = 0, mid = "white", 
-                        high = muted("blue"), low = muted("red"), 
-                        guide = "colourbar", space = "Lab",
-                        limit = c(-color_limit, color_limit)) + 
+                        high=muted("blue"), low = muted("red"), 
+                        guide="colourbar", space = "Lab",
+                        limit=c(-color_limit, color_limit)) + 
   # scale_color_continuous(breaks = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        labels = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        low = "red", high = "blue") + 
-  theme(axis.title.y = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.y = element_blank(), 
-        axis.ticks.x = element_blank(),
-        axis.text = element_blank(),
-        plot.title = element_text(size = 14, face = "bold"),
-        legend.text = element_text(size = 8, face="plain"),
-        legend.title = element_blank(),
-        # legend.justification = c(.93, .9),
-        # legend.position = c(.93, .9),
-        legend.position = "top",
-        strip.text = element_text(size=14, face="bold"))+
-  ggtitle(ttl, subtitle=subttl)
+  the +
+  ggtitle(ttl) # , subtitle=subttl
 }
 
 all_mods_map_storm <- function(dt, minn, maxx, ttl){
@@ -1536,9 +1559,9 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
 
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         #, "okanogan" "chelan"
+                                         ))%>% 
                  data.table()
 
   dt %>%
@@ -1576,16 +1599,16 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
   
   dt <- add_coord_from_location(dt)
   dt <- merge(dt, fips_clust, by="location", all.x=T)
-  dt <- within(dt, remove(location, model, return_period))
+  dt <- suppressWarnings({within(dt, remove(location, model, return_period))})
 
   # states <- map_data("state")
   # states_cluster <- subset(states, 
   #                          region %in% c("washington"))
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         # , "okanogan", "chelan"
+                                         ))%>% 
                  data.table()
   dt %>%
   ggplot() +
@@ -1596,9 +1619,7 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
                aes(x=long, y=lat,group = group), 
                fill = NA, colour = "grey60") + 
   geom_point(aes_string(x = "long", y = "lat",
-                        color = tgt_col), 
-                        alpha = 1,
-                        size=.3) +
+                        color = tgt_col), alpha = 1, size=.3) +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
                         limits = c(minn, maxx),
@@ -1613,8 +1634,7 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
         legend.title = element_blank(),
         legend.justification = c(.93, .9),
         legend.position = c(.93, .9),
-        strip.text = element_text(size=14, face="bold")) +
-  ggtitle("Observed historical") 
+        strip.text = element_text(size=14, face="bold"))
   # +
   # geom_polygon(fill = "transparent", color = "red", size = .1, 
   #               data = dt, aes(x = long, y = lat, group = cluster))
@@ -1640,7 +1660,7 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
 
   melted <- melt(dt, id = c("location", "year", "time_period", "emission", "cluster"))
   
-  categ_label <- c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
   time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
@@ -1853,9 +1873,9 @@ geo_map_of_clusters <- function(obs_w_clusters){
   
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         #, "okanogan" "chelan"
+                                         ))%>% 
                  data.table()
 
   # color_ord = c("red", "purple", "dodgerblue2", "blue4")
@@ -1941,7 +1961,7 @@ satellite_map_of_clusters <- function(obs_w_clusters){
 
   # "grey47",
   color_ord = c("blue4", "dodgerblue2", "purple", "red") 
-  categ_lab = c("WCLL", "CFH", "NWCWS", "NCC", "NCLS")
+  categ_lab = c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
@@ -1998,9 +2018,9 @@ geo_map_of_precip <- function(data_dt){
 
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
+                                         #, "okanogan" "chelan"
+                                         ))%>% 
                  data.table()
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
@@ -2051,9 +2071,10 @@ geo_map_of_elevation <- function(data_dt){
   data_dt <- unique(data_dt)
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island")) %>% data.table()
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish",
+                                         "island"
+                                         #, "okanogan", "chelan"
+                                         )) %>% data.table()
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),
@@ -2105,9 +2126,10 @@ geo_map_of_rain_frac <- function(data_dt){
 
   WA_counties <- map_data("county", "washington")
   WA_counties <- WA_counties %>% 
-                 filter(subregion %in% c("whatcom", "skagit", 
-                                         "snohomish", "okanogan",
-                                         "chelan", "island"))%>% 
+                 filter(subregion %in% c("whatcom", "skagit", "snohomish",
+                                         "island"
+                                         # , "okanogan", "chelan", 
+                                         ))%>% 
                  data.table()
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
