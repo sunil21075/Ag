@@ -291,7 +291,7 @@ shinyServer(function(input, output, session) {
   #                                     list(src = filename, width = 800, height = 900)}, 
   #                                     deleteFile = FALSE)
 
-  output$abs_pop_cumdd <- renderImage({
+  output$diapause_abs_rcp85 <- renderImage({
     filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp85.png'))
     
     # Return a list containing the filename and alt text
@@ -323,7 +323,7 @@ shinyServer(function(input, output, session) {
     
   #   }, deleteFile = FALSE) # hossein
 
-  output$abs_pop_cumdd_rcp45 <- renderImage({
+  output$diapause_abs_rcp45 <- renderImage({
     filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp45.png'))
     
     # Return a list containing the filename and alt text
