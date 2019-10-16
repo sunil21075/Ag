@@ -379,7 +379,13 @@ navbarPage(title = div("",
                                  ####### BLOOM END
 
                                  ####### No. of generations 85 start
-                                 tabPanel("No. of Generations", imageOutput("Adult_Gen_Aug_rcp85")),
+                                 tabPanel("No. of Generations",
+                                          fluidRow(tabBox(tabPanel("Adults", imageOutput("Adult_Gen_Aug_rcp85"), height = 700),
+                                                          tabPanel("Larva", imageOutput("Larva_Gen_Aug_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
                                  ####### No. of generations 85 END
                                  
                                  ####### DD start
@@ -401,7 +407,7 @@ navbarPage(title = div("",
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop")),
                                                           # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot"), height = 900), # Hossein
-                                                          tabPanel("Number of Generations", imageOutput("lg_bplot"), height = 900),
+                                                          # tabPanel("Number of Generations", imageOutput("Larva_Gen_Aug_rcp85"), height = 900),
                                                           width = 12
                                                           )
                                                    )
@@ -423,7 +429,15 @@ navbarPage(title = div("",
                                  ####### BLOOM 45 END
 
                                  ####### No. of generations 45 start
-                                 tabPanel("No. of Generations", imageOutput("Adult_Gen_Aug_rcp45")),
+                                 tabPanel("No. of Generations",
+                                          fluidRow(tabBox(tabPanel("Adults", imageOutput("Adult_Gen_Aug_rcp45"), height = 700),
+                                                          tabPanel("Larva", imageOutput("Larva_Gen_Aug_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+
+                                 # tabPanel("No. of Generations", imageOutput("Adult_Gen_Aug_rcp45")),
                                  ####### No. of generations 45 END
 
                                  ####### DD 45 start
@@ -445,7 +459,7 @@ navbarPage(title = div("",
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop_rcp45")),
                                                           # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot_rcp45"), height = 900), # Hossein
-                                                          tabPanel("Number of Generations", imageOutput("lg_bplot_rcp45"), height = 900),
+                                                          # tabPanel("Number of Generations", imageOutput("Larva_Gen_Aug_rcp45"), height = 900),
                                                           width = 12
                                                           )
                                                   )

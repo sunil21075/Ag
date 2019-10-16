@@ -126,7 +126,7 @@ shinyServer(function(input, output, session) {
                                   list(src = filename, width = 600, height = 450)}, 
                                   deleteFile = FALSE)
   
-  output$lg_bplot <- renderImage({
+  output$Larva_Gen_Aug_rcp85 <- renderImage({
                                   filename <- normalizePath(file.path('./plots/', 
                                                                       'Larva_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
@@ -152,7 +152,7 @@ shinyServer(function(input, output, session) {
                                         list(src = filename, width = 600, height = 450)}, 
                                         deleteFile = FALSE)
   
-  output$lg_bplot_rcp45 <- renderImage({
+  output$Larva_Gen_Aug_rcp45 <- renderImage({
                                         filename <- normalizePath(file.path('./plots/', 
                                                             'Larva_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
