@@ -43,8 +43,9 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
   d1[variable == "gala"]$variable = "Gala"
   d1[variable == "cripps_pink"]$variable = "Cripps Pink"
   print ("line 45, plot_bloom_filling")
+  color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
-       labs(x = "Julian day", y = "proportion full bloom completed", fill = "Climate Group") +
+       labs(x = "day of year", y = "proportion full bloom completed", fill = "Climate Group") +
        guides(fill=guide_legend(title="Time period")) + 
        facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
        stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
@@ -54,17 +55,8 @@ plot_bloom_filling <- function(data_dir, file_name = "vertdd_combined_CMPOP_",
                                    fun.ymin=function(z) { quantile(z,0.25) }, 
                                    fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
        stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) }, size = 1)+
-       
-       scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                          rgb(92, 160, 201, max=255), 
-                          rgb(211, 91, 76, max=255), 
-                          rgb(125, 7, 37, max=255))) +
-       
-       scale_fill_manual(values =c(rgb(29, 67, 111, max=255), 
-                         rgb(92, 160, 201, max=255), 
-                         rgb(211, 91, 76, max=255), 
-                         rgb(125, 7, 37, max=255))) +
-
+       scale_color_manual(values=color_ord) +
+       scale_fill_manual(values =color_ord) +
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
        theme(panel.grid.major = element_line(size=0.2),
              panel.spacing=unit(.5, "cm"),
@@ -105,14 +97,14 @@ plot_bloom <- function(data_dir, file_name = "vertdd_combined_CMPOP_", version,
   d1[variable == "gala"]$variable = "Gala"
   d1[variable == "cripps_pink"]$variable = "Cripps Pink"
   print ("line 107, plot_bloom")
+  color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   p1 = ggplot(d1, aes(x=dayofyear, y=value, fill=factor(ClimateGroup))) +
-       labs(x = "Julian day", y = "proportion completing full bloom", color = "Climate Group") +
+       labs(x = "day of year", y = "proportion completing full bloom", color = "Climate Group") +
        guides(fill=guide_legend(title="Time period")) + 
      # stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.1) }, fun.ymax=function(z) { quantile(z,0.9) }, alpha=0.3) +
      # stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, fun.ymin=function(z) { quantile(z,0.25) }, fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.7) +
        stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) }, aes(color=factor(ClimateGroup)), size = 1)+ #, aes(color=factor(Timeframe))) + , # aes(color=factor(ClimateGroup))
-       scale_color_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-     # scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+       scale_color_manual(values=color_ord) +
        facet_grid(. ~ variable ~ CountyGroup, scales = "free") +
      # xlim(45, 165) +
        scale_x_continuous(breaks=seq(x_limits[1], x_limits[2], 10), limits = x_limits) +
@@ -160,10 +152,10 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
     data = melt(data, id = c("ClimateGroup", "CountyGroup", 
                              "latitude", "longitude", 
                              "ClimateScenario", "year", "dayofyear"))
-
+    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
     plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                   aes(x=dayofyear, y=value, fill=factor(variable))) +
-           labs(x = "Julian day", y = "cumulative population fraction", fill = "larva generation") +
+           labs(x = "day of year", y = "cumulative population fraction", fill = "larva generation") +
            facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
           # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
            stat_summary(geom="ribbon", 
@@ -178,15 +170,9 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                         alpha=0.8) + 
            stat_summary(geom="line", 
                         fun.y=function(z) { quantile(z,0.5) })+
-           scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                       rgb(92, 160, 201, max=255), 
-                                       rgb(211, 91, 76, max=255), 
-                                       rgb(125, 7, 37, max=255)),
-                             labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
-           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                      rgb(92, 160, 201, max=255), 
-                                      rgb(211, 91, 76, max=255), 
-                                      rgb(125, 7, 37, max=255)),
+           scale_color_manual(values = color_ord,
+                              labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
+           scale_fill_manual(values= color_ord,
                              labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4"))+
            scale_x_continuous(limits = c(0, 320), breaks=seq(0, 300, 100)) +
            geom_vline(xintercept=c(100, 150, 200, 250, 300), linetype="solid", color ="grey", size=0.2) +
@@ -221,8 +207,8 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                                    "year", "dayofyear", "CumDDinF"))
 
     data$CountyGroup = as.character(data$CountyGroup)
-    data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
-    data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
+    data[CountyGroup == 1]$CountyGroup = 'Cooler subregions'
+    data[CountyGroup == 2]$CountyGroup = 'Warmer subregions'
 
     old_ClimateGroup <- c("Historical", "2040's", "2060's", "2080's")
     new_ClimateGroup <- c("Historical", "2040s", "2060s", "2080s")
@@ -232,15 +218,17 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
     data[data$ClimateGroup == old_ClimateGroup[4]]$ClimateGroup = new_ClimateGroup[4]
     data$ClimateGroup = factor(data$ClimateGroup, levels=new_ClimateGroup, order=T)
     
-    data <- data[, .(CumDD = median(CumDDinF)), by = c("CountyGroup", "latitude", "longitude", 
-                                                       "ClimateScenario", "ClimateGroup", "dayofyear")]
+    data <- data[, .(CumDD = median(CumDDinF)), 
+                  by = c("CountyGroup", "latitude", "longitude", 
+                        "ClimateScenario", "ClimateGroup", "dayofyear")]
     if (version == "rcp85"){
       y_range = seq(0, 5750, 500)
      } else {
       y_range=seq(0, 4500, 500)
     }
+    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
-           labs(x = "Julian day", y = "cumulative degree days (in F)", fill = "Climate group") +
+           labs(x = "day of year", y = "cumulative degree days (in F)", fill = "Climate group") +
            guides(fill=guide_legend(title="")) + 
            facet_grid(. ~ CountyGroup, scales="free") +
            #geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
@@ -252,14 +240,8 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                                        fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
            stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) + 
         
-           scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                       rgb(92, 160, 201, max=255), 
-                                       rgb(211, 91, 76, max=255), 
-                                       rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                      rgb(92, 160, 201, max=255), 
-                                      rgb(211, 91, 76, max=255), 
-                                      rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+           scale_color_manual(values=color_ord)+
+           scale_fill_manual(values=color_ord)+
            scale_x_continuous(breaks=seq(0, 370, 50)) +
            scale_y_continuous(breaks=y_range) +
            # geom_vline(xintercept=c(90, 181, 273), 
@@ -295,7 +277,7 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
     data = subset(data, select = c("ClimateGroup", "CountyGroup", "latitude", 
                                    "longitude", "ClimateScenario", "year", "dayofyear", "CumDDinF"))
     data$CumDD = data$CumDDinF
-
+    color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
     plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
          # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
            stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
@@ -305,14 +287,12 @@ plot_cumdd_eggHatch <- function(input_dir, file_name ="combined_CMPOP_",
                                        fun.ymin=function(z) { quantile(z,0.25) }, 
                                        fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
            stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) })+ #, aes(color=factor(Timeframe))) +        
-           scale_color_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), 
-                                       rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
-           scale_fill_manual(values=c(rgb(29, 67, 111, max=255), rgb(92, 160, 201, max=255), 
-                                      rgb(211, 91, 76, max=255), rgb(125, 7, 37, max=255)))+#c("black", "red","darkgreen","blue")) +
+           scale_color_manual(values = color_ord) +
+           scale_fill_manual(values = color_ord) +
            facet_grid(CountyGroup ~ ClimateGroup ~ ., scales = "fixed") +
            scale_x_continuous(breaks=seq(0, 370, 50)) +
            scale_y_continuous(breaks=seq(0, 5000, 1000)) +
-           labs(x = "Julian day", y = "cumulative degree days (in F)", fill = "Climate Group") +
+           labs(x = "day of year", y = "cumulative degree days (in F)", fill = "Climate Group") +
            theme(panel.grid.major = element_line(size = 0.7),
                  panel.spacing=unit(.5, "cm"),
                  legend.title = element_text(face = "plain", size = 16),
@@ -469,11 +449,11 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
                            "latitude", "longitude", 
                            "ClimateScenario", "year", "dayofyear"))
 
-
+  color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                 aes(x=dayofyear, y=value, fill=factor(variable))
                 ) +
-         labs(x = "Julian day", y = paste0("cumulative population fraction"), fill = "adult generation") +
+         labs(x = "day of year", y = paste0("cumulative population fraction"), fill = "adult generation") +
         # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
         stat_summary(geom="ribbon", 
                      fun.y=function(z) { quantile(z,0.5) }, 
@@ -487,15 +467,9 @@ plot_adult_DoY_filling_median <- function(input_dir, file_name ="combined_CMPOP_
                      alpha=0.8) + 
         stat_summary(geom="line", 
                      fun.y=function(z) { quantile(z,0.5) })+
-        scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                    rgb(92, 160, 201, max=255), 
-                                    rgb(211, 91, 76, max=255), 
-                                    rgb(125, 7, 37, max=255)),
+        scale_color_manual(values = color_ord,
                           labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
-        scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                   rgb(92, 160, 201, max=255), 
-                                   rgb(211, 91, 76, max=255), 
-                                   rgb(125, 7, 37, max=255)),
+        scale_fill_manual(values = color_ord,
                           labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")) +
         facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
         scale_x_continuous(limits = c(0, 320), breaks=seq(0, 300, 100)) +
@@ -548,11 +522,11 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
   data = melt(data, id = c("ClimateGroup", "CountyGroup", 
                            "latitude", "longitude", 
                            "ClimateScenario", "year", "dayofyear"))
-
+  color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   plot = ggplot(data[value >=0.01 & value <.98 & dayofyear <360], 
                 aes(x=dayofyear, y=value, fill=factor(variable))
                 ) +
-         labs(x = "Julian day", y = paste0("cumulative population fraction"), fill = "adult generation") +
+         labs(x = "day of year", y = paste0("cumulative population fraction"), fill = "adult generation") +
          # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
          stat_summary(geom="ribbon", 
                       fun.y=function(z) { quantile(z,0.5) }, 
@@ -566,16 +540,10 @@ plot_adult_DoY_filling_mean <- function(input_dir, file_name ="combined_CMPOP_",
                       alpha=0.8) + 
          stat_summary(geom="line", 
                       fun.y=function(z) { quantile(z,0.5) })+
-         scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                            rgb(92, 160, 201, max=255), 
-                            rgb(211, 91, 76, max=255), 
-                            rgb(125, 7, 37, max=255)),
+         scale_color_manual(values=color_ord,
                             labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")
                             ) +
-         scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                           rgb(92, 160, 201, max=255), 
-                           rgb(211, 91, 76, max=255), 
-                           rgb(125, 7, 37, max=255)),
+         scale_fill_manual(values=color_ord,
                            labels = c("Gen. 1", "Gen. 2", "Gen. 3", "Gen. 4")
                            ) +
          facet_grid(. ~ ClimateGroup ~ CountyGroup, scales="free") +
@@ -722,7 +690,7 @@ plot_adult_emergence_4_Latex <- function(input_dir, file_name,
       geom_boxplot(outlier.size=-.25, notch=TRUE, width=box_width, lwd=.1) +
       scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
       scale_y_continuous(breaks = round(seq(40, 170, by = 20))) +
-      labs(x="", y="Julian day", color = "Climate group") +
+      labs(x="", y="day of year", color = "Climate group") +
       facet_wrap(~CountyGroup) +
       theme(plot.margin = unit(c(t=0, r=.2, b=.1, l=0), "cm"),
             panel.border = element_rect(fill=NA, size=.3),
@@ -818,7 +786,7 @@ plot_adult_emergence <- function(input_dir, file_name,
       geom_boxplot(outlier.size=-.15, notch=FALSE, width=box_width, lwd=.25) +
       scale_x_discrete(expand=c(0, 2), limits = levels(data$ClimateGroup[1])) +
       scale_y_continuous(breaks = round(seq(40, 170, by = 20), 1)) +
-      labs(x="Time period", y="Julian day of adult emergence", color = "Climate Group") +
+      labs(x="Time period", y="day of year of adult emergence", color = "Climate Group") +
       facet_wrap(~CountyGroup) +
       the_theme +
       scale_fill_manual(values=color_ord, name="Time\nPeriod", labels=time_periods) + 
@@ -1039,7 +1007,7 @@ plot_flight_DoY_half <- function(input_dir, input_name, stage,
                         position=position_dodge(width=0.5)) + 
            scale_y_continuous(limits = c(80, 370), breaks = seq(100, 360, by = 50)) +
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
-           labs(x="Time period", y="Julian day", color = "Climate Group") + 
+           labs(x="Time period", y="day of year", color = "Climate Group") + 
            theme(legend.position="bottom", 
                  legend.margin=margin(t=-.1, r=0, b=5, l=0, unit = 'cm'),
                  legend.title = element_blank(),
@@ -1109,10 +1077,10 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
   data[data[ , data$dayofyear >= 182 & data$dayofyear <= 273]]$season = "Qr. 3"
   data[data[ , data$dayofyear >= 274]]$season = "Qr. 4"
   data$season = factor(data$season, levels = c("Qr. 1", "Qr. 2", "Qr. 3", "Qr. 4s"))
-
+  color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
   plot = ggplot(data, aes(x=dayofyear, y=CumDD, fill=factor(ClimateGroup))) +
          facet_grid(. ~ CountyGroup ~ season, scales = "free") +
-         labs(x = "Julian day", y = "cumulative degree days (in F)", fill = "Climate group") +
+         labs(x = "day of year", y = "cumulative degree days (in F)", fill = "Climate group") +
          guides(fill=guide_legend(title="")) + 
          stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                                      fun.ymin=function(z) { quantile(z,0.1) }, 
@@ -1122,14 +1090,8 @@ plot_cumdd_seasonal <- function(input_dir, file_name ="combined_CMPOP_",
                                      fun.ymax=function(z) { quantile(z,0.75) }, alpha=0.8) + 
          stat_summary(geom="line", fun.y=function(z) { quantile(z,0.5) })+
       
-         scale_color_manual(values=c(rgb(29, 67, 111, max=255), 
-                                     rgb(92, 160, 201, max=255), 
-                                     rgb(211, 91, 76, max=255), 
-                                     rgb(125, 7, 37, max=255))) +
-         scale_fill_manual(values=c(rgb(29, 67, 111, max=255), 
-                                    rgb(92, 160, 201, max=255), 
-                                    rgb(211, 91, 76, max=255), 
-                                    rgb(125, 7, 37, max=255)))+ 
+         scale_color_manual(values=color_ord) +
+         scale_fill_manual(values=color_ord)+ 
          scale_x_continuous(breaks=seq(0, 370, 50)) +
          scale_y_continuous(breaks=y_range) +
          theme(panel.grid.minor = element_blank(),
@@ -1171,7 +1133,7 @@ plot_cumdd_histogram <- function(input_dir, file_name ="combined_CMPOP_",
     color_ord = c("grey70", "dodgerblue", "olivedrab4", "red")
     plot = ggplot(data, aes(x=dayofyear, fill=ClimateGroup, color=ClimateGroup)) + 
            geom_histogram(alpha=0.5, position="dodge", bins=4) +
-           labs(x = "Julian day", fill="") +
+           labs(x = "day of year", fill="") +
            guides(guide_legend(title=""), color = FALSE, shape = FALSE) + 
            facet_grid(. ~ CountyGroup, scales="free") +
            scale_x_continuous(breaks=seq(0, 370, 50)) +

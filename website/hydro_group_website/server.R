@@ -119,7 +119,7 @@ shinyServer(function(input, output, session) {
   #                                list(src = filename, width = 1200, height = 800)}, 
   #                                deleteFile = FALSE) # Hossein commented out
   
-  output$ag_bplot <- renderImage({
+  output$Adult_Gen_Aug_rcp85 <- renderImage({
                                   filename <- normalizePath(file.path('./plots/', 
                                                                       'Adult_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
@@ -145,7 +145,7 @@ shinyServer(function(input, output, session) {
   #                                       list(src = filename, width = 1200, height = 800)}, 
   #                                       deleteFile = FALSE) # Hossein commented out
   
-  output$ag_bplot_rcp45 <- renderImage({
+  output$Adult_Gen_Aug_rcp45 <- renderImage({
                                         filename <- normalizePath(file.path('./plots/', 
                                                                  'Adult_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
@@ -339,14 +339,15 @@ shinyServer(function(input, output, session) {
     
   # }, deleteFile = FALSE)
   ############
-  output$full_bloom <- renderImage({
-    #filename <- normalizePath(file.path('./plots', 'FullBloom.png'))
-    filename <- normalizePath(file.path('./plots', 'bloom_rcp85.png'))
+  ############ Bloom to be done in another page
+  # output$full_bloom <- renderImage({
+  #   #filename <- normalizePath(file.path('./plots', 'FullBloom.png'))
+  #   filename <- normalizePath(file.path('./plots', 'bloom_rcp85.png'))
     
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 500)
+  #   # Return a list containing the filename and alt text
+  #   list(src = filename, width = 600, height = 500)
     
-  }, deleteFile = FALSE)
+  # }, deleteFile = FALSE)
 
   output$cumdd <- renderImage({
     filename <- normalizePath(file.path('./plots', 'cumdd_rcp85.png'))
@@ -364,14 +365,15 @@ shinyServer(function(input, output, session) {
     
   }, deleteFile = FALSE)
 
-  output$full_bloom_rcp45 <- renderImage({
-    #filename <- normalizePath(file.path('./plots', 'FullBloom_rcp45.png'))
-    filename <- normalizePath(file.path('./plots', 'bloom_rcp45.png'))
+  # Bloom to be done in another page
+  # output$full_bloom_rcp45 <- renderImage({
+  #   #filename <- normalizePath(file.path('./plots', 'FullBloom_rcp45.png'))
+  #   filename <- normalizePath(file.path('./plots', 'bloom_rcp45.png'))
     
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 500)
+  #   # Return a list containing the filename and alt text
+  #   list(src = filename, width = 600, height = 500)
     
-  }, deleteFile = FALSE)
+  # }, deleteFile = FALSE)
 
   output$cumdd_rcp45 <- renderImage({
     filename <- normalizePath(file.path('./plots', 'cumdd_rcp45.png'))

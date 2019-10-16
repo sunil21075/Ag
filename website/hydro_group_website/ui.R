@@ -155,7 +155,7 @@ navbarPage(title = div("",
            #
            ############## CM Flight START
            #
-           navbarMenu(tags$b("CM Flight"),
+           navbarMenu(tags$b("Flight"),
                       tabPanel("Median Day of Year (First Flight)", 
                                div(class="outer",
                                    tags$head(includeCSS("styles.css")),
@@ -241,7 +241,7 @@ navbarPage(title = div("",
            #
            ############## CM Egg Hatch START
            #
-           navbarMenu(tags$b("CM Egg Hatch"),
+           navbarMenu(tags$b("Egg Hatch"),
                       tabPanel("Pest Risk",
                                div(class="outer",
                                    tags$head(includeCSS("styles.css")),
@@ -335,7 +335,7 @@ navbarPage(title = div("",
            #
            ############## CM Diapause START
            #
-           tabPanel(tags$b("CM Diapause"),
+           tabPanel(tags$b("Diapause"),
                     div(class="outer",
                         tags$head(includeCSS("styles.css")),
                         leafletOutput("map_diap_pop", width="100%", height="100%"),
@@ -372,21 +372,25 @@ navbarPage(title = div("",
            ############## Regional Plots START
            #
            tabPanel(tags$b("Regional Plots"),
-                    navlistPanel(tabPanel("Location Groups", imageOutput("location_group")),
-                                 HTML("<b>Rcp 8.5</b>"),
+                    navlistPanel(tabPanel("Subregions Map", imageOutput("location_group")),
+                                 HTML("<b>RCP 8.5</b>"),
                                  ####### BLOOM start
-                                 tabPanel("Bloom", imageOutput("full_bloom")),
+                                 # tabPanel("Bloom", imageOutput("full_bloom")),
                                  ####### BLOOM END
+
+                                 ####### No. of generations 85 start
+                                 tabPanel("No. of Generations", imageOutput("Adult_Gen_Aug_rcp85")),
+                                 ####### No. of generations 85 END
                                  
                                  ####### DD start
                                  tabPanel("Degree Days", imageOutput("cumdd")),
                                  ####### DD END
                                  
                                  ####### Adult Flight start
-                                 tabPanel("Adult Flight",
+                                 tabPanel("Adult First Flight",
                                           fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot"), height = 700),
                                                           # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot"), height = 900), # hossein
-                                                          tabPanel("Number of Generations", imageOutput("ag_bplot"), height = 900),
+                                                          # tabPanel("Number of Generations", imageOutput("ag_bplot_rcp85"), height = 900),
                                                           width = 12
                                                           )
                                                   )
@@ -413,20 +417,24 @@ navbarPage(title = div("",
                                                   )
                                           ),
                                  ####### DIAPAUSE END
-                                 HTML("<b>Rcp 4.5</b>"),
+                                 HTML("<b>RCP 4.5</b>"),
                                  ####### BLOOM 45 start
-                                 tabPanel("Bloom", imageOutput("full_bloom_rcp45")),
+                                 # tabPanel("Bloom", imageOutput("full_bloom_rcp45")),
                                  ####### BLOOM 45 END
+
+                                 ####### No. of generations 45 start
+                                 tabPanel("No. of Generations", imageOutput("Adult_Gen_Aug_rcp45")),
+                                 ####### No. of generations 45 END
 
                                  ####### DD 45 start
                                  tabPanel("Degree Days", imageOutput("cumdd_rcp45")),
                                  ####### DD 45 END
 
                                  ####### Adult Flight 45 start
-                                 tabPanel("Adult Flight",
+                                 tabPanel("Adult First Flight",
                                           fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot_rcp45"), height = 700),
                                                           # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot_rcp45"), height = 900), # Hossein
-                                                          tabPanel("Number of Generations", imageOutput("ag_bplot_rcp45"), height = 900),
+                                                          # tabPanel("Number of Generations", imageOutput("ag_bplot_rcp45"), height = 900),
                                                           width = 12
                                                           )
                                                   )
