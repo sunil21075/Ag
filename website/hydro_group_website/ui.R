@@ -388,26 +388,17 @@ navbarPage(title = div("",
                                           ),
                                  ####### No. of generations 85 END
                                  
-                                 ####### DD start
+                                 ####### DD 85 start
                                  tabPanel("Degree Days", imageOutput("cumdd")),
-                                 ####### DD END
+                                 ####### DD 85 END
                                  
-                                 ####### Adult Flight start
-                                 tabPanel("Adult First Flight",
-                                          fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot"), height = 700),
-                                                          # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot"), height = 900), # hossein
-                                                          # tabPanel("Number of Generations", imageOutput("ag_bplot_rcp85"), height = 900),
-                                                          width = 12
-                                                          )
-                                                  )
-                                          ),
-                                 ####### Adult Flight END
+                                 ####### Adult Flight 85 start
+                                 tabPanel("Adult First Flight", imageOutput("adult_emergence_rcp85")),
+                                 ####### Adult Flight 85 END
 
                                  ####### Egg Hatch into Larva start
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop")),
-                                                          # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot"), height = 900), # Hossein
-                                                          # tabPanel("Number of Generations", imageOutput("Larva_Gen_Aug_rcp85"), height = 900),
                                                           width = 12
                                                           )
                                                    )
@@ -445,21 +436,12 @@ navbarPage(title = div("",
                                  ####### DD 45 END
 
                                  ####### Adult Flight 45 start
-                                 tabPanel("Adult First Flight",
-                                          fluidRow(tabBox(tabPanel("Adult Flight", imageOutput("e_vplot_rcp45"), height = 700),
-                                                          # tabPanel("Adult Flight Day of Year", imageOutput("ag_vplot_rcp45"), height = 900), # Hossein
-                                                          # tabPanel("Number of Generations", imageOutput("ag_bplot_rcp45"), height = 900),
-                                                          width = 12
-                                                          )
-                                                  )
-                                          ),
+                                 tabPanel("Adult First Flight", imageOutput("adult_emergence_rcp45")),
                                  ####### Adult Flight 45 END
 
                                  ####### Egg Hatch 45 start
                                  tabPanel("Egg Hatch into Larva",
                                           fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop_rcp45")),
-                                                          # tabPanel("Egg Hatch Day of Year", imageOutput("lg_vplot_rcp45"), height = 900), # Hossein
-                                                          # tabPanel("Number of Generations", imageOutput("Larva_Gen_Aug_rcp45"), height = 900),
                                                           width = 12
                                                           )
                                                   )

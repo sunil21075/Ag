@@ -203,12 +203,12 @@ shinyServer(function(input, output, session) {
 #    
 #  }, deleteFile = FALSE)
   
-  output$e_vplot <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('./plots/', 
                                                                      'adult_emergence_rcp85.png'))
                                  # Return a list containing the filename and alt text
                                  list(src = filename, width = 600, height = 450)}, 
                                  deleteFile = FALSE)
-  output$e_vplot_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/', 
                                                                            'adult_emergence_rcp45.png'))
                                        # Return a list containing the filename and alt text
                                        list(src = filename, width = 600, height = 450)}, 
