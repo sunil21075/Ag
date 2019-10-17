@@ -28,7 +28,6 @@ AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period",
                               "model", "emission",
                               "seasonal_cum_precip", "rain_fraction", "snow_fraction",
                               "season"))
-
 AVs <- remove_observed(AVs)
 AVs <- remove_current_timeP(AVs) # remove 2006-2025
 # update clusters labels
@@ -44,7 +43,6 @@ unbias_diff <- na.omit(unbias_diff)
 unbias_diff <- remove_observed(unbias_diff)
 unbias_diff <- remove_current_timeP(unbias_diff) # remove 2006-2025
 unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff) # update clusters labels
-
 unbias_diff_45 <- unbias_diff %>% filter(emission=="RCP 4.5") %>% data.table()
 unbias_diff_85 <- unbias_diff %>% filter(emission=="RCP 8.5") %>% data.table(); rm(unbias_diff)
 
@@ -63,7 +61,7 @@ for (clust_g in cluster_types){
   ######### Actual value plots
   #########
   quans_85 <- find_quantiles(curr_AVs_85, tgt_col=AV_tg_col, time_type="seasonal")
-  quans_45 <- find_quantiles(curr_AVs_85, tgt_col=AV_tg_col, time_type="seasonal")
+  quans_45 <- find_quantiles(curr_AVs_45, tgt_col=AV_tg_col, time_type="seasonal")
   
   AV_box_85 <- seasonal_cum_box_season_x(dt = curr_AVs_85, 
                                          tgt_col = AV_tg_col,
@@ -79,7 +77,7 @@ for (clust_g in cluster_types){
   #########
   ######### difference plot
   #########
-  box_title <- paste0("differences", subttl)
+  box_title <- paste0("percentage differences between future time periods and historical", subttl)
   quans_85 <- find_quantiles(curr_diff_85, tgt_col= "perc_diff", time_type="seasonal")
   quans_45 <- find_quantiles(curr_diff_45, tgt_col= "perc_diff", time_type="seasonal")
 
@@ -87,20 +85,20 @@ for (clust_g in cluster_types){
                                                   y_lab = "differences (%)",
                                                   tgt_col = "perc_diff") + 
                          ggtitle(box_title) +
-                         coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                         coord_cartesian(ylim=c(quans_85[1], quans_85[2]))
 
   unbias_perc_diff_45 <- seasonal_cum_box_season_x(dt = curr_diff_45,
                                                   y_lab = "differences (%)",
                                                   tgt_col = "perc_diff") + 
                          ggtitle(box_title) + 
-                         coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                         coord_cartesian(ylim=c(quans_45[1], quans_45[2]))
   #########
   #########
   ######### rain plot
   #########
-  box_title <- paste0("rain fracion (", clust_g, ")")
-  quans_85 <- 100 * find_quantiles(curr_AVs_85, tgt_col= "rain_fraction", time_type="seasonal")
-  quans_45 <- 100 * find_quantiles(curr_AVs_45, tgt_col= "rain_fraction", time_type="seasonal")
+  box_title <- paste0("fraction of precip. fell as rain (", clust_g, ")")
+  quans_85 <- 100 * find_quantiles(curr_AVs_85, tgt_col="rain_fraction", time_type="seasonal")
+  quans_45 <- 100 * find_quantiles(curr_AVs_45, tgt_col="rain_fraction", time_type="seasonal")
 
   rain_frac_85 <- seasonal_fraction_season_x(data_tb = curr_AVs_85,
                                              y_lab = "rain fraction (%)", 
@@ -118,20 +116,22 @@ for (clust_g in cluster_types){
   #######################################################################
   ############
   ############
-  DD <- "narrowed_rain_snow_fractions/seasonal/season_x/3_in_1/"
-  plot_dir <- paste0(data_base, DD)
-  if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
-  
-  print (plot_dir)
-  rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85, 
-                                       unbias_perc_diff_85),
+  rain_85 <- ggarrange(plotlist = list(AV_box_85, 
+                                       unbias_perc_diff_85,
+                                       rain_frac_85),
                        ncol=1, nrow=3, 
                        common.legend = TRUE, legend="bottom")
   
-  rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45,
-                                       unbias_perc_diff_45),
+  rain_45 <- ggarrange(plotlist = list(AV_box_45,
+                                       unbias_perc_diff_45,
+                                       rain_frac_45),
                        ncol=1, nrow=3,
-                       common.legend = TRUE, legend="bottom")
+                       common.legend=TRUE, legend="bottom")
+
+  DD <- "narrowed_rain_snow_fractions/seasonal/season_x/3_in_1/"
+  plot_dir <- paste0(data_base, DD)
+  if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
+  print (plot_dir)
   
   ggsave(filename = paste0(clust_g, "_rain_85.png"),
          plot = rain_85, width = 5.5, height=5, units = "in", 

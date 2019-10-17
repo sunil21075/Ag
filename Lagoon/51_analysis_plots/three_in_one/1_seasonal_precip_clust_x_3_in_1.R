@@ -68,7 +68,7 @@ for (season_g in season_types){
   ######### Actual value plots
   #########
   quans_85 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="seasonal")
-  quans_45 <- find_quantiles(curr_AVs_85, tgt_col= AV_tg_col, time_type="seasonal")
+  quans_45 <- find_quantiles(curr_AVs_45, tgt_col= AV_tg_col, time_type="seasonal")
   
   AV_box_85 <- seasonal_cum_box_clust_x(dt = curr_AVs_85, tgt_col = AV_tg_col,
                                         y_lab = AV_y_lab) +
@@ -83,7 +83,7 @@ for (season_g in season_types){
   #########
   ######### difference plot
   #########
-  box_title <- paste0("differences", subttl)
+  box_title <- paste0("percentage differences between future time periods and historical", subttl)
   quans_85 <- find_quantiles(curr_diff_85, tgt_col= "perc_diff", time_type="seasonal")
   quans_45 <- find_quantiles(curr_diff_45, tgt_col= "perc_diff", time_type="seasonal")
 
@@ -102,9 +102,9 @@ for (season_g in season_types){
   #########
   ######### rain plot
   #########
-  box_title <- paste0("rain fracion (", season_g, ")")
+  box_title <- paste0("fraction of precip. fell as rain (", season_g, ")")
   quans_85 <- 100 * find_quantiles(curr_AVs_85, tgt_col= "rain_fraction", time_type="seasonal")
-  quans_45 <- 100 * find_quantiles(curr_AVs_85, tgt_col= "rain_fraction", time_type="seasonal")
+  quans_45 <- 100 * find_quantiles(curr_AVs_45, tgt_col= "rain_fraction", time_type="seasonal")
 
   rain_frac_85 <- seasonal_fraction_clust_x(data_tb = curr_AVs_85,
                                             y_lab = "rain fraction (%)", 
@@ -116,7 +116,8 @@ for (season_g in season_types){
                                             y_lab = "rain fraction (%)", 
                                             tgt_col="rain_fraction") +
                   ggtitle(box_title) +
-                  coord_cartesian(ylim = c(max(-2, quans_45[1]), min(quans_45[2], 110))) # quans_45[1]
+                  coord_cartesian(ylim = c(max(-2, quans_45[1]), 
+                                           min(quans_45[2], 110)))
   ######################################################
   ########
   ########    Save 3 in 1
@@ -125,13 +126,15 @@ for (season_g in season_types){
   if (dir.exists(plot_dir_3_in_1) == F) {
     dir.create(path = plot_dir_3_in_1, recursive = T)}
   
-  rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45, 
-                                       unbias_perc_diff_45),
+  rain_45 <- ggarrange(plotlist = list(AV_box_45, 
+                                       unbias_perc_diff_45,
+                                       rain_frac_45),
                        ncol = 1, nrow = 3, 
                        common.legend = TRUE, legend="bottom")
 
-  rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85,
-                                       unbias_perc_diff_85),
+  rain_85 <- ggarrange(plotlist = list(AV_box_85,
+                                       unbias_perc_diff_85,
+                                       rain_frac_85),
                        ncol = 1, nrow = 3, 
                        common.legend = TRUE, legend="bottom")
 
@@ -195,7 +198,7 @@ for (season_g in season_types){
          plot = unbias_perc_diff_45, width =5.5, height =1.5, units = "in", 
          dpi=400, device = "png", path = just_diff_plt_dir)
   
-  print(paste0(season_g, "_snow_45.png"))
+  # print(paste0(season_g, "_snow_45.png"))
   print(plot_dir)
 }
 

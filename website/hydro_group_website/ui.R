@@ -372,7 +372,12 @@ navbarPage(title = div("",
            ############## Regional Plots START
            #
            tabPanel(tags$b("Regional Plots"),
-                    navlistPanel(tabPanel("Subregions Map", imageOutput("location_group")),
+                    navlistPanel(
+                                 ####### Subregion Groups start
+                                 tabPanel("Subregions Map", imageOutput("location_group")
+                                 # tabPanel("Summary", verbatimTextOutput("location_summary"))
+                                  ),
+                                 ####### Subregion Groups End
                                  HTML("<b>RCP 8.5</b>"),
                                  ####### BLOOM start
                                  # tabPanel("Bloom", imageOutput("full_bloom")),

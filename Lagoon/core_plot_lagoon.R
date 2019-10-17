@@ -79,7 +79,7 @@ frac_rain <- function(dt, y_lab, tgt_col){
                # legend.text = element_text(size = ax_ttl_size, face="bold"),
                # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                plot.title = element_text(size=8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                plot.subtitle = element_text(face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -167,7 +167,7 @@ frac_snow <- function(dt, y_lab, tgt_col){
                # legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                # legend.title = element_blank(),
                plot.title = element_text(size=8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                plot.subtitle = element_text(face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -265,7 +265,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
                legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size=8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -324,7 +324,8 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(data_tb, id = c("emission", "time_period", "cluster", "season"))
+  melted <- melt(data_tb, id = c("emission", "time_period", 
+                                 "cluster", "season"))
   rm(data_tb)
   
   time_label <- sort(unique(melted$time_period))
@@ -355,8 +356,8 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                legend.text = element_text(size = ax_ttl_size, face="bold"),
                legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = 8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+               plot.title = element_text(size=8, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -446,7 +447,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                legend.margin = margin(t=-0.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size=8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -526,15 +527,15 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                panel.grid.major = element_line(size = 0.05),
                panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
+               panel.spacing.y = unit(.5, 'line'),
                legend.position = "bottom", 
                legend.key.size = unit(.8, "line"),
                legend.spacing.x = unit(.1, 'line'),
-               panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
                legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = 8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -615,7 +616,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size=8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -683,16 +684,21 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
                fill = "grey", color = "black") +
   geom_polygon(data = WA_counties, 
                aes(x=long, y=lat, group = group), 
-               fill = NA, colour = "grey60", size=.3) + 
-  geom_point(aes_string(x = "long", y = "lat", color = col_col), 
-             alpha = 1, size=.3) +
-  guides(fill = guide_colourbar(barwidth = .1, barheight = 20)) +
-  scale_color_gradient2(midpoint = 0, mid = "white", 
-                        high = muted("blue"), low = muted("red"), 
-                        guide = "colourbar", space = "Lab",
-                        limit = c(-color_limit, color_limit),
-                        breaks = c(-200, -100, -50, -25, -10, -5, 0,
-                                    5, 10, 25, 50, 100, 200)) + 
+               fill = NA, colour = "black", size=.5) + 
+  geom_point(aes_string(x="long", y="lat", color=col_col), 
+             alpha=1, size=2.5) +
+  guides(fill = guide_colourbar(barwidth=.1, barheight=2,
+         direction = "vertical")) +
+   scale_color_viridis_c(option = "plasma", 
+                         name = "storm", direction = -1,
+                         limits = c(color_limit[1], color_limit[2]),
+                         breaks = pretty_breaks(n=8)) +
+  # scale_color_gradient2(midpoint = 0, mid = "white", 
+  #                       high = muted("blue"), low = muted("red"), 
+  #                       guide = "colourbar", space = "Lab",
+  #                       limit = c(color_limit[1], color_limit[2]),
+  #                       breaks = c(-200, -100, -50, -25, -10, -5, 0,
+  #                                   5, 10, 25, 50, 100, 200)) + 
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         axis.ticks.y = element_blank(), 
@@ -702,7 +708,7 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
         # margin = margin(t=.15, r=.1, b=-.2, l=0, "line")),
         legend.text = element_text(size=8, face="plain"),
         legend.title = element_blank(),
-        legend.position = "top",
+        legend.position = c(0.93, 0.2),
         strip.text = element_text(size=14, face="bold"))
 }
 
@@ -942,7 +948,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -1020,25 +1026,28 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                group_by(cluster, time_period, emission, month) %>% 
                summarise( med = median(get(tgt_col))) %>% 
                data.table()
-
-    melted <- melt(dt, id = c("location", "month", "time_period", "emission", "cluster"))
+    
+    melted <- melt(dt,
+                   id = c("location", "month", "time_period", 
+                          "emission", "cluster"))
     rm(dt)
 
     ax_txt_size <- 8; ax_ttl_size <- 12; box_width = 0.53
+    ax_txt_size <- 6; ax_ttl_size <- 8;
     the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
                  panel.border = element_rect(fill=NA, size=.3),
                  panel.grid.major = element_line(size = 0.05),
                  panel.grid.minor = element_blank(),
                  panel.spacing = unit(.35, "line"),
                  legend.position = "bottom", 
-                 legend.key.size = unit(1, "line"),
+                 legend.key.size = unit(.8, "line"),
                  legend.spacing.x = unit(.1, 'line'),
                  panel.spacing.y = unit(.5, 'line'),
-                 legend.text = element_text(size = ax_ttl_size, face="bold"),
-                 legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
+                 legend.text = element_text(size=ax_ttl_size, face="bold"),
+                 legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
                  legend.title = element_blank(),
                  plot.title = element_text(size = ax_ttl_size, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=-1.5, l=0, "line")),
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                  plot.subtitle = element_text(face = "bold"),
                  strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                              margin = margin(.15, 0, .15, 0, "line")),
@@ -1065,7 +1074,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                geom_boxplot(outlier.size = - 0.3, notch=F, 
                             width = box_width, lwd=.1, 
                             position = position_dodge(0.6), outlier.shape=NA) +
-               facet_grid(~ emission ~ cluster, scales="free") +
+               facet_grid(~ emission, scales="free") +
                ylab(y_lab) +
                # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
                scale_fill_manual(values = color_ord,
@@ -1086,7 +1095,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  geom_boxplot(outlier.size = - 0.3, notch=F, 
                               width = box_width, lwd=.1, outlier.shape=NA,
                               position = position_dodge(0.6)) +
-                 facet_grid(~ emission ~ cluster, scales="free") +
+                 facet_grid(~ emission, scales="free") +
                  ylab(y_lab) +
                  scale_fill_manual(values = color_ord, name = "time\nperiod", 
                                    labels = time_lbl)
@@ -1340,8 +1349,7 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
   WA_counties <- WA_counties %>% 
                  filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
                                          #, "okanogan", "chelan"
-                                         ))%>% 
-                 data.table()
+                                         ))%>% data.table()
 
   th <- theme(axis.title.y = element_blank(),
                axis.title.x = element_blank(),
@@ -1350,14 +1358,13 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
                axis.text = element_blank(),
                # plot.title=element_text(size = 14, face = "bold",
                #              margin = margin(t=.15, r=.1, b=-.5, l=0, "line")),
-               plot.title = element_text(size = 14, face = "bold"),
-               legend.text = element_text(size = 12, face="plain"),
+               plot.title = element_text(size=14, face = "bold"),
+               legend.text = element_text(size=12, face="plain"),
                legend.title = element_blank(),
-               # legend.justification = c(.93, .9),
-               # legend.position = c(.93, .9),
-               legend.position = "top",
+               legend.position = c(.93, .2),
+               # legend.position = "top",
                strip.text = element_text(size=14, face="bold"))
-  color_limit <- max(abs(minn), abs(maxx))
+  # color_limit <- max(abs(minn), abs(maxx))
   if (differ==TRUE){
     bbb <- dt %>%
            ggplot() +
@@ -1366,15 +1373,17 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
                         fill = "grey", color = "black") +
            geom_polygon(data=WA_counties, 
                         aes(x=long, y=lat,group = group), 
-                        fill = NA, colour = "grey60", size=0.3) + 
+                        fill = NA, colour = "black", size=.5) + 
            geom_point(aes_string(x="long", y="lat",
                                  color = tgt_col), 
-                      alpha = 1, size=.3) +
+                      alpha=1, size=2.5) +
            scale_color_gradient2(midpoint = 0, mid = "white", 
                                  high = muted("blue"), low = muted("red"), 
                                  guide = "colourbar", space = "Lab",
-                                 limits = c(-color_limit, color_limit)) +
+                                 limits = c(minn, maxx)) +
           th +
+          guides(fill = guide_colourbar(barwidth=.1, barheight=2),
+                 direction = "vertical") + 
           ggtitle(ttl) #, subtitle=subttl
       } else{
        bbb <- dt %>%
@@ -1384,15 +1393,17 @@ one_time_medians_storm_geoMap <- function(dt, minn, maxx, ttl, subttl, differ=FA
                            fill = "grey", color = "black") +
               geom_polygon(data=WA_counties, 
                            aes(x=long, y=lat,group = group), 
-                          fill = NA, colour = "grey60") + 
+                          fill = NA, colour = "black", size=.5) + 
               geom_point(aes_string(x="long", y="lat", color = tgt_col), 
-                         alpha = 1, size=.3) +
+                         alpha = 1, size=2.5) +
               scale_color_viridis_c(option = "plasma", 
                                     name = "storm", direction = -1,
                                     limits = c(minn, maxx),
-                                    breaks = pretty_breaks(n = 4)) +
+                                    breaks = pretty_breaks(n=8)) +
               th +
-              ggtitle(ttl) #, subtitle=subttl
+              guides(fill = guide_colourbar(barwidth=.1, barheight=2),
+                     direction = "vertical") + 
+              ggtitle(ttl)
     }
     return(bbb)
 }
@@ -1499,9 +1510,9 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group), 
-               fill = NA, colour="grey60", size=.3) + 
+               fill = NA, colour = "black", size=.5) + 
   geom_point(aes_string(x="long", y="lat", color=col_col), 
-             alpha = 1, size=.3) +
+             alpha = 1, size=2.5) +
   guides(fill = guide_colourbar(barwidth=.1, barheight=2),
          direction = "vertical")+
   # scale_color_viridis_c(option = "plasma", 
@@ -1562,9 +1573,7 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
   WA_counties <- WA_counties %>% 
                  filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
                                          #, "okanogan" "chelan"
-                                         ))%>% 
-                 data.table()
-
+                                         ))%>% data.table()
   dt %>%
   ggplot() +
   geom_polygon(data = WA_counties, 
@@ -1572,15 +1581,13 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat,group = group), 
-               fill = NA, colour = "grey60") + 
-  geom_point(aes_string(x = "long", y = "lat",
-                        color = tgt_col), 
-             alpha = 1,
-             size = .15) +
+               fill=NA, colour = "black", size=.5) + 
+  geom_point(aes_string(x="long", y="lat", color = tgt_col), 
+             alpha=1, size=2.5) +
   facet_wrap(~ model) +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
-                        limits = c(min, max),
+                        limits = c(minn, maxx),
                         breaks = pretty_breaks(n = 4)) +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
@@ -1597,11 +1604,10 @@ all_mods_map_storm <- function(dt, minn, maxx, ttl){
 }
 
 obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_years") {
-  
   dt <- add_coord_from_location(dt)
   dt <- merge(dt, fips_clust, by="location", all.x=T)
-  dt <- suppressWarnings({within(dt, remove(location, model, return_period))})
-
+  dt <- suppressWarnings({within(dt, 
+                          remove(location, model, return_period))})
   # states <- map_data("state")
   # states_cluster <- subset(states, 
   #                          region %in% c("washington"))
@@ -1609,8 +1615,7 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
   WA_counties <- WA_counties %>% 
                  filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
                                          # , "okanogan", "chelan"
-                                         ))%>% 
-                 data.table()
+                                         ))%>% data.table()
   dt %>%
   ggplot() +
   geom_polygon(data = WA_counties, 
@@ -1618,13 +1623,13 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat,group = group), 
-               fill = NA, colour = "grey60") + 
+               fill = NA, colour = "black", size=.5) + 
   geom_point(aes_string(x = "long", y = "lat",
-                        color = tgt_col), alpha = 1, size=.3) +
+                        color = tgt_col), alpha = 1, size=2.5) +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
                         limits = c(minn, maxx),
-                        breaks = pretty_breaks(n = 4)) +
+                        breaks = pretty_breaks(n=8)) +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         axis.ticks.y = element_blank(), 
@@ -1633,8 +1638,8 @@ obs_hist_map_storm <- function(dt, minn, maxx, fips_clust, tgt_col="twenty_five_
         plot.title = element_text(size = 14, face = "bold"),
         legend.text = element_text(size = 12, face="plain"),
         legend.title = element_blank(),
-        legend.justification = c(.93, .9),
-        legend.position=c(.93, .9),
+        # legend.justification = c(.93, .2),
+        legend.position=c(.93, .2),
         strip.text = element_text(size=14, face="bold"))
   # +
   # geom_polygon(fill = "transparent", color = "red", size = .1, 
@@ -1912,7 +1917,7 @@ geo_map_of_clusters <- function(obs_w_clusters){
                                aes(x=long, y=lat,group = group), 
                                fill = NA, colour = "black", size=0.0000001) + 
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
-                            alpha = 1, size=2) + 
+                            alpha = 1, size=2.5) + 
                   scale_color_manual(values = color_ord, name = "Precip.\n") + 
                   the_theme +
                   # size of dot inside the legend
@@ -1988,7 +1993,7 @@ satellite_map_of_clusters <- function(obs_w_clusters){
                               aes(x=long, y=lat, group = group),
                                   fill = "grey", color = "black", size=0.5) +
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
-                             alpha = 1, size=0.8) + 
+                             alpha = 1, size=2.5) + 
                   scale_color_manual(values = color_ord, name = "Precip.\n", 
                                      labels = categ_lab) + 
                   the_theme +
@@ -2051,7 +2056,7 @@ geo_map_of_precip <- function(data_dt){
                aes(x=long, y=lat, group = group), 
                fill = NA, colour = "black", size=0.0000001) + 
   geom_point(aes_string(x = "long", y = "lat", color="ann_prec_mean"), 
-            alpha = 1, size=0.8) + 
+            alpha = 1, size=2.5) + 
   the_theme +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
@@ -2104,7 +2109,7 @@ geo_map_of_elevation <- function(data_dt){
                aes(x=long, y=lat, group = group), 
                fill = NA, colour = "black", size=0.0000001) + 
   geom_point(aes_string(x = "long", y = "lat", color="elevation"), 
-            alpha = 1, size=0.8) + 
+            alpha = 1, size=2.5) + 
   the_theme +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
@@ -2159,9 +2164,9 @@ geo_map_of_rain_frac <- function(data_dt){
                fill = "grey", color = "black", size=0.5) +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group), 
-               fill = NA, colour = "black", size=0.0000001) + 
+               fill = NA, colour = "black", size=.5) + 
   geom_point(aes_string(x = "long", y = "lat", color="avg_rain_frac"), 
-            alpha = 1, size=0.8) + 
+            alpha = 1, size=2.5) + 
   the_theme +
   scale_color_viridis_c(option = "plasma", 
                         name = "storm", direction = -1,
@@ -2197,9 +2202,9 @@ geo_map_of_diffs_discrete_cuts <- function(dt, col_col, ttl, subttl){
                fill = "grey", color = "black") +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group), 
-               fill = NA, colour = "grey60", size=.3) + 
+               fill = NA, colour = "black", size=.5) + 
   geom_point(aes_string(x = "long", y = "lat", color = col_col), 
-             alpha = 1, size=.3) +
+             alpha=1, size=2.5) +
   scale_color_manual(name = "qsec",
                      values = c("(-Inf,-0.5]"= "red4",
                                 "(-0.5,-0.2]" = "red",

@@ -27,6 +27,14 @@ options(digits=9)
 # source_path = "/home/hnoorazar/reading_binary/read_binary_core.R"      #
 # source(source_path)                                                    #
 ##########################################################################
+get_ridof_canada <- function(dt_dt){
+  vect <- c("49.03125_-122.46875", "49.03125_-122.53125",
+            "49.03125_-122.59375", "49.03125_-122.65625",
+            "49.03125_-122.71875")
+  dt_dt <- dt_dt %>% filter(!(location %in% vect))
+  return(dt_dt)
+}
+
 remove_current_timeP <- function(data_tb){
  data_tb %>% filter(time_period != "2006-2025") %>% data.table()
 }

@@ -104,6 +104,9 @@ shinyServer(function(input, output, session) {
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
+  output$location_summary= renderText({
+    "some text heresome text heresome text heresome text heresome text here"
+  })
   
   # output$ag_vplot <- renderImage({
   #   filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY.png'))

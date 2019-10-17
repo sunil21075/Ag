@@ -46,7 +46,6 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   unbias_diff <- readRDS(paste0(diff_dir, "detail_med_diff_med_", 
                                 timeP_ty_middN[timeP_ty], "_precip.rds")) %>% 
                  data.table()
-
   AVs <- subset(AVs, select = c("location", "cluster", "year", "time_period", 
                                 "model", "emission",
                                 "annual_cum_precip", "rain_fraction", "snow_fraction"))
@@ -64,7 +63,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
 
   unbias_diff_45 <- unbias_diff %>% filter(emission=="RCP 4.5") %>% data.table()
   unbias_diff_85 <- unbias_diff %>% filter(emission=="RCP 8.5") %>% data.table()
-  rm(unbias_diff)    
+  rm(unbias_diff)
   ##################################
   #####
   ##### AVs plots
@@ -80,14 +79,14 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   AV_box_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_45, y_lab = AV_y_lab, 
                                                  tgt_col = AV_tg_col) + 
                ggtitle(AV_title) + 
-               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+               coord_cartesian(ylim=c(quans_45[1], quans_45[2]))
 
   ###################################
   #####
   ##### fraction plots
   #####
   ###################################
-  box_title <- paste0("rain fracion", " (", title_time, ")")
+  box_title <- paste0("fraction of precip. fell as rain", " (", title_time, ")")
 
   quans_85 <- 100 * find_quantiles(AVs_85, tgt_col= "rain_fraction", time_type="annual")
   quans_45 <- 100 * find_quantiles(AVs_45, tgt_col= "rain_fraction", time_type="annual")
@@ -110,8 +109,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   ##### difference plots
   #####
   ###################################
-  box_title <- "differences"
-  box_subtitle <- "for each model median is\ntaken over years, separately"
+  box_title <- "percentage differences between future time periods and historical"
 
   quans_85 <- find_quantiles(unbias_diff_85, tgt_col= "perc_diff", time_type="annual")
   quans_45 <- find_quantiles(unbias_diff_45, tgt_col= "perc_diff", time_type="annual")
@@ -144,13 +142,15 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   if (dir.exists(plot_dir) == F) {dir.create(path = plot_dir, recursive = T)}
   print (plot_dir)
 
-  rain_45 <- ggarrange(plotlist = list(AV_box_45, rain_frac_45, 
-                                       unbias_perc_diff_45),
+  rain_45 <- ggarrange(plotlist = list(AV_box_45, 
+                                       unbias_perc_diff_45,
+                                       rain_frac_45),
                        ncol = 1, nrow = 3, 
                        common.legend = TRUE, legend="bottom")
 
-  rain_85 <- ggarrange(plotlist = list(AV_box_85, rain_frac_85, 
-                                       unbias_perc_diff_85),
+  rain_85 <- ggarrange(plotlist = list(AV_box_85, 
+                                       unbias_perc_diff_85,
+                                       rain_frac_85),
                        ncol = 1, nrow = 3, 
                        common.legend = TRUE, legend="bottom")
   
