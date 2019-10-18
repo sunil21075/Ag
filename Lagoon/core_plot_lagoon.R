@@ -674,9 +674,7 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
   WA_counties <- WA_counties %>% 
                  filter(subregion %in% c("whatcom", "skagit", "snohomish", "island"
                                          # , "okanogan", "chelan"
-                                         ))%>% 
-                 data.table()  
-  
+                                         ))%>% data.table()
   dt_dt %>%
   ggplot() +
   geom_polygon(data = WA_counties, 
@@ -689,10 +687,10 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
              alpha=1, size=2.5) +
   guides(fill = guide_colourbar(barwidth=.1, barheight=2,
          direction = "vertical")) +
-   scale_color_viridis_c(option = "plasma", 
-                         name = "storm", direction = -1,
-                         limits = c(color_limit[1], color_limit[2]),
-                         breaks = pretty_breaks(n=8)) +
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(color_limit[1], color_limit[2]),
+                        breaks = pretty_breaks(n=8)) +
   # scale_color_gradient2(midpoint = 0, mid = "white", 
   #                       high = muted("blue"), low = muted("red"), 
   #                       guide = "colourbar", space = "Lab",
@@ -1216,9 +1214,9 @@ box_dt_25 <- function(dt_25){
                axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
-               axis.text.x = element_text(size = ax_txt_size, 
-                                          face = "bold", color = "black"),
-               # axis.text.x = element_blank(),
+               # axis.text.x = element_text(size = ax_txt_size, 
+               #                            face = "bold", color = "black"),
+               axis.text.x = element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
@@ -1290,7 +1288,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
-               axis.text.x = element_text(face="bold", color = "black"), # element_blank(),
+               axis.text.x = element_blank(), # element_text(face="bold", color = "black"), # element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
@@ -1473,13 +1471,13 @@ storm_box_plot <- function(data_tb){
 #####################################
 #####################################
 
-geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
-  color_limit <- max(abs(minn), abs(maxx))
-  x <- sapply(dt$location, 
+geo_map_of_diffs <- function(dt_dt, col_col, minn, maxx, ttl, subttl){
+  color_limit <- c(minn, maxx)
+  x <- sapply(dt_dt$location, 
               function(x) strsplit(x, "_")[[1]], 
               USE.NAMES=FALSE)
   lat <- as.numeric(x[1, ]); long <- as.numeric(x[2, ])
-  dt$lat <- lat; dt$long <- long;
+  dt_dt$lat <- lat; dt_dt$long <- long;
   
   states <- map_data("state")
   states_cluster <- subset(states, 
@@ -1503,7 +1501,7 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
                legend.position=c(.93, .2),
                strip.text = element_text(size=14, face="bold"))
 
-  dt %>%
+  dt_dt %>%
   ggplot() +
   geom_polygon(data=WA_counties, 
                aes(x=long, y=lat, group = group),
@@ -1513,8 +1511,12 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
                fill = NA, colour = "black", size=.5) + 
   geom_point(aes_string(x="long", y="lat", color=col_col), 
              alpha = 1, size=2.5) +
-  guides(fill = guide_colourbar(barwidth=.1, barheight=2),
+  guides(fill = guide_colourbar(barwidt_dth=.1, barheight=2),
          direction = "vertical")+
+  scale_color_viridis_c(option = "plasma", 
+                        name = "storm", direction = -1,
+                        limits = c(color_limit[1], color_limit[2]),
+                        breaks = pretty_breaks(n=8)) +
   # scale_color_viridis_c(option = "plasma", 
   #                       name = "storm", direction = -1,
   #                       limits = c(min, max),
@@ -1545,11 +1547,10 @@ geo_map_of_diffs <- function(dt, col_col, minn, maxx, ttl, subttl){
   #       values=c(0, 0.19, 0.2, 0.5, 0.8, 0.81, 1),
   #       limits=c(-color_limit, color_limit),
   #       breaks = c(20, 30, 40, 50, 60, 70, 80, 90, 100))
-
-  scale_color_gradient2(midpoint = 0, mid = "white", 
-                        high=muted("blue"), low = muted("red"), 
-                        guide="colourbar", space = "Lab",
-                        limit=c(-color_limit, color_limit)) + 
+  # scale_color_gradient2(midpoint = 0, mid = "white", 
+  #                       high=muted("blue"), low = muted("red"), 
+  #                       guide="colourbar", space = "Lab",
+  #                       limit=c(-color_limit, color_limit)) + 
   # scale_color_continuous(breaks = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        labels = c(as.integer(minn+1), 0, as.integer(maxx-1)),
   #                        low = "red", high = "blue") + 

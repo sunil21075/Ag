@@ -117,8 +117,8 @@ for (season_g in season_types){
   #############################################
   box_title <- "percentage differences between future"
   box_title <- paste0(box_title, 
-  	                  " time periods and historical", 
-  	                  subttl)
+                      " time periods and historical", 
+                      subttl)
   quans_85 <- find_quantiles(curr_diff_85, 
   	                         tgt_col="perc_diff", 
   	                         time_type="seasonal")

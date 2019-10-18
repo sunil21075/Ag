@@ -20,7 +20,7 @@ navbarPage(title = div("",
                                                    includeHTML("home-page/about.html")
                                                    )
                                           ),
-                                 
+                                 ########################################################
                                  tabPanel(tags$b("People"), 
                                           tags$div(style="width:950px", 
                                                    includeHTML("home-page/people.html")
@@ -374,9 +374,30 @@ navbarPage(title = div("",
            tabPanel(tags$b("Regional Plots"),
                     navlistPanel(
                                  ####### Subregion Groups start
-                                 tabPanel("Subregions Map", imageOutput("location_group")
-                                 # tabPanel("Summary", verbatimTextOutput("location_summary"))
-                                  ),
+                                 # tabPanel("Subregions Map", imageOutput("location_group")
+                                 # # tabPanel("Summary", verbatimTextOutput("location_summary"))
+                                 #  ),
+                                 tabPanel("Subregions Map", imageOutput("location_group"),
+                                          hr(),
+                                          fluidRow(column(width=2,textOutput(paste0("We use statistical methods ", 
+                                                                                    "to group the regions into two", 
+                                                                                    " areas based on average historical", 
+                                                                                    " growing degree day accumulation.",
+                                                                                    " The warmer areas have an avg.", 
+                                                                                    " annual historical GDD of XX ", 
+                                                                                    "degree day F (provide a range) ", 
+                                                                                    "and the cooler areas have a ", 
+                                                                                    "historical GDD of YY degree ", 
+                                                                                    "days F (provide a range)."))))),
+                                 tabPanel(tags$b("Subregion Map HTML"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("HTML_plots/subregion_groups.html")
+                                                   )
+                                          ),
+
+                                 # tabsetPanel(
+                                 #             tabPanel("Subregions Map", imageOutput("location_group")),
+                                 #             tabPanel("Summary", verbatimTextOutput("subregion_summary"))),
                                  ####### Subregion Groups End
                                  HTML("<b>RCP 8.5</b>"),
                                  ####### BLOOM start
@@ -541,7 +562,7 @@ navbarPage(title = div("",
                                                                     br(), br(),
                                                                     br(), br(),
                                                                     br(), br(),
-                                                                    p(tags$b(span("All Models Analogs", style = "color:white")),
+                                                                    p(tags$b(span("Best Analog", style = "color:white")),
                                                                       (span(" plot includes most similar", style = "color:white")),
                                                                       (span(" county in all models.", style = "color:white"))
                                                                       ),

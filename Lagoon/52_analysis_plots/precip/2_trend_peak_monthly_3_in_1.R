@@ -288,7 +288,6 @@ for (clust_g in cluster_types){
          plot = precip_n_frac_45, 
          width=5.5, height=3.5, units = "in", 
          dpi=600, device = "png", path=precip_n_frac_dir)
-
 }
 
 print (Sys.time() - start_time)
