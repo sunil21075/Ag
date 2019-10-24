@@ -33,7 +33,7 @@ for (dt_type in in_dir_ext){
   in_dir <- paste0(data_base, dt_type, "/")
   for (timeP_ty in 1:1){
     files <- runoff_AV_fileNs
-    AV_y_lab <- "cum. runoff (mm)"
+    AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
     AV_title <- paste0(av_titles[timeP_ty], "runoff")
 
@@ -106,7 +106,7 @@ for (dt_type in in_dir_ext){
       #########
       box_title <- "percentage differences "
       box_title <- paste0(box_title, "between future time periods ")
-      box_title <- paste0(box_title, "and historical ", subttl)
+      box_title <- paste0(box_title, "and historical runoff ", subttl)
 
       quans_85 <- find_quantiles(curr_diff_85, 
                                  tgt_col= "perc_diff", 

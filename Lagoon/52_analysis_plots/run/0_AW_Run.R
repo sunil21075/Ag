@@ -20,10 +20,10 @@ plot_base <- paste0(data_base, "plots/runoff/")
 in_dir_ext <- c("runbase")
 unbias_dir_ext <- "/02_med_diff_med_no_bias/"
 
-runoff_AV_fileNs <- c("ann_cum_runbase", "wtr_yr_cum_runbase")
-timeP_ty_middN <- c("ann", "wtr_yr")
-av_tg_col_pref <- c("annual_cum_", "annual_cum_")
-av_titles <- c("ann. ", "ann. ")
+runoff_AV_fileNs <- c("wtr_yr_cum_runbase") # "ann_cum_runbase",
+timeP_ty_middN <- c("wtr_yr") # "ann", 
+av_tg_col_pref <- c("annual_cum_") # "annual_cum_",
+av_titles <- c("annual ")
 emissions <- c("RCP 4.5", "RCP 8.5")
 
 dt_type <-  in_dir_ext[1]
@@ -32,20 +32,19 @@ timeP_ty <- 1
 
 for (dt_type in in_dir_ext){
   in_dir <- paste0(data_base, dt_type, "/")
-  for (timeP_ty in 1:2){
+  for (timeP_ty in length(timeP_ty_middN)){
     ###############################################################
     # set up title stuff
     # 
-    if (timeP_ty_middN[timeP_ty]== "ann"){
-      title_time <- "calendar year"
-      } else if (timeP_ty_middN[timeP_ty]== "wtr_yr"){
-        title_time <- "water year"
-    }
-
+    # if (timeP_ty_middN[timeP_ty]== "ann"){
+    #   title_time <- "calendar year"
+    #   } else if (timeP_ty_middN[timeP_ty]== "wtr_yr"){
+    #     title_time <- "water year"
+    # }
     files <- runoff_AV_fileNs
-    AV_y_lab <- "cum. runoff (mm)"
+    AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-    AV_title <- paste0(av_titles[timeP_ty], "runoff", " (", title_time, ")")
+    AV_title <- paste0(av_titles[timeP_ty], "runoff")
     ###############################################################
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% 
@@ -62,8 +61,8 @@ for (dt_type in in_dir_ext){
     unbias_diff <- remove_current_timeP(unbias_diff) # remove 2006-2025
     
     # update clusters labels
-    AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
-    unbias_diff <- convert_5_numeric_clusts_to_alphabet(data_tb = unbias_diff)
+    AVs <- convert_5_numeric_clusts_to_alphabet(AVs)
+    unbias_diff <- convert_5_numeric_clusts_to_alphabet(unbias_diff)
 
     AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
     AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
@@ -71,26 +70,34 @@ for (dt_type in in_dir_ext){
     unbias_diff_85 <- unbias_diff %>% filter(emission=="RCP 8.5") %>% data.table()
     rm(AVs, unbias_diff)
 
-    av_quans_85 <- find_quantiles(data_table=AVs_85, tgt_col= AV_tg_col, time_type="annual")
-    av_quans_45 <- find_quantiles(data_table=AVs_45, tgt_col= AV_tg_col, time_type="annual")
+    av_quans_85 <- find_quantiles(data_table=AVs_85, 
+                                  tgt_col= AV_tg_col, 
+                                  time_type="annual")
+    av_quans_45 <- find_quantiles(data_table=AVs_45, 
+                                  tgt_col= AV_tg_col, 
+                                  time_type="annual")
 
-    AV_box_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_85, y_lab = AV_y_lab, 
+    AV_box_85 <- ann_wtrYr_chunk_cum_box_cluster_x(dt=AVs_85, 
+                                                   y_lab=AV_y_lab, 
+                                                   tgt_col=AV_tg_col) + 
+                 ggtitle(AV_title) + 
+                 coord_cartesian(ylim = c(av_quans_85[1], 
+                                          av_quans_85[2]))
+
+    AV_box_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_45, 
+                                                   y_lab = AV_y_lab, 
                                                    tgt_col = AV_tg_col) + 
                  ggtitle(AV_title) + 
-                 coord_cartesian(ylim = c(av_quans_85[1], av_quans_85[2]))
-
-    AV_box_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_45, y_lab = AV_y_lab, 
-                                                   tgt_col = AV_tg_col) + 
-                 ggtitle(AV_title) + 
-                 coord_cartesian(ylim = c(av_quans_45[1], av_quans_45[2]))
+                 coord_cartesian(ylim = c(av_quans_45[1], 
+                                          av_quans_45[2]))
 
     ###################################
     #####
     ##### difference plots
     #####
     ###################################
-    box_title <- "percentage differences between future time periods and historical"
-    box_subtitle <- "for each model median is\ntaken over years, separately"
+    a <- "percentage differences between future "
+    box_title <- paste0(a, "time periods and historical runoff")
 
     quans_85 <- find_quantiles(unbias_diff_85, 
                                tgt_col= "perc_diff", 

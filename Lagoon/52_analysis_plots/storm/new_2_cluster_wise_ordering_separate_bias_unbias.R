@@ -51,7 +51,8 @@ for (clust in clusters){
   ##################
   ################## Actual Values
   ################## 
-  AV_title <- paste0("25-year/24-hr design storm\n", clust)
+  AV_title <- paste0("25-year/24-hr Design Storm intensity\n", 
+                     clust, " subregion\n")
   quans_85 <- storm_25_quantiles(curr_dt_85, 
                                  tgt_col= "twenty_five_years")
   quans_45 <- storm_25_quantiles(curr_dt_45, 
@@ -75,7 +76,8 @@ for (clust in clusters){
   subttl <- paste0(" (", clust, ")")
   box_title <- "percentage differences between\nfuture"
   box_title <- paste0(box_title, 
-                      " time periods and historical")
+                      " time periods and historical\n",
+                      clust, " subregion")
   unbias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_45, 
                                                diff_from="1950-2005")
   quans_45 <- storm_25_quantiles(unbias_diffs_45, tgt_col= "perc_diff") 

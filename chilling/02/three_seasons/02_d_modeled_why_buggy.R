@@ -10,8 +10,6 @@
 # the function is core is process_data_non_overlap(.) and I wrote the new driver.
 #
 #
-
-
 .libPaths("/data/hydro/R_libs35")
 .libPaths()
 library(plyr)
@@ -21,10 +19,8 @@ library(tidyverse)
 
 source_path = "/home/hnoorazar/chilling_codes/current_draft/chill_core.R"
 source(source_path)
-
 options(digit=9)
 options(digits=9)
-
 # Check current folder
 print("does this look right?")
 getwd()
@@ -63,7 +59,7 @@ if (dir.exists(file.path(main_out)) == F) {
   dir.create(path = main_out, recursive = T)
 }
 
-# 3. Some set up ----------------------------------------------------------
+# 3. Some set up --------------------------------------------------
 
 # List of filenames
 the_dir <- dir()
@@ -73,7 +69,8 @@ the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
 
 # Pre-allocate lists to be used
 param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
-local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
+local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), 
+                          header = F)
 local_files <- as.vector(local_files$V1)
 no_sites <- length(local_files)
 
@@ -115,8 +112,8 @@ if(hist){
                                               start = 7, stop = 10))
     data_historical$model <- basename(dirname(getwd()))
     data_historical$scenario <- basename(getwd())
-    data_historical$lat <- as.numeric(substr(x = data_historical$.id, start = 19, stop = 26))
-    data_historical$long<- as.numeric(substr(x = data_historical$.id, start = 28, stop = 37))
+    data_historical$lat <- as.numeric(substr(x = data_historical$.id, start=19, stop=26))
+    data_historical$long<- as.numeric(substr(x = data_historical$.id, start=28, stop=37))
     data_historical <- unique(data_historical)
     
     # No longer needed
@@ -126,7 +123,8 @@ if(hist){
     write.table(x = data_historical,
                 file = file.path(main_out,
                                  paste0("summary_",
-                                        gsub("-", "_", basename(dirname(getwd()))), # model name
+                                        # model name
+                                        gsub("-", "_", basename(dirname(getwd()))),
                                         "_",
                                         basename(getwd()), # scenario
                                         ".txt")),
@@ -143,7 +141,8 @@ if(hist){
     write.table(x = summary_data_historical,
                 file = file.path(main_out,
                                  paste0("summary_stats_",
-                                        gsub("-", "_",basename(dirname(getwd()))), # model name
+                                        # model name
+                                        gsub("-", "_",basename(dirname(getwd()))),
                                         "_",
                                         basename(getwd()), # scenario
                                         ".txt")),
@@ -237,7 +236,8 @@ if(hist){
   write.table(x = all_years,
               file = file.path(main_out,
                                paste0("summary_",
-                                      gsub( "-", "_", basename(dirname(getwd()))), # model name
+                                      # model name
+                                      gsub( "-", "_", basename(dirname(getwd()))),
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),
@@ -275,7 +275,8 @@ if(hist){
   write.table(x = summary_data_comb,
               file = file.path(main_out,
                                paste0("summary_stats_",
-                                      gsub("-", "_", basename(dirname(getwd()))), # model name
+                                      # model name
+                                      gsub("-", "_", basename(dirname(getwd()))),
                                       "_",
                                       basename(getwd()), # scenario
                                       ".txt")),

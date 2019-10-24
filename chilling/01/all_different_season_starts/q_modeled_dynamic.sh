@@ -11,7 +11,7 @@
 #PBS -l nodes=1:ppn=1,walltime=10:00:00
 #PBS -l mem=2gb
 #PBS -q hydro
-#PBS -t 1-72
+#PBS -t 1-62
 
 ## Define path for output & error logs
 #PBS -k o

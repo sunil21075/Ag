@@ -26,8 +26,8 @@ diff_dir <- paste0(base, "/precip/02_med_diff_med_no_bias/")
 #############################################################
 
 AV_fileNs <- "seasonal_fracs"
-AV_y_lab <- "cum. precip. (mm)"
-AV_title <- paste0("seasonal precip.")
+AV_y_lab <- "precipitation (mm)"
+AV_title <- paste0("seasonal precipitation")
 AV_tg_col <- "seasonal_cum_precip"
 
 AVs <- readRDS(paste0(data_base,"seasonal_fracs.rds")) %>% 
@@ -117,7 +117,7 @@ for (season_g in season_types){
   #############################################
   box_title <- "percentage differences between future"
   box_title <- paste0(box_title, 
-                      " time periods and historical", 
+                      " time periods and historical precipitation", 
                       subttl)
   quans_85 <- find_quantiles(curr_diff_85, 
   	                         tgt_col="perc_diff", 
@@ -144,7 +144,7 @@ for (season_g in season_types){
   ######### rain plot
   #########
   #############################################
-  box_title <- "fraction of precip. fell as rain ("
+  box_title <- "portion of precipitation fell as rain ("
   box_title <- paste0(box_title, season_g, ")")
   quans_85 <- 100 * find_quantiles(curr_AVs_85, 
                                    tgt_col= "rain_fraction", 
@@ -154,14 +154,14 @@ for (season_g in season_types){
                                    time_type="seasonal")
 
   rain_frac_85 <- seasonal_fraction_clust_x(data_tb=curr_AVs_85,
-                                      y_lab = "rain fraction (%)", 
+                                      y_lab = "rain portion (%)", 
                                       tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
               coord_cartesian(ylim = c(max(-2, quans_85[1]), 
                                     min(quans_85[2], 110)))
 
   rain_frac_45 <- seasonal_fraction_clust_x(data_tb = curr_AVs_45,
-                                      y_lab = "rain fraction (%)", 
+                                      y_lab = "rain portion (%)", 
                                       tgt_col="rain_fraction") +
                   ggtitle(box_title) +
              coord_cartesian(ylim = c(max(-2, quans_45[1]), 
@@ -297,12 +297,12 @@ for (season_g in season_types){
   ggsave(filename = paste0(season_g, "_rain_85.png"),
          plot = rain_85, 
          width=5.5, height=5, units = "in", 
-         dpi=400, device = "png", path = plot_dir_3_in_1)
+         dpi=600, device = "png", path = plot_dir_3_in_1)
 
   ggsave(filename = paste0(season_g, "_rain_45.png"),
          plot = rain_45, 
          width =5.5, height=5, units = "in", 
-         dpi=400, device = "png", path = plot_dir_3_in_1)
+         dpi=600, device = "png", path = plot_dir_3_in_1)
 }
 
 

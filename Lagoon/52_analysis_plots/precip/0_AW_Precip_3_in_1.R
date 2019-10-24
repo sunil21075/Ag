@@ -16,8 +16,8 @@ source(source_path_2)
 ############################################################################
 base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 data_base <- paste0(base, "rain_snow_fractions/")
-AV_fileNs <- c("annual_fracs", "wtr_yr_fracs")
-timeP_ty_middN <- c("ann", "wtr_yr")
+AV_fileNs <- c("wtr_yr_fracs") # "annual_fracs",
+timeP_ty_middN <- c("wtr_yr") # "ann", 
 timeP_ty <- 1
 
 ##########################################
@@ -26,17 +26,17 @@ timeP_ty <- 1
 #
 diff_dir <- paste0(base, "precip/02_med_diff_med_no_bias/")
 
-for (timeP_ty in 1:2){ # annual or wtr_yr?
+for (timeP_ty in 1:1){ # annual or wtr_yr?
   ###############################################################
   # set up title stuff
   # 
-  if (timeP_ty_middN[timeP_ty]== "ann"){
-     title_time <- "calendar year"
-     } else if (timeP_ty_middN[timeP_ty]== "wtr_yr"){
-     title_time <- "water year"
-  }
-  AV_y_lab <- "cum. precip. (mm)"
-  AV_title <- paste0("ann. precip.", " (", title_time, ")")
+  # if (timeP_ty_middN[timeP_ty]== "ann"){
+  #    title_time <- "calendar year"
+  #    } else if (timeP_ty_middN[timeP_ty]== "wtr_yr"){
+  #    title_time <- "water year"
+  # }
+  AV_y_lab <- "precipitation (mm)"
+  AV_title <- paste0("annual precipitation")
   AV_tg_col <- "annual_cum_precip"
   
   ###############################################################
@@ -96,25 +96,24 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   ##### fraction plots
   #####
   ###################################
-  box_title <- paste0("fraction of precip. fell as rain (", 
-  	                   title_time, ")")
+  box_title <- paste0("portion of precipitation fell as rain")
 
   quans_85 <- 100 * find_quantiles(AVs_85, tgt_col="rain_fraction", 
                                    time_type="annual")
   quans_45 <- 100 * find_quantiles(AVs_45, tgt_col="rain_fraction", 
                                    time_type="annual")  
   rain_frac_85 <- annual_fraction(data_tb = AVs_85,
-                                  y_lab = "rain fraction (%)", 
+                                  y_lab = "rain portion (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
                   coord_cartesian(ylim = c(max(-2, quans_85[1]), 
                                            min(quans_85[2], 110)))
   rain_frac_45 <- annual_fraction(data_tb = AVs_45,
-                                  y_lab = "rain fraction (%)", 
+                                  y_lab = "rain portion (%)", 
                                   tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
                   coord_cartesian(ylim = c(max(-2, quans_45[1]), 
-                  	                       min(quans_45[2], 110)))
+                                           min(quans_45[2], 110)))
   #################################################################
   ###################################
   #####
@@ -123,6 +122,7 @@ for (timeP_ty in 1:2){ # annual or wtr_yr?
   ###################################
   box_title <- "percentage differences between"
   box_title <- paste0(box_title, " future time periods and historical")
+  box_title <- paste0(box_title, " precipitation")
 
   quans_85 <- find_quantiles(unbias_diff_85, tgt_col= "perc_diff", 
                              time_type="annual")

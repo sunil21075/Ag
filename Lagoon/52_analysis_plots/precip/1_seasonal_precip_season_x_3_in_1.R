@@ -20,8 +20,8 @@ diff_dir <- paste0(base, "/precip/02_med_diff_med_no_bias/")
 plot_base <- paste0(base, "plots/precip/seasonal/season_x/")
 #############################################################
 AV_fileNs <- "seasonal_fracs"
-AV_y_lab <- "cum. precip. (mm)"
-AV_title <- paste0("seasonal precip.")
+AV_y_lab <- "precipitation (mm)"
+AV_title <- paste0("seasonal precipitation")
 AV_tg_col <- "seasonal_cum_precip"
 
 AVs <- readRDS(paste0(data_base, 
@@ -105,7 +105,7 @@ for (clust_g in cluster_types){
   #########
   box_title <- "percentage differences between future time "
   box_title <- paste0(box_title, 
-                      "periods and historical", subttl)
+                      "periods and historical precipitation ", subttl)
   quans_85 <- find_quantiles(curr_diff_85, 
                              tgt_col="perc_diff", 
                              time_type="seasonal")
@@ -129,7 +129,7 @@ for (clust_g in cluster_types){
   ######### rain plot
   #########
   ######################################################
-  box_title <- "fraction of precip. fell as rain ("
+  box_title <- "portion of precipitation fell as rain ("
   box_title <- paste0(box_title, clust_g, ")")
   quans_85 <- 100 * find_quantiles(curr_AVs_85, 
                                    tgt_col="rain_fraction", 
@@ -139,14 +139,14 @@ for (clust_g in cluster_types){
                                    time_type="seasonal")
 
   rain_frac_85 <- seasonal_fraction_season_x(data_tb = curr_AVs_85,
-                                       y_lab = "rain fraction (%)", 
+                                       y_lab = "rain portion (%)", 
                                        tgt_col="rain_fraction") +
                   ggtitle(box_title) +
                   coord_cartesian(ylim = c(max(quans_85[1], -2), 
                                            min(quans_85[2], 110)))
 
   rain_frac_45 <- seasonal_fraction_season_x(data_tb = curr_AVs_45,
-                                       y_lab = "rain fraction (%)", 
+                                       y_lab = "rain portion (%)", 
                                        tgt_col="rain_fraction") +
                   ggtitle(box_title) + 
                   coord_cartesian(ylim = c(max(quans_45[1], -2), 

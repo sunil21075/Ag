@@ -108,7 +108,7 @@ create_ymdvalues <- function(data_start_year, data_end_year){
     }
   }
 
-  daycount_in_year <- daycount_in_year[-1] #delete the leading 0
+  daycount_in_year <- daycount_in_year[-1] # delete the leading 0
   moncount_in_year <- moncount_in_year[-1]
   yearrep_in_year <- yearrep_in_year[-1]
   ymd <- cbind(yearrep_in_year, moncount_in_year, daycount_in_year)

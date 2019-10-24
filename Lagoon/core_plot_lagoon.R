@@ -1236,7 +1236,7 @@ box_dt_25 <- function(dt_25){
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
                              labels = categ_lab) + 
-           scale_y_continuous(breaks = seq(0, 20, by=5)) + 
+           scale_y_continuous(breaks = seq(0, 20, by=2)) + 
            the +
            geom_text(data = medians, 
                      aes(label = sprintf("%1.1f", medians$med_25), 
@@ -1294,7 +1294,6 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                                            margin = margin(t=0, r=2, b=0, l=0)),
                axis.title.x = element_blank()
               )
-
   if (tgt_col=="perc_diff"){
      y_labb <- "differences (%)"
      } else {
@@ -1321,6 +1320,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                              name = "Return\nPeriod", 
                              labels = time_label) + 
            the +
+           scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
            geom_text(data = medians, 
                      aes(label = sprintf("%1.1f", medians$med), y = medians$med),
                      size = 2, vjust = -.6, fontface="bold",

@@ -21,8 +21,8 @@ diff_dir <- paste0(base, "/precip/02_med_diff_med_no_bias/")
 in_dir <- data_base
 plot_base <- paste0(base, "plots/precip/monthly/")
 ##############################################################
-AV_title <- "monthly precip."
-AV_y_lab <- "cum. precip. (mm)"
+AV_title <- "monthly precipitation"
+AV_y_lab <- "precipitation (mm)"
 AV_tg_col <- "monthly_cum_precip"
 
 AVs <- readRDS(paste0(in_dir, "monthly_fracs.rds")) %>% 
@@ -30,20 +30,20 @@ AVs <- readRDS(paste0(in_dir, "monthly_fracs.rds")) %>%
 AVs <- remove_observed(AVs)
 AVs <- remove_current_timeP(AVs) # remove 2006-2025
 # update clusters labels
-AVs <- convert_5_numeric_clusts_to_alphabet(data_tb = AVs)
+AVs <- convert_5_numeric_clusts_to_alphabet(AVs)
 AVs <- na.omit(AVs)
 AVs <- within(AVs, remove(day, rain_portion, 
                           monthly_cum_rain, monthly_cum_snow))
-AVs$rain_fraction <- AVs$rain_fraction * 100
+AVs$rain_portion <- AVs$rain_portion * 100
 AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
 AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
 ############################################################
 unbias_diff<-readRDS(paste0(diff_dir, 
-                     "detail_med_diff_med_month_precip.rds")) %>% 
+           "detail_med_diff_med_month_precip.rds")) %>% 
                data.table()
 unbias_diff <- na.omit(unbias_diff)
 unbias_diff <- remove_observed(unbias_diff)
-unbias_diff <- remove_current_timeP(unbias_diff)#remove 2006-2025
+unbias_diff <- remove_current_timeP(unbias_diff)
 # update clusters labels
 unbias_diff<-convert_5_numeric_clusts_to_alphabet(unbias_diff)
 unbias_diff_45 <- unbias_diff %>% 
@@ -101,7 +101,7 @@ for (clust_g in cluster_types){
   ######### difference plot
   #########
   a1 <- "percentage differences"
-  a2 <- " between future time periods and historical"
+  a2 <- " between future time periods and historical precipitation"
   box_title <- paste0(a1, a2)
   quans_85 <- find_quantiles(curr_diff_85, 
                              tgt_col= "perc_diff", 
@@ -126,7 +126,7 @@ for (clust_g in cluster_types){
   #########
   ######### rain fractions
   #########
-  box_title <- paste0("fraction of precip. fell as rain")
+  box_title <- paste0("portion of precipitation fell as rain")
   quans_85 <- find_quantiles(curr_AVs_85, 
                              tgt_col="rain_fraction", 
                              time_type="monthly")
@@ -136,15 +136,15 @@ for (clust_g in cluster_types){
              
   rain_frac_85 <- box_trend_monthly_cum(dt = curr_AVs_85, 
                                         p_type="box",
-                              y_lab="rain fraction (%)", 
+                              y_lab="rain portion (%)", 
                               tgt_col="rain_fraction") + 
                   ggtitle(paste0(box_title, subttl)) + 
                coord_cartesian(ylim = c(max(-2, quans_85[1]), 
                	                        min(105, quans_85[2])))
   ############################################################
-  rain_frac_45 <- box_trend_monthly_cum(dt=curr_AVs_45, 
+  rain_frac_45 <- box_trend_monthly_cum(dt=curr_AVs_45,
                                         p_type="box",
-                                        y_lab="rain fraction (%)", 
+                                        y_lab="rain portion (%)", 
                                         tgt_col="rain_fraction") + 
                   ggtitle(paste0(box_title, subttl)) + 
                   coord_cartesian(ylim = c(max(-2, quans_45[1]), 

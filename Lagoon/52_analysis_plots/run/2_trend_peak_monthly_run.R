@@ -31,7 +31,7 @@ for (dt_type in in_dir_ext){
   in_dir <- paste0(data_base, dt_type, "/")
   for (timeP_ty in 1:1){
     files <- runoff_AV_fileNs
-    AV_y_lab <- "cum. runoff (mm)"
+    AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
     AV_title <- paste0(av_titles[timeP_ty], "runoff")
 
@@ -98,21 +98,21 @@ for (dt_type in in_dir_ext){
                                          p_type="box",
                                          y_lab = AV_y_lab, 
                                          tgt_col = AV_tg_col) + 
-                   ggtitle(paste0("monthy ", dt_type, ".")) +
+                   ggtitle(paste0("monthly runoff")) +
                    coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
       AV_box_45 <- box_trend_monthly_cum(dt = curr_AVs_45, 
                                          p_type="box",
                                          y_lab = AV_y_lab, 
                                          tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthy ", dt_type, ".")) + 
+                      ggtitle(paste0("monthly runoff")) + 
               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
       #########
       ######### unbiased Percentage diffs
       #########
       box_title <- "percentage differences"
-      box_title <- paste0(box_title, "between future time periods ")
-      box_title <-  paste0(box_title, "and historical")
+      box_title <- paste0(box_title, " between future time periods ")
+      box_title <-  paste0(box_title, "and historical runoff")
       
       quans_85 <- find_quantiles(curr_unbias_diff_85, 
                                  tgt_col = "perc_diff", 

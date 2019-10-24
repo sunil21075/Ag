@@ -7,7 +7,9 @@ options(digits=9)
 ##################################################################
 
 add_time_periods_model <- function(dt){
-  time_periods <- c("1950-2005", "2006-2025", "2026-2050", "2051-2075", "2076-2099")
+  time_periods <- c("1950-2005", 
+                    "2006-2025", "2026-2050", 
+                    "2051-2075", "2076-2099")
   dt$time_period <- 0L
   dt$time_period[dt$year <= 2005] <- time_periods[1]
   dt$time_period[dt$year >= 2006 & dt$year <= 2025] <- time_periods[2]
@@ -18,8 +20,7 @@ add_time_periods_model <- function(dt){
 }
 
 add_time_periods_observed <- function(dt){
-  time_periods <- c("1979-2015")
-  dt$time_period <- time_periods[1]
+  dt$time_period <- c("1979-2015")
   return(dt)
 }
 
@@ -41,7 +42,8 @@ put_time_period <- function(data_tb, observed){
 thresh_median_4_frost_bloom_thresh_plot <- function(data_tb, colname){
   colnames(data_tb)[colnames(data_tb)==colname] <- "thresh"
   data_tb <- data_tb[, .(thresh_median_DoY = median(thresh)), 
-                    by = c("city", "year", "chill_season", "emission", "time_period")]
+                    by = c("city", "year", "chill_season", 
+                           "emission", "time_period")]
   return(data_tb)
 }
 
@@ -76,7 +78,6 @@ remove_modeled_historical_add_time_period <- function(data_tb){
   data_tb_observed_85$emission <- "RCP 8.5"
   data_tb_observed <- rbind(data_tb_observed_45, data_tb_observed_85)
   data_tb_observed$time_period <- "observed"
-
 
   data_tb_modeled <- data_tb %>% 
                      filter(!(model %in% c("observed", "Observed"))) %>% 
@@ -482,26 +483,26 @@ medians <- function(thresh_20, thresh_25, thresh_30,
 #####    the non-overlap is below            #####
 #####                                        #####
 ##################################################
-process_data <- function(file, time_period) { # this is for overlapping data, which we never will use!
-  if (time_period=="2040"){
-    processed_data <- file %>%
-                      filter(year >= 2025 & year <= 2055,
-                             chill_season != "chill_2025-2026" &
-                             chill_season != "chill_2055-2056")
-  } else if (time_period=="2060"){
-    processed_data <- file %>%
-                      filter(year > 2045 & year <= 2075,
-                             chill_season != "chill_2045-2046" &
-                             chill_season != "chill_2075-2076")
-  } else if (time_period=="2080") {
-     processed_data <- file %>%
-                       filter(year > 2065 & year <= 2095,
-                              chill_season != "chill_2065-2066" &
-                              chill_season != "chill_2095-2096")
-  }
-  processed_data <- threshold_func(processed_data, data_type="modeled")
-  return(processed_data)
-}
+# process_data <- function(file, time_period) { # this is for overlapping data, which we never will use!
+#   if (time_period=="2040"){
+#     processed_data <- file %>%
+#                       filter(year >= 2025 & year <= 2055,
+#                              chill_season != "chill_2025-2026" &
+#                              chill_season != "chill_2055-2056")
+#   } else if (time_period=="2060"){
+#     processed_data <- file %>%
+#                       filter(year > 2045 & year <= 2075,
+#                              chill_season != "chill_2045-2046" &
+#                              chill_season != "chill_2075-2076")
+#   } else if (time_period=="2080") {
+#      processed_data <- file %>%
+#                        filter(year > 2065 & year <= 2095,
+#                               chill_season != "chill_2065-2066" &
+#                               chill_season != "chill_2095-2096")
+#   }
+#   processed_data <- threshold_func(processed_data, data_type="modeled")
+#   return(processed_data)
+# }
 
 ##################################################
 #####                                        #####
@@ -539,12 +540,14 @@ process_data_non_overlap <- function(file, time_period) {
                     # Only want complete seasons of data
                     filter(chill_season != "chill_2005-2006" &
                            chill_season != "chill_2099-2100")
+  processed_data <- na.omit(processed_data)
 
   processed_data <- threshold_func(processed_data, data_type="modeled")
   return(processed_data)
 }
 
 threshold_func <- function(file, data_type){
+  file <- na.omit(file)
   if (data_type=="modeled"){
     data <- file %>%
            # Only want complete seasons of data
@@ -632,7 +635,7 @@ chill_thresh <- function(x, threshold) {x >= threshold}
 
 ###################################################################
 
-put_chill_season <- function(met_hourly_dt, chill_start = "sept"){
+put_chill_season <- function(data_tb, chill_start="sept"){
 
   if (chill_start == "sept"){
     #########################
@@ -640,39 +643,37 @@ put_chill_season <- function(met_hourly_dt, chill_start = "sept"){
     # Chill season start at Sep.
     #
     #########################
-    met_hourly_dt <- met_hourly_dt %>%
-                     mutate(chill_season = case_when(
-                                                     # If Jan:Aug then part of chill season of prev year - current year
-                                                     month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", year),
-                                                     # If Sept:Dec then part of chill season of current year - next year
-                                                     month %in% c(9:12) ~ paste0("chill_", year, "-", (year + 1))
-                                                     )
-                            )
+    data_tb <- data_tb %>%
+               mutate(chill_season = case_when(
+                      # If Jan:Aug then part of chill season of prev year - current year
+                      month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", year),
+                      # If Sept:Dec then part of chill season of current year - next year
+                      month %in% c(9:12) ~ paste0("chill_", year, "-", (year + 1))
+                      ))
     } else if (chill_start == "mid_sept"){
       #########################
       #
       # Chill season start at Mid Sep.
       #
       #########################
-      met_hourly_dt <- met_hourly_dt %>%
-                       mutate(chill_season = case_when(
-                                                       # If Jan:Sept_15th then part of chill season of prev year - current year                
-                                                       month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", year),
-                                                       ((month %in% c(9)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
-                       
-                                                       # If Sept_16th:Dec then part of chill season of current year - next year
-                                                       ((month %in% c(9)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
-                                                        (month %in% c(10:12)) ~ paste0("chill_", year, "-", (year + 1))
-                                                       )
-                             )
+      data_tb <- data_tb %>%
+                 mutate(chill_season = case_when(
+                        # If Jan:Sept_15th then part of chill season of prev year - current year                
+                        month %in% c(1:8) ~ paste0("chill_", (year - 1), "-", year),
+                        ((month %in% c(9)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
+
+                        # If Sept_16th:Dec then part of chill season of current year - next year
+                        ((month %in% c(9)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
+                        (month %in% c(10:12)) ~ paste0("chill_", year, "-", (year + 1))
+                        ))
       } else if (chill_start == "oct"){
       #########################
       #
       # Chill season start at Oct
       #
       #########################
-      met_hourly_dt <- met_hourly_dt %>%
-                        mutate(chill_season = case_when(
+      data_tb <- data_tb %>%
+                 mutate(chill_season = case_when(
                         # If Jan:Sept then part of chill season of prev year - current year
                         month %in% c(1:9) ~ paste0("chill_", (year - 1), "-", year),
                         # If Oct:Dec then part of chill season of current year - next year
@@ -684,23 +685,23 @@ put_chill_season <- function(met_hourly_dt, chill_start = "sept"){
       # Chill season start at Mid Oct
       #
       #########################
-      met_hourly_dt <- met_hourly_dt %>%
-                       mutate(chill_season = case_when(
-                       # If Jan:oct_15th then part of chill season of prev year - current year                
-                       month %in% c(1:9) ~ paste0("chill_", (year - 1), "-", year),
-                       ((month %in% c(10)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
-                       # If oct_16th:Dec then part of chill season of current year - next year
-                       ((month %in% c(10)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
-                       month %in% c(11:12) ~ paste0("chill_", year, "-", (year + 1))
-                       ))
+      data_tb <- data_tb %>%
+                 mutate(chill_season = case_when(
+                        # If Jan:oct_15th then part of chill season of prev year - current year                
+                        month %in% c(1:9) ~ paste0("chill_", (year - 1), "-", year),
+                        ((month %in% c(10)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
+                        # If oct_16th:Dec then part of chill season of current year - next year
+                        ((month %in% c(10)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
+                        month %in% c(11:12) ~ paste0("chill_", year, "-", (year + 1))
+                        ))
     } else if (chill_start == "nov"){
       #########################
       #
       # Chill season start at Nov
       #
       #########################
-      met_hourly_dt <- met_hourly_dt %>%
-                        mutate(chill_season = case_when(
+      data_tb <- data_tb %>%
+                 mutate(chill_season = case_when(
                         # If Jan:Nov then part of chill season of prev year - current year
                         month %in% c(1:10) ~ paste0("chill_", (year - 1), "-", year),
                         # If Nov:Dec then part of chill season of current year - next year
@@ -712,16 +713,15 @@ put_chill_season <- function(met_hourly_dt, chill_start = "sept"){
       # Chill season start at Mid Nov
       #
       #########################
-      met_hourly_dt <- met_hourly_dt %>%
-                       mutate(chill_season = case_when(
-                       # If Jan:Nov_15th then part of chill season of prev year - current year                
-                       month %in% c(1:10) ~ paste0("chill_", (year - 1), "-", year),
-                       ((month %in% c(11)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
-                       # If Nov_16th:Dec then part of chill season of current year - next year
-                       ((month %in% c(11)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
-                       month %in% c(12) ~ paste0("chill_", year, "-", (year + 1))
-                       ))
+      data_tb <- data_tb %>%
+                 mutate(chill_season = case_when(
+                        # If Jan:Nov_15th then part of chill season of prev year - current year                
+                        month %in% c(1:10) ~ paste0("chill_", (year - 1), "-", year),
+                        ((month %in% c(11)) & (day <= 15)) ~ paste0("chill_", (year - 1), "-", year),
+                        # If Nov_16th:Dec then part of chill season of current year - next year
+                        ((month %in% c(11)) & (day >= 16)) ~ paste0("chill_", year, "-", (year + 1)),
+                        month %in% c(12) ~ paste0("chill_", year, "-", (year + 1))
+                        ))
   }
-  return(met_hourly_dt)
+  return(data_tb)
 }
-

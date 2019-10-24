@@ -48,21 +48,24 @@ the_dir <- the_dir[grep(pattern = "chill_output_data",
 
 # Pre-allocate lists to be used
 param_dir = file.path("/home/hnoorazar/chilling_codes/parameters/")
-local_files <- read.delim(file = paste0(param_dir, "file_list.txt"), header = F)
+local_files <- read.delim(file = paste0(param_dir, 
+                                        "file_list.txt"), 
+                          header = F)
 local_files <- as.vector(local_files$V1)
 
 no_sites <- length(local_files)
 data_list_historical <- vector(mode = "list", length = no_sites)
 
-# 5. Iterate through files and process ------------------------------------
-#    5a. Iterate through historical files ---------------------------------
+# 5. Iterate through files and process ---------------------------
+#    5a. Iterate through historical files ------------------------
 
 for(i in 1:length(the_dir)){
   
   # Read in file
   file <- read.table(file = the_dir[i],
                      header = T,
-                     colClasses = c("factor", "numeric", "numeric", "numeric",
+                     colClasses = c("factor", "numeric", 
+                                    "numeric", "numeric",
                                     "numeric", "numeric"))
   
   names(data_list_historical)[i] <- the_dir[i]
@@ -77,27 +80,28 @@ for(i in 1:length(the_dir)){
 # Get medians for each location during historical period
 summary_data_historical <- get_medians(data_list_historical)
 
-head(summary_data_historical)
-
 # Briefly want to export the raw data from the lists for use in other figs
 data_historical <- ldply(data_list_historical, function(x) data.frame(x))
 
 data_historical$year <- as.numeric(substr(x = data_historical$chill_season,
                                           start = 12, stop = 15))
 data_historical$model <- "observed"
-data_historical$scenario <- "historical"
+data_historical$emission <- "historical"
 data_historical$lat = as.numeric(substr(x = data_historical$.id,
                                         start = 19, stop = 26))
 data_historical$long = as.numeric(substr(x = data_historical$.id,
                                          start = 28, stop = 37))
 data_historical <- unique(data_historical)
 
-head(data_historical)
-
 # Remove what's no longer needed
 rm(data_list_historical)
 
 # .id row contains originating filename of this data
+data_historical <- add_time_periods_observed(data_historical)
+summary_data_historical <- add_time_periods_observed(summary_data_historical)
+print ("there should be time period in columns:")
+print(colnames(summary_data_historical))
+
 write.table(x = data_historical,
             file = file.path(main_out,
                              "summary_obs_hist.txt"),
@@ -109,7 +113,10 @@ rm(data_historical)
 summary_data_historical <- grab_coord(summary_data_historical)
 
 summary_data_historical$model <- "observed"
-summary_data_historical$scenario <- "historical"
+summary_data_historical$emission <- "historical"
+summary_data_historical <- add_time_periods_observed(summary_data_historical)
+print ("there should be time period in columns:")
+print(colnames(summary_data_historical))
 
 write.table(x = summary_data_historical,
             file = file.path(main_out,

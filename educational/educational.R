@@ -6,9 +6,46 @@
 # Chill_season != "chill_2055-2056") %>% 
 # group_by(Chill_season) %>%
 
+
+Extract row corresponding to minimum value of a variable by group
+
+data_dt <- data_dt %>%
+           group_by(lat, long, model, chill_season) %>% 
+           slice(which.min(chill_dayofyear)) %>%
+           data.table()
+
+data_dt[ , .SD[which.min(chill_dayofyear)], 
+           by = list(lat, long, model, chill_season)]
+
+
+dt$month[dt$month == 1] = 13
+dt$month[dt$month == 2] = 14
+dt$month[dt$month == 3] = 15
+dt$month[dt$month == 4] = 16
+dt$month[dt$month == 5] = 17
+dt$month[dt$month == 6] = 18
+dt$month[dt$month == 7] = 19
+dt$month[dt$month == 8] = 20
+
+transform(dt, month=case_when(month == 1 ~ 13,
+                              month == 2 ~ 14,
+                              month == 3 ~ 15,
+                              month == 4 ~ 16,
+                              month == 5 ~ 17,
+                              month == 6 ~ 18,
+                              month == 7 ~ 19,
+                              month == 8 ~ 20,
+                              month == 9 ~ 9,
+                              month == 10 ~ 10,
+                              month == 11 ~ 11,
+                              month == 12 ~ 12
+                              ))
+
+
+
+##########################################
 main_out <- file.path(lagoon_out, "/01_storm_cumPrecip/cum_precip/")
 if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
-
 
 ##########################################
 

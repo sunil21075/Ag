@@ -19,9 +19,10 @@ direcs <- c("mid_nov", "mid_oct", "mid_sept", "nov", "oct", "sept")
 starts <- c("Nov. 15", "Oct. 15", "Sept. 15", "Nov. 1", "Oct. 1", "Sept. 1")
 in_post <- "non_overlap/"
 
-for (i in 1:len(direcs)){
+for (i in 1:length(direcs)){
 
   specific_dir <- direcs[i]
+  print(specific_dir)
   start = starts[i]
 
   in_dir <- file.path(in_pref, specific_dir, in_post)
@@ -37,15 +38,11 @@ for (i in 1:len(direcs)){
   the_dir_summary <- the_dir
   # drop the ones with stats in their name
   # the_dir_summary <- the_dir[-grep(pattern = "summary_stats", x = the_dir)]
-  print ("_____________________________________________")
-  getwd()
-  print (the_dir_summary)
-  print ("_____________________________________________")
 
   # Compile the data files for plotting
-  summary_comp <- lapply(the_dir_summary, read.table, header = T)
+  summary_comp <- lapply(the_dir_summary, read.table, header=T)
   summary_comp <- do.call(bind_rows, summary_comp)
-  print (colnames(summary_comp))
+
   summary_comp <- within(summary_comp, remove(.id))
   summary_comp <- na.omit(summary_comp)
 

@@ -21,11 +21,9 @@ start_time <- Sys.time()
 ##                     Terminal arguments                           ##
 ##                                                                  ##
 ######################################################################
-
 args = commandArgs(trailingOnly=TRUE)
 model_type = args[1]
 overlap_type = args[2]
-
 ######################################################################
 ##                                                                  ##
 ##           non_overlap    vs    overlap                           ##

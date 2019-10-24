@@ -18,5 +18,13 @@ output = generations_func(input_dir, file_name)
 generations_Aug = data.table(output[[1]])
 generations_Nov = data.table(output[[2]])
 
-saveRDS(generations_Aug, paste0(write_dir, "generations_Aug_combined_CMPOP_", version, ".rds"))
-saveRDS(generations_Nov, paste0(write_dir, "generations_Nov_combined_CMPOP_", version, ".rds"))
+saveRDS(generations_Aug, paste0(write_dir, 
+                                "generations_Aug_combined_CMPOP_", 
+                                version, ".rds"))
+
+saveRDS(generations_Nov, paste0(write_dir, 
+                                "generations_Nov_combined_CMPOP_", 
+                                version, ".rds"))
+
+
+

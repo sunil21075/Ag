@@ -9,8 +9,9 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
+b <- "/Users/hn/Documents/GitHub/Ag/Lagoon/"
+source_path_1 <- paste0(b, "core_lagoon.R")
+source_path_2 <- paste0(b, "/core_plot_lagoon.R")
 source(source_path_1)
 source(source_path_2)
 #######################################################################
@@ -36,7 +37,7 @@ for (dt_type in in_dir_ext){
   in_dir <- paste0(data_base, dt_type, "/")
   for (timeP_ty in 1:1){
     files <- runoff_AV_fileNs
-    AV_y_lab <- "cum. runoff (mm)"
+    AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
     AV_title <- paste0(av_titles[timeP_ty], "runoff")
 
@@ -113,7 +114,7 @@ for (dt_type in in_dir_ext){
       #########
       box_title <- "percentage differences between future time "
       box_title <- paste0(box_title, 
-                          "periods and historical", subttl)
+                          "periods and historical runoff ", subttl)
 
       quans_85 <- find_quantiles(curr_diff_85, 
                                  tgt_col="perc_diff", 
@@ -125,13 +126,15 @@ for (dt_type in in_dir_ext){
                                               y_lab = "differences (%)",
                                               tgt_col = "perc_diff") + 
                              ggtitle(box_title) +
-                      coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                      coord_cartesian(ylim = c(quans_85[1], 
+                                               quans_85[2]))
 
       unbias_perc_diff_45 <- seasonal_cum_box_clust_x(dt = curr_diff_45,
                                               y_lab = "differences (%)",
                                               tgt_col = "perc_diff") + 
                              ggtitle(box_title) + 
-                     coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                     coord_cartesian(ylim = c(quans_45[1], 
+                                              quans_45[2]))
       ###################################
       #####
       ##### arrange plots
