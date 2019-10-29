@@ -128,9 +128,12 @@ if(hist){
   summary_data_historical$emission <- basename(getwd())
   summary_data_historical <- add_time_periods_model(summary_data_historical)
   summary_data_historical <- na.omit(summary_data_historical)
+  out <- paste0(main_out, "/stats/")
+  if (dir.exists(file.path(out)) == F){
+     dir.create(path = out, recursive = T)}
+
   write.table(x=summary_data_historical,
-              file = file.path(main_out,
-                               paste0("summary_stats_",
+              file = file.path(out, paste0("/summary_stats_",
                      # model name
                      gsub("-", "_",basename(dirname(getwd()))),
                      "_", basename(getwd()), # emission
@@ -189,9 +192,11 @@ if(hist){
   summary_data_F$emission <- basename(getwd())
   summary_data_F <- add_time_periods_model(summary_data_F)
   summary_data_F <- na.omit(summary_data_F)
+  out <- paste0(main_out, "/stats/")
+  if (dir.exists(file.path(out)) == F){
+     dir.create(path = out, recursive = T)}
   write.table(x = summary_data_F,
-              file = file.path(main_out,
-                               paste0("summary_stats_",
+              file = file.path(out, paste0("/summary_stats_",
                      # model name
                      gsub("-", "_", basename(dirname(getwd()))),
                      "_",

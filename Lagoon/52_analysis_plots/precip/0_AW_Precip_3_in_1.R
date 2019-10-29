@@ -36,7 +36,8 @@ for (timeP_ty in 1:1){ # annual or wtr_yr?
   #    title_time <- "water year"
   # }
   AV_y_lab <- "precipitation (mm)"
-  AV_title <- paste0("annual precipitation")
+  AV_title <- paste0("annual precipitation for historical", 
+                     " and three future time frames")
   AV_tg_col <- "annual_cum_precip"
   
   ###############################################################
@@ -83,20 +84,21 @@ for (timeP_ty in 1:1){ # annual or wtr_yr?
                                             y_lab = AV_y_lab, 
                                             tgt_col = AV_tg_col) + 
                ggtitle(AV_title) +
-               coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+               coord_cartesian(ylim = c(max(0, quans_85[1]), quans_85[2]))
 
   AV_box_45 <- ann_wtrYr_chunk_cum_box_cluster_x(dt = AVs_45, 
                                                  y_lab = AV_y_lab, 
                                                  tgt_col = AV_tg_col) + 
                ggtitle(AV_title) + 
-               coord_cartesian(ylim=c(quans_45[1], quans_45[2]))
+               coord_cartesian(ylim=c(max(0, quans_45[1]), quans_45[2]))
 
   ###################################
   #####
   ##### fraction plots
   #####
   ###################################
-  box_title <- paste0("portion of precipitation fell as rain")
+  box_title <- paste0("proportion (%) of annual", 
+                      " precipitation in rain form")
 
   quans_85 <- 100 * find_quantiles(AVs_85, tgt_col="rain_fraction", 
                                    time_type="annual")
@@ -120,9 +122,8 @@ for (timeP_ty in 1:1){ # annual or wtr_yr?
   ##### difference plots
   #####
   ###################################
-  box_title <- "percentage differences between"
-  box_title <- paste0(box_title, " future time periods and historical")
-  box_title <- paste0(box_title, " precipitation")
+  box_title <- paste0("% difference between future and historical", 
+                      " annual precipitation")
 
   quans_85 <- find_quantiles(unbias_diff_85, tgt_col= "perc_diff", 
                              time_type="annual")

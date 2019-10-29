@@ -117,10 +117,12 @@ summary_data_historical$emission <- "historical"
 summary_data_historical <- add_time_periods_observed(summary_data_historical)
 print ("there should be time period in columns:")
 print(colnames(summary_data_historical))
-
+out <- paste0(main_out, "/stats/")
+if (dir.exists(file.path(out)) == F) {
+  dir.create(path = out, recursive = T)
+}
 write.table(x = summary_data_historical,
-            file = file.path(main_out,
-                             "summary_stats_observed.txt"),
+            file = file.path(out, "summary_stats_observed.txt"),
             row.names = F)
   
 end_time <- Sys.time()

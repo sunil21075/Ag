@@ -44,7 +44,9 @@ for (dt_type in in_dir_ext){
     files <- runoff_AV_fileNs
     AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-    AV_title <- paste0(av_titles[timeP_ty], "runoff")
+    AV_title <- paste0(av_titles[timeP_ty], 
+                       "runoff for historical", 
+                       " and three future time frames")
     ###############################################################
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% 
@@ -96,8 +98,8 @@ for (dt_type in in_dir_ext){
     ##### difference plots
     #####
     ###################################
-    a <- "percentage differences between future "
-    box_title <- paste0(a, "time periods and historical runoff")
+    a <- "% difference between future and historical"
+    box_title <- paste0(a, " annual runoff")
 
     quans_85 <- find_quantiles(unbias_diff_85, 
                                tgt_col= "perc_diff", 

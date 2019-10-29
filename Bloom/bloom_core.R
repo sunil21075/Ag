@@ -1,3 +1,94 @@
+convert_zero_to_365 <- function(dt){
+  dt$thresh_75[dt$thresh_75==0] <- 365
+  dt$thresh_70[dt$thresh_75==0] <- 365
+  dt$thresh_65[dt$thresh_75==0] <- 365
+  dt$thresh_60[dt$thresh_75==0] <- 365
+  dt$thresh_55[dt$thresh_75==0] <- 365
+  dt$thresh_50[dt$thresh_75==0] <- 365
+  dt$thresh_45[dt$thresh_75==0] <- 365
+  dt$thresh_40[dt$thresh_75==0] <- 365
+  dt$thresh_35[dt$thresh_75==0] <- 365
+  dt$thresh_30[dt$thresh_75==0] <- 365
+  dt$thresh_25[dt$thresh_75==0] <- 365
+  dt$thresh_20[dt$thresh_75==0] <- 365
+  return(dt)
+}
+
+change_thresh_4_bloom <- function(dt, location_ls){
+  #
+  #  emissions are saved as rcp45, time periods are 2026-2075
+  #  here we modify those stuff to make the file proper for 
+  #  time series plots. 
+  #
+  dt <- within(dt, remove(start, 
+                          sum, sum_J1, sum_F1, 
+                          sum_M1, sum_A1, year))
+
+  # make time_period similar to that of frost and bloom
+  dt <- convert_thresh_TPs_to_three(dt)
+  
+  #
+  # there are 8 locations in Montana here, drop them
+  #
+  dt <- dt %>% filter(location %in% location_ls) %>% data.table()
+  
+  thresh_F <- dt %>% filter(time_period=="future")
+  thresh_F_85 <- thresh_F %>% filter(emission == "rcp85")
+  thresh_F_45 <- thresh_F %>% filter(emission == "rcp45")
+  thresh_F_85$emission <- "RCP 8.5"
+  thresh_F_45$emission <- "RCP 4.5"
+  thresh_F <- rbind(thresh_F_85, thresh_F_45)
+  rm(thresh_F_85, thresh_F_45)
+
+  thresh_mod_hist <- dt %>% filter(time_period=="modeled_hist")
+  thresh_mod_hist_85 <- thresh_mod_hist
+  thresh_mod_hist_45 <- thresh_mod_hist
+  thresh_mod_hist_85$emission <- "RCP 8.5"
+  thresh_mod_hist_45$emission <- "RCP 4.5"
+  thresh_mod_hist <- rbind(thresh_mod_hist_85, thresh_mod_hist_45)
+  rm(thresh_mod_hist_85, thresh_mod_hist_45)
+
+  thresh_obs <- dt %>% filter(time_period=="observed")
+  thresh_obs_85 <- thresh_obs
+  thresh_obs_45 <- thresh_obs
+  thresh_obs_85$emission <- "RCP 8.5"
+  thresh_obs_45$emission <- "RCP 4.5"
+  thresh_obs <- rbind(thresh_obs_85, thresh_obs_45)
+  rm(thresh_obs_85, thresh_obs_45)
+
+  thresh <- rbind(thresh_F, thresh_obs, thresh_mod_hist)
+  rm(thresh_F, thresh_obs, thresh_mod_hist)
+  return(thresh)
+}
+
+convert_thresh_TPs_to_three <- function(dt){
+  FTP <- c("2006-2025", "2026-2050", "2051-2075", "2076-2099")
+
+  dt_F <- dt %>% 
+          filter(time_period %in% FTP)%>% 
+          data.table()
+  dt_F$time_period <- "future"
+
+  dt_MH <- dt %>% 
+          filter(time_period == "1950-2005")%>% 
+          data.table()
+  dt_MH$time_period <- "modeled_hist"
+
+  dt_obs <- dt %>% 
+          filter(time_period == "1979-2015")%>% 
+          data.table()
+  dt_obs$time_period <- "observed"
+  dt <- rbind(dt_F, dt_MH, dt_obs)
+  return(dt)
+}
+
+add_location <- function(dt){
+  if (!("location" %in% colnames(dt))){
+    dt$location <- paste0(dt$lat, "_", dt$long)
+  }
+  return(dt)
+}
+
 pick_obs_and_F <- function(dt){
   # just keep observed and future
   dt <- toss_model_hist_by_TP(dt)
@@ -23,7 +114,7 @@ toss_F0 <- function(dt){
 
 pick_F1_F3_by_chill_season <- function(dt){
   dt <- dt %>% 
-        filter(chill_season >= "chill_2025-2026")%>% 
+        filter(chill_season >= "chill_2025-2026") %>% 
         data.table()
   return(dt)
 }
@@ -74,7 +165,25 @@ find_1st_frost <- function(data_dt){
   return (data_dt)
 }
 
+convert_doy_to_chill_doy <- function(dt){
+  dt$chill_doy <- 1
+  for (m in (1:8)){
+    dt$chill_doy[dt$month==m] <- dt$dayofyear[dt$month==m] + 122
+  }
+  
+  for (m in (9:12)){
+    dt$chill_doy[dt$month==m] <- dt$dayofyear[dt$month==m] -244
+  }
+  return(dt)
+}
+
 add_chill_sept_DoY <- function(dt){
+  # This function would work when all days and months
+  # of a given year are there.
+  # Otherwise, cumsum would not work, and you have to use
+  # convert_doy_to_chill_doy(.) function.
+  #
+
   # relabel the months so we can
   # sort them, and create day of year 
   # in the chill calendar
@@ -92,7 +201,7 @@ add_chill_sept_DoY <- function(dt){
                                      month == 11 ~ 11,
                                      month == 12 ~ 12))
   dt <- data.table(dt)
-  dt$chill_dayofyear <- 1 # dummy
+  dt$chill_dayofyear <- 1
   dt[, chill_dayofyear := cumsum(chill_dayofyear), 
        by=list(chill_season, model, lat, long)]
   return(dt)
@@ -229,24 +338,28 @@ bloom_medians_across_models_time_periods <- function(data){
 }
 
 bloom_cut_off <- function(data, cut_off){
-  data <- subset(data, select = c("lat", "long", "emission",
-                                  "model", "chill_dayofyear", 
-                                  "chill_season",
+  data <- subset(data, select = c("year", "month", "day",
+                                  "lat", "long", 
+                                  "model", "emission",
                                   "cripps_pink", "gala", "red_deli"))
   
-  data <- melt(data, id.vars = c("lat", "long", "model",
-                                 "chill_season", 
-                                 "chill_dayofyear", "emission"), 
+  data$dayofyear <- 1 # dummy
+  data[, dayofyear := cumsum(dayofyear), 
+       by=list(year, lat, long, model, emission)]
+  
+  data <- melt(data, id.vars = c("lat", "long", 
+                                 "model", "emission",
+                                 "year", "month", "day", 
+                                 "dayofyear"),
                variable.name = "fruit_type")
-  setnames(data, old=c("value"), new=c("chill_dayofyear"))
-  data = data[chill_dayofyear >= cut_off, ]
+  setnames(data, old=c("value"), new=c("bloom_perc"))
+  data = data[bloom_perc >= cut_off, ]
   data = data[, head(.SD, 1), 
                 by = c("lat", "long", "model", "emission",
-                       "chill_season", "fruit_type")]
+                       "year", "fruit_type")]
   
   return (data)
 }
-
 
 generate_vertdd <- function(data_tb, lower_temp=4.5, upper_temp=24.28){
   data_tb <- data.table(data_tb)

@@ -12,10 +12,8 @@ bloom_rcp45 <- within(bloom_rcp45, remove(location, latitude, longitude, value, 
 setnames(bloom_rcp85, old=c("ClimateGroup"), new=c("time_period"))
 setnames(bloom_rcp45, old=c("ClimateGroup"), new=c("time_period"))
 
-
 setnames(bloom_rcp85, old=c("ClimateScenario"), new=c("model"))
 setnames(bloom_rcp45, old=c("ClimateScenario"), new=c("model"))
-
 
 bloom_rcp85$model <- as.character(bloom_rcp85$model)
 bloom_rcp85$model[bloom_rcp85$model=="historical"] <- "observed"
@@ -27,4 +25,5 @@ write_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/frost_bloom/bloo
 
 saveRDS(bloom_rcp45, paste0(write_dir, "bloom_cloudy_45_50Percent.rds"))
 saveRDS(bloom_rcp85, paste0(write_dir, "bloom_cloudy_85_50Percent.rds"))
+
 

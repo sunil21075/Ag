@@ -496,17 +496,24 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
   season_levels <- c("fall", "winter", "spring", "summer")
   dt$season <- factor(dt$season, levels=season_levels, order=T)
   
-  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  region_levels <- c("Western coastal", "Cascade foothills", 
+                     "Northwest Cascades", "Northcentral Cascades", 
+                     "Northeast Cascades")
+  
   dt$cluster <- factor(dt$cluster, levels=region_levels, order=T)
   dt <- dt %>% filter(time_period != "2006-2025") %>% data.table()
-  dt <- subset(dt, select=c("time_period", "emission", "season","cluster", tgt_col))
+  
+  dt <- subset(dt, select=c("time_period", 
+                            "emission", "season",
+                            "cluster", tgt_col))
   
   medians <- data.frame(dt) %>% 
              group_by(cluster, time_period, emission, season) %>% 
              summarise(med = median(get(tgt_col))) %>% 
              data.table()
 
-  melted <- melt(dt, id = c("emission", "season", "time_period", "cluster")); rm(dt)
+  melted <- melt(dt, id = c("emission", "season", 
+                            "time_period", "cluster")); rm(dt)
   time_label <- sort(unique(melted$time_period))
   
   if (length(unique(melted$time_period)) == 3){
@@ -532,7 +539,7 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.key.size = unit(.8, "line"),
                legend.spacing.x = unit(.1, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = 8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
@@ -570,9 +577,9 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
         geom_text(data = medians, 
                   aes(label = sprintf(signif, medians$med), y=medians$med), 
                   size = 2, fontface = "bold",
-                  position = position_dodge(.8), vjust = -.6)
+                  position = position_dodge(.8), vjust = -.3)
   if(tgt_col == "perc_diff"){
-    bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
+    bx <- bx + geom_hline(yintercept = 0, color = "red", size=.3)
   }
   return(bx)
 }
@@ -613,7 +620,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size=8, face = "bold",
                                          margin = margin(t=.15, r=.1, b=0, l=0, "line")),
@@ -649,7 +656,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
         geom_text(data = medians, 
                   aes(label = sprintf(signif, medians$med), y=medians$med), 
                   size = 2, fontface = "bold",
-                  position = position_dodge(.8), vjust = -.6)
+                  position = position_dodge(.8), vjust = -.3)
   if (tgt_col == "perc_diff"){
     bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
   }
@@ -943,7 +950,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=-.2, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold",
                                          margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
@@ -979,7 +986,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
     geom_text(data = medians, 
               aes(label = sprintf(signif, medians$med), y = medians$med), 
               size = 2, fontface = "bold",
-              position = position_dodge(.8), vjust = -.6)
+              position = position_dodge(.8), vjust = -.3)
 
   if (tgt_col=="perc_diff"){
    bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
@@ -1231,7 +1238,7 @@ box_dt_25 <- function(dt_25){
                         ) +
            facet_grid(~ emission) +
            xlab("precip. group") + 
-           ylab("design storm intensity (mm/hr)") + 
+           ylab("Design Storm intensity (mm/hr)") + 
            # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
@@ -1241,7 +1248,7 @@ box_dt_25 <- function(dt_25){
            geom_text(data = medians, 
                      aes(label = sprintf("%1.1f", medians$med_25), 
                          y = medians$med_25),
-                     size = 4, vjust = -.6, fontface="bold",
+                     size=4, vjust = -.3, fontface="bold",
                      position = position_dodge(.85))
 }
 
@@ -1323,7 +1330,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
            scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
            geom_text(data = medians, 
                      aes(label = sprintf("%1.1f", medians$med), y = medians$med),
-                     size = 2, vjust = -.6, fontface="bold",
+                     size = 4, vjust = -.3, fontface="bold",
                      position = position_dodge(.8))
 }
 
@@ -1460,7 +1467,7 @@ storm_box_plot <- function(data_tb){
                                      "twenty_years" = "20",
                                      "twenty_five_years" = "25")) + 
            xlab("time interval (years)") + 
-           ylab("24 hr design storm intensity (mm/hr)") + 
+           ylab("25-year/24-hr Design Storm intensity (mm/hr)") + 
            # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 

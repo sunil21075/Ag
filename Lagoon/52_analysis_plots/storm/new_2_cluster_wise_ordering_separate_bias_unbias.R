@@ -39,7 +39,8 @@ all_storms <- within(all_storms,
 
 ###############################################################
 clusters <- sort(unique(all_storms$cluster))
-clust <- clusters[1]
+clust <- clusters[4]
+
 for (clust in clusters){
   curr_dt <- all_storms %>% filter(cluster == clust)
   curr_dt_45 <- curr_dt %>% 
@@ -51,8 +52,7 @@ for (clust in clusters){
   ##################
   ################## Actual Values
   ################## 
-  AV_title <- paste0("25-year/24-hr Design Storm intensity\n", 
-                     clust, " subregion\n")
+  AV_title <- paste0("25-year/24-hr Design Storm intensity\n")
   quans_85 <- storm_25_quantiles(curr_dt_85, 
                                  tgt_col= "twenty_five_years")
   quans_45 <- storm_25_quantiles(curr_dt_45, 
@@ -73,11 +73,10 @@ for (clust in clusters){
   ### 45
   ###
   ########################
-  subttl <- paste0(" (", clust, ")")
-  box_title <- "percentage differences between\nfuture"
+  
+  box_title <- "% difference between future and historical\n"
   box_title <- paste0(box_title, 
-                      " time periods and historical\n",
-                      clust, " subregion")
+                      " Design Storm intensity")
   unbias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_45, 
                                                diff_from="1950-2005")
   quans_45 <- storm_25_quantiles(unbias_diffs_45, tgt_col= "perc_diff") 
@@ -108,13 +107,25 @@ for (clust in clusters){
   plt_45_unbias <- ggarrange(plotlist = list(AV_45, 
                                              unbias_diffs_perc_box_45),
                              ncol = 2, nrow = 1, 
-                             widths = c(1.25, 1, 1),
+                             widths = c(1, 1),
                              common.legend = TRUE, legend="bottom")
+  plt_45_unbias <- annotate_figure(plt_45_unbias,
+                                   bottom = text_grob(clust, 
+                                                      color="red",
+                                                      face = "bold", 
+                                                      size = 10))
+
   plt_85_unbias <- ggarrange(plotlist = list(AV_85, 
                                              unbias_diffs_perc_box_85),
                              ncol = 2, nrow = 1, 
-                             widths = c(1.25, 1, 1),
+                             widths = c(1, 1),
                              common.legend = TRUE, legend="bottom")
+  plt_85_unbias <- annotate_figure(plt_85_unbias,
+                                   bottom = text_grob(clust, 
+                                                      color="red",
+                                                      face = "bold", 
+                                                      size = 10))
+
   ##############################
   ######
   ###### Save Plots
@@ -123,13 +134,13 @@ for (clust in clusters){
   ggsave(filename = paste0(gsub("\ ", "_", clust), 
                           "_45_unbias_storm.png"),
          plot = plt_45_unbias, 
-         width=6.5, height = 4, units = "in", 
+         width=6.75, height = 4, units = "in", 
          dpi=600, device = "png", path = plot_dir)
   
   ggsave(filename = paste0(gsub("\ ", "_", clust), 
                            "_85_unbias_storm.png"),
          plot = plt_85_unbias, 
-         width=6.5, height = 4, units = "in", 
+         width=6.75, height=4, units = "in", 
          dpi=600, device = "png",
          path = plot_dir)
 }

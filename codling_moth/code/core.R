@@ -1011,13 +1011,16 @@ bloom_medians_across_models_time_periods <- function(data){
 bloom <- function(data, bloom_cut_off){
   print (paste0("bloom_cut_off: ", bloom_cut_off))
 
-  data <- subset(data, select = c("ClimateGroup", "latitude", "longitude", 
-                                 "ClimateScenario", "year", "month", 
-                                 "day", "dayofyear", "cripps_pink", "gala", "red_deli"))
+  data <- subset(data, select = c("ClimateGroup",
+                                  "latitude", "longitude", 
+                                  "ClimateScenario", "year", "month", 
+                                  "day", "dayofyear", 
+                                  "cripps_pink", "gala", "red_deli"))
   
-  data <- melt(data, id.vars = c("ClimateGroup", "latitude", "longitude", 
-                                "ClimateScenario", "year", 
-                                "month", "day", "dayofyear"), 
+  data <- melt(data, id.vars = c("ClimateGroup",
+                                 "longitude",  "latitude", 
+                                 "ClimateScenario", "year", 
+                                 "month", "day", "dayofyear"), 
               variable.name = "apple_type")
   
   # data = data[value >= 1.000000e+00,]

@@ -95,24 +95,25 @@ for (dt_type in in_dir_ext){
                                  tgt_col= AV_tg_col, 
                                  time_type="monthly")
       AV_box_85 <- box_trend_monthly_cum(dt=curr_AVs_85, 
-                                         p_type="box",
+                                         p_type = "box",
                                          y_lab = AV_y_lab, 
                                          tgt_col = AV_tg_col) + 
-                   ggtitle(paste0("monthly runoff")) +
+                   ggtitle(paste0("monthly runoff for historical", 
+                                     " and three future time frames")) + 
                    coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
       AV_box_45 <- box_trend_monthly_cum(dt = curr_AVs_45, 
-                                         p_type="box",
+                                         p_type = "box",
                                          y_lab = AV_y_lab, 
                                          tgt_col = AV_tg_col) + 
-                      ggtitle(paste0("monthly runoff")) + 
+                      ggtitle(paste0("monthly runoff for historical", 
+                                     " and three future time frames")) + 
               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
       #########
       ######### unbiased Percentage diffs
       #########
-      box_title <- "percentage differences"
-      box_title <- paste0(box_title, " between future time periods ")
-      box_title <-  paste0(box_title, "and historical runoff")
+      box_title <- "% difference between future and historical"
+      box_title <-  paste0(box_title, " monthly runoff")
       
       quans_85 <- find_quantiles(curr_unbias_diff_85, 
                                  tgt_col = "perc_diff", 

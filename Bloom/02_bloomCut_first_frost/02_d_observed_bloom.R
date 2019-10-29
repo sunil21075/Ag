@@ -36,8 +36,10 @@ print(head(the_dir))
 all_fullbloom_50percent_day <- data.table()
 for(file in the_dir){
   met_data <- data.table(readRDS(file))
-  met_data <- trim_chill_calendar(met_data)
   bloom_cuts <- bloom_cut_off(data=met_data, cut_off=0.5)
+  bloom_cuts <- put_chill_calendar(bloom_cuts, chill_start="sept")
+  bloom_cuts <- convert_doy_to_chill_doy(bloom_cuts)
+  bloom_cuts <- trim_chill_calendar(bloom_cuts)
   all_fullbloom_50percent_day <- rbind(all_fullbloom_50percent_day, 
                                        bloom_cuts)
 }

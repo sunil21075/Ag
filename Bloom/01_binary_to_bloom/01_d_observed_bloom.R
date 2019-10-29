@@ -81,6 +81,7 @@ for(file in dir_con){
   met_data$emission <- "observed"
   met_data <- put_chill_calendar(met_data, chill_start="sept")
   met_data <- add_chill_sept_DoY(met_data)
+
   saveRDS(object=met_data, 
           file=file.path(main_out, 
                          paste0("/bloom_", lat, "_", long, ".rds")))

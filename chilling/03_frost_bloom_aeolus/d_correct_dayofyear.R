@@ -35,5 +35,9 @@ form_chill_season_dayofyear <- function(dt, due){
   keycol <- c("location", "year", "month", "day")
   setorderv(dt, keycol)
   dt$dayofyear <- 1 # dummy
-  dt[, dayofyear := cumsum(dayofyear), by=list(year, location, model, emission)]
+  dt[, dayofyear := cumsum(dayofyear), 
+       by=list(year, location, model, emission)]
 }
+
+
+

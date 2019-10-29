@@ -61,9 +61,8 @@ if (dir.exists(file.path(main_out, current_dir)) == F){
   dir.create(path=file.path(main_out, current_dir), recursive=T)
 }
 
-# 2d. get files in current folder
+# get files in current folder and remove non-data files
 dir_con <- dir()
-# remove filenames that aren't data
 dir_con <- dir_con[grep(pattern = "data_", x = dir_con)]
 
 # choose only files that we're interested in
@@ -73,8 +72,7 @@ start_time <- Sys.time()
 # 3. Process the data ---------------------------------------
 for(file in dir_con){
   # 3a. read in binary meteorological data file from specified path
-  met_data <- read_binary(file_path = file,
-                          hist = hist, no_vars=4)
+  met_data <- read_binary(file_path=file, hist=hist, no_vars=4)
 
   # I make the assumption that lat always has 
   # same number of decimal points
@@ -84,8 +82,7 @@ for(file in dir_con){
   met_data$long <- long
 
   # 3b. Clean it up
-  met_data <- met_data %>%
-              select(-c(precip, windspeed)) %>%
+  met_data <- within(met_data, remove(precip, windspeed)) %>%
               data.table()
   met_data$model <- current_model
 

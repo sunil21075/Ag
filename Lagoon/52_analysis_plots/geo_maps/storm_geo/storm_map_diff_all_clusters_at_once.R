@@ -66,8 +66,10 @@ for (em in emissions){
     plt_dt_unbias <- unbiased_dt %>% 
                      filter(emission == em & return_period==tp) %>% 
                      data.table()
-    unbiased_min <- min(plt_dt_unbias$perc_diff_meds)
-    unbiased_max <- max(plt_dt_unbias$perc_diff_meds)
+                     
+    # unbiased_min <- min(plt_dt_unbias$perc_diff_meds)
+    # unbiased_max <- max(plt_dt_unbias$perc_diff_meds)
+
     unbias_clr_lim <- c(floor(unbiased_min), ceiling(unbiased_max))
 
     assign(x = paste0("unbias_", 
@@ -76,8 +78,10 @@ for (em in emissions){
            value = geo_map_perc_diff(dt_dt = plt_dt_unbias,
                                      col_col = "perc_diff_meds", 
                                      color_limit = unbias_clr_lim) + 
-                   ggtitle(label=paste0("25-year/24-hour design storm\n",
-                                    "percent difference from historical", 
+                   ggtitle(label=paste0("25-year/24-hour Design Storm intensity\n", 
+                                        "% difference",
+                                        "in intensity as compared\n", 
+                                        "to the historical time frame", 
                                         "\n", em, ", ", tp)))
   }
 }

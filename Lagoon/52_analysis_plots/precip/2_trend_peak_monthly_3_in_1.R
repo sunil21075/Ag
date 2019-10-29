@@ -21,7 +21,9 @@ diff_dir <- paste0(base, "/precip/02_med_diff_med_no_bias/")
 in_dir <- data_base
 plot_base <- paste0(base, "plots/precip/monthly/")
 ##############################################################
-AV_title <- "monthly precipitation"
+AV_title <- paste0("monthly precipitation for historical", 
+                   " and three future time frames")
+
 AV_y_lab <- "precipitation (mm)"
 AV_tg_col <- "monthly_cum_precip"
 
@@ -38,13 +40,15 @@ AVs$rain_portion <- AVs$rain_portion * 100
 AVs_45 <- AVs %>% filter(emission=="RCP 4.5") %>% data.table()
 AVs_85 <- AVs %>% filter(emission=="RCP 8.5") %>% data.table()
 ############################################################
-unbias_diff<-readRDS(paste0(diff_dir, 
-           "detail_med_diff_med_month_precip.rds")) %>% 
+unbias_diff <- readRDS(paste0(diff_dir, 
+                              "detail_med_diff_med_month_precip.rds")) %>% 
                data.table()
+
 unbias_diff <- na.omit(unbias_diff)
 unbias_diff <- remove_observed(unbias_diff)
 unbias_diff <- remove_current_timeP(unbias_diff)
 # update clusters labels
+
 unbias_diff<-convert_5_numeric_clusts_to_alphabet(unbias_diff)
 unbias_diff_45 <- unbias_diff %>% 
                   filter(emission=="RCP 4.5") %>% 
@@ -100,9 +104,9 @@ for (clust_g in cluster_types){
   #########
   ######### difference plot
   #########
-  a1 <- "percentage differences"
-  a2 <- " between future time periods and historical precipitation"
-  box_title <- paste0(a1, a2)
+  box_title <- paste0("% difference between future and", 
+                      " historical annual precipitation")
+  
   quans_85 <- find_quantiles(curr_diff_85, 
                              tgt_col= "perc_diff", 
                              time_type="monthly")
@@ -126,10 +130,13 @@ for (clust_g in cluster_types){
   #########
   ######### rain fractions
   #########
-  box_title <- paste0("portion of precipitation fell as rain")
+  box_title <- paste0("proportion (%) of monthly", 
+                      " precipitation in rain form")
+
   quans_85 <- find_quantiles(curr_AVs_85, 
                              tgt_col="rain_fraction", 
                              time_type="monthly")
+
   quans_45 <- find_quantiles(curr_AVs_45, 
                              tgt_col="rain_fraction",
                              time_type="monthly")

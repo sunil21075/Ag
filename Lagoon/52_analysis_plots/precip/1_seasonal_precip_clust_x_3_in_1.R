@@ -27,7 +27,6 @@ diff_dir <- paste0(base, "/precip/02_med_diff_med_no_bias/")
 
 AV_fileNs <- "seasonal_fracs"
 AV_y_lab <- "precipitation (mm)"
-AV_title <- paste0("seasonal precipitation")
 AV_tg_col <- "seasonal_cum_precip"
 
 AVs <- readRDS(paste0(data_base,"seasonal_fracs.rds")) %>% 
@@ -73,7 +72,10 @@ season_types <- c("fall", "winter", "spring", "summer")
 season_g <- "fall"
 
 for (season_g in season_types){
-  subttl <- paste0(" (", season_g, ")")
+  AV_title <- paste0(season_g, 
+                     " precipitation for historical and ",
+                     "three future time frames")
+  
   curr_AVs_85 <- AVs_85 %>% 
                  filter(season == season_g) %>% 
                  data.table()
@@ -102,23 +104,23 @@ for (season_g in season_types){
   AV_box_85 <- seasonal_cum_box_clust_x(dt = curr_AVs_85, 
                                      tgt_col = AV_tg_col,
                                      y_lab = AV_y_lab) +
-               ggtitle(label= paste0(AV_title, subttl)) +
+               ggtitle(label= paste0(AV_title)) +
         coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
   AV_box_45 <- seasonal_cum_box_clust_x(dt = curr_AVs_45, 
                                         tgt_col = AV_tg_col,
                                         y_lab = AV_y_lab) +
-               ggtitle(label= paste0(AV_title, subttl)) + 
+               ggtitle(label= paste0(AV_title)) + 
           coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
   #############################################
   #########
   ######### difference plot
   #########
   #############################################
-  box_title <- "percentage differences between future"
-  box_title <- paste0(box_title, 
-                      " time periods and historical precipitation", 
-                      subttl)
+  box_title <- paste0("% difference between future and historical ", 
+                      season_g, 
+                      " precipitation")
+
   quans_85 <- find_quantiles(curr_diff_85, 
   	                         tgt_col="perc_diff", 
   	                         time_type="seasonal")
@@ -144,8 +146,10 @@ for (season_g in season_types){
   ######### rain plot
   #########
   #############################################
-  box_title <- "portion of precipitation fell as rain ("
-  box_title <- paste0(box_title, season_g, ")")
+  box_title <- paste0("proportion (%) of ", 
+                      season_g, 
+                      " precipitation in rain form")
+  
   quans_85 <- 100 * find_quantiles(curr_AVs_85, 
                                    tgt_col= "rain_fraction", 
                                    time_type="seasonal")

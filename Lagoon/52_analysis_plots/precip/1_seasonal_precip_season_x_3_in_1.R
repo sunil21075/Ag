@@ -21,8 +21,10 @@ plot_base <- paste0(base, "plots/precip/seasonal/season_x/")
 #############################################################
 AV_fileNs <- "seasonal_fracs"
 AV_y_lab <- "precipitation (mm)"
-AV_title <- paste0("seasonal precipitation")
 AV_tg_col <- "seasonal_cum_precip"
+
+AV_title <- "seasonal precipitation for historical and "
+AV_title <- paste0(AV_title, "three future time frames")
 
 AVs <- readRDS(paste0(data_base, 
                       "seasonal_fracs.rds")) %>% 
@@ -93,19 +95,20 @@ for (clust_g in cluster_types){
                                          tgt_col = AV_tg_col,
                                          y_lab = AV_y_lab) +
                ggtitle(label= paste0(AV_title, subttl)) +
-               coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+               coord_cartesian(ylim = c(max(0, quans_85[1]), quans_85[2]))
 
   AV_box_45 <- seasonal_cum_box_season_x(dt = curr_AVs_45, 
                                          tgt_col = AV_tg_col,
                                          y_lab = AV_y_lab) +
                ggtitle(label= paste0(AV_title, subttl)) + 
-               coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+               coord_cartesian(ylim = c(max(0, quans_45[1]), quans_45[2]))
   #########
   ######### difference plot
   #########
-  box_title <- "percentage differences between future time "
-  box_title <- paste0(box_title, 
-                      "periods and historical precipitation ", subttl)
+  box_title <- paste0("% difference between future and ", 
+                      "historical seasonal precipitation ", 
+                      subttl)
+  
   quans_85 <- find_quantiles(curr_diff_85, 
                              tgt_col="perc_diff", 
                              time_type="seasonal")
@@ -129,7 +132,7 @@ for (clust_g in cluster_types){
   ######### rain plot
   #########
   ######################################################
-  box_title <- "portion of precipitation fell as rain ("
+  box_title <- "proportion (%) of precipitation in rain form ("
   box_title <- paste0(box_title, clust_g, ")")
   quans_85 <- 100 * find_quantiles(curr_AVs_85, 
                                    tgt_col="rain_fraction", 

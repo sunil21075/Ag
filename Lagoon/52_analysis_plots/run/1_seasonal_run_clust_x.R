@@ -39,7 +39,6 @@ for (dt_type in in_dir_ext){
     files <- runoff_AV_fileNs
     AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-    AV_title <- paste0(av_titles[timeP_ty], "runoff")
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>%
            data.table()
@@ -91,6 +90,10 @@ for (dt_type in in_dir_ext){
       #########
       ######### Actual value plots
       #########
+      AV_title <- paste0(season_g, 
+                         " runoff for historical and three", 
+                         " future time frames")
+
       quans_85 <- find_quantiles(curr_AVs_85, 
                                  tgt_col= AV_tg_col, 
                                  time_type="seasonal")
@@ -101,20 +104,22 @@ for (dt_type in in_dir_ext){
       AV_box_85 <- seasonal_cum_box_clust_x(dt = curr_AVs_85, 
                                             tgt_col = AV_tg_col,
                                             y_lab = AV_y_lab) +
-                   ggtitle(label= paste0(AV_title, subttl)) +
-            coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                   ggtitle(label= AV_title) +
+            coord_cartesian(ylim = c(max(0, quans_85[1]), quans_85[2]))
 
       AV_box_45 <- seasonal_cum_box_clust_x(dt = curr_AVs_45, 
                                             tgt_col = AV_tg_col,
                                             y_lab = AV_y_lab)+
-                   ggtitle(label= paste0(AV_title, subttl)) +
-            coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                   ggtitle(label= AV_title) +
+            coord_cartesian(ylim = c(max(0, quans_45[1]), quans_45[2]))
       #########
       ######### difference plot
       #########
-      box_title <- "percentage differences between future time "
+      box_title <- "% difference between future"
       box_title <- paste0(box_title, 
-                          "periods and historical runoff ", subttl)
+                          " and historical ", 
+                          season_g, 
+                          " runoff")
 
       quans_85 <- find_quantiles(curr_diff_85, 
                                  tgt_col="perc_diff", 

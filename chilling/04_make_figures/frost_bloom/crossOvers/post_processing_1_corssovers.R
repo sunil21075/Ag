@@ -1,9 +1,6 @@
 rm(list=ls())
 library(data.table)
 library(dplyr)
-library(tidyverse)
-library(lubridate)
-library(ggpubr)
 
 options(digits=9)
 options(digit=9)

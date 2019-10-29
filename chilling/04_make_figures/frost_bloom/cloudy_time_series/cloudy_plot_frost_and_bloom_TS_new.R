@@ -97,7 +97,7 @@ chill_limited$location <- paste0(chill_limited$lat, "_", chill_limited$long)
 suppressWarnings({ chill_limited <- within(chill_limited, remove(lat, long))})
 chill_limited <- chill_limited %>% filter(city %in% cities) %>% data.table()
 
-thresh_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/"
+thresh_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/chilling/old_summary_comp_rds_stuff/"
 thresh_dt <- readRDS(paste0(thresh_dir, "/sept_summary_comp.rds"))
 thresh_dt <- thresh_dt %>% 
                 filter(location %in% chill_limited$location # & model %in% all_models_observed
@@ -178,9 +178,10 @@ for (due in dues){
                path=frost_plot_dir)
 
         ##### Threshold care
-        curr_thresh <- subset(thresh_dt, select=c("city", "year", "chill_season", 
-                                                  "time_period",
-                                                  "model", "emission", col_name))
+        curr_thresh <- subset(thresh_dt,
+                              select=c("city", "year", "chill_season", 
+                                       "time_period",
+                                       "model", "emission", col_name))
         curr_thresh <- curr_thresh %>% 
                        filter(city==ct & emission==em) %>% 
                        data.table()
@@ -264,9 +265,13 @@ for (due in dues){
           # merged_dt <- melt(merged_dt, id=c("city", "year", "time_period", 
           #                                   "model", "emission"))
           curr_thresh_melt <- melt(curr_thresh, 
-                                   id=c("city", "year", "time_period", "model", "emission"))
-          curr_bloom_melt <- melt(curr_bloom, 
-                                  id=c("city", "year", "time_period", "model", "emission"))
+                                   id=c("city", "year", "time_period", 
+                                        "model", "emission"))
+          
+          curr_bloom_melt <- melt(curr_bloom,
+                                  id=c("city", "year", "time_period", 
+                                       "model", "emission"))
+          
           merged_dt <- rbind(curr_thresh_melt, curr_bloom_melt)
           
           merged_plt <- double_cloud(d1 = merged_dt) + 

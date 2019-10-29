@@ -35,7 +35,9 @@ for (dt_type in in_dir_ext){
     files <- runoff_AV_fileNs
     AV_y_lab <- "runoff (mm)"
     AV_tg_col <- paste0(av_tg_col_pref[timeP_ty], "runbase")
-    AV_title <- paste0(av_titles[timeP_ty], "runoff")
+    AV_title <- paste0(av_titles[timeP_ty], 
+                       "runoff for historical and three", 
+                       " future time frames")
 
     AVs <- readRDS(paste0(in_dir, files[timeP_ty], ".rds")) %>% 
            data.table()
@@ -66,7 +68,9 @@ for (dt_type in in_dir_ext){
     rm(AVs, unbias_diff)
     cluster_types <- unique(AVs_45$cluster)
     clust_g <- cluster_types[1]
+    
     for (clust_g in cluster_types){
+
       subttl <- paste0("(", clust_g, ")")
       curr_AVs_85 <- AVs_85 %>% 
                      filter(cluster == clust_g) %>% 
@@ -94,19 +98,19 @@ for (dt_type in in_dir_ext){
                                              tgt_col = AV_tg_col,
                                              y_lab = AV_y_lab)+ 
                    ggtitle(label= paste0(AV_title, " ", subttl)) +
-                   coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
+                   coord_cartesian(ylim = c(max(0, quans_85[1]), quans_85[2]))
 
       AV_box_45 <- seasonal_cum_box_season_x(dt = curr_AVs_45, 
                                              tgt_col = AV_tg_col,
                                              y_lab = AV_y_lab) + 
                    ggtitle(label= paste0(AV_title, " ", subttl)) +
-                   coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
+                   coord_cartesian(ylim = c(max(0, quans_45[1]), quans_45[2]))
       #########
       ######### difference plot
       #########
-      box_title <- "percentage differences "
-      box_title <- paste0(box_title, "between future time periods ")
-      box_title <- paste0(box_title, "and historical runoff ", subttl)
+      box_title <- "% difference between future"
+      box_title <- paste0(box_title, " and historical seasonal runoff ")
+      box_title <- paste0(box_title, subttl)
 
       quans_85 <- find_quantiles(curr_diff_85, 
                                  tgt_col= "perc_diff", 
@@ -122,7 +126,7 @@ for (dt_type in in_dir_ext){
                   coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
       unbias_perc_diff_45 <- seasonal_cum_box_season_x(dt = curr_diff_45,
                                                 y_lab = "differences (%)",
-                                                 tgt_col = "perc_diff") + 
+                                                tgt_col = "perc_diff") + 
                              ggtitle(box_title) + 
                 coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
       ###################################
