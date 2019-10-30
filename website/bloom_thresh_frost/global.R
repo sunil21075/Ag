@@ -52,27 +52,33 @@ whatcom <- readOGR("geo/Whatcom.geo.json", "OGRGeoJSON") # Whatcom County
 
 # Bind all counties ####
 counties <- rbind(skagit, snohomish, whatcom, makeUniqueIDs = TRUE)
-
-# Map info ####
+#################
+#               #
+#   Map info    #
+#               #
+#################
 spatial_precip <- readRDS("/data/pruett/precip/spatial_prob_time.rds") %>% 
                   group_by (file_name, lat, lng)
 
-
 # Global part
-data_dir <- "/data/hnoorazar/bloom_thresh_frost/"
+data_dir <- "/data/hnoorazar/bloom_thresh_frost/just_CM_locs/"
 
-bloom_f_name <- "fullbloom_50percent_day.rds"
-frost_f_name <- "first_frost.rds"
-CP_f_name <- "sept_summary_comp.rds"
+bloom_f_name <- "cm_loc_fullbloom_50percent_day.rds"
+frost_f_name <- "cm_loc_frost.rds"
+CP_f_name <- "cm_loc_sept_summary_comp.rds"
 
-# bloom_dt <- readRDS(paste0(data_dir, bloom_f_name)) %>% 
-#             group_by(location, lat, long)
+bloom_dt <- readRDS(paste0(data_dir, bloom_f_name)) %>% 
+            group_by(location, lat, long)
 
-# frost_dt <- readRDS(paste0(data_dir, frost_f_name)) %>% 
-#             group_by(location, lat, long)
+frost_dt <- readRDS(paste0(data_dir, frost_f_name)) %>% 
+            group_by(location, lat, long)
 
-# thresh_dt <- readRDS(paste0(data_dir, CP_f_name)) %>% 
-#             group_by(location, lat, long)
+thresh_dt <- readRDS(paste0(data_dir, CP_f_name)) %>% 
+            group_by(location, lat, long)
+
+spatial_bcf <- readRDS(paste0(data_dir, "cm_spatial_bcf.rds")) %>% 
+               group_by(location, lat, long)
+
 
 # spatial_surface <- readRDS("/data/pruett/spatial_prob_surface.rds") %>% 
 #                    as_tibble() %>% 

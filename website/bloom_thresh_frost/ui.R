@@ -16,6 +16,10 @@ sidebar <- dashboardSidebar(
     ## Map ##
     menuItem("Precipitation", 
              tabName = "precip_map", 
+             icon = icon("tint")),
+
+    menuItem("Bloom, CPs, and 1st frost", 
+             tabName = "bcf_map", 
              icon = icon("tint"))
     # menuItem("Surface Flow", tabName = "surface_map", icon = icon("tint")),
     # menuItem("Dry Days", tabName = "dry_map", icon = icon("tint"))
@@ -47,19 +51,18 @@ body <- dashboardBody(
     tabItem(tabName = "contact", fluidPage(fluidRow(column(8, offset = 2, includeMarkdown("pages/contact.Rmd"))))),
     
     # bloom_vs_CP tab
-    tabItem(tabName = "bloom_CP_map",
-            box(id = "bloom_CP",
-                width = NULL,
+    tabItem(tabName = "bcf_map",
+            box(id = "bcf", width = NULL,
                 #  Main Map  #
                 tabPanel("Map",
                          div(class = "outer",
                              tags$style(type = "text/css", 
-                                        "#bloom_CP_map {height: calc(100vh - 125px) !important;}"),
-                             leafletOutput("bloom_CP_map")
+                                        "#bcf_map {height: calc(100vh - 125px) !important;}"),
+                             leafletOutput("bcf_map")
                             )
                         )
                 )
-            ),
+        ),
     
     # Precip Tab #
     tabItem(tabName = "precip_map",

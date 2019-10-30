@@ -96,6 +96,32 @@ shinyServer(function(input, output, session) {
 
   ###############################################################
   #######
+  #######      Bloom PART
+  #######
+  ###############################################################
+  spatial_bcf_data <- reactive({
+    spatial_bcf
+  })
+
+  output$bcf_map <- renderLeaflet({
+    pal <- colorBin(palette = "plasma", reverse = TRUE,
+                    domain = spatial_bcf_data()$lat, bins = 8, pretty=TRUE)
+    leaflet() %>%
+    addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+             attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
+    setView(lat = 47, lng = -120, zoom = 7) %>%
+    addCircleMarkers(data = spatial_bcf_data(), 
+                     lng = ~ long, lat = ~ lat,
+                     label = ~ location,
+                     layerId = ~ location,
+                     radius = 6,
+                     color = ~ pal(lat),
+                     stroke  = FALSE,
+                     fillOpacity = .95)
+  })
+
+  ###############################################################
+  #######
   #######      DRY PART
   #######
   ###############################################################
@@ -146,6 +172,16 @@ shinyServer(function(input, output, session) {
   #   toggleModal(session, modalId = "dry_days_graphs", toggle = "open")
     
   #              })
+  # output$dry_days_plot <- renderPlot({
+      
+  #     # p_month <- plot_monthly_prob(dry_days_data_month(), "Monthly Probability")
+  #     # p_octmar <- plot_octmar_prob(dry_days_data_octmar())
+      
+  #     # plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
+    
+  #   plot_drydays_boxplot(dry_days_data(), input$dry_days_plot_climate_proj)
+    
+  # }, res = 70, width = 400)
   ###############################################################
   #######
   #######      SURFACE PART
@@ -225,15 +261,5 @@ shinyServer(function(input, output, session) {
     
   # }, res = 140)
 
-  # output$dry_days_plot <- renderPlot({
-      
-  #     # p_month <- plot_monthly_prob(dry_days_data_month(), "Monthly Probability")
-  #     # p_octmar <- plot_octmar_prob(dry_days_data_octmar())
-      
-  #     # plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
-    
-  #   plot_drydays_boxplot(dry_days_data(), input$dry_days_plot_climate_proj)
-    
-  # }, res = 70, width = 400)
 
 })
