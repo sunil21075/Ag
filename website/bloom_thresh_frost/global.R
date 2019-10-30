@@ -30,8 +30,8 @@ source("functions/pruet_core.R")
 # source("functions/plot_dry_days.R") ## Print Dry Days Plots
 
 ### file names and lat, longs  ###
-hydro_map_df <- readRDS("/data/pruett/surface/hydro_spatial.RDS") %>% 
-                mutate(max_combined = as.numeric(max_combined))
+# hydro_map_df <- readRDS("/data/pruett/surface/hydro_spatial.RDS") %>% 
+#                 mutate(max_combined = as.numeric(max_combined))
 
 ###########################
 ###                    ####
@@ -57,21 +57,38 @@ counties <- rbind(skagit, snohomish, whatcom, makeUniqueIDs = TRUE)
 spatial_precip <- readRDS("/data/pruett/precip/spatial_prob_time.rds") %>% 
                   group_by (file_name, lat, lng)
 
-spatial_surface <- readRDS("/data/pruett/spatial_prob_surface.rds") %>% 
-                   as_tibble() %>% 
-                   rename(file_name = files) %>% 
-                   mutate(file_name = as.character(file_name)) %>% 
-                   group_by (file_name, lat, lng) %>% 
-                   mutate(exceedance_val = case_when(exceedance == "prob_80" ~ 0.2,
-                                                     exceedance == "prob_90" ~ 0.1,
-                                                     exceedance == "prob_95" ~ 0.05),
-                          prob_median = prob_median - exceedance_val)
 
-spatial_dry_days <- readRDS("/data/pruett/dry_days/spatial_prob.rds") %>% 
-                    mutate(exceedance_val = case_when(exceedance == "prob_80" ~ 0.2,
-                                                      exceedance == "prob_90" ~ 0.1,
-                                                      exceedance == "prob_95" ~ 0.05),
-                           prob_median = prob_median - exceedance_val)
+# Global part
+data_dir <- "/data/hnoorazar/bloom_thresh_frost/"
+
+bloom_f_name <- "fullbloom_50percent_day.rds"
+frost_f_name <- "first_frost.rds"
+CP_f_name <- "sept_summary_comp.rds"
+
+# bloom_dt <- readRDS(paste0(data_dir, bloom_f_name)) %>% 
+#             group_by(location, lat, long)
+
+# frost_dt <- readRDS(paste0(data_dir, frost_f_name)) %>% 
+#             group_by(location, lat, long)
+
+# thresh_dt <- readRDS(paste0(data_dir, CP_f_name)) %>% 
+#             group_by(location, lat, long)
+
+# spatial_surface <- readRDS("/data/pruett/spatial_prob_surface.rds") %>% 
+#                    as_tibble() %>% 
+#                    rename(file_name = files) %>% 
+#                    mutate(file_name = as.character(file_name)) %>% 
+#                    group_by (file_name, lat, lng) %>% 
+#                    mutate(exceedance_val = case_when(exceedance == "prob_80" ~ 0.2,
+#                                                      exceedance == "prob_90" ~ 0.1,
+#                                                      exceedance == "prob_95" ~ 0.05),
+#                           prob_median = prob_median - exceedance_val)
+
+# spatial_dry_days <- readRDS("/data/pruett/dry_days/spatial_prob.rds") %>% 
+#                     mutate(exceedance_val = case_when(exceedance == "prob_80" ~ 0.2,
+#                                                       exceedance == "prob_90" ~ 0.1,
+#                                                       exceedance == "prob_95" ~ 0.05),
+#                            prob_median = prob_median - exceedance_val)
 
 
 

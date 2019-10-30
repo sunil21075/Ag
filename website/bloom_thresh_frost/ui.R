@@ -62,7 +62,7 @@ body <- dashboardBody(
             ),
     
     # Precip Tab #
-    tabItem(tabName = "precip_map_exceedance",
+    tabItem(tabName = "precip_map",
             box(id = "precip",
                 width = NULL,
       

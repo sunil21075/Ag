@@ -40,9 +40,7 @@ body <- dashboardBody(
     
     # Precip Tab #
     tabItem(tabName = "precip_map",
-      box(
-      id = "precip",
-      width = NULL,
+      box(id = "precip", width = NULL,
       
       #  Main Map  #
       tabPanel("Map",
