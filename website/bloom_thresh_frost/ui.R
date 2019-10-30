@@ -14,7 +14,7 @@ sidebar <- dashboardSidebar(
              menuSubItem("Contact", tabName = "contact", icon = icon("envelope"))),
     
     ## Map ##
-    menuItem("Bloom and Chill Portions", 
+    menuItem("Precipitation", 
              tabName = "precip_map", 
              icon = icon("tint"))
     # menuItem("Surface Flow", tabName = "surface_map", icon = icon("tint")),
