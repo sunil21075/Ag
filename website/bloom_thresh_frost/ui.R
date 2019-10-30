@@ -171,7 +171,7 @@ body <- dashboardBody(
     ),
   
   # plot Modal
-  bsModal(title = "Bloom vs. CP", 
+  bsModal(title = "Precipitation", 
           id = "precip_graphs", 
           trigger = NULL, 
           size = "large",
@@ -215,6 +215,7 @@ body <- dashboardBody(
 
 ####  Combine Dashboard Elements  ####
 dashboardPage(
+  title="Bloom",
   header,
   sidebar,
   body

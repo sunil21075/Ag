@@ -8,7 +8,27 @@
 #
 # Dry
 #
+##************************************************ Done
+menuItem("Bloom and Chill Portions", 
+         tabName = "bcf_map", 
+         icon = icon("tint"))
+
 menuItem("Dry Days", tabName = "dry_map", icon = icon("tint"))
+
+##************************************************ Done
+tabItem(tabName = "bcf_map",
+            box(id = "bcf", width = NULL,
+                #  Main Map  #
+                tabPanel("Map",
+                         div(class = "outer",
+                             tags$style(type = "text/css", 
+                                        "#bcf_map {height: calc(100vh - 125px) !important;}"),
+                             leafletOutput("bcf_map")
+                            )
+                        )
+                )
+            )
+
 tabItem(tabName = "dry_map",
             box(id = "dry_days",
                 width = NULL,
@@ -40,6 +60,7 @@ tabItem(tabName = "dry_map",
                 )
             )
 
+##################################################
 bsModal(title="Dry Days Summary", id = "dry_days_graphs", trigger = NULL, size = "large",
           fluidPage(fluidRow(column(2, radioButtons("dry_days_plot_climate_proj", label = h3("Climate Projection"), 
                                                     choices = list("RCP 4.5" = "rcp45", 
@@ -49,28 +70,6 @@ bsModal(title="Dry Days Summary", id = "dry_days_graphs", trigger = NULL, size =
                             )
                    )
           )
-##################################################
-
-##************************************************ Done
-menuItem("Bloom and Chill Portions", 
-         tabName = "bcf_map", 
-         icon = icon("tint"))
-
-##************************************************ Done
-tabItem(tabName = "bcf_map",
-            box(id = "bcf", width = NULL,
-                #  Main Map  #
-                tabPanel("Map",
-                         div(class = "outer",
-                             tags$style(type = "text/css", 
-                                        "#bcf_map {height: calc(100vh - 125px) !important;}"),
-                             leafletOutput("bcf_map")
-                            )
-                        )
-                )
-            )
-
-
 bsModal(title = "Bloom vs. CP", 
           id = "precip_graphs", 
           trigger = NULL, 
@@ -99,61 +98,70 @@ bsModal(title = "Bloom vs. CP",
 #
 #                   server part
 #
-######################################################
-######################################################
-# we do not have reactive!
+####################################################################
+####################################################################
+#
+# done 
+#
 spatial_bcf_data <- reactive({
-    spatial_bcf
-  })
+  spatial_bcf
+})
 
 dry_days_map_data <- reactive({
     spatial_dry_days %>% 
-      filter(climate_proj == input$dry_days_map_climate_proj,
-             group == input$dry_days_map_climate_group, 
-             exceedance == input$dry_days_map_exceedance)
-  })
-  
-   output$bcf_map <- renderLeaflet({
-    pal <- colorBin(palette = "plasma", reverse = TRUE,
-                    domain = spatial_bcf()$lat, bins = 8, pretty=TRUE)
-    leaflet() %>%
-      addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-               attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
-      addPolygons(data = skagit, fill = FALSE, stroke = 1, color = 'black') %>% 
-      addPolygons(data = whatcom, fill = FALSE, stroke = 1, color = 'black') %>% 
-      addPolygons(data = snohomish, fill = FALSE, stroke = 1, color = 'black') %>% 
-      setView(lat = 48.35, lng = -121.5, zoom = 8) %>%
-      addCircleMarkers(data = spatial_bcf(), 
-                       lng = ~ lng, lat = ~ lat,
-                       label = ~ file_name,
-                       layerId = ~ file_name,
-                       radius = 6,
-                       color = ~ pal(lat),
-                       stroke  = FALSE,
-                       fillOpacity = .95)
-  })
-  output$dry_map <- renderLeaflet({
-    pal <- colorBin(palette = "plasma", reverse = TRUE,
-                    domain = dry_days_map_data()$prob_median, bins = 8, pretty=TRUE)
-    
-    leaflet() %>%
-      addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-               attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
-      addPolygons(data = skagit, fill = FALSE, stroke = 1, color = 'black') %>% 
-      addPolygons(data = whatcom, fill = FALSE, stroke = 1, color = 'black') %>% 
-      addPolygons(data = snohomish, fill = FALSE, stroke = 1, color = 'black') %>% 
-      setView(lat = 48.35, lng = -121.5, zoom = 8) %>%
-      addCircleMarkers(data = dry_days_map_data(), 
-                       lng = ~ lng, lat = ~ lat,
-                       label = ~ file_name,
-                       layerId = ~ file_name,
-                       radius = 6,
-                       color = ~ pal(prob_median),
-                       stroke  = FALSE,
-                       fillOpacity = .95) %>% 
-      addLegend("bottomleft", pal = pal, values = NULL, title = "Difference from Exceedance Probability") 
-  })
+    filter(climate_proj == input$dry_days_map_climate_proj,
+           group == input$dry_days_map_climate_group, 
+           exceedance == input$dry_days_map_exceedance)
+})
+######################################################################
 
+# done
+
+output$bcf_map <- renderLeaflet({
+  pal <- colorBin(palette = "plasma", reverse = TRUE,
+                  domain = spatial_bcf()$lat, bins = 8, pretty=TRUE)
+  leaflet() %>%
+  addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
+  addPolygons(data = skagit, fill = FALSE, stroke = 1, color = 'black') %>% 
+  addPolygons(data = whatcom, fill = FALSE, stroke = 1, color = 'black') %>% 
+  addPolygons(data = snohomish, fill = FALSE, stroke = 1, color = 'black') %>% 
+  setView(lat = 48.35, lng = -121.5, zoom = 8) %>%
+  addCircleMarkers(data = spatial_bcf(), 
+                   lng = ~ lng, lat = ~ lat,
+                   label = ~ file_name,
+                   layerId = ~ file_name,
+                   radius = 6,
+                   color = ~ pal(lat),
+                   stroke  = FALSE,
+                   fillOpacity = .95)
+})
+
+output$dry_map <- renderLeaflet({
+  pal <- colorBin(palette = "plasma", reverse = TRUE,
+                  domain = dry_days_map_data()$prob_median, bins = 8, pretty=TRUE)
+  
+  leaflet() %>%
+  addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+           attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
+  addPolygons(data = skagit, fill = FALSE, stroke = 1, color = 'black') %>% 
+  addPolygons(data = whatcom, fill = FALSE, stroke = 1, color = 'black') %>% 
+  addPolygons(data = snohomish, fill = FALSE, stroke = 1, color = 'black') %>% 
+  setView(lat = 48.35, lng = -121.5, zoom = 8) %>%
+  addCircleMarkers(data = dry_days_map_data(), 
+                   lng = ~ lng, lat = ~ lat,
+                   label = ~ file_name,
+                   layerId = ~ file_name,
+                   radius = 6,
+                   color = ~ pal(prob_median),
+                   stroke  = FALSE,
+                   fillOpacity = .95) %>% 
+  addLegend("bottomleft", 
+            pal = pal, 
+            values = NULL, 
+            title = "Difference from Exceedance Probability") 
+})
+######################################################################
   observeEvent(input$dry_map_marker_click, {
     
     toggleModal(session, modalId = "dry_days_graphs", toggle = "open")
