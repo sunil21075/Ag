@@ -1,19 +1,18 @@
 
-
 combine_models <- function(file_name, climate_proj){
   
-  models <- list.dirs("data/pruett/RDS", recursive = FALSE, full.names = FALSE)
+  models <- list.dirs("/data/pruett/RDS", recursive = FALSE, full.names = FALSE)
   
   read_RDS <- function(model){
 
     if(model == "historical"){
-      df <- readRDS(paste0("data/pruett/RDS/historical/", file_name, ".rds"))
+      df <- readRDS(paste0("/data/pruett/RDS/historical/", file_name, ".rds"))
       df <- mutate(df, time_stamp = ymd(paste(year, month, day, sep="-")),
                    water_year = year(time_stamp %m+% months(3)),
                    model = model, climate_proj = NA)
       return(df)
     } else {
-      df_futr <- readRDS(paste0("data/pruett/RDS/", model, "/", climate_proj, "/", file_name, ".rds")) %>% 
+      df_futr <- readRDS(paste0("/data/pruett/RDS/", model, "/", climate_proj, "/", file_name, ".rds")) %>% 
         filter(year >= 2016)
       
       df_NA <- df_futr %>% filter(year <= 2025 || year >= 2095) %>%

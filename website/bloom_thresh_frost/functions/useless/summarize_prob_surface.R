@@ -1,14 +1,14 @@
 library(tidyverse)
 library(stringi)
 
-files <- list.files("data/pruett/runoff/RDS/historical/")
-models <- list.dirs("data/pruett/runoff/RDS", recursive = FALSE, full.names = FALSE)
+files <- list.files("/data/pruett/runoff/RDS/historical/")
+models <- list.dirs("/data/pruett/runoff/RDS", recursive = FALSE, full.names = FALSE)
 
 read_runoff <- function(model, climate_proj, file_name){
   if (model ==  "historical") {
-    readRDS(paste0("data/pruett/runoff/RDS/", model, "/", file_name))
+    readRDS(paste0("/data/pruett/runoff/RDS/", model, "/", file_name))
   } else {
-    readRDS(paste0("data/pruett/runoff/RDS/", model, "_", climate_proj, "/", file_name))
+    readRDS(paste0("/data/pruett/runoff/RDS/", model, "_", climate_proj, "/", file_name))
   }
 }
 
@@ -68,7 +68,7 @@ df_octmar <- df %>% mutate(data = map(data, summarize_prob)) %>% unnest()
 df_octmar <- df_octmar %>% mutate(lat_lon = str_sub(files, 8, -5)) %>% 
   separate(lat_lon, c("lat", "lng"), sep = "_", convert = TRUE)
 
-write_rds(df_octmar, "data/pruett/spatial_prob_surface.rds")
+write_rds(df_octmar, "/data/pruett/spatial_prob_surface.rds")
 
 
 

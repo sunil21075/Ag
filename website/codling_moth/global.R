@@ -3,7 +3,6 @@ library(lattice)
 # library(ggmap)
 library(jsonlite)
 library(raster)
-
 library(data.table)
 library(shiny)
 library(shinydashboard)
@@ -19,7 +18,7 @@ library(RColorBrewer)
 # library(plotly)
 # library(Hmisc)
 
-data_dir = "/data/codmoth_data/"
+data_dir = "/data/hnoorazar/codling_moth/"
 d = data.table(readRDS(paste0(data_dir,"/combinedData.rds")))
 # ordering time frame levels 
 d$timeFrame <-as.factor(d$timeFrame)
@@ -92,8 +91,8 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir,
 
 #########################################################
 # read county shapefile
-shapefile_dir<-"/data/codmoth_data/analog/tl_2017_us_county/"
-shapefile_dir<-"/data/codmoth_data/analog/tl_2017_us_county_simple/"
+shapefile_dir<-"/data/hnoorazar/codling_moth/analog/tl_2017_us_county/"
+shapefile_dir<-"/data/hnoorazar/codling_moth/analog/tl_2017_us_county_simple/"
 counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), 
                            layer = "tl_2017_us_county")
 

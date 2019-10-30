@@ -46,8 +46,23 @@ body <- dashboardBody(
     tabItem(tabName = "data", fluidPage(fluidRow(column(8, offset = 2, includeMarkdown("pages/data.Rmd"))))),
     tabItem(tabName = "contact", fluidPage(fluidRow(column(8, offset = 2, includeMarkdown("pages/contact.Rmd"))))),
     
+    # bloom_vs_CP tab
+    tabItem(tabName = "bloom_CP_map",
+            box(id = "bloom_CP",
+                width = NULL,
+                #  Main Map  #
+                tabPanel("Map",
+                         div(class = "outer",
+                             tags$style(type = "text/css", 
+                                        "#bloom_CP_map {height: calc(100vh - 125px) !important;}"),
+                             leafletOutput("bloom_CP_map")
+                            )
+                        )
+                )
+            ),
+    
     # Precip Tab #
-    tabItem(tabName = "precip_map",
+    tabItem(tabName = "precip_map_exceedance",
             box(id = "precip",
                 width = NULL,
       
@@ -76,9 +91,9 @@ body <- dashboardBody(
                                                         selected = "prob_80"),
                                            radioButtons("precip_map_climate_group", 
                                                         label = "Climate Group", 
-                                                        choices = list("2040's" = "2040s", 
-                                                                       "2060's" = "2060s", 
-                                                                       "2080's" = "2080s"),
+                                                        choices = list("2040s" = "2040s", 
+                                                                       "2060s" = "2060s", 
+                                                                       "2080s" = "2080s"),
                                                         
                                                         selected = "2040s"),
                                            radioButtons("precip_map_time_scale", 
@@ -92,68 +107,71 @@ body <- dashboardBody(
                             )
                         )
                 )
-            ),
-    
-    ## Surface Water Tab 
-    tabItem(tabName = "surface_map",
-            box(id = "surface",
-                width = NULL,
+            ) # ,
+
+    # ## Surface Water Tab 
+    # tabItem(tabName = "surface_map",
+    #         box(id = "surface",
+    #             width = NULL,
               
-                #  Main Map  #
-                tabPanel("Map",
-                         div(class = "outer",
-                             tags$style(type = "text/css", "#surface_map {height: calc(100vh - 125px) !important;}"),
-                             leafletOutput("surface_map"),
-                             absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                           draggable = TRUE, top = 90, left = "auto", right = 40, bottom = "auto",
-                                           width = 250, height = "auto",
-                                           h3(tags$b("Explorer")),
-                                           radioButtons("surface_map_climate_proj", label = "Climate Projection", 
-                                                        choices = list("A1B" = "A1B", "B1" = "B1"),
-                                                        selected = "A1B"),
-                                           radioButtons("surface_map_exceedance", label = "Exceedance Value", 
-                                                        choices = list("20th Percentile" = "prob_80", 
-                                                                       "10th Percentile" = "prob_90",
-                                                                       "5th Percentile" = "prob_95"),
-                                                        selected = "prob_80"),
-                                           radioButtons("surface_map_climate_group", label = "Climate Group", 
-                                                        choices = list("2040's" = "2040s", "2060's" = "2060s", "2080's" = "2080s"),
-                                                        selected = "2040s"))
-                              )
-                         )
-                )
-           ),
-    ## Dry Days Tab 
-    tabItem(tabName = "dry_map",
-            box(id = "dry_days",
-                width = NULL,
+    #             #  Main Map  #
+    #             tabPanel("Map",
+    #                      div(class = "outer",
+    #                          tags$style(type = "text/css", "#surface_map {height: calc(100vh - 125px) !important;}"),
+    #                          leafletOutput("surface_map"),
+    #                          absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+    #                                        draggable = TRUE, top = 90, left = "auto", right = 40, bottom = "auto",
+    #                                        width = 250, height = "auto",
+    #                                        h3(tags$b("Explorer")),
+    #                                        radioButtons("surface_map_climate_proj", label = "Climate Projection", 
+    #                                                     choices = list("A1B" = "A1B", "B1" = "B1"),
+    #                                                     selected = "A1B"),
+    #                                        radioButtons("surface_map_exceedance", label = "Exceedance Value", 
+    #                                                     choices = list("20th Percentile" = "prob_80", 
+    #                                                                    "10th Percentile" = "prob_90",
+    #                                                                    "5th Percentile" = "prob_95"),
+    #                                                     selected = "prob_80"),
+    #                                        radioButtons("surface_map_climate_group", label = "Climate Group", 
+    #                                                     choices = list("2040s" = "2040s", "2060s" = "2060s", "2080s" = "2080s"),
+    #                                                     selected = "2040s"))
+    #                           )
+    #                      )
+    #             )
+    #        )# , 
+    # ## Dry Days Tab 
+    # tabItem(tabName = "dry_map",
+    #         box(id = "dry_days",
+    #             width = NULL,
               
-                #  Main Map  #
-                tabPanel("Map",
-                         div(class = "outer",
-                             tags$style(type = "text/css", "#dry_map {height: calc(100vh - 125px) !important;}"),
-                             leafletOutput("dry_map"),
-                             absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                           draggable = TRUE, top = 90, left = "auto", right = 40, bottom = "auto",
-                                           width = 250, height = "auto",
-                                           h3(tags$b("Explorer")),
-                                           radioButtons("dry_days_map_climate_proj", label = "Climate Projection", 
-                                                        choices = list("RCP 4.5" = "rcp45", "RCP 8.5" = "rcp85")),
-                                           radioButtons("dry_days_map_exceedance", label = "Exceedance Value", 
-                                                        choices = list("20th Percentile" = "prob_80", 
-                                                                       "10th Percentile" = "prob_90",
-                                                                       "5th Percentile" = "prob_95")),
-                                           radioButtons("dry_days_map_climate_group", label = "Climate Group", 
-                                                        choices = list("2040's" = "2040s", "2060's" = "2060s", "2080's" = "2080s")))
-                            )
-                        )
-                )
-            )
+    #             #  Main Map  #
+    #             tabPanel("Map",
+    #                      div(class = "outer",
+    #                          tags$style(type = "text/css", "#dry_map {height: calc(100vh - 125px) !important;}"),
+    #                          leafletOutput("dry_map"),
+    #                          absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+    #                                        draggable = TRUE, top = 90, left = "auto", right = 40, bottom = "auto",
+    #                                        width = 250, height = "auto",
+    #                                        h3(tags$b("Explorer")),
+    #                                        radioButtons("dry_days_map_climate_proj", label = "Climate Projection", 
+    #                                                     choices = list("RCP 4.5" = "rcp45", "RCP 8.5" = "rcp85")),
+    #                                        radioButtons("dry_days_map_exceedance", label = "Exceedance Value", 
+    #                                                     choices = list("20th Percentile" = "prob_80", 
+    #                                                                    "10th Percentile" = "prob_90",
+    #                                                                    "5th Percentile" = "prob_95")),
+    #                                        radioButtons("dry_days_map_climate_group", label = "Climate Group", 
+    #                                                     choices = list("2040s" = "2040s", "2060s" = "2060s", "2080s" = "2080s")))
+    #                         )
+    #                     )
+    #             )
+    #         )
     
     ),
   
   # plot Modal
-  bsModal(title = "Bloom vs. CP", id = "precip_graphs", trigger = NULL, size = "large",
+  bsModal(title = "Bloom vs. CP", 
+          id = "precip_graphs", 
+          trigger = NULL, 
+          size = "large",
           fluidPage(fluidRow(column(2, 
                                     radioButtons("precip_plot_climate_proj", 
                                                  label = h4("Climate Projection"), 

@@ -5,7 +5,8 @@ shinyServer(function(input, output, session) {
   
   precip_map_data <- reactive({
     
-      filter(spatial_precip, climate_proj == input$precip_map_climate_proj,
+      filter(spatial_precip, 
+             climate_proj == input$precip_map_climate_proj,
              group == input$precip_map_climate_group, 
              exceedance == input$precip_map_exceedance,
              time_scale == input$precip_map_time_scale)
@@ -34,13 +35,17 @@ shinyServer(function(input, output, session) {
 
     # Test if location is selected
     validate(
-      need(!is.null(input$precip_map_marker_click$id), "Please select a location")
+      need(!is.null(input$precip_map_marker_click$id), 
+            "Please select a location")
     )
 
     # load data
-    readRDS(paste0("/data/pruett/precip/", input$precip_plot_time_scale,"_prob_month/", input$precip_map_marker_click$id, ".rds")) %>% 
+    readRDS(paste0("/data/pruett/precip/", 
+                    input$precip_plot_time_scale, 
+                    "_prob_month/", 
+                    input$precip_map_marker_click$id, 
+                    ".rds")) %>% 
       filter(climate_proj == input$precip_plot_climate_proj)
-    
   })
   
   precip_data_octmar <- reactive({
@@ -51,7 +56,11 @@ shinyServer(function(input, output, session) {
     )
     
     # load data
-    readRDS(paste0("/data/pruett/precip/", input$precip_plot_time_scale,"_prob_octmar/", input$precip_map_marker_click$id, ".rds")) %>% 
+    readRDS(paste0("/data/pruett/precip/", 
+                   input$precip_plot_time_scale, 
+                   "_prob_octmar/", 
+                   input$precip_map_marker_click$id, 
+                   ".rds")) %>% 
       filter(climate_proj == input$precip_plot_climate_proj)
     
   })
@@ -187,7 +196,9 @@ shinyServer(function(input, output, session) {
       p_month <- plot_monthly_prob(precip_data_month(), "Daily Probability")
       p_octmar <- plot_octmar_prob(precip_data_octmar())
       
-      plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
+      plot_grid(p_month, p_octmar, 
+                nrow = 1, align = "vh", 
+                rel_widths = c(4, 1), axis = 'b')
     
   }, res = 140)
   

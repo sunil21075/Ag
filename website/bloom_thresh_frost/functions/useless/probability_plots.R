@@ -50,6 +50,5 @@ plot_octmar_prob <- function(df){
     # scale_color_viridis_d(option = "plasma") +
     # scale_fill_viridis_d(option = "plasma") +
     scale_y_continuous(labels=scales::percent)
-  
 }
 

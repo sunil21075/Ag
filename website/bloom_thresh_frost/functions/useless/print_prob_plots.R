@@ -181,6 +181,6 @@ print_prob_plots <- function(df){
   p_all <- plot_grid(p_prob_daily, p_prob_7day, p_prob_monthly, ncol = 1, align = "vh")
   
   return(p_all)
-  
+
 }
 

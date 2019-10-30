@@ -1,5 +1,3 @@
-
-
 runoff_plots <- function(df){
   
   size <- 16
@@ -251,13 +249,5 @@ runoff_plots <- function(df){
     p_grid <- plot_grid(p_prob_m, p_exceedance_m, p_combined, ncol = 1, align = "v", axis = 'l')
     
     plot_grid(p_grid, legend, ncol = 1, rel_heights = c(1,.05))
-  
-
 }
-
-
-
-
-
-
 

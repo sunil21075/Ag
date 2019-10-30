@@ -640,10 +640,3 @@ precip_plots <- function(df){
 
   plot_grid(p_grid, legend, ncol = 1, rel_heights = c(1,.05))
 }
-
-
-
-
-
-
-

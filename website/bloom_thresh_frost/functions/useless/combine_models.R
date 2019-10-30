@@ -1,19 +1,18 @@
-library(stringr)
 
-combine_models_fluxes <- function(file_name, climate_proj){
+combine_models <- function(file_name, climate_proj){
   
-  models <- c("ccsm3", "cgcm3.1_t47", "cnrm_cm3", "echam5", "echo_g", "hadcm", "historical")
+  models <- list.dirs("/data/pruett/RDS", recursive = FALSE, full.names = FALSE)
   
   read_RDS <- function(model){
-    
+
     if(model == "historical"){
-      df <- readRDS(paste0("data/pruett/runoff/RDS/historical/", file_name, ".RDS"))
-      df <- mutate(df, time_stamp = ymd(paste(year, month, "01", sep="-")),
+      df <- readRDS(paste0("/data/pruett/RDS/historical/", file_name, ".rds"))
+      df <- mutate(df, time_stamp = ymd(paste(year, month, day, sep="-")),
                    water_year = year(time_stamp %m+% months(3)),
-                   model = model, climate_proj = NA, group = "hist")
+                   model = model, climate_proj = NA)
       return(df)
     } else {
-      df_futr <- readRDS(paste0("data/pruett/runoff/RDS/", model, "_", climate_proj, "/", file_name, ".RDS")) %>% 
+      df_futr <- readRDS(paste0("/data/pruett/RDS/", model, "/", climate_proj, "/", file_name, ".rds")) %>% 
         filter(year >= 2016)
       
       df_NA <- df_futr %>% filter(year <= 2025 || year >= 2095) %>%
@@ -28,16 +27,27 @@ combine_models_fluxes <- function(file_name, climate_proj){
       df_2080 <- df_futr %>% filter(year >= 2065, year <= 2095) %>%
         mutate(group = "2080s")
       
+      x <- nrow(df_2080)
+      
       futr <- bind_rows(df_NA, df_2040, df_2060, df_2080) %>%
         mutate(group = as.factor(group))
-      
-      df <- mutate(futr, time_stamp = ymd(paste(year, month, "01", sep="-")),
+
+      df <- mutate(futr, time_stamp = ymd(paste(year, month, day, sep="-")),
                    water_year = year(time_stamp %m+% months(3)),
                    model = model, climate_proj = climate_proj)
-      
+
       return(df)
     }
-    
+
   }
-  map(models, read_RDS) %>% bind_rows() %>% mutate(model = as.factor(model))
+  map(models, read_RDS) %>% 
+    bind_rows() %>% 
+    mutate(model = as.factor(model),
+           group = factor(group, levels = c("hist", "2040s", "2060s", "2080s")))
 }
+
+
+
+
+
+

@@ -1,20 +1,22 @@
 ###  Packages  ####
 library(shiny)
-library(cowplot) # , lib.loc = "r_lib"
-library(ggplot2) # , lib.loc = "r_lib"
-library(leaflet) # , lib.loc = "r_lib"
-library(zoo) # , lib.loc = "r_lib"
 library(shinyBS)
 library(shinydashboard)
 library(purrr)
 library(tidyr)
 library(dplyr)
 library(tibble)
+library(ggplot2) #  lib.loc = "r_lib"
+library(cowplot) # , lib.loc = "r_lib"
+library(leaflet) # , lib.loc = "r_lib"
+library(zoo) # , lib.loc = "r_lib"
 library(stringr)
 library(lubridate)
 library(rgdal)
 library(Cairo)
-# library(readr, lib.loc="/home/hnoorazar/R/x86_64-redhat-linux-gnu-library/3.3") # , lib.loc = "r_lib"
+# library(readr, lib.loc = "/home/hnoorazar/R/x86_64-redhat-linux-gnu-library/3.3")
+# library(readr, lib.loc = "/home/hnoorazar/ShinyApps/bloom_thresh_frost/r_lib")
+# library(readr)
 options(shiny.usecairo=TRUE)
 
 ###  User Defined Functions  ###
@@ -33,14 +35,8 @@ source("functions/pruet_core.R")
 hydro_map_df <- readRDS("/data/pruett/surface/hydro_spatial.RDS") %>% 
                 mutate(max_combined = as.numeric(max_combined))
 
-###########################
-###                    ####
-###    Import Spatial  ####
-###                    ####
-###########################
-###
-### Server
-###
+### Import Spatial ####
+# Server
 skagit <- readOGR("geo/Skagit.geo.json", "OGRGeoJSON") # Skagit County
 snohomish <- readOGR("geo/Snohomish.geo.json", "OGRGeoJSON") # Snohomish County
 whatcom <- readOGR("geo/Whatcom.geo.json", "OGRGeoJSON") # Whatcom County
@@ -55,7 +51,7 @@ counties <- rbind(skagit, snohomish, whatcom, makeUniqueIDs = TRUE)
 
 # Map info ####
 spatial_precip <- readRDS("/data/pruett/precip/spatial_prob_time.rds") %>% 
-                  group_by (file_name, lat, lng)
+                  group_by(file_name, lat, lng)
 
 spatial_surface <- readRDS("/data/pruett/spatial_prob_surface.rds") %>% 
                    as_tibble() %>% 

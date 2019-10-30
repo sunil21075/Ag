@@ -2,7 +2,7 @@ library(tidyverse)
 library(cowplot)
 library(ggrepel)
 
-df <- read_rds("data/example/data_47.78125_-121.78125.rds") %>% 
+df <- read_rds("/data/example/data_47.78125_-121.78125.rds") %>% 
   filter(climate_proj == "rcp85")
 
 ggplot(df) +
