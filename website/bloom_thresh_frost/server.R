@@ -184,7 +184,6 @@ shinyServer(function(input, output, session) {
   
   ## Plot Output ####
   output$precip_plot <- renderPlot({
-      
       p_month <- plot_monthly_prob(precip_data_month(), "Daily Probability")
       p_octmar <- plot_octmar_prob(precip_data_octmar())
       
@@ -192,24 +191,24 @@ shinyServer(function(input, output, session) {
     
   }, res = 140)
   
-  output$surface_plot <- renderPlot({
+  # output$surface_plot <- renderPlot({
       
-      p_month <- plot_monthly_prob(surface_data_month(), "Monthly Probability")
-      p_octmar <- plot_octmar_prob(surface_data_octmar())
+  #     p_month <- plot_monthly_prob(surface_data_month(), "Monthly Probability")
+  #     p_octmar <- plot_octmar_prob(surface_data_octmar())
       
-      plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
+  #     plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
     
-  }, res = 140)
+  # }, res = 140)
 
-  output$dry_days_plot <- renderPlot({
+  # output$dry_days_plot <- renderPlot({
       
-      # p_month <- plot_monthly_prob(dry_days_data_month(), "Monthly Probability")
-      # p_octmar <- plot_octmar_prob(dry_days_data_octmar())
+  #     # p_month <- plot_monthly_prob(dry_days_data_month(), "Monthly Probability")
+  #     # p_octmar <- plot_octmar_prob(dry_days_data_octmar())
       
-      # plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
+  #     # plot_grid(p_month, p_octmar, nrow = 1, align = "vh", rel_widths = c(4, 1), axis = 'b')
     
-    plot_drydays_boxplot(dry_days_data(), input$dry_days_plot_climate_proj)
+  #   plot_drydays_boxplot(dry_days_data(), input$dry_days_plot_climate_proj)
     
-  }, res = 70, width = 400)
+  # }, res = 70, width = 400)
 
 })

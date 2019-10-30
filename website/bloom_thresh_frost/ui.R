@@ -153,14 +153,21 @@ body <- dashboardBody(
     ),
   
   # plot Modal
-  bsModal(title = "Precipitation Summary", id = "precip_graphs", trigger = NULL, size = "large",
-          fluidPage(fluidRow(column(2, radioButtons("precip_plot_climate_proj", label = h4("Climate Projection"), 
-                                                    choices = list("RCP 4.5" = "rcp45", "RCP 8.5" = "rcp85"),
-                                                    selected = "rcp85"),
-                                    radioButtons("precip_plot_time_scale", label = h4("Time Scale"), 
-                                                 choices = list("Daily" = "day", "Weekly" = "week", "Monthly" = "month"),
+  bsModal(title = "Bloom vs. CP", id = "precip_graphs", trigger = NULL, size = "large",
+          fluidPage(fluidRow(column(2, 
+                                    radioButtons("precip_plot_climate_proj", 
+                                                 label = h4("Climate Projection"), 
+                                                 choices = list("RCP 4.5" = "rcp45", 
+                                                                "RCP 8.5" = "rcp85"),
+                                                 selected = "rcp85"),
+
+                                    radioButtons("precip_plot_time_scale", 
+                                                 label = h4("Time Scale"), 
+                                                 choices = list("Daily" = "day", 
+                                                                "Weekly" = "week", 
+                                                                "Monthly" = "month"),
                                                  selected = "day")),
-                            column(10, offset = 0, plotOutput("precip_plot", height = 550))
+                             column(10, offset = 0, plotOutput("precip_plot", height = 550))
                             )
                     )
          ) # ,
