@@ -46,7 +46,7 @@ shinyServer(function(input, output, session) {
                { 
                  p <- input$analog_front_page_shape_click
                  toggleModal(session, modalId = "Graphs", toggle = "open")
-                 county <- rgdal::readOGR("/data/codmoth_data/analog/simle_county/", 
+                 county <- rgdal::readOGR("/data/hnoorazar/codling_moth/analog/simle_county/", 
                                            layer = "simpleCounty")
                  
                  # get polygon of current selected county(boundary)
@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
                  current_state_fip <- toString(over(dat, county)$STATEFP)
                  current_state_name <- st_cnty_names[st_cnty_names$state_fip == current_state_fip,]$state[1]
 
-                output$Plot <- renderImage({if (input$detail_level == "all_models"){
+                 output$Plot <- renderImage({if (input$detail_level == "all_models"){
                                               image_name <- paste0("all_mods_", 
                                                                    current_state_name, "_", 
                                                                    current_county_name, 
@@ -72,7 +72,7 @@ shinyServer(function(input, output, session) {
                                                                       ".png")
                                                  curr_emission <- input$emission
                                              }
-                                             file_dir_string <- paste0("./plots/analog_plots/", 
+                                             file_dir_string <- paste0("/data/hnoorazar/codling_moth/plots/analog_plots/", 
                                                                        "1_sigma_", 
                                                                        curr_emission, "/", 
                                                                        image_name)
@@ -92,7 +92,7 @@ shinyServer(function(input, output, session) {
   ########################### ANALOG WITH just side bar
   ########################### to choose County names from.
   output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
-                                      filename <- normalizePath(file.path('./plots/analog_plots', image_name))
+                                      filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/analog_plots', image_name))
                                       # Return a list containing the filename and alt text
                                       list(src = filename, width = 600, height = 600)}, 
                                      deleteFile = FALSE
@@ -100,7 +100,7 @@ shinyServer(function(input, output, session) {
   ###################################################
   ###################################################
   ###################################################
-  output$location_group <- renderImage({filename <- normalizePath(file.path('./plots/', 'location-group.png'))
+  output$location_group <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
@@ -123,14 +123,14 @@ shinyServer(function(input, output, session) {
   #                                deleteFile = FALSE) # Hossein commented out
   
   output$Adult_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('./plots/', 
+                                  filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                                       'Adult_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
                                   list(src = filename, width = 600, height = 450)}, 
                                   deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('./plots/', 
+                                  filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                                       'Larva_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
                                   list(src = filename, width = 600, height = 450)}, 
@@ -149,14 +149,14 @@ shinyServer(function(input, output, session) {
   #                                       deleteFile = FALSE) # Hossein commented out
   
   output$Adult_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('./plots/', 
+                                        filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                                  'Adult_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 450)}, 
                                         deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('./plots/', 
+                                        filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                             'Larva_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                       list(src = filename, width = 600, height = 450)}, 
@@ -206,12 +206,12 @@ shinyServer(function(input, output, session) {
 #    
 #  }, deleteFile = FALSE)
   
-  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                                      'adult_emergence_rcp85.png'))
                                  # Return a list containing the filename and alt text
                                  list(src = filename, width = 600, height = 450)}, 
                                  deleteFile = FALSE)
-  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
                                                                            'adult_emergence_rcp45.png'))
                                        # Return a list containing the filename and alt text
                                        list(src = filename, width = 600, height = 450)}, 
@@ -295,7 +295,7 @@ shinyServer(function(input, output, session) {
   #                                     deleteFile = FALSE)
 
   output$diapause_abs_rcp85 <- renderImage({
-    filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'diapause_abs_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
@@ -303,7 +303,7 @@ shinyServer(function(input, output, session) {
   }, deleteFile = FALSE)
 
   output$abs_pop_doy <- renderImage({
-    filename <- normalizePath(file.path('./plots/Diapause', 'abs_pop_doy.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/Diapause', 'abs_pop_doy.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 900)
@@ -327,7 +327,7 @@ shinyServer(function(input, output, session) {
   #   }, deleteFile = FALSE) # hossein
 
   output$diapause_abs_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp45.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'diapause_abs_rcp45.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
@@ -353,7 +353,7 @@ shinyServer(function(input, output, session) {
   # }, deleteFile = FALSE)
 
   output$cumdd <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'cumdd_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots', 'cumdd_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
@@ -361,7 +361,7 @@ shinyServer(function(input, output, session) {
   }, deleteFile = FALSE)
 
   output$cum_larva_pop <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'eggHatch_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots', 'eggHatch_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
@@ -379,21 +379,22 @@ shinyServer(function(input, output, session) {
   # }, deleteFile = FALSE)
 
   output$cumdd_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'cumdd_rcp45.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots', 
+                                        'cumdd_rcp45.png'))
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
     
   }, deleteFile = FALSE)
 
   output$cum_larva_pop_rcp45 <- renderImage({
-         filename <- normalizePath(file.path('./plots', 'eggHatch_rcp45.png'))
+         filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots', 'eggHatch_rcp45.png'))
          # Return a list containing the filename and alt text
          list(src = filename, width = 600, height = 450)
          }, 
         deleteFile = FALSE)
   #############
 
-  #output$county_groups <- renderImage({
+  # output$county_groups <- renderImage({
   #  filename <- normalizePath(file.path('./plots', 'county_groups.png'))
     
     # Return a list containing the filename and alt text
