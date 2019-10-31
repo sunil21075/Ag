@@ -197,8 +197,8 @@ navbarPage(title = div("",
                                  tabPanel("Diapause", imageOutput("diapause_abs_rcp85")),
                                  # tabPanel("Diapause",
                                  #          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd")), # Hossein
-                                 #                          tabPanel("Absolute Population Vs Cumulative DD", imageOutput("diapause_abs_rcp85")),
-                                 #                          width = 12
+                                 #          tabPanel("Absolute Population Vs Cumulative DD", imageOutput("diapause_abs_rcp85")),
+                                 #                width = 12
                                  #                          )
                                  #                  )
                                  #          ),
@@ -243,11 +243,11 @@ navbarPage(title = div("",
                                  ####### Diapause 45 START
                                  tabPanel("Diapause", imageOutput("diapause_abs_rcp45")),
                                  # tabPanel("Diapause",
-                                 #          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd_rcp45")), # Hossein
-                                 #                          tabPanel("Absolute Population Vs Cumulative DD", imageOutput("abs_pop_cumdd_rcp45")),
-                                 #                          width = 12
-                                 #                          )
-                                 #                   )
+                                 #  fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd_rcp45")), # Hossein
+                                 #   tabPanel("Absolute Population Vs Cumulative DD", imageOutput("abs_pop_cumdd_rcp45")),
+                                 #        width = 12
+                                 #                  )
+                                 #            )
                                  #          ),
                                  ####### Diapause 45 END
                                  widths = c(2,10)
@@ -298,10 +298,13 @@ navbarPage(title = div("",
                                                       dashboardBody(
                                                                      tags$head(tags$style(HTML('.content-wrapper, 
                                                                                                .right-side {
-                                                                                               background-color: #252d38;
+                                                                                               background-color: #ffffff;
                                                                                                  }'
                                                                                               ))),
-                                                                     plotOutput("bcf_plot")
+                                                                     # plotOutput("bcf_plot")
+                                                                     fluidPage(fluidRow(column(2, offset = 0, plotOutput("bcf_plot", height = 550)))
+                                                                              )
+
                                                                     )
                                                     )
                                       )
