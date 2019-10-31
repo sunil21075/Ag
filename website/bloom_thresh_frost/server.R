@@ -39,7 +39,8 @@ shinyServer(function(input, output, session) {
 
     # Test if location is selected
     validate(
-      need(!is.null(input$precip_map_marker_click$id), "Please select a location")
+      need(!is.null(input$precip_map_marker_click$id), 
+           "Please select a location")
     )
     
     # load data
@@ -51,13 +52,15 @@ shinyServer(function(input, output, session) {
       filter(climate_proj == input$precip_plot_climate_proj)
     
   })
-
-  ## Build Map ####
+  ##################
+  ##
+  ##  Build Map ####
+  ##
+  ##################
   output$precip_map <- renderLeaflet({
     pal <- colorBin(palette = "plasma", reverse = TRUE,
                     domain = precip_map_data()$prob_median, 
                     bins = 8, pretty=TRUE)
-    
     leaflet() %>%
     addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
              attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
@@ -83,14 +86,19 @@ shinyServer(function(input, output, session) {
     toggleModal(session, modalId = "precip_graphs", toggle = "open")
     
   })
+  ##########################
+  ##
   ## Plot precip Output ####
+  ##
+  ##########################
   output$precip_plot <- renderPlot({
       p_month <- plot_monthly_prob(precip_data_month(), "Daily Probability")
       p_octmar <- plot_octmar_prob(precip_data_octmar())
       
       plot_grid(p_month, p_octmar, 
                 nrow = 1, align = "vh", 
-                rel_widths = c(4, 1), axis = 'b')
+                rel_widths = c(4, 1), 
+                axis='b')
     
   }, res = 140)
 
@@ -103,6 +111,12 @@ shinyServer(function(input, output, session) {
     spatial_bcf
   })
 
+  ##################
+  ##
+  ##  Build Map ####
+  ##
+  ##################
+
   output$bcf_map <- renderLeaflet({
     pal <- colorBin(palette = "plasma", reverse = TRUE,
                     domain = spatial_bcf_data()$lat, bins = 8, pretty=TRUE)
@@ -114,12 +128,37 @@ shinyServer(function(input, output, session) {
                      lng = ~ long, lat = ~ lat,
                      label = ~ location,
                      layerId = ~ location,
-                     radius = 6,
+                     radius = 4,
                      color = ~ pal(lat),
                      stroke  = FALSE,
                      fillOpacity = .95)
   })
 
+  # plot part of bloom
+  observeEvent(input$bcf_map_marker_click, 
+             { p <- input$bcf_map_marker_click$id
+               lat <- substr(as.character(p), 1, 8)
+               long <- substr(as.character(p), 13, 21)
+               print(p)
+               file_dir_string <- paste0("/data/hnoorazar/", 
+                                         "bloom_thresh_frost/plots/", 
+                                         "CM_locs/bloom_thresh_in_one",
+                                         "/no_obs/apple/thresh_75/")
+               toggleModal(session, modalId = "bcf_graphs", toggle = "open")
+
+               curr_emission <- gsub(" ", "_", input$bcf_plot_climate_proj)
+               output$bcf_plot <- renderImage({
+                     image_name <- paste0(lat, "_-", long, "_", 
+                                          curr_emission, "_", 
+                                          input$bcf_plot_fruit_type,
+                                          ".png")
+
+                     filename <- normalizePath(file.path(file_dir_string, image_name))
+                     # Return a list containing the filename and alt text
+                     list(src = filename, width = 800, height = 550)
+                                              }, deleteFile = FALSE
+                                              )
+            })
   ###############################################################
   #######
   #######      DRY PART
@@ -201,11 +240,13 @@ shinyServer(function(input, output, session) {
 
   #   # Test if location is selected
   #   validate(
-  #     need(!is.null(input$surface_map_marker_click$id), "Please select a location")
+  #     need(!is.null(input$surface_map_marker_click$id), 
+  #          "Please select a location")
   #   )
 
   #   # load data
-  #   readRDS(paste0("/data/pruett/surface/daily_prob_month/", input$surface_map_marker_click$id)) %>% 
+  #   readRDS(paste0("/data/pruett/surface/daily_prob_month/", 
+  #                  input$surface_map_marker_click$id)) %>% 
   #     filter(climate_proj == input$surface_plot_climate_proj)
     
   # })
@@ -214,11 +255,13 @@ shinyServer(function(input, output, session) {
 
   #   # Test if location is selected
   #   validate(
-  #     need(!is.null(input$surface_map_marker_click$id), "Please select a location")
+  #     need(!is.null(input$surface_map_marker_click$id), 
+  #          "Please select a location")
   #   )
 
   #   # load data
-  #   readRDS(paste0("/data/pruett/surface/daily_prob_octmar/", input$surface_map_marker_click$id)) %>% 
+  #   readRDS(paste0("/data/pruett/surface/daily_prob_octmar/", 
+  #                  input$surface_map_marker_click$id)) %>% 
   #     filter(climate_proj == input$surface_plot_climate_proj)
     
   # })
@@ -242,7 +285,9 @@ shinyServer(function(input, output, session) {
   #                      color = ~ pal(prob_median),
   #                      stroke  = FALSE,
   #                      fillOpacity = .95) %>% 
-  #     addLegend("bottomleft", pal = pal, values = NULL, title = "Difference from Exceedance Probability") 
+  #     addLegend("bottomleft", pal = pal, 
+  #               values = NULL, 
+  #               title = "Difference from Exceedance Probability") 
     
   # })
   

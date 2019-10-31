@@ -70,27 +70,28 @@ bsModal(title="Dry Days Summary", id = "dry_days_graphs", trigger = NULL, size =
                             )
                    )
           )
-bsModal(title = "Bloom vs. CP", 
-          id = "precip_graphs", 
+
+bsModal(title = "Bloom vs. CP, and frost", 
+          id = "bcf_graphs", 
           trigger = NULL, 
           size = "large",
           fluidPage(fluidRow(column(2, 
-                                    radioButtons("precip_plot_climate_proj", 
+                                    radioButtons("bcf_plot_climate_proj", 
                                                  label = h4("Climate Projection"), 
                                                  choices = list("RCP 4.5" = "rcp45", 
                                                                 "RCP 8.5" = "rcp85"),
                                                  selected = "rcp85"),
 
-                                    radioButtons("precip_plot_time_scale", 
-                                                 label = h4("Time Scale"), 
-                                                 choices = list("Daily" = "day", 
-                                                                "Weekly" = "week", 
-                                                                "Monthly" = "month"),
-                                                 selected = "day")),
-                             column(10, offset = 0, plotOutput("precip_plot", height = 550))
+                                    radioButtons("fcp_plot_fruit_type", 
+                                                 label = h4("Fruit type"), 
+                                                 choices = list("Cripps Pink" = "cripps_pink", 
+                                                                "Gala" = "gala", 
+                                                                "Red Delicious" = "red_deli"),
+                                                 selected = "cripps_pink")),
+                             column(10, offset = 0, plotOutput("fcp_plot", height = 550))
                             )
                     )
-         ) # ,
+) # ,
   
 
 ######################################################
@@ -162,24 +163,44 @@ output$dry_map <- renderLeaflet({
             title = "Difference from Exceedance Probability") 
 })
 ######################################################################
-  observeEvent(input$dry_map_marker_click, {
-    
-    toggleModal(session, modalId = "dry_days_graphs", toggle = "open")
-    
-               })
-
-  dry_days_data <- reactive({
-
-    # Test if location is selected
-    validate(
-              need(!is.null(input$dry_map_marker_click$id), 
-              "Please select a location")
-            )
-    # load data
-    readRDS(paste0("/data/pruett/combined/data/", 
-                   input$dry_map_marker_click$id))
-    
+#
+# done
+#
+observeEvent(input$fcp_map_marker_click, {
+  toggleModal(session, modalId = "bcf_graphs", toggle = "open")
   })
+
+observeEvent(input$dry_map_marker_click, {
+  toggleModal(session, modalId = "dry_days_graphs", toggle = "open")
+  })
+
+######################################################################
+
+fcp_data <- reactive({
+
+  # Test if location is selected
+  validate(
+            need(!is.null(input$fcp_map_marker_click$id), 
+            "Please select a location")
+          )
+  # load data
+  readRDS(paste0("/data/pruett/combined/data/", 
+                 input$fcp_map_marker_click$id))
+  
+})
+
+dry_days_data <- reactive({
+
+  # Test if location is selected
+  validate(
+            need(!is.null(input$dry_map_marker_click$id), 
+            "Please select a location")
+          )
+  # load data
+  readRDS(paste0("/data/pruett/combined/data/", 
+                 input$dry_map_marker_click$id))
+  
+})
 
   output$dry_days_plot <- renderPlot({
       
@@ -212,5 +233,35 @@ frost_dt <- readRDS(paste0(data_dir, frost_f_name)) %>%
 
 thresh_dt <- readRDS(paste0(data_dir, CP_f_name)) %>% 
             group_by(location, lat, lng)
+
+
+
+#### from analog:
+
+observeEvent(input$fcp_map_marker_click, 
+             { 
+                 p <- input$fcp_map_marker_click$id
+                 lat <- substr(as.character(p), 1, 8)
+                 long <- substr(as.character(p), 13, 20)
+                 file_dir_string <- paste0("/home/hnoorazar/ShinyApps/", 
+                                           "bloom_thresh_frost/plots/", 
+                                           "CM_locs/bloom_thresh_in_one", 
+                                           "/no_obs/apple/thresh_75/")
+                 
+                 toggleModal(session, modalId = "bcf_graphs", toggle = "open")
+
+                 curr_emission <- gsub(" ", "_", input$bcf_plot_climate_proj)
+                 output$fcp_plot <- renderImage({
+                       image_name <- paste0(lat, "_", long, "_", 
+                                            curr_emission, "_", 
+                                            input$fcp_plot_fruit_type,
+                                            ".png")
+
+                       filename <- normalizePath(file.path(file_dir_string))
+                       # Return a list containing the filename and alt text
+                       list(src = filename, width = 600, height = 600)
+                                                }, deleteFile = FALSE
+                                                )
+            })
 
 

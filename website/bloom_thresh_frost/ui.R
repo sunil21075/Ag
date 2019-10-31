@@ -171,6 +171,26 @@ body <- dashboardBody(
     ),
   
   # plot Modal
+  bsModal(title = "Bloom vs. CP, and frost", 
+          id = "bcf_graphs", trigger = NULL, size = "large",
+          fluidPage(fluidRow(column(2, 
+                                    radioButtons("bcf_plot_climate_proj", 
+                                                 label = h4("Climate Projection"), 
+                                                 choices = list("RCP 4.5" = "RCP 4.5", 
+                                                                "RCP 8.5" = "RCP 8.5"),
+                                                 selected = "RCP 8.5"),
+
+                                    radioButtons("bcf_plot_fruit_type", 
+                                                 label = h4("Fruit type"), 
+                                                 choices = list("Cripps Pink" = "Cripps_Pink", 
+                                                                "Gala" = "Gala", 
+                                                                "Red Delicious" = "Red_Deli"),
+                                                 selected = "Cripps_Pink")),
+                              column(10, offset = 0, plotOutput("bcf_plot", height = 550))
+                             )
+                    )
+         ),
+
   bsModal(title = "Precipitation", 
           id = "precip_graphs", 
           trigger = NULL, 
