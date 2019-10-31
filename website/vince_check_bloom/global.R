@@ -106,21 +106,6 @@ time_periods <- c("2026-2050" = "F1",
                   "2076-2095" = "F3")
 
 ######################################################
-#
-# Definitions on Dashboard body
-#
-# all_analog_text <- '"All Models Analogs" plot includes most similar county in all models.'
-red_border <- "A county with red border is in the future."
-yellow_border <- "A county with yellow border is the best analog for a given county."
-
-inner_ring <- paste0("The inner ring is the similarity measurement ", 
-                     "of pest pressure distribution between future county ", 
-                     "and its analog ")
-
-outer_ring <- paste0("The inner ring is the similarity measurement ", 
-                     "of precipitation distribution between future county ", 
-                     "and its analog ")
-######################################################
 
 
 

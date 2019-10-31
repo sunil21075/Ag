@@ -298,7 +298,7 @@ navbarPage(title = div("",
                                                       dashboardBody(
                                                                      tags$head(tags$style(HTML('.content-wrapper, 
                                                                                                .right-side {
-                                                                                               background-color: #ffffff;
+                                                                                               background-color: #252d38;
                                                                                                  }'
                                                                                               ))),
                                                                      # plotOutput("bcf_plot")
