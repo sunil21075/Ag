@@ -64,10 +64,10 @@ shinyServer(function(input, output, session) {
                          modalId = "bcf_graphs", 
                          toggle =  "open")
 
-             curr_emission <- gsub(" ", "_", input$em_scenario)
              output$bcf_plot <- renderImage({
                    image_name <- paste0(lat, "_-", long, "_", 
-                                        curr_emission, "_", 
+                                        gsub(" ", "_", input$em_scenario), 
+                                        "_", 
                                         input$bcf_plot_fruit_type,
                                         ".png")
 
