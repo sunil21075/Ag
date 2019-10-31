@@ -90,7 +90,8 @@ counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
 
 #
 # Compute states like so, to put border around states
-states <- aggregate(counties[, "STATEFP"], by = list(ID = counties@data$STATEFP), 
+states <- aggregate(counties[, "STATEFP"], 
+                    by = list(ID = counties@data$STATEFP), 
                     FUN = unique, dissolve = T)
 
 interest_counties <- c("16027", "53001", "53021", "53071",
@@ -101,13 +102,19 @@ interest_counties <- c("16027", "53001", "53021", "53071",
 
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
+spatial_bcf_dir <- "/data/hnoorazar/bloom_thresh_frost/just_CM_locs/"
+spatial_bcf <- readRDS(paste0(spatial_bcf_dir, "cm_spatial_bcf.rds")) %>% 
+               group_by(location, lat, long)
+
 ################################################################################
 
 
 analog_param_dir <- "/data/hnoorazar/bloom/params/"
-st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
+st_cnty_names <- read.csv(paste0(analog_param_dir, 
+                                 "17_counties_fips_unique.csv"),
                           header=T,
-                          as.is=T) %>% data.table()
+                          as.is=T) %>% 
+                 data.table()
 #############################################
 #
 # Analog Plot Menu variables on pop-up page
