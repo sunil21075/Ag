@@ -1,3 +1,5 @@
+# Bloom - Vince
+
 library(leaflet)
 library(shinyBS)
 library(shiny)
@@ -10,7 +12,7 @@ navbarPage(title = div("",
                        img(src='NW-Climate-Hub-Logo.jpg', style='width:100px;height:35px;')
                        ),
            id="nav", 
-           windowTitle = "Codling Moth",
+           windowTitle = "Bloom",
            #
            ############## Home Begin
            #
@@ -153,221 +155,6 @@ navbarPage(title = div("",
            ############## BLOOM END
            #
            #
-           ############## CM Flight START
-           #
-           navbarMenu(tags$b("Flight"),
-                      tabPanel("Median Day of Year (First Flight)", 
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_emerg_doy", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_emerg_doy", includeHTML("explorer_climate_group.html"))
-                                                )
-                                  )
-                              ),
-                      tabPanel("Difference from Historical (First Flight)",
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_diff_emerg", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_diff_emerg", includeHTML("explorer_climate_group_diff.html"))
-                                                 )
-                                   )
-                               ),
-                      tabPanel("Median Day Of Year (By Generation)", 
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_adult_med_doy", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_adult_med_doy", includeHTML("explorer_climate_group.html")),
-                                                 selectInput("adult_gen", label = h4(tags$b("Select Generation")),
-                                                             choices = list("Generation 1" = "Gen1", 
-                                                                            "Generation 2" = "Gen2",
-                                                                            "Generation 3" = "Gen3", 
-                                                                            "Generation 4" = "Gen4"),
-                                                             selected = "Gen1"),
-                                                 radioButtons("adult_percent", 
-                                                              label = h4(tags$b("Select % Population that has completed the growth stage")),
-                                                              choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
-                                                              selected = "0.25", inline = TRUE
-                                                              )
-                                                 )
-                                   )
-                               ),
-                      tabPanel("Difference from Historical (By Generation)",
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_adult_diff_doy", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_adult_doy_diff", includeHTML("explorer_climate_group_diff.html")),
-                                                 selectInput("adult_gen_diff", 
-                                                             label = h4(tags$b("Select Generation")),
-                                                             choices = list("Generation 1" = "Gen1", 
-                                                                            "Generation 2" = "Gen2", 
-                                                                            "Generation 3" = "Gen3", 
-                                                                            "Generation 4" = "Gen4"),
-                                                             selected = "Gen1"),
-                                                 radioButtons("adult_percent_diff", 
-                                                              label = h4(tags$b("Select % Population that has completed the growth stage")),
-                                                              choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
-                                                              selected = "0.25", inline = TRUE)
-                                                 )
-                                   )
-                               )
-                     ),
-           #
-           ############## CM Flight END
-           #
-           #
-           ############## CM Egg Hatch START
-           #
-           navbarMenu(tags$b("Egg Hatch"),
-                      tabPanel("Pest Risk",
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_risk", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_risk", includeHTML("explorer_climate_group.html")),
-                                                 selectInput("gen_risk", 
-                                                             label = h4(tags$b("Select Generation")),
-                                                             choices = list("Generation 3" = "Gen3", 
-                                                                            "Generation 4" = "Gen4"),
-                                                             selected = "Gen3"
-                                                             ),
-                                                radioButtons("percent_risk", 
-                                                             label = h4(tags$b("Select Proportion of Eggs Hatched")),
-                                                             choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
-                                                             selected = "0.75", 
-                                                             inline = TRUE
-                                                             )
-                                                )
-                                  )
-                              ),
-                      tabPanel("Median Day Of Year (By Generation)", 
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_larvae_med_doy", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", 
-                                                 class = "panel panel-default", 
-                                                 fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_larvae_med_doy", includeHTML("explorer_climate_group.html")),
-                                                 selectInput("larvae_gen", 
-                                                             label = h4(tags$b("Select Generation")),
-                                                              choices = list("Generation 1" = "Gen1", 
-                                                                             "Generation 2" = "Gen2",
-                                                                             "Generation 3" = "Gen3", 
-                                                                             "Generation 4" = "Gen4"),
-                                                              selected = "Gen1"),
-                                                 radioButtons("larvae_percent", 
-                                                               label = h4(tags$b("Select Proportion of Eggs hatched")),
-                                                               choices = list("25 %" = "0.25", 
-                                                                              "50 %" = "0.5", 
-                                                                              "75 %" = "0.75"),
-                                                               selected = "0.25", inline = TRUE
-                                                               )
-                                                 )
-                                   )
-                              ),
-                      tabPanel("Difference from Historical (By Generation)",
-                               div(class="outer",
-                                   tags$head(includeCSS("styles.css")),
-                                   leafletOutput("map_larvae_diff_doy", width="100%", height="100%"),
-                                   absolutePanel(id = "controls", 
-                                                 class = "panel panel-default", 
-                                                 fixed = TRUE,
-                                                 draggable = TRUE, 
-                                                 top = 60, left = "auto", 
-                                                 right = 20, bottom = "auto",
-                                                 width = 250, height = "auto",
-                                                 h3(tags$b("Explorer")),
-                                                 gsub("cg", "cg_larvae_doy_diff", includeHTML("explorer_climate_group_diff.html")),
-                                                 selectInput("larvae_gen_diff", label = h4(tags$b("Select Generation")),
-                                                             choices = list("Generation 1" = "Gen1", 
-                                                                            "Generation 2" = "Gen2", 
-                                                                            "Generation 3" = "Gen3", 
-                                                                            "Generation 4" = "Gen4"),
-                                                             selected = "Gen1"),
-                                                 radioButtons("larvae_percent_diff", 
-                                                              label = h4(tags$b("Select Proportion of Eggs hatched")),
-                                                              choices = list("25 %" = "0.25", 
-                                                                             "50 %" = "0.5", 
-                                                                             "75 %" = "0.75"),
-                                                              selected = "0.25", 
-                                                              inline = TRUE
-                                                              )
-                                                 )
-                                   )
-                              )
-                      ),
-           #
-           ############## CM Egg Hatch END
-           #
-           #
-           ############## CM Diapause START
-           #
-           tabPanel(tags$b("Diapause"),
-                    div(class="outer",
-                        tags$head(includeCSS("styles.css")),
-                        leafletOutput("map_diap_pop", width="100%", height="100%"),
-                        absolutePanel(id = "controls", class = "panel panel-default", 
-                                      fixed = TRUE, draggable = TRUE, 
-                                      top = 60, left = "auto", 
-                                      right = 20, bottom = "auto",
-                                      width = 250, height = "auto",
-                                      h3(tags$b("Explorer")),
-                                      gsub("cg", "cg_diap", includeHTML("explorer_climate_group.html")),
-                                      radioButtons("diapaused", 
-                                                   label = h4(tags$b("Select Diapause/Non-Diapause")),
-                                                   choices = list("Diapause Escaped" = "NonDiap", 
-                                                                  "Diapause Induced" = "Diap"),
-                                                   selected = "NonDiap", 
-                                                   inline = FALSE
-                                                   ),
-                                      selectInput("diap_gen",
-                                                  label = h4(tags$b("Select Generation")),
-                                                  choices = list("Generation 1" = "Gen1", 
-                                                                 "Generation 2" = "Gen2",
-                                                                 "Generation 3" = "Gen3", 
-                                                                 "Generation 4" = "Gen4",
-                                                                 "All" = "all"),
-                                                   selected = "Gen1"
-                                                   )
-                                      )
-                        )
-                    ),
-           #
-           ############## CM Diapause END
-           #
            #
            ############## Regional Plots START
            #
@@ -473,7 +260,7 @@ navbarPage(title = div("",
            #
            ############## Analogs Map Front Page start
            #
-           tabPanel(tags$b("Analog Map"),
+           tabPanel(tags$b("Bloom vs. Chill Portion"),
                     fluidPage( id = "nav", inverse=FALSE, fluid=FALSE, title="Tool",
                                div( class="outer",
                                     tags$head(includeCSS("styles.css"),
@@ -559,6 +346,221 @@ navbarPage(title = div("",
                     )
            #
            ############## Analogs Map Front page END
+           #
+           ############## CM Flight START
+           #
+           # navbarMenu(tags$b("Flight"),
+           #            tabPanel("Median Day of Year (First Flight)", 
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_emerg_doy", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_emerg_doy", includeHTML("explorer_climate_group.html"))
+           #                                      )
+           #                        )
+           #                    ),
+           #            tabPanel("Difference from Historical (First Flight)",
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_diff_emerg", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_diff_emerg", includeHTML("explorer_climate_group_diff.html"))
+           #                                       )
+           #                         )
+           #                     ),
+           #            tabPanel("Median Day Of Year (By Generation)", 
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_adult_med_doy", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_adult_med_doy", includeHTML("explorer_climate_group.html")),
+           #                                       selectInput("adult_gen", label = h4(tags$b("Select Generation")),
+           #                                                   choices = list("Generation 1" = "Gen1", 
+           #                                                                  "Generation 2" = "Gen2",
+           #                                                                  "Generation 3" = "Gen3", 
+           #                                                                  "Generation 4" = "Gen4"),
+           #                                                   selected = "Gen1"),
+           #                                       radioButtons("adult_percent", 
+           #                                                    label = h4(tags$b("Select % Population that has completed the growth stage")),
+           #                                                    choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
+           #                                                    selected = "0.25", inline = TRUE
+           #                                                    )
+           #                                       )
+           #                         )
+           #                     ),
+           #            tabPanel("Difference from Historical (By Generation)",
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_adult_diff_doy", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_adult_doy_diff", includeHTML("explorer_climate_group_diff.html")),
+           #                                       selectInput("adult_gen_diff", 
+           #                                                   label = h4(tags$b("Select Generation")),
+           #                                                   choices = list("Generation 1" = "Gen1", 
+           #                                                                  "Generation 2" = "Gen2", 
+           #                                                                  "Generation 3" = "Gen3", 
+           #                                                                  "Generation 4" = "Gen4"),
+           #                                                   selected = "Gen1"),
+           #                                       radioButtons("adult_percent_diff", 
+           #                                                    label = h4(tags$b("Select % Population that has completed the growth stage")),
+           #                                                    choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
+           #                                                    selected = "0.25", inline = TRUE)
+           #                                       )
+           #                         )
+           #                     )
+           #           ),
+           # #
+           # ############## CM Flight END
+           # #
+           # #
+           # ############## CM Egg Hatch START
+           # #
+           # navbarMenu(tags$b("Egg Hatch"),
+           #            tabPanel("Pest Risk",
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_risk", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_risk", includeHTML("explorer_climate_group.html")),
+           #                                       selectInput("gen_risk", 
+           #                                                   label = h4(tags$b("Select Generation")),
+           #                                                   choices = list("Generation 3" = "Gen3", 
+           #                                                                  "Generation 4" = "Gen4"),
+           #                                                   selected = "Gen3"
+           #                                                   ),
+           #                                      radioButtons("percent_risk", 
+           #                                                   label = h4(tags$b("Select Proportion of Eggs Hatched")),
+           #                                                   choices = list("25 %" = "0.25", "50 %" = "0.5", "75 %" = "0.75"),
+           #                                                   selected = "0.75", 
+           #                                                   inline = TRUE
+           #                                                   )
+           #                                      )
+           #                        )
+           #                    ),
+           #            tabPanel("Median Day Of Year (By Generation)", 
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_larvae_med_doy", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", 
+           #                                       class = "panel panel-default", 
+           #                                       fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_larvae_med_doy", includeHTML("explorer_climate_group.html")),
+           #                                       selectInput("larvae_gen", 
+           #                                                   label = h4(tags$b("Select Generation")),
+           #                                                    choices = list("Generation 1" = "Gen1", 
+           #                                                                   "Generation 2" = "Gen2",
+           #                                                                   "Generation 3" = "Gen3", 
+           #                                                                   "Generation 4" = "Gen4"),
+           #                                                    selected = "Gen1"),
+           #                                       radioButtons("larvae_percent", 
+           #                                                     label = h4(tags$b("Select Proportion of Eggs hatched")),
+           #                                                     choices = list("25 %" = "0.25", 
+           #                                                                    "50 %" = "0.5", 
+           #                                                                    "75 %" = "0.75"),
+           #                                                     selected = "0.25", inline = TRUE
+           #                                                     )
+           #                                       )
+           #                         )
+           #                    ),
+           #            tabPanel("Difference from Historical (By Generation)",
+           #                     div(class="outer",
+           #                         tags$head(includeCSS("styles.css")),
+           #                         leafletOutput("map_larvae_diff_doy", width="100%", height="100%"),
+           #                         absolutePanel(id = "controls", 
+           #                                       class = "panel panel-default", 
+           #                                       fixed = TRUE,
+           #                                       draggable = TRUE, 
+           #                                       top = 60, left = "auto", 
+           #                                       right = 20, bottom = "auto",
+           #                                       width = 250, height = "auto",
+           #                                       h3(tags$b("Explorer")),
+           #                                       gsub("cg", "cg_larvae_doy_diff", includeHTML("explorer_climate_group_diff.html")),
+           #                                       selectInput("larvae_gen_diff", label = h4(tags$b("Select Generation")),
+           #                                                   choices = list("Generation 1" = "Gen1", 
+           #                                                                  "Generation 2" = "Gen2", 
+           #                                                                  "Generation 3" = "Gen3", 
+           #                                                                  "Generation 4" = "Gen4"),
+           #                                                   selected = "Gen1"),
+           #                                       radioButtons("larvae_percent_diff", 
+           #                                                    label = h4(tags$b("Select Proportion of Eggs hatched")),
+           #                                                    choices = list("25 %" = "0.25", 
+           #                                                                   "50 %" = "0.5", 
+           #                                                                   "75 %" = "0.75"),
+           #                                                    selected = "0.25", 
+           #                                                    inline = TRUE
+           #                                                    )
+           #                                       )
+           #                         )
+           #                    )
+           #            ),
+           # #
+           # ############## CM Egg Hatch END
+           # #
+           # #
+           # ############## CM Diapause START
+           # #
+           # tabPanel(tags$b("Diapause"),
+           #          div(class="outer",
+           #              tags$head(includeCSS("styles.css")),
+           #              leafletOutput("map_diap_pop", width="100%", height="100%"),
+           #              absolutePanel(id = "controls", class = "panel panel-default", 
+           #                            fixed = TRUE, draggable = TRUE, 
+           #                            top = 60, left = "auto", 
+           #                            right = 20, bottom = "auto",
+           #                            width = 250, height = "auto",
+           #                            h3(tags$b("Explorer")),
+           #                            gsub("cg", "cg_diap", includeHTML("explorer_climate_group.html")),
+           #                            radioButtons("diapaused", 
+           #                                         label = h4(tags$b("Select Diapause/Non-Diapause")),
+           #                                         choices = list("Diapause Escaped" = "NonDiap", 
+           #                                                        "Diapause Induced" = "Diap"),
+           #                                         selected = "NonDiap", 
+           #                                         inline = FALSE
+           #                                         ),
+           #                            selectInput("diap_gen",
+           #                                        label = h4(tags$b("Select Generation")),
+           #                                        choices = list("Generation 1" = "Gen1", 
+           #                                                       "Generation 2" = "Gen2",
+           #                                                       "Generation 3" = "Gen3", 
+           #                                                       "Generation 4" = "Gen4",
+           #                                                       "All" = "all"),
+           #                                         selected = "Gen1"
+           #                                         )
+           #                            )
+           #              )
+           #          )
+           #
+           ############## CM Diapause END
            #
            
 

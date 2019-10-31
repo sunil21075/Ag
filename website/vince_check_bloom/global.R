@@ -1,5 +1,4 @@
-
-
+# Bloom - Vince
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -81,8 +80,8 @@ bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")
 
 #########################################################
 # read county shapefile
-shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county/"
-shapefile_dir <- "/data/codmoth_data/analog/tl_2017_us_county_simple/"
+shapefile_dir <- "/data/hnoorazar/bloom/shape_files/tl_2017_us_county/"
+shapefile_dir <- "/data/hnoorazar/bloom/shape_files/tl_2017_us_county_simple/"
 counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), 
                            layer = "tl_2017_us_county")
 
@@ -105,7 +104,7 @@ counties <- counties[counties@data$GEOID %in% interest_counties, ]
 ################################################################################
 
 
-analog_param_dir <- "/home/hnoorazar/ShinyApps/hydro_group_website/params/"
+analog_param_dir <- "/data/hnoorazar/bloom/params/"
 st_cnty_names <- read.csv(paste0(analog_param_dir, "17_counties_fips_unique.csv"),
                           header=T,
                           as.is=T) %>% data.table()
@@ -146,10 +145,6 @@ inner_ring <- paste0("The inner ring is the similarity measurement ",
 outer_ring <- paste0("The inner ring is the similarity measurement ", 
                      "of precipitation distribution between future county ", 
                      "and its analog ")
-
-
-
-
 ######################################################
 
 

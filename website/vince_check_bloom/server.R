@@ -1,3 +1,5 @@
+# Bloom - Vince
+
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -46,7 +48,7 @@ shinyServer(function(input, output, session) {
                { 
                  p <- input$analog_front_page_shape_click
                  toggleModal(session, modalId = "Graphs", toggle = "open")
-                 county <- rgdal::readOGR("/data/hnoorazar/codmoth_data/analog/simle_county/", 
+                 county <- rgdal::readOGR("/data/hnoorazar/bloom/shape_files/simle_county/", 
                                            layer = "simpleCounty")
                  
                  # get polygon of current selected county(boundary)
