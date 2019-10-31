@@ -21,38 +21,6 @@ library(RColorBrewer)
 # library(Hmisc)
 
 data_dir = "/data/hnoorazar/codling_moth/"
-d = data.table(readRDS(paste0(data_dir,"/combinedData.rds")))
-# ordering time frame levels 
-d$timeFrame <-as.factor(d$timeFrame)
-d$timeFrame <- factor(d$timeFrame, levels = levels(d$timeFrame)[c(4,1,2,3)])
-
-d_rcp45 = data.table(readRDS(paste0(data_dir,"/combinedData_rcp45.rds")))
-names(d_rcp45)[names(d_rcp45) == "ClimateGroup"] = "timeFrame"
-d_rcp45$location = paste0(d_rcp45$latitude, "_", d_rcp45$longitude)
-
-d1 <- data.table(readRDS(paste0(data_dir, "/subData.rds")))
-d1$month = as.factor(d1$month)
-levels(d1$month) = c("January", "February", "March", 
-                     "April", "May", "June", 
-                     "July", "August", "September", 
-                     "October", "November", "December")
-
-d1$location = paste0(d1$latitude, "_", d1$longitude)
-
-d1_rcp45 <- data.table(readRDS(paste0(data_dir, "/subData_rcp45.rds")))
-d1_rcp45$month = as.factor(d1_rcp45$month)
-levels(d1_rcp45$month) = c("January", "February", "March",
-                           "April", "May", "June", 
-                           "July", "August", "September", 
-                           "October", "November", "December")
-
-d1_rcp45$location = paste0(d1_rcp45$latitude, "_", d1_rcp45$longitude)
-
-RdBu_reverse <- rev(brewer.pal(11, "RdBu"))
-head(d1)
-
-diap <- data.table(readRDS(paste0(data_dir, "/diapause_map_data1.rds")))
-diap_rcp45 <- data.table(readRDS(paste0(data_dir, "/diapause_map_data1_rcp45.rds")))
 
 # bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
 # bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_data_rcp45.rds")))
