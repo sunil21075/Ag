@@ -817,14 +817,14 @@ add_coord_from_location <- function(dt){
 
 month_numeric_2_str <- function(B){
   B$month <- as.character(B$month)
-  B$month <- recode(B$month, "1" = "Jan.", "2" = "Feb.", "3" = "Mar.",
-                             "4" = "Apr.", "5" = "May.", "6" = "Jun.", 
-                             "7" = "Jul.", "8" = "Aug.", "9" = "Sept.", 
-                             "10" = "Oct.", "11" = "Nov.", "12" = "Dec.")
+  B$month <- recode(B$month, "1" = "Jan", "2" = "Feb", "3" = "Mar",
+                             "4" = "Apr", "5" = "May", "6" = "Jun", 
+                             "7" = "Jul", "8" = "Aug", "9" = "Sep", 
+                             "10" = "Oct", "11" = "Nov", "12" = "Dec")
 
-  month_levels <- c("Sept.", "Oct.", "Nov.", "Dec.",
-                    "Jan.", "Feb.", "Mar.", "Apr.", 
-                    "May.", "Jun.", "Jul.", "Aug.")
+  month_levels <- c("Sep", "Oct", "Nov", "Dec",
+                    "Jan", "Feb", "Mar", "Apr", 
+                    "May", "Jun", "Jul", "Aug")
   B$month <- factor(B$month, levels=month_levels)
   return(B)
 }

@@ -1,5 +1,4 @@
-# Lagoon
-
+# Bloom - Vince
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -108,5 +107,5 @@ time_periods <- c("2026-2050" = "F1",
 
 ######################################################
 
-
+RdBu_reverse <- rev(brewer.pal(11, "RdBu"))
 

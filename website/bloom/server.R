@@ -1,4 +1,4 @@
-# Lagoon
+# Bloom - Vince
 
 library(scales)
 library(lattice)
@@ -106,68 +106,63 @@ shinyServer(function(input, output, session) {
   ###################################################
   ###################################################
   ###################################################
-  output$location_group <- renderImage({filename <- normalizePath(file.path('./plots/', 'location-group.png'))
+  output$location_group <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                                                            'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
   
   output$Adult_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('./plots/', 
+                                  filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                                       'Adult_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
                                   list(src = filename, width = 600, height = 450)}, 
                                   deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('./plots/', 
+                                  filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                                       'Larva_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
                                   list(src = filename, width = 600, height = 450)}, 
                                   deleteFile = FALSE)
   
   output$Adult_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('./plots/', 
+                                        filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                                  'Adult_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 450)}, 
                                         deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('./plots/', 
+                                        filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                             'Larva_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                       list(src = filename, width = 600, height = 450)}, 
                                       deleteFile = FALSE)
 
-  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                                                    'adult_emergence_rcp85.png'))
                                                 # Return a list containing the filename and alt text
                                                 list(src = filename, width = 600, height = 450)}, 
                                                 deleteFile = FALSE)
-  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
                                                                            'adult_emergence_rcp45.png'))
                                        # Return a list containing the filename and alt text
                                        list(src = filename, width = 600, height = 450)}, 
                                        deleteFile = FALSE)
   
   output$diapause_abs_rcp85 <- renderImage({
-    filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                        'diapause_abs_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
     
   }, deleteFile = FALSE)
 
-  output$abs_pop_doy <- renderImage({
-    filename <- normalizePath(file.path('./plots/Diapause', 'abs_pop_doy.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 900)
-    
-  }, deleteFile = FALSE)
-
   output$diapause_abs_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp45.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                        'diapause_abs_rcp45.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
@@ -175,7 +170,8 @@ shinyServer(function(input, output, session) {
   }, deleteFile = FALSE)
 
   output$cumdd <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'cumdd_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                        'cumdd_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
@@ -183,7 +179,8 @@ shinyServer(function(input, output, session) {
   }, deleteFile = FALSE)
 
   output$cum_larva_pop <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'eggHatch_rcp85.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                        'eggHatch_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
@@ -191,14 +188,16 @@ shinyServer(function(input, output, session) {
   }, deleteFile = FALSE)
 
   output$cumdd_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('./plots', 'cumdd_rcp45.png'))
+    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                         'cumdd_rcp45.png'))
     # Return a list containing the filename and alt text
     list(src = filename, width = 600, height = 450)
     
   }, deleteFile = FALSE)
 
   output$cum_larva_pop_rcp45 <- renderImage({
-         filename <- normalizePath(file.path('./plots', 'eggHatch_rcp45.png'))
+         filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
+                                              'eggHatch_rcp45.png'))
          # Return a list containing the filename and alt text
          list(src = filename, width = 600, height = 450)
          }, 
@@ -207,7 +206,7 @@ shinyServer(function(input, output, session) {
 
   output$map_bloom_doy <- renderLeaflet({
     # c("Historical", "2040's", "2060's", "2080's")
-    layerlist = levels(diap$ClimateGroup) 
+    layerlist = levels(bloom$ClimateGroup)  # diap$ClimateGroup
 
     if(input$cg_bloom == "Historical") {
       climate_group = input$cg_bloom
@@ -240,7 +239,7 @@ shinyServer(function(input, output, session) {
   })
   ##########################################################
   output$map_bloom_doy_100 <- renderLeaflet({
-    layerlist = levels(diap$ClimateGroup) 
+    layerlist = levels(bloom$ClimateGroup) #diap$ClimateGroup
 
     if(input$cg_bloom_100 == "Historical") {
          climate_group = input$cg_bloom_100
@@ -274,7 +273,7 @@ shinyServer(function(input, output, session) {
   })
   ##########################################################
   output$map_bloom_doy_95 <- renderLeaflet({
-  layerlist = levels(diap$ClimateGroup)
+  layerlist = levels(bloom$ClimateGroup) # diap$ClimateGroup
 
   if(input$cg_bloom_95 == "Historical") {
     climate_group = input$cg_bloom_95
@@ -309,7 +308,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$map_bloom_doy_50 <- renderLeaflet({
-    layerlist = levels(diap$ClimateGroup)
+    layerlist = levels(bloom$ClimateGroup) # diap$ClimateGroup
 
     if(input$cg_bloom_50 == "Historical") {
       climate_group = input$cg_bloom_50
@@ -436,7 +435,7 @@ shinyServer(function(input, output, session) {
   #                                                                     ".png")
   #                                                curr_emission <- input$emission
   #                                            }
-  #                                            file_dir_string <- paste0("./plots/analog_plots/", 
+  #                                            file_dir_string <- paste0("/data/hnoorazar/bloom/plots/regional_plots/analog_plots/", 
   #                                                                      "1_sigma_", 
   #                                                                      curr_emission, "/", 
   #                                                                      image_name)
@@ -452,7 +451,7 @@ shinyServer(function(input, output, session) {
   # Dashboard plots
   #
   # output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
-  #                                     filename <- normalizePath(file.path('./plots/analog_plots', image_name))
+  #                                     filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/analog_plots', image_name))
   #                                     # Return a list containing the filename and alt text
   #                                     list(src = filename, width = 600, height = 600)}, 
   #                                    deleteFile = FALSE
@@ -523,6 +522,5 @@ shinyServer(function(input, output, session) {
 
     map
   }
-
 
 })

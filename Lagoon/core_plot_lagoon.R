@@ -295,7 +295,7 @@ seasonal_fraction_season_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col=
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
-  facet_grid(~ emission, scales="free") +
+  # facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) + 
   # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
@@ -477,7 +477,7 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
   # labs(x="", y="") + # theme_bw() + 
-  facet_grid(~ emission, scales="free") +
+  # facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) +
   # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
@@ -542,7 +542,8 @@ seasonal_cum_box_clust_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = 8, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
+                                         margin = margin(t=.15, r=.1, 
+                                                         b=0, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -649,7 +650,7 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                      position = position_dodge(0.8), outlier.shape=NA) +
         scale_x_discrete(expand=c(0.1, 0)) + 
         # labs(x="", y="") + # theme_bw() + 
-        facet_grid(~ emission, scales="free") +
+        # facet_grid(~ emission, scales="free") +
         ylab(y_lab) + 
         # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
         scale_fill_manual(values = color_ord, labels = time_label) +
@@ -953,7 +954,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
                plot.title = element_text(size = ax_ttl_size, face = "bold",
-                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -979,7 +980,7 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
                  width = box_width, lwd=.1,
                  position = position_dodge(0.8), outlier.shape=NA) +
     scale_x_discrete(expand=c(0.1, 0)) + 
-    facet_grid(~ emission, scales="free") +
+    # facet_grid(~ emission, scales="free") +
     xlab("precip. group") +
     ylab(y_lab) + 
     scale_fill_manual(values = color_ord, labels = time_label) +
@@ -1079,7 +1080,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                geom_boxplot(outlier.size = - 0.3, notch=F, 
                             width = box_width, lwd=.1, 
                             position = position_dodge(0.6), outlier.shape=NA) +
-               facet_grid(~ emission, scales="free") +
+               # facet_grid(~ emission, scales="free") +
                ylab(y_lab) +
                # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
                scale_fill_manual(values = color_ord,
@@ -1100,7 +1101,7 @@ box_trend_monthly_cum <- function(dt, p_type="trend", trend_type="median", y_lab
                  geom_boxplot(outlier.size = - 0.3, notch=F, 
                               width = box_width, lwd=.1, outlier.shape=NA,
                               position = position_dodge(0.6)) +
-                 facet_grid(~ emission, scales="free") +
+                 # facet_grid(~ emission, scales="free") +
                  ylab(y_lab) +
                  scale_fill_manual(values = color_ord, name = "time\nperiod", 
                                    labels = time_lbl)
@@ -1208,14 +1209,16 @@ box_dt_25 <- function(dt_25){
                panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
                legend.position = "bottom", 
-               legend.key.size = unit(1.2, "line"),
+               legend.key.size = unit(0.8, "line"),
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size=ax_ttl_size, face="bold"),
+               legend.text = element_text(size=ax_txt_size, face="bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold", vjust=2),
-               plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=0.1, 
+                                                         b=0, l=0, "line")),
+               # plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
                axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
@@ -1236,9 +1239,9 @@ box_dt_25 <- function(dt_25){
                         width = box_width, lwd=.1, 
                         position = position_dodge(0.85), outlier.shape=NA
                         ) +
-           facet_grid(~ emission) +
+           # facet_grid(~ emission) +
            xlab("precip. group") + 
-           ylab("Design Storm intensity (mm/hr)") + 
+           ylab("design storm intensity (mm/hr)") + 
            # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
@@ -1280,13 +1283,15 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                panel.grid.minor = element_blank(),
                panel.spacing = unit(.35, "line"),
                legend.position = "bottom", 
-               legend.key.size = unit(1.2, "line"),
+               legend.key.size = unit(0.8, "line"),
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
-               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.text = element_text(size = ax_txt_size, face="bold"),
                legend.margin = margin(t=.1, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size = ax_ttl_size, face = "bold", vjust=2),
+               plot.title = element_text(size = ax_ttl_size, face = "bold", 
+                                         margin = margin(t=.15, r=0.1, 
+                                                         b=0, l=0, "line")),
                plot.subtitle = element_text(size=ax_txt_size, face = "bold"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
                                            margin = margin(.15, 0, .15, 0, "line")),
@@ -1321,7 +1326,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                         position = position_dodge(0.8), outlier.shape=NA
                         ) +
            # labs(x="", y="") + # theme_bw() + 
-           facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
+           # facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
            ylab(y_labb) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 
@@ -1467,7 +1472,7 @@ storm_box_plot <- function(data_tb){
                                      "twenty_years" = "20",
                                      "twenty_five_years" = "25")) + 
            xlab("time interval (years)") + 
-           ylab("25-year/24-hr Design Storm intensity (mm/hr)") + 
+           ylab("design storm intensity (mm/hr)") + 
            # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
            scale_fill_manual(values = color_ord,
                              name = "Return\nPeriod", 

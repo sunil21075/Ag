@@ -47,8 +47,8 @@ levels(d1_rcp45$month) = c("January", "February", "March",
                            "October", "November", "December")
 
 d1_rcp45$location = paste0(d1_rcp45$latitude, "_", d1_rcp45$longitude)
-
 RdBu_reverse <- rev(brewer.pal(11, "RdBu"))
+
 head(d1)
 
 diap <- data.table(readRDS(paste0(data_dir, 
