@@ -23,23 +23,6 @@ library(RColorBrewer)
 
 data_dir = "/data/hnoorazar/codling_moth/"
 
-# bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
-# bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_data_rcp45.rds")))
-
-bloom <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
-bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
-
-print (colnames(bloom_rcp45))
-##########################
-bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_100_new.rds")))
-bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_100_new.rds")))
-
-bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_95_new.rds")))
-bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_95_new.rds")))
-
-bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
-bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
-
 ######################################
 ###################################### clear above
 ######################################
