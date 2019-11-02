@@ -61,6 +61,14 @@ st_cnty_names <- read.csv(paste0(map_dir,
                           as.is=T) %>% 
                  data.table()
 
+#####################################################################
+cluster_labels <- c("Western coastal", "Cascade foothills",
+                    "Northwest Cascades", "Northcentral Cascades",
+                    "Northeast Cascades")
+
+spatial_lagoon$cluster <- factor(spatial_lagoon$cluster, 
+                                 levels = cluster_labels,
+                                 order=TRUE)
 
 
 

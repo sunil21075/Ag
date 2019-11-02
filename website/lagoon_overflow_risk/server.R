@@ -25,17 +25,14 @@ shinyServer(function(input, output, session) {
   #############################################
 
   # Show page on click event for chill frost
-  spatial_lagoon_data <- reactive({
-    spatial_lagoon
-  })
 
   #
   # Create the map
   #
   output$lagoon_map <- renderLeaflet({
-    pal <- colorBin(palette = "plasma", reverse = TRUE,
-                    domain = spatial_lagoon_data()$numerical_cluster, 
-                    bins = 8, pretty=TRUE)
+    factpal <- colorFactor(palette = c("royalblue3", "steelblue1", "maroon3", "red", "black"), 
+                           levels = spatial_lagoon$cluster)
+
     leaflet() %>%
     
     addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
@@ -53,14 +50,19 @@ shinyServer(function(input, output, session) {
                 smoothFactor = 2) %>% 
     
     setView(lat = 48, lng = -122, zoom = 8) %>%
-    addCircleMarkers(data = spatial_lagoon_data(), 
+    addCircleMarkers(data = spatial_lagoon, 
                      lng = ~ long, lat = ~ lat,
                      label = ~ location,
                      layerId = ~ location,
                      radius = 4,
-                     color = ~ pal(numerical_cluster),
+                     color = ~ factpal(cluster),
                      stroke  = FALSE,
-                     fillOpacity = .95)
+                     fillOpacity = .95) %>%
+    addLegend(position="bottomleft", 
+               pal = factpal, 
+               values = NULL, 
+               labels = ~cluster,
+               title = "Cluster Subregions") 
   })
 
   #
