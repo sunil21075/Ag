@@ -30,7 +30,8 @@ shinyServer(function(input, output, session) {
   # Create the map
   #
   output$lagoon_map <- renderLeaflet({
-    factpal <- colorFactor(palette = c("royalblue3", "steelblue1", "maroon3", "red", "black"), 
+    factpal <- colorFactor(palette = c("royalblue3", "steelblue1", 
+                                       "maroon3", "red", "black"), 
                            levels = spatial_lagoon$cluster)
 
     leaflet() %>%
@@ -59,10 +60,10 @@ shinyServer(function(input, output, session) {
                      stroke  = FALSE,
                      fillOpacity = .95) %>%
     addLegend(position="bottomleft", 
-               pal = factpal, 
-               values = NULL, 
-               labels = ~cluster,
-               title = "Cluster Subregions") 
+              pal = factpal, 
+              values = cluster_labels,
+              labels = cluster_labels,
+              title = "Cluster Subregions") 
   })
 
   #
