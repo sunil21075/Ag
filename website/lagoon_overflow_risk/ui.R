@@ -73,7 +73,7 @@ navbarPage(title = div("",
                                     tags$head(includeCSS("styles.css"),
                                               includeScript("gomap.js")
                                               ),
-                                    leafletOutput("bcf_map", 
+                                    leafletOutput("lagoon_map", 
                                                    width="100%", 
                                                    height="100%")
                                   )

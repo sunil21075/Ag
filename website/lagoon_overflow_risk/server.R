@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
   #
   # Create the map
   #
-  output$bcf_map <- renderLeaflet({
+  output$lagoon_map <- renderLeaflet({
     pal <- colorBin(palette = "plasma", reverse = TRUE,
                     domain = spatial_bcf_data()$lat, bins = 8, pretty=TRUE)
     leaflet() %>%
@@ -52,8 +52,8 @@ shinyServer(function(input, output, session) {
   #
   # Bloom Dashboard plots
   #
-  observeEvent(input$bcf_map_marker_click, 
-           { p <- input$bcf_map_marker_click$id
+  observeEvent(input$lagoon_map_marker_click, 
+           { p <- input$lagoon_map_marker_click$id
              lat <- substr(as.character(p), 1, 8)
              long <- substr(as.character(p), 13, 21)
              file_dir_string <- paste0("/data/hnoorazar/", 
@@ -78,16 +78,7 @@ shinyServer(function(input, output, session) {
                         width = 620, height = 370)
                                             }, deleteFile = FALSE
                                             )
-          })
-
-  ########################### ANALOG W/ just side bar
-  ########################### to choose County names from.
-  #############################################
-  ############################################# ANALOG WITH Global map
-  #############################################
-  #
-  # Create the map
-  #
+          })  
   
   ###################################################
   ###################################################
@@ -122,35 +113,37 @@ shinyServer(function(input, output, session) {
                                         filename <- normalizePath(file.path('./plots/', 
                                                             'Larva_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
-                                      list(src = filename, width = 600, height = 450)}, 
-                                      deleteFile = FALSE)
+                                        list(src = filename, width = 600, height = 450)}, 
+                                        deleteFile = FALSE)
 
-  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('./plots/', 
-                                                                                   'adult_emergence_rcp85.png'))
-                                                # Return a list containing the filename and alt text
-                                                list(src = filename, width = 600, height = 450)}, 
-                                                deleteFile = FALSE)
-  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/', 
+  output$adult_emergence_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path('./plots/', 
+                                                                             'adult_emergence_rcp85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 450)}, 
+                                        deleteFile = FALSE)
+  
+  output$adult_emergence_rcp45 <- renderImage({
+                                      filename <- normalizePath(file.path('./plots/', 
                                                                            'adult_emergence_rcp45.png'))
                                        # Return a list containing the filename and alt text
                                        list(src = filename, width = 600, height = 450)}, 
                                        deleteFile = FALSE)
   
   output$diapause_abs_rcp85 <- renderImage({
-    filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp85.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
+                            filename <- normalizePath(file.path('./plots/', 
+                                                                 'diapause_abs_rcp85.png'))
+                            # Return a list containing the filename and alt text
+                            list(src = filename, width = 800, height = 600)
+                            }, deleteFile = FALSE)
 
   output$abs_pop_doy <- renderImage({
-    filename <- normalizePath(file.path('./plots/Diapause', 'abs_pop_doy.png'))
+    filename <- normalizePath(file.path('./plots/Diapause', 
+                                        'abs_pop_doy.png'))
     
     # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 900)
-    
-  }, deleteFile = FALSE)
+    list(src = filename, width = 800, height = 900)}, 
+    deleteFile = FALSE)
 
   output$diapause_abs_rcp45 <- renderImage({
     filename <- normalizePath(file.path('./plots/', 'diapause_abs_rcp45.png'))
