@@ -25,8 +25,8 @@ shinyServer(function(input, output, session) {
   #############################################
 
   # Show page on click event for chill frost
-  spatial_bcf_data <- reactive({
-    spatial_bcf
+  spatial_lagoon_data <- reactive({
+    spatial_lagoon
   })
 
   #
@@ -34,17 +34,31 @@ shinyServer(function(input, output, session) {
   #
   output$lagoon_map <- renderLeaflet({
     pal <- colorBin(palette = "plasma", reverse = TRUE,
-                    domain = spatial_bcf_data()$lat, bins = 8, pretty=TRUE)
+                    domain = spatial_lagoon_data()$numerical_cluster, 
+                    bins = 8, pretty=TRUE)
     leaflet() %>%
+    
     addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
              attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
-    setView(lat = 47, lng = -120, zoom = 7) %>%
-    addCircleMarkers(data = spatial_bcf_data(), 
+    addPolygons(data = skagit, fill = FALSE, 
+                stroke = 1, color = 'black',
+                smoothFactor = 2) %>% 
+    
+    addPolygons(data = whatcom, fill = FALSE, 
+                stroke = 10, color = 'black',
+                smoothFactor = 2) %>% 
+    
+    addPolygons(data = snohomish, fill = FALSE, 
+                stroke = 10, color = 'black',
+                smoothFactor = 2) %>% 
+    
+    setView(lat = 48, lng = -122, zoom = 8) %>%
+    addCircleMarkers(data = spatial_lagoon_data(), 
                      lng = ~ long, lat = ~ lat,
                      label = ~ location,
                      layerId = ~ location,
                      radius = 4,
-                     color = ~ pal(lat),
+                     color = ~ pal(numerical_cluster),
                      stroke  = FALSE,
                      fillOpacity = .95)
   })
@@ -61,14 +75,14 @@ shinyServer(function(input, output, session) {
                                        "CM_locs/bloom_thresh_in_one",
                                        "/no_obs/apple/thresh_75/")
              toggleModal(session,
-                         modalId = "bcf_graphs", 
+                         modalId = "lagoon_graphs", 
                          toggle =  "open")
 
-             output$bcf_plot <- renderImage({
+             output$lagoon_plot <- renderImage({
                    image_name <- paste0(lat, "_-", long, "_", 
                                         gsub(" ", "_", input$em_scenario), 
                                         "_", 
-                                        input$bcf_plot_fruit_type,
+                                        input$lagoon_plot_fruit_type,
                                         ".png")
 
                    filename <- normalizePath(file.path(file_dir_string, 

@@ -30,8 +30,11 @@ shinyServer(function(input, output, session) {
                    minZoom = 4, maxZoom = 20, dragging = TRUE))  %>%
            addTiles() %>%
            setView(lng = -118.4942, lat = 46, zoom = 6) %>%
-           addPolygons( fillColor = "green", fillOpacity = 0.5,
-                       color = "black", opacity = 1.0, weight = .6, smoothFactor = 0.5,
+           addPolygons(fillColor = "green", 
+                       fillOpacity = 0.5,
+                       color = "black", 
+                       opacity = 1.0, 
+                       weight = .6, smoothFactor = 0.5,
                        highlightOptions = highlightOptions(color="white", 
                                                            weight=2, 
                                                            bringToFront = TRUE),

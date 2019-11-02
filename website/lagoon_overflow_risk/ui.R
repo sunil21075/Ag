@@ -79,7 +79,7 @@ navbarPage(title = div("",
                                   )
                               ),
                     fluidPage(bsModal(
-                                       id="bcf_graphs",
+                                       id="lagoon_graphs",
                                        trigger = NULL,
                                        title = "",
                                        size = "large",                                       
@@ -90,7 +90,7 @@ navbarPage(title = div("",
                                                                                     choices = c("RCP 8.5" = "RCP 8.5",
                                                                                                 "RCP 4.5" = "RCP 4.5"), 
                                                                                     selected = "RCP 8.5"),
-                                                                       radioButtons(inputId="bcf_plot_fruit_type", 
+                                                                       radioButtons(inputId="lagoon_plot_fruit_type", 
                                                                                     label = h4("Fruit type"), 
                                                                                     choices = list("Cripps Pink" = "Cripps_Pink", 
                                                                                                    "Gala" = "Gala", 
@@ -108,8 +108,9 @@ navbarPage(title = div("",
                                                                                                background-color: #252d38;
                                                                                                  }'
                                                                                               ))),
-                                                                     # plotOutput("bcf_plot")
-                                                                     fluidPage(fluidRow(column(2, offset = 0, plotOutput("bcf_plot", height = 550)))
+                                                                     # plotOutput("lagoon_plot")
+                                                                     fluidPage(fluidRow(column(2, offset = 0, 
+                                                                                               plotOutput("lagoon_plot", height = 550)))
                                                                               )
 
                                                                     )
