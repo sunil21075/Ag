@@ -20,7 +20,8 @@ rain <- readRDS(paste0(in_dir, "/rain_snow_fractions/annual_fracs.rds"))
 rain <- rain %>% filter(emission == "RCP 8.5") %>% data.table()
 rain <- subset(rain, select=c(location, time_period, rain_fraction))
 
-rain <- rain[, .(avg_rain_frac = mean(rain_fraction)), by = c("location", "time_period")]
+rain <- rain[, .(avg_rain_frac = mean(rain_fraction)), 
+              by = c("location", "time_period")]
 rain[,(c("avg_rain_frac")) := round(.SD, 2), .SDcols=c("avg_rain_frac")]
 
 rain_obs_map <- geo_map_of_rain_frac(rain[time_period == "1979-2016"])
@@ -30,15 +31,18 @@ rain_F2_map <- geo_map_of_rain_frac(rain[time_period == "2051-2075"])
 rain_F3_map <- geo_map_of_rain_frac(rain[time_period == "2076-2099"])
 
 obs_future <- ggarrange(plotlist = list(rain_obs_map, 
-                                        rain_F1_map, rain_F2_map, rain_F3_map),
+                                        rain_F1_map, rain_F2_map, 
+                                        rain_F3_map),
                         ncol = 4, nrow = 1, common.legend = FALSE)
 
 mod_hist_future <- ggarrange(plotlist = list(rain_hist_map, 
-                                              rain_F1_map, rain_F2_map, rain_F3_map),
+                                            rain_F1_map, rain_F2_map, 
+                                            rain_F3_map),
                              ncol = 4, nrow = 1, common.legend = FALSE)
 
 obs_mod_hist_future <- ggarrange(plotlist = list(rain_obs_map, rain_hist_map,
-                                                 rain_F1_map, rain_F2_map, rain_F3_map),
+                                                 rain_F1_map, rain_F2_map, 
+                                                 rain_F3_map),
                                  ncol = 5, nrow = 1, common.legend = FALSE)
 
 plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/rain_frac_maps/"
@@ -95,3 +99,4 @@ ggsave(filename = paste0("obs_mod_hist_future", ".png"),
        width = 20, height = 4, units = "in", 
        dpi=600, device = "png",
        path = plot_dir)
+

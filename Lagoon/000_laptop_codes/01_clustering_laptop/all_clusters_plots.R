@@ -8,25 +8,25 @@ library(dplyr)
 library(ggplot2)
 library(maps)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
 options(digit=9)
 options(digits=9)
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 # location and elevations
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
-info <- read.csv(paste0(param_dir, "loc_fip_clust_elev.csv"), as.is=T)
+param_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+info <- read.csv(paste0(param_dir, "useless_clusters/loc_fip_clust_elev.csv"), as.is=T)
 elevation_info <- subset(info, select=c(location, elevation))
 precip_info <- subset(info, select=c(location, ann_prec_mean))
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 #######################
 #######################      PRECIP. PLOT
 #######################
 ##### read file
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+in_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 file_name <- "precip_avgs.rds"
 
 observed_dt <- readRDS(paste0(in_dir, file_name)) %>% data.table()
@@ -50,12 +50,12 @@ clusters[, .(elev_range = range(elevation)), by = c("cluster")]
 
 precip_plt <- geo_map_of_clusters(clusters) +
                ggtitle("clustering by avg. annual. precip. (observed)")
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 #######################
 #######################      ELEVATION PLOT
 #######################
 ##### read file
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
+in_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
 observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
 observed <- within(observed, remove(centroid, ann_prec_mean, cluster, fips))
 
@@ -76,13 +76,14 @@ clusters[, .(elev_mean = mean(elevation)), by = c("cluster")]
 clusters[, .(elev_range = range(elevation)), by = c("cluster")]
 ######################### end of table
 
-elevation_plt <- geo_map_of_clusters(clusters) + ggtitle("clustering by elevation")
-# ---------------------------------------------------------------------------------
+elevation_plt <- geo_map_of_clusters(clusters) + 
+                 ggtitle("clustering by elevation")
+# --------------------------------------------------------------------
 #######################
 #######################      Precip-Elevation 4 clusters
 #######################
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+in_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+plot_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
 observed <- within(observed, remove(centroid, cluster, fips))
 
@@ -105,13 +106,16 @@ clusters[, .(elev_range = range(elevation)), by = c("cluster")]
 PE_4_plt <- geo_map_of_clusters(clusters) + 
             ggtitle("clustering by both precip and elevation")
 PE_4_plt
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 #######################
 #######################      Precip-Elevation 5 clusters
 #######################
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
+in_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+plot_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
+observed <- read.csv(paste0(in_dir, 
+	                        "useless_clusters/", 
+	                        "loc_fip_clust_elev.csv"), as.is=T)
+
 observed <- within(observed, remove(centroid, cluster, fips))
 
 outputs <- cluster_by_precip_elev(observed, scale=FALSE, no_clusters=5)
@@ -132,15 +136,16 @@ clusters[, .(elev_range = range(elevation)), by = c("cluster")]
 PE_5_plt <- geo_map_of_clusters(clusters) + 
             ggtitle("clustering by both precip and elevation")
 PE_5_plt
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 #######################
 #######################      arrange
 #######################
 
-all_p <- ggarrange(plotlist = list(precip_plt, elevation_plt, PE_4_plt, PE_5_plt),
+all_p <- ggarrange(plotlist = list(precip_plt, elevation_plt, 
+                                   PE_4_plt, PE_5_plt),
                    ncol = 4, nrow = 1, common.legend = FALSE)
 
-# ---------------------------------------------------------------------------------
+# --------------------------------------------------------------------
 #######################
 #######################      save
 #######################

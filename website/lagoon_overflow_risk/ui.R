@@ -63,6 +63,147 @@ navbarPage(title = div("",
            #
            ############## Home End
            #
+           ############## Regional Plots START
+           #
+           tabPanel(tags$b("Regional Plots"),
+                    navlistPanel(
+                                 ####### Subregion Groups start
+                                 tabPanel(tags$b("Subregion Map"), 
+                                          tags$div(style="width:950px", 
+                                                   includeHTML("./HTML_plots/Western_Coastal_85.html")
+                                                   )
+                                          ),
+                                 ####### Subregion Groups End
+                                 HTML("<b>RCP 8.5</b>"),
+                                 
+                                 ####### Western Coastal 85 start
+                                 tabPanel("Western Coastal",
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$div(style="width:950px", 
+                                                                            includeHTML("HTML_plots/Western_Coastal_85.html")),
+                                                                   imageOutput("Western_Coastal_Seasonal_rcp85")
+                                                                   ),
+                                                          tabPanel("Seasonal", imageOutput("Western_Coastal_Seasonal_rcp85"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Western_Coastal_Monthly_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Western Coastal 85 END
+
+                                 ####### Cascade foothills 85 start
+                                 tabPanel("Cascade foothills",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Cascade_foothills_Annual_rcp85"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Cascade_foothills_Seasonal_rcp85"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Cascade_foothills_Monthly_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Cascade foothills 85 END
+
+                                 ####### Northwest Cascades 85 start
+                                 tabPanel("Northwest Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northwest_Cascades_Annual_rcp85"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northwest_Cascades_Seasonal_rcp85"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northwest_Cascades_Monthly_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northwest Cascades 85 END
+
+                                 ####### Northcentral Cascades 85 start
+                                 tabPanel("Northcentral Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northcentral_Cascades_Annual_rcp85"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northcentral_Cascades_Seasonal_rcp85"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northcentral_Cascades_Monthly_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northcentral Cascades 85 END
+
+                                 ####### Northeast Cascades 85 start
+                                 tabPanel("Northcentral Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northeast_Cascades_Annual_rcp85"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northeast_Cascades_Seasonal_rcp85"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northeast_Cascades_Monthly_rcp85"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northeast Cascades 85 END
+                                 #######
+                                 #######
+                                 #######     RCP 4.5
+                                 #######
+                                 #######
+                                 HTML("<b>RCP 4.5</b>"),
+
+                                 
+                                 ####### Western Coastal 45 start
+                                 tabPanel("Western Coastal",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Western_Coastal_Annual_rcp45"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Western_Coastal_Seasonal_rcp45"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Western_Coastal_Monthly_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Western Coastal 45 END
+
+                                 ####### Cascade foothills 45 start
+                                 tabPanel("Cascade foothills",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Cascade_foothills_Annual_rcp45"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Cascade_foothills_Seasonal_rcp45"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Cascade_foothills_Monthly_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Cascade foothills 45 END
+
+                                 ####### Northwest Cascades 45 start
+                                 tabPanel("Northwest Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northwest_Cascades_Annual_rcp45"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northwest_Cascades_Seasonal_rcp45"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northwest_Cascades_Monthly_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northwest Cascades 45 END
+
+                                 ####### Northcentral Cascades 45 start
+                                 tabPanel("Northcentral Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northcentral_Cascades_Annual_rcp45"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northcentral_Cascades_Seasonal_rcp45"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northcentral_Cascades_Monthly_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northcentral Cascades 45 END
+
+                                 ####### Northeast Cascades 45 start
+                                 tabPanel("Northcentral Cascades",
+                                          fluidRow(tabBox(tabPanel("Annual", imageOutput("Northeast_Cascades_Annual_rcp45"), height = 700),
+                                                          tabPanel("Seasonal", imageOutput("Northeast_Cascades_Seasonal_rcp45"), height=700),
+                                                          tabPanel("Monthly", imageOutput("Northeast_Cascades_Monthly_rcp45"), height=700),
+                                                          width = 12
+                                                          )
+                                                  )
+                                          ),
+                                 ####### Northeast Cascades 45 END
+
+
+                                 widths = c(2,10)
+                                 )
+                   ),
+           #
+           ############## Regional Plots END
+           #
            #
            ############## Bloom, CP, frost Map Front Page start
            #

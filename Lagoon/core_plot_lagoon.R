@@ -317,7 +317,9 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
                                          seasonal_cum_precip, rain_fraction))
   }
 
-  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  region_levels <- c("Western coastal", "Cascade foothills", 
+                     "Northwest Cascades", "Northcentral Cascades", 
+                     "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission, season) %>% 
@@ -337,7 +339,9 @@ seasonal_fraction_clust_x <-function(data_tb,y_lab="rain fraction (%)",tgt_col="
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  categ_label <-  c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -409,7 +413,9 @@ annual_fraction <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fract
                                          annual_cum_precip, rain_fraction))
    }
 
-  region_levels <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  region_levels <-  c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -605,7 +611,9 @@ seasonal_cum_box_season_x <- function(dt, y_lab, tgt_col, ttl, subttl){
     } else if (length(unique(melted$time_period)) == 5){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
-  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+   categ_label <- c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.6
@@ -834,7 +842,9 @@ Nov_Dec_Diffs <- function(dt, y_lab, tgt_col, ttl, subttl){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  categ_label <- c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
   
@@ -935,7 +945,9 @@ ann_wtrYr_chunk_cum_box_cluster_x <- function(dt, y_lab, tgt_col, ttl, subttl){
      color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
 
-  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+   categ_label <- c("Western coastal", "Cascade foothills", 
+                    "Northwest Cascades", "Northcentral Cascades", 
+                    "Northeast Cascades")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
 
@@ -1266,7 +1278,11 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
   time_label <- sort(unique(data_tb$return_period))
   data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
   data_tb$cluster <- factor(data_tb$cluster, 
-                            levels=c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades"))
+                            levels=c("Western coastal", 
+                                     "Cascade foothills", 
+                                     "Northwest Cascades", 
+                                     "Northcentral Cascades", 
+                                     "Northeast Cascades"))
      
   if (length(time_label) == 3){
     color_ord = c("dodgerblue2", "olivedrab4", "gold")
@@ -1300,7 +1316,7 @@ storm_diff_box_25yr <- function(data_tb, tgt_col){
                axis.ticks = element_blank(), #element_line(size = .1, color = "black"),
                axis.text.y = element_text(size = ax_txt_size, 
                                           face = "bold", color = "black"),
-               axis.text.x = element_blank(), # element_text(face="bold", color = "black"), # element_blank(),
+               axis.text.x = element_blank(),
                axis.title.y = element_text(size = ax_ttl_size, 
                                            face = "bold", 
                                            margin = margin(t=0, r=2, b=0, l=0)),
@@ -1679,7 +1695,9 @@ ann_wtrYr_chunk_cumP_box_cluster_x <- function(dt, y_lab, tgt_col){
 
   melted <- melt(dt, id = c("location", "year", "time_period", "emission", "cluster"))
   
-  categ_label <- c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  categ_label <-  c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
   time_label <- c("1979-2016", "2026-2050", "2051-2075", "2076-2099")
   melted$cluster <- factor(melted$cluster, levels=categ_label)
   melted$time_period <- factor(melted$time_period, levels=time_label)
@@ -1931,7 +1949,7 @@ geo_map_of_clusters <- function(obs_w_clusters){
                                fill = NA, colour = "black", size=0.0000001) + 
                   geom_point(aes_string(x = "long", y = "lat", color="cluster"), 
                             alpha = 1, size=2.5) + 
-                  scale_color_manual(values = color_ord, name = "Precip.\n") + 
+                  scale_color_manual(values = color_ord, name = "Precip.") + 
                   the_theme +
                   # size of dot inside the legend
                   guides(colour = guide_legend(override.aes = list(size=3))) + 
@@ -1980,7 +1998,9 @@ satellite_map_of_clusters <- function(obs_w_clusters){
 
   # "grey47",
   color_ord = c("blue4", "dodgerblue2", "purple", "red") 
-  categ_lab = c("Western coastal", "Cascade foothills", "Northwest Cascades", "Northcentral Cascades", "Northeast Cascades")
+  categ_lab =  c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
 
   the_theme <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                      panel.border = element_rect(fill=NA, size=.3),

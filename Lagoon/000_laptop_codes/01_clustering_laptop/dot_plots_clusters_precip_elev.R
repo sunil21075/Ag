@@ -8,8 +8,8 @@ library(dplyr)
 library(ggplot2)
 library(maps)
 
-source_path_1 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_lagoon.R"
-source_path_2 = "/Users/hn/Documents/GitHub/Kirti/Lagoon/core_plot_lagoon.R"
+source_path_1 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_lagoon.R"
+source_path_2 = "/Users/hn/Documents/GitHub/Ag/Lagoon/core_plot_lagoon.R"
 source(source_path_1)
 source(source_path_2)
 
@@ -21,12 +21,17 @@ options(digits=9)
 #      4 clusters based on (precip, elevation)
 #
 
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
-observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
+in_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+plot_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
+observed <- read.csv(paste0(in_dir, 
+                            "useless_clusters/", 
+                            "loc_fip_clust_elev.csv"), 
+                    as.is=T)
 observed <- within(observed, remove(centroid, cluster, fips))
 
-outputs <- cluster_by_precip_elev(observed_dt = observed, scale=FALSE, no_clusters=4)
+outputs <- cluster_by_precip_elev(observed_dt = observed, 
+                                  scale=FALSE, 
+                                  no_clusters=4)
 clusters <- outputs[[1]]
 cluster_obj <- outputs[[2]]
 clusters$cluster <- factor(clusters$cluster)
@@ -43,12 +48,14 @@ four_clusters <- ggplot(clusters, aes(x=elevation, y=ann_prec_mean, color=cluste
 #      5 clusters based on (precip, elevation)
 #
 
-in_dir <- "/Users/hn/Documents/GitHub/Kirti/Lagoon/parameters/"
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+in_dir <- "/Users/hn/Documents/GitHub/Ag/Lagoon/parameters/"
+plot_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 observed <- read.csv(paste0(in_dir, "loc_fip_clust_elev.csv"), as.is=T)
 observed <- within(observed, remove(centroid, cluster, fips))
 
-outputs <- cluster_by_precip_elev(observed, scale=FALSE, no_clusters=5)
+outputs <- cluster_by_precip_elev(observed, 
+                                  scale=FALSE, 
+                                  no_clusters=5)
 clusters <- outputs[[1]]
 cluster_obj <- outputs[[2]]
 clusters$cluster <- factor(clusters$cluster)
@@ -71,7 +78,7 @@ all_p <- ggarrange(plotlist = list(four_clusters, five_clusters),
 #######################
 #######################      save
 #######################
-plot_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/lagoon/"
+plot_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 
 ggsave(filename = "cluster_visualization.png", 
        plot = all_p, device = "png",

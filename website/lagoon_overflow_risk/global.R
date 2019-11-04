@@ -21,7 +21,9 @@ library(RColorBrewer)
 # library(plotly)
 # library(Hmisc)
 
-data_dir = "/data/hnoorazar/codling_moth/"
+data_dir <- "/data/hnoorazar/codling_moth/"
+map_dir <- "/data/hnoorazar/lagoon/map_files/"
+plot_dir <- "/data/hnoorazar/lagoon/plots/"
 
 ######################################
 ###################################### clear above
@@ -32,7 +34,6 @@ data_dir = "/data/hnoorazar/codling_moth/"
 
 #########################################################
 # read county shapefile
-map_dir <- "/data/hnoorazar/lagoon/map_files/"
 shapefile_dir <- paste0(map_dir, "shape_files/tl_2017_us_county/")
 shapefile_dir <- paste0(map_dir, "shape_files/tl_2017_us_county_simple/")
 
@@ -62,13 +63,5 @@ st_cnty_names <- read.csv(paste0(map_dir,
                  data.table()
 
 #####################################################################
-cluster_labels <- c("Western coastal", "Cascade foothills",
-                    "Northwest Cascades", "Northcentral Cascades",
-                    "Northeast Cascades")
-
-spatial_lagoon$cluster <- factor(spatial_lagoon$cluster, 
-                                 levels = cluster_labels,
-                                 order=TRUE)
-
 
 
