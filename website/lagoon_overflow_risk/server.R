@@ -123,7 +123,7 @@ shinyServer(function(input, output, session) {
                                                                             '/storm/',
                                                                             'Western_coastal_85.png'))
                                         # Return a list containing the filename and alt text
-                                        list(src = filename, width = 600, height = 400)}, 
+                                        list(src = filename, width = 600, height = 350)}, 
                                         deleteFile = FALSE)
   
 

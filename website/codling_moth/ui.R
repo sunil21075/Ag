@@ -377,23 +377,26 @@ navbarPage(title = div("",
                                  # tabPanel("Subregions Map", imageOutput("location_group")
                                  # # tabPanel("Summary", verbatimTextOutput("location_summary"))
                                  #  ),
-                                 tabPanel("Subregions Map", imageOutput("location_group"),
-                                          hr(),
-                                          fluidRow(column(width=2, textOutput(paste0("We use statistical methods ", 
-                                                                                    "to group the regions into two", 
-                                                                                    " areas based on average historical", 
-                                                                                    " growing degree day accumulation.",
-                                                                                    " The warmer areas have an avg.", 
-                                                                                    " annual historical GDD of XX ", 
-                                                                                    "degree day F (provide a range) ", 
-                                                                                    "and the cooler areas have a ", 
-                                                                                    "historical GDD of YY degree ", 
-                                                                                    "days F (provide a range)."))))),
-                                 tabPanel(tags$b("Subregion Map HTML"), 
-                                          tags$div(style="width:950px", 
-                                                   includeHTML("HTML_plots/subregion_groups.html")
-                                                   )
+                                 tabPanel("Subregions Map", 
+                                          tags$b("Sites are divided into two subregions:"),
+                                          br(),br(),
+                                          imageOutput("location_group"),
+                                          br(),
+                                          tags$h3("We use statistical methods ", 
+                                                          "to group the regions into two", 
+                                                          " areas based on average historical", 
+                                                          " growing degree day accumulation.",
+                                                          " The warmer areas have an avg.", 
+                                                          " annual historical GDD of XX ", 
+                                                          "degree day F (provide a range) ", 
+                                                          "and the cooler areas have a ", 
+                                                          "historical GDD of YY degree ", 
+                                                          "days F (provide a range).")
                                           ),
+                                 # tabPanel(tags$b("Subregion Map HTML"), 
+                                 #          tags$div(style="width:950px", 
+                                 #                   includeHTML("HTML_plots/subregion_groups.html")
+                                 #                   )),
 
                                  # tabsetPanel(
                                  #             tabPanel("Subregions Map", imageOutput("location_group")),

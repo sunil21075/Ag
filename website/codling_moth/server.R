@@ -105,7 +105,8 @@ shinyServer(function(input, output, session) {
   ###################################################
   output$location_group <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'location-group.png'))
                                         # Return a list containing the filename and alt text
-                                        list(src = filename, width = 600, height = 600)}, 
+                                        list(src = filename, 
+                                             width = 400, height = 400)}, 
                                         deleteFile = FALSE)
   output$location_summary= renderText({
     "some text heresome text heresome text heresome text heresome text here"
