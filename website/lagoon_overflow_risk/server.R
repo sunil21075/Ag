@@ -101,6 +101,23 @@ shinyServer(function(input, output, session) {
   ###################################################
   ###################################################
   ###################################################
+  output$location_group <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/maps/',
+                                                                            'clust_map_4_web.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 400, height = 300)}, 
+                                        deleteFile = FALSE)
+
+  output$cluster_visualization <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/maps/',
+                                                                            'cluster_visualization_5.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 300, height = 550)}, 
+                                        deleteFile = FALSE)
+
   
   output$Western_Coastal_Annual_rain_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 

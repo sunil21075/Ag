@@ -67,11 +67,24 @@ navbarPage(title = div("",
            #
            tabPanel(tags$b("Regional Plots"),
                     navlistPanel(
-                                 ####### Subregion Groups start
-                                 tabPanel(tags$b("Subregion Map"), 
-                                          tags$div(style="width:950px", 
-                                                   includeHTML("./HTML_plots/Western_Coastal_85.html")
-                                                   )
+                                 ###### Subregion Groups start
+                                 # tabPanel(tags$b("Subregion Map"),
+                                 #          tags$div(style="width:950px", 
+                                 #                   includeHTML("./HTML_plots/subregion_groups.html")
+                                 #                   )
+                                 #          ),
+
+                                 tabPanel(tags$b("Subregion Map"),
+                                          tags$h4(paste0("We have clustered the grids ", 
+                                                         "into 5 subregions based on ", 
+                                                         "elevation and average annual ", 
+                                                         "precipitation.")),
+                                          imageOutput("location_group"),
+                                          tags$h4(paste0("The variables", 
+                                                         " distribution is given below ", 
+                                                         "and they correspond to ", 
+                                                         "historical data:")),
+                                          imageOutput("cluster_visualization")
                                           ),
                                  ####### Subregion Groups End
                                  HTML("<b>RCP 8.5</b>"),
@@ -80,14 +93,12 @@ navbarPage(title = div("",
                                  tabPanel("Western Coastal",
                                           fluidRow(tabBox(tabPanel("Annual", 
                                                                    # tags$div(style="width:950px", includeHTML("HTML_plots/Western_Coastal_85.html")),
-                                                                   tags$blockquote("Below we see annual precipitation ranges.", 
-                                                                                   cite = "Hadley Wickham"),
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
 
                                                                    imageOutput("Western_Coastal_Annual_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
                                                                    br(),br(), br(),br(),br(), br(),
-                                                                   tags$blockquote("Below we see annual runoff ranges.", 
-                                                                                   cite = "Western Coastal"),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
                                                                    imageOutput("Western_Coastal_Annual_runoff_rcp85"),
                                                                    br(),br(),
                                                                    tags$blockquote("and finally 25-year/24-hour design storm intensity"),
