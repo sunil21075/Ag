@@ -79,9 +79,20 @@ navbarPage(title = div("",
                                  ####### Western Coastal 85 start
                                  tabPanel("Western Coastal",
                                           fluidRow(tabBox(tabPanel("Annual", 
-                                                                   tags$div(style="width:950px", 
-                                                                            includeHTML("HTML_plots/Western_Coastal_85.html")),
-                                                                   imageOutput("Western_Coastal_Seasonal_rcp85")
+                                                                   # tags$div(style="width:950px", includeHTML("HTML_plots/Western_Coastal_85.html")),
+                                                                   tags$blockquote("Below we see annual precipitation ranges.", 
+                                                                                   cite = "Hadley Wickham"),
+
+                                                                   imageOutput("Western_Coastal_Annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges.", 
+                                                                                   cite = "Western Coastal"),
+                                                                   imageOutput("Western_Coastal_Annual_runoff_rcp85"),
+                                                                   br(),br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity", 
+                                                                                   cite = "Western Coastal"),
+                                                                   imageOutput("Western_Coastal_dsi_rcp85")
                                                                    ),
                                                           tabPanel("Seasonal", imageOutput("Western_Coastal_Seasonal_rcp85"), height=700),
                                                           tabPanel("Monthly", imageOutput("Western_Coastal_Monthly_rcp85"), height=700),

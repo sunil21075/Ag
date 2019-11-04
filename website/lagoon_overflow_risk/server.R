@@ -102,12 +102,28 @@ shinyServer(function(input, output, session) {
   ###################################################
   ###################################################
   
-  output$Western_Coastal_Annual_rcp85 <- renderImage({
+  output$Western_Coastal_Annual_rain_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/precip/wtr_yr/',
                                                                             'wtr_yr_rain_85.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_Coastal_Annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_Coastal_dsi_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
                                         deleteFile = FALSE)
   
 
