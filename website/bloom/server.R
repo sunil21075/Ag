@@ -204,111 +204,111 @@ shinyServer(function(input, output, session) {
         deleteFile = FALSE)
   #############
 
-  output$map_bloom_doy <- renderLeaflet({
-    # c("Historical", "2040's", "2060's", "2080's")
-    layerlist = levels(bloom$ClimateGroup)  # diap$ClimateGroup
+  # output$map_bloom_doy <- renderLeaflet({
+  #   # c("Historical", "2040's", "2060's", "2080's")
+  #   layerlist = levels(bloom$ClimateGroup)  # diap$ClimateGroup
 
-    if(input$cg_bloom == "Historical") {
-      climate_group = input$cg_bloom
-      future_version = "rcp85"
-     }
-     else {
-      temp = tstrsplit(input$cg_bloom, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
+  #   if(input$cg_bloom == "Historical") {
+  #     climate_group = input$cg_bloom
+  #     future_version = "rcp85"
+  #    }
+  #    else {
+  #     temp = tstrsplit(input$cg_bloom, "_")
+  #     climate_group = unlist(temp[1])
+  #     future_version = unlist(temp[2])
+  #   }
 
-    if(future_version == "rcp45") {
-     bloom_d = bloom_rcp45
-     }
-     else {
-     bloom_d = bloom
-    }
+  #   if(future_version == "rcp45") {
+  #    bloom_d = bloom_rcp45
+  #    }
+  #    else {
+  #    bloom_d = bloom
+  #   }
 
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
     
-    medBloom = list(hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+  #   medBloom = list(hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                   `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                   `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                   `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
     
-    BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", 
-                             legendVals = seq(85, 165), "Median Day of Year")
-    BloomMap
-  })
+  #   BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", 
+  #                            legendVals = seq(85, 165), "Median Day of Year")
+  #   BloomMap
+  # })
   ##########################################################
-  output$map_bloom_doy_100 <- renderLeaflet({
-    layerlist = levels(bloom$ClimateGroup) #diap$ClimateGroup
+  # output$map_bloom_doy_100 <- renderLeaflet({
+  #   layerlist = levels(bloom$ClimateGroup) #diap$ClimateGroup
 
-    if(input$cg_bloom_100 == "Historical") {
-         climate_group = input$cg_bloom_100
-         future_version = "rcp85"
-          } else {
-         temp = tstrsplit(input$cg_bloom_100, "_")
-         climate_group = unlist(temp[1])
-         future_version = unlist(temp[2])
-    }
+  #   if(input$cg_bloom_100 == "Historical") {
+  #        climate_group = input$cg_bloom_100
+  #        future_version = "rcp85"
+  #         } else {
+  #        temp = tstrsplit(input$cg_bloom_100, "_")
+  #        climate_group = unlist(temp[1])
+  #        future_version = unlist(temp[2])
+  #   }
 
-    if(future_version == "rcp45") {
-         bloom_d = bloom_rcp45_100
-          } else { 
-         bloom_d = bloom_rcp85_100
-    }
+  #   if(future_version == "rcp45") {
+  #        bloom_d = bloom_rcp45_100
+  #         } else { 
+  #        bloom_d = bloom_rcp85_100
+  #   }
 
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
-                       ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
+  #                      ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
     
-    medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+  #   medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
     
-    BloomMap <- constructMap(medBloom, layerlist, 
-                             palColumn = "medDoY", 
-                             legendVals = seq(85,165), 
-                             "Median Day of Year")
-    BloomMap
-  })
+  #   BloomMap <- constructMap(medBloom, layerlist, 
+  #                            palColumn = "medDoY", 
+  #                            legendVals = seq(85,165), 
+  #                            "Median Day of Year")
+  #   BloomMap
+  # })
   ##########################################################
-  output$map_bloom_doy_95 <- renderLeaflet({
-  layerlist = levels(bloom$ClimateGroup) # diap$ClimateGroup
+  # output$map_bloom_doy_95 <- renderLeaflet({
+  #   layerlist = levels(bloom$ClimateGroup) # diap$ClimateGroup
 
-  if(input$cg_bloom_95 == "Historical") {
-    climate_group = input$cg_bloom_95
-    future_version = "rcp85"
-    } else {
-    temp = tstrsplit(input$cg_bloom_95, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
-  }
+  #   if(input$cg_bloom_95 == "Historical") {
+  #     climate_group = input$cg_bloom_95
+  #     future_version = "rcp85"
+  #     } else {
+  #     temp = tstrsplit(input$cg_bloom_95, "_")
+  #     climate_group = unlist(temp[1])
+  #     future_version = unlist(temp[2])
+  #   }
 
-  if(future_version == "rcp45") {
-    bloom_d = bloom_rcp45_95
-    } else { 
-    bloom_d = bloom_rcp85_95
-  }
+  #   if(future_version == "rcp45") {
+  #     bloom_d = bloom_rcp45_95
+  #     } else { 
+  #     bloom_d = bloom_rcp85_95
+  #   }
 
-  sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
-                     ClimateGroup == climate_group)
-  sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
-  
-  medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                   `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                   `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                   `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
-  
-  BloomMap <- constructMap(medBloom, 
-                          layerlist, 
-                          palColumn = "medDoY", 
-                          legendVals = seq(85,165), 
-                          "Median Day of Year")
-  BloomMap
-  })
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
+  #                      ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+    
+  #   medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+    
+  #   BloomMap <- constructMap(medBloom, 
+  #                           layerlist, 
+  #                           palColumn = "medDoY", 
+  #                           legendVals = seq(85,165), 
+  #                           "Median Day of Year")
+  #   BloomMap
+  # })
 
   output$map_bloom_doy_50 <- renderLeaflet({
-    layerlist = levels(bloom$ClimateGroup) # diap$ClimateGroup
+    layerlist = levels(bloom_rcp45_50$ClimateGroup) # diap$ClimateGroup
 
     if(input$cg_bloom_50 == "Historical") {
       climate_group = input$cg_bloom_50
@@ -324,9 +324,14 @@ shinyServer(function(input, output, session) {
       } else { 
      bloom_d = bloom_rcp85_50
     }
-
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+    print (bloom_d$ClimateGroup)
+    print (climate_group)
+    sub_bloom = subset(bloom_d, 
+                       apple_type == input$apple_type & 
+                       ClimateGroup == climate_group)
+    
+    sub_bloom$location = paste0(sub_bloom$latitude, "_", 
+                                sub_bloom$longitude)
     
     medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
                      `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
@@ -344,17 +349,17 @@ shinyServer(function(input, output, session) {
   #######################################################
   #######################################################
   output$map_bloom_diff <- renderLeaflet({
-    #diffType = as.integer(input$emerg_diff_type)
+    # diffType = as.integer(input$emerg_diff_type)
     
     temp = tstrsplit(input$cg_bloom_diff, "_")
     climate_group = unlist(temp[1])
     future_version = unlist(temp[2])
 
     if(future_version == "rcp45") {
-        data = bloom_rcp45
+        data = bloom_rcp45_50
         }
        else {
-        data = bloom
+        data = bloom_rcp85_50
     }
 
     layerdiff = c("2040's - Historical", 
@@ -369,19 +374,10 @@ shinyServer(function(input, output, session) {
                        select = c(ClimateGroup, location, medDoY))
     
     cgBloom = list(subset(sub_Bloom, ClimateGroup == layerlist[1]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[2]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[3]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[4]))
+                   subset(sub_Bloom, ClimateGroup == layerlist[2]),
+                   subset(sub_Bloom, ClimateGroup == layerlist[3]),
+                   subset(sub_Bloom, ClimateGroup == layerlist[4]))
     
-    #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
-    
-    
-    #for(i in 1:length(diffEmerg)) {
-    #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
-    #}
-    #diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
     if(layerdiff[1] == climate_group) {
       diffBloom = list(merge(cgBloom[[2]], cgBloom[[1]], by = c("location")))
     }
@@ -496,7 +492,7 @@ shinyServer(function(input, output, session) {
                               lat = mapLayerData[[i]]$latitude, 
                               lng = mapLayerData[[i]]$longitude,
                               stroke = FALSE,
-                              radius = 7,
+                              radius = 5,
                               fillOpacity = 0.9,
                               color = ~pal(mapLayerData[[i]][, get(palColumn)]),
                               popup=paste0("<b>", title, ": </b>", 
@@ -508,18 +504,21 @@ shinyServer(function(input, output, session) {
     }
     
     if(title == "Median Day of Year") {
-      map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
-                       title = title,
-                       labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
-                       opacity = 0.7) 
+      map = addLegend(map, "bottomleft", 
+                      pal = pal, 
+                      values = legendVals,
+                      title = title,
+                      labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
+                      opacity = 0.7) 
     }
     else {
-       map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
+       map = addLegend(map, "bottomleft", 
+                       pal = pal, 
+                       values = legendVals,
                        title = title,
                        labFormat = myLabelFormat(prefix = " "),
                        opacity = 0.7)
     }
-
     map
   }
 

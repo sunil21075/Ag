@@ -25,19 +25,20 @@ data_dir = "/data/hnoorazar/codling_moth/"
 # bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
 # bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_data_rcp45.rds")))
 
-bloom <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
-bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
+# bloom <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
+# bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
 
-print (colnames(bloom_rcp45))
-##########################
-bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_100_new.rds")))
-bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_100_new.rds")))
+# print (colnames(bloom_rcp45))
+# ##########################
+# bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_100_new.rds")))
+# bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_100_new.rds")))
 
-bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_95_new.rds")))
-bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_95_new.rds")))
+# bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_95_new.rds")))
+# bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_95_new.rds")))
 
 bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
 bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
+print (bloom_rcp45_50$ClimateGroup)
 
 ######################################
 ###################################### clear above
@@ -83,27 +84,9 @@ st_cnty_names <- read.csv(paste0(analog_param_dir,
                           header=T,
                           as.is=T) %>% 
                  data.table()
-#############################################
-#
-# Analog Plot Menu variables on pop-up page
-#
-#############################################
-detail_levels <- c("All Models Analogs" = "all_models", 
-                   "More Details" = "more_details")
 
 emissions <- c("RCP 8.5" = "rcp85",
                "RCP 4.5" = "rcp45")
-
-climate_models <- c("BNU-ESM" = "BNU_ESM", 
-                    "CanESM2" = "CanESM2",
-                    "GFDL-ESM2G" = "GFDL_ESM2G",
-                    "CNRM-CM5"= "CNRM_CM5",
-                    "bcc-csm1-1-m" = "bcc_csm1_1_m",
-                    "GFDL-ESM2M" = "GFDL_ESM2M")
-
-time_periods <- c("2026-2050" = "F1",
-                  "2051-2075" = "F2",
-                  "2076-2095" = "F3")
 
 ######################################################
 
