@@ -332,15 +332,16 @@ shinyServer(function(input, output, session) {
     
     sub_bloom$location = paste0(sub_bloom$latitude, "_", 
                                 sub_bloom$longitude)
-    
+    sub_bloom <- na.omit(sub_bloom)
     medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
                      `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
                      `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
                      `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
-    
-    BloomMap <- constructMap(medBloom, layerlist, 
+
+    BloomMap <- constructMap(medBloom, 
+                             layerlist, 
                              palColumn = "medDoY", 
-                             legendVals = seq(85,165), 
+                             legendVals = seq(50,140), #seq(min(sub_bloom$medDoY), max(sub_bloom$medDoY)), # seq(50,165), 
                              "Median Day of Year")
     BloomMap
   })
@@ -368,10 +369,17 @@ shinyServer(function(input, output, session) {
 
     layerlist = levels(data$ClimateGroup)
     data$location = paste0(data$latitude, "_", data$longitude)
+
+    data <- na.omit(data)
+    sub_Bloom <- data %>% 
+                 filter(apple_type == input$apple_type_diff) %>%
+                 data.table()
+    sub_Bloom <- subset(sub_Bloom, 
+                        select = c(ClimateGroup, location, medDoY))
     
-    sub_Bloom = subset(data, !is.na(ClimateGroup) & 
-                       apple_type == input$apple_type_diff, 
-                       select = c(ClimateGroup, location, medDoY))
+    # sub_Bloom <- subset(data, !is.na(ClimateGroup) & 
+    #                          apple_type == input$apple_type_diff, 
+    #                    select = c(ClimateGroup, location, medDoY))
     
     cgBloom = list(subset(sub_Bloom, ClimateGroup == layerlist[1]),
                    subset(sub_Bloom, ClimateGroup == layerlist[2]),
@@ -393,7 +401,7 @@ shinyServer(function(input, output, session) {
     BloomDiffMap <- constructMap(diffBloom, 
                                  layerdiff, 
                                  palColumn = "diff", 
-                                 legendVals = seq(5,45), 
+                                 legendVals = seq(min(diffDomain), max(diffDomain)), # seq(8,48), 
                                  HTML("Median calendar day <br />difference from historical"), 
                                  RdBu_reverse)
     BloomDiffMap
@@ -458,6 +466,7 @@ shinyServer(function(input, output, session) {
   #     Functions
   #
   ####################################################################
+
   constructMap <- function(mapLayerData, layerlist, palColumn, 
                            legendVals, title, gradient = "RdBu") {
     pal <- colorNumeric(
