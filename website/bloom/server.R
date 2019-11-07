@@ -88,120 +88,20 @@ shinyServer(function(input, output, session) {
   #
   # Create the map
   #
-  output$analog_front_page <- renderLeaflet({
-    map <- counties %>%
-           leaflet(options = leafletOptions(zoomControl = TRUE,
-                   minZoom = 4, maxZoom = 20, dragging = TRUE))  %>%
-           addTiles() %>%
-           setView(lng = -118.4942, lat = 46, zoom = 6) %>%
-           addPolygons( fillColor = "green", fillOpacity = 0.5,
-                       color = "black", opacity = 1.0, weight = .6, smoothFactor = 0.5,
-                       highlightOptions = highlightOptions(color="white", 
-                                                           weight=2, 
-                                                           bringToFront = TRUE),
-                       label= ~ NAME) %>%
-           addPolylines(data = states, color = "black", opacity = 1, weight = 1.5)
-  })
-  
-  ###################################################
-  ###################################################
-  ###################################################
-  output$location_group <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                            'location-group.png'))
-                                        # Return a list containing the filename and alt text
-                                        list(src = filename, width = 600, height = 600)}, 
-                                        deleteFile = FALSE)
-  
-  output$Adult_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                      'Adult_Gen_Aug_rcp85.png'))
-                                  # Return a list containing the filename and alt text
-                                  list(src = filename, width = 600, height = 450)}, 
-                                  deleteFile = FALSE)
-  
-  output$Larva_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                      'Larva_Gen_Aug_rcp85.png'))
-                                  # Return a list containing the filename and alt text
-                                  list(src = filename, width = 600, height = 450)}, 
-                                  deleteFile = FALSE)
-  
-  output$Adult_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                 'Adult_Gen_Aug_rcp45.png'))
-                                        # Return a list containing the filename and alt text
-                                        list(src = filename, width = 600, height = 450)}, 
-                                        deleteFile = FALSE)
-  
-  output$Larva_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                            'Larva_Gen_Aug_rcp45.png'))
-                                        # Return a list containing the filename and alt text
-                                      list(src = filename, width = 600, height = 450)}, 
-                                      deleteFile = FALSE)
-
-  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                                   'adult_emergence_rcp85.png'))
-                                                # Return a list containing the filename and alt text
-                                                list(src = filename, width = 600, height = 450)}, 
-                                                deleteFile = FALSE)
-  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                                                           'adult_emergence_rcp45.png'))
-                                       # Return a list containing the filename and alt text
-                                       list(src = filename, width = 600, height = 450)}, 
-                                       deleteFile = FALSE)
-  
-  output$diapause_abs_rcp85 <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                        'diapause_abs_rcp85.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
-
-  output$diapause_abs_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                        'diapause_abs_rcp45.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 600)
-    
-  }, deleteFile = FALSE)
-
-  output$cumdd <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                        'cumdd_rcp85.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 450)
-    
-  }, deleteFile = FALSE)
-
-  output$cum_larva_pop <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                        'eggHatch_rcp85.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 450)
-    
-  }, deleteFile = FALSE)
-
-  output$cumdd_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                         'cumdd_rcp45.png'))
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 600, height = 450)
-    
-  }, deleteFile = FALSE)
-
-  output$cum_larva_pop_rcp45 <- renderImage({
-         filename <- normalizePath(file.path('/data/hnoorazar/bloom/plots/regional_plots/', 
-                                              'eggHatch_rcp45.png'))
-         # Return a list containing the filename and alt text
-         list(src = filename, width = 600, height = 450)
-         }, 
-        deleteFile = FALSE)
+  # output$analog_front_page <- renderLeaflet({
+  #   map <- counties %>%
+  #          leaflet(options = leafletOptions(zoomControl = TRUE,
+  #                  minZoom = 4, maxZoom = 20, dragging = TRUE))  %>%
+  #          addTiles() %>%
+  #          setView(lng = -118.4942, lat = 46, zoom = 6) %>%
+  #          addPolygons( fillColor = "green", fillOpacity = 0.5,
+  #                      color = "black", opacity = 1.0, weight = .6, smoothFactor = 0.5,
+  #                      highlightOptions = highlightOptions(color="white", 
+  #                                                          weight=2, 
+  #                                                          bringToFront = TRUE),
+  #                      label= ~ NAME) %>%
+  #          addPolylines(data = states, color = "black", opacity = 1, weight = 1.5)
+  # })
   #############
 
   # output$map_bloom_doy <- renderLeaflet({

@@ -6,6 +6,8 @@
 # Chill_season != "chill_2055-2056") %>% 
 # group_by(Chill_season) %>%
 
+# strsplit a column into two columns
+A[, c("date", "time") := tstrsplit(PriorityDate, " ", fixed=TRUE)]
 
 Extract row corresponding to minimum value of a variable by group
 

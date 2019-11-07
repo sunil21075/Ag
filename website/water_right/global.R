@@ -78,15 +78,15 @@ spatial_bcf <- readRDS(paste0(spatial_bcf_dir, "cm_spatial_bcf.rds")) %>%
 ################################################################################
 
 
-# analog_param_dir <- "/data/hnoorazar/bloom/params/"
-# st_cnty_names <- read.csv(paste0(analog_param_dir, 
-#                                  "17_counties_fips_unique.csv"),
-#                           header=T,
-#                           as.is=T) %>% 
-#                  data.table()
+analog_param_dir <- "/data/hnoorazar/bloom/params/"
+st_cnty_names <- read.csv(paste0(analog_param_dir, 
+                                 "17_counties_fips_unique.csv"),
+                          header=T,
+                          as.is=T) %>% 
+                 data.table()
 
-# emissions <- c("RCP 8.5" = "rcp85",
-#                "RCP 4.5" = "rcp45")
+emissions <- c("RCP 8.5" = "rcp85",
+               "RCP 4.5" = "rcp45")
 
 ######################################################
 
