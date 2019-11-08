@@ -92,14 +92,21 @@ addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
 ###########
 mins_file_dir <- paste0(data_dir, "wsda2018shp/")
 mins_file <- readOGR(paste0(mins_file_dir, "/WSDACro_2018.shp"),
-                  layer = "WSDACro_2018", 
-                  GDAL1_integer64_policy = TRUE)
+                     layer = "WSDACro_2018", 
+                     GDAL1_integer64_policy = TRUE)
 
 mins_file_double_crop <- subset(mins_file, 
                                 RotationCr != " ")
 
 mins_file_double_crop <- mins_file_double_crop[grepl('double', 
                                                mins_file_double_crop$Notes), ]
+
+writeOGR(obj=mins_file_double_crop, 
+         dsn = paste0("/Users/hn/Desktop/Desktop/", 
+                      "Ag/check_point/pre_microsoft_meeting/", 
+                      "filtered_shape_files/not_simple/Min_double_crops/"), 
+         layer="Min_DoubleCrop", 
+         driver="ESRI Shapefile")
 
 ###### simplify to reduce the size for faster reading
 simple_Min_double_crop <- rmapshaper::ms_simplify(mins_file_double_crop)

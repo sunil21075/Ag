@@ -111,7 +111,19 @@ double_crops_centroids <- rgeos::gCentroid(WSDACrop2018_doublecrop,
 
 some_crops_centroids <- rgeos::gCentroid(WSDACrop2018_some_crops, 
                                          byid=TRUE)
+####
+#### Convert to Lat Long
+####
 
+crs <- CRS("+proj=lcc 
+           +lat_1=45.83333333333334 
+           +lat_2=47.33333333333334 
+           +lat_0=45.33333333333334 
+           +lon_0=-120.5 +datum=WGS84")
+
+centroid_coord <- spTransform(double_crops_centroids, 
+                              CRS("+proj=longlat +datum=WGS84"))
+#######################################################################
 double_crops_centroids_coord <- data.table(double_crops_centroids@coords)
 some_crops_centroids_coord <- data.table(some_crops_centroids@coords)
 
