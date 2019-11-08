@@ -1,3 +1,4 @@
+# Per_MS Meeting
 
 library(shiny)
 library(leaflet)
@@ -7,50 +8,47 @@ shinyServer(function(input, output, session) {
 
   observe({
        if (input$color == "Esri.WorldStreetMap"){
-        output$mymap = renderLeaflet({ 
-                        leaflet() %>%
-                                         # Esri.WorldStreetMap or OpenTopoMap
-                        addProviderTiles(providers$Esri.WorldStreetMap, 
-                                        options= providerTileOptions(opacity = 0.99))%>%
-                        setView(lat = 46.5, lng = -119, zoom = 9) %>%
-                        addPolygons(data = Min_sp,
-                                    stroke = TRUE, 
-                                    fillOpacity = 0.5, 
-                                   smoothFactor = 0.5)
+         output$mymap = renderLeaflet({ 
+                                   leaflet() %>%
+                                   # Esri.WorldStreetMap or OpenTopoMap
+                                   addProviderTiles(providers$Esri.WorldStreetMap, 
+                                                    options= providerTileOptions(opacity = 0.8))%>%
+                                   setView(lat = 46.5, lng = -119, zoom = 7) %>%
+                                   addPolygons(data = Min_sp,
+                                               stroke = TRUE, 
+                                               fillOpacity = 0.1, 
+                                               smoothFactor = 0.9)
 
-                        })
+                                    })
             } else if (input$color == "OpenTopoMap"){
              output$mymap = renderLeaflet({ 
                             leaflet() %>%
                                              # Esri.WorldStreetMap or OpenTopoMap
                             addProviderTiles(providers$OpenTopoMap,
-                                            options= providerTileOptions(opacity = 0.99))%>%
-                            setView(lat = 46.5, lng = -119, zoom = 9) %>%
+                                            options= providerTileOptions(opacity = 0.8))%>%
+                            setView(lat = 46.5, lng = -119, zoom = 7) %>%
                             addPolygons(data = Min_sp,
                                         stroke = TRUE, 
-                                        fillOpacity = 0.5, 
-                                       smoothFactor = 0.5)
-
+                                        fillOpacity = 0.1, 
+                                       smoothFactor = 0.9)
                             })
 
+            } else if (input$color == "Sattelite"){
+               output$mymap = renderLeaflet({ 
+                                      leaflet() %>%
+                                      
+                                      addTiles(urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                                               attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>',
+                                               layerId = "Satellite",
+                                               options= providerTileOptions(opacity = 0.8)) %>%
+                                      setView(lat = 46.5, lng = -119, zoom = 7) %>%
+                                      addPolygons(data = Min_sp,
+                                                  stroke = TRUE, 
+                                                  fillOpacity = 0.1, 
+                                                 smoothFactor = 0.9)
+                            })
        }
   })
-
-  
-
-
-  # output$mymap_1 <- renderLeaflet({
-  #    counties %>%
-  #    leaflet(options = leafletOptions(zoomControl = TRUE,
-  #            minZoom = 4, maxZoom = 20, dragging = TRUE))  %>%
-  #    addTiles() %>%
-  #    setView(lat = 46, lng = -119, zoom = 6) %>%
-  #     addPolygons(data = Min_sp,
-  #                  stroke = TRUE, 
-  #                  fillOpacity = 0.5, 
-  #                  smoothFactor = 0.5) %>%
-  #    addPolylines(data = states, color = "black", opacity = 1, weight = 1.5)
-  # })
            
 })
 

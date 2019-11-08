@@ -1,7 +1,7 @@
-# Bloom - Vince
+# Per_MS Meeting
+
 library(scales)
 library(lattice)
-# library(ggmap)
 library(jsonlite)
 library(raster)
 
@@ -29,32 +29,6 @@ mins_file <- rgdal::readOGR(dsn=path.expand(paste0(data_dir, "/Min_DoubleCrop.sh
 Min_sp <- spTransform(mins_file, CRS("+init=epsg:4326"))
 
 
-################################################
-################################################
-################################################
-
-# data_dir <- "/data/hnoorazar/codling_moth/"
-
-# # read county shapefile
-# shapefile_dir <- "/data/hnoorazar/bloom/shape_files/tl_2017_us_county/"
-# shapefile_dir <- "/data/hnoorazar/bloom/shape_files/tl_2017_us_county_simple/"
-# counties <- rgdal::readOGR(dsn=path.expand(shapefile_dir), 
-#                            layer = "tl_2017_us_county")
-
-# # Extract just the three states OR: 41, WA:53, ID: 16
-# counties <- counties[counties@data$STATEFP %in% c("16", "41", "53"), ]
-
-# #
-# # Compute states like so, to put border around states
-# states <- aggregate(counties[, "STATEFP"], 
-#                     by = list(ID = counties@data$STATEFP), 
-#                     FUN = unique, dissolve = T)
-
-# interest_counties <- c("16027", "53001", "53021", "53071",
-#                        "41021", "53005", "53025", "53077", 
-#                        "41027", "53007", "53037",  
-#                        "41049", "53013", "53039", 
-#                        "41059", "53017", "53047")
-
-# counties <- counties[counties@data$GEOID %in% interest_counties, ]
-
+#######################################################
+#######################################################
+#######################################################

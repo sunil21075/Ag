@@ -1,4 +1,5 @@
-# Bloom - Vince
+# Water Rights
+
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -19,33 +20,6 @@ library(reshape2)
 library(RColorBrewer)
 # library(plotly)
 # library(Hmisc)
-
-data_dir = "/data/hnoorazar/codling_moth/"
-
-# bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
-# bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_data_rcp45.rds")))
-
-# bloom <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
-# bloom_rcp45 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
-
-# print (colnames(bloom_rcp45))
-# ##########################
-# bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_100_new.rds")))
-# bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_100_new.rds")))
-
-# bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_95_new.rds")))
-# bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_95_new.rds")))
-
-bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp85_50_new.rds")))
-bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, "/bloom_rcp45_50_new.rds")))
-print (bloom_rcp45_50$ClimateGroup)
-
-######################################
-###################################### clear above
-######################################
-##########################
-########################## For Analog Map
-##########################
 
 #########################################################
 # read county shapefile
@@ -71,23 +45,10 @@ interest_counties <- c("16027", "53001", "53021", "53071",
 
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
-spatial_bcf_dir <- "/data/hnoorazar/bloom/just_CM_locs/"
-spatial_bcf <- readRDS(paste0(spatial_bcf_dir, "cm_spatial_bcf.rds")) %>% 
-               group_by(location, lat, long)
-
-################################################################################
-
-
-analog_param_dir <- "/data/hnoorazar/bloom/params/"
-st_cnty_names <- read.csv(paste0(analog_param_dir, 
-                                 "17_counties_fips_unique.csv"),
-                          header=T,
-                          as.is=T) %>% 
-                 data.table()
-
-emissions <- c("RCP 8.5" = "rcp85",
-               "RCP 4.5" = "rcp45")
-
+wtr_right_dir <- "/data/hnoorazar/water_right/"
+spatial_wtr_right <- readRDS(paste0(wtr_right_dir, 
+                                     "sample_points_for_Rshiny_no_NA.rds"))
+spatial_wtr_right$color <- "#0080FF"
 ######################################################
 
 RdBu_reverse <- rev(brewer.pal(11, "RdBu"))

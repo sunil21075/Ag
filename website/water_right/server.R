@@ -1,4 +1,4 @@
-# Bloom - Vince
+# Water Rights
 
 library(scales)
 library(lattice)
@@ -20,75 +20,51 @@ library(reshape2)
 library(RColorBrewer)
 
 shinyServer(function(input, output, session) {
-  #############################################
-  ############################################# Bloom W/ Global map
-  #############################################
-
-  # Show page on click event for chill frost
-  spatial_bcf_data <- reactive({
-    spatial_bcf
-  })
-
+  
   #
   # Create the map
   #
-  output$bcf_map <- renderLeaflet({
-    pal <- colorBin(palette = "plasma", reverse = TRUE,
-                    domain = spatial_bcf_data()$lat, bins = 8, pretty=TRUE)
-    leaflet() %>%
-    addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-             attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
-    setView(lat = 47, lng = -120, zoom = 7) %>%
-    addCircleMarkers(data = spatial_bcf_data(), 
-                     lng = ~ long, lat = ~ lat,
-                     label = ~ location,
-                     layerId = ~ location,
-                     radius = 4,
-                     color = ~ pal(lat),
-                     stroke  = FALSE,
-                     fillOpacity = .95)
-  })
-
   ###################################################
   
-  output$map_bloom_doy_50 <- renderLeaflet({
-    layerlist = levels(bloom_rcp45_50$ClimateGroup) # diap$ClimateGroup
+    output$water_right_map <- renderLeaflet({
+      target_date <- as.Date(paste(as.character(input$year_input),
+                                   as.character(input$month_input),
+                                   as.character(input$day_input),
+                                   sep="-")
+                            )
 
-    if(input$cg_bloom_50 == "Historical") {
-      climate_group = input$cg_bloom_50
-      future_version = "rcp85"
-     } else {
-      temp = tstrsplit(input$cg_bloom_50, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
+      spatial_wtr_right <- data.table(spatial_wtr_right)
+      spatial_wtr_right[, color := ifelse(date < target_date, "#FF3333", "#0080FF")]
 
-    if(future_version == "rcp45") {
-     bloom_d = bloom_rcp45_50
-      } else { 
-     bloom_d = bloom_rcp85_50
-    }
-    print (bloom_d$ClimateGroup)
-    print (climate_group)
-    sub_bloom = subset(bloom_d, 
-                       apple_type == input$apple_type & 
-                       ClimateGroup == climate_group)
-    
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", 
-                                sub_bloom$longitude)
-    sub_bloom <- na.omit(sub_bloom)
-    medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+      # pal <- colorBin(palette = "plasma", reverse = TRUE,
+      #                 domain = spatial_wtr_right$color, 
+      #                 bins = 2, pretty=TRUE)
+      leaflet() %>%
+      addTiles(urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+               attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>',
+               layerId = "Satellite",
+               options= providerTileOptions(opacity = 0.9)) %>%
 
-    BloomMap <- constructMap(medBloom, 
-                             layerlist, 
-                             palColumn = "medDoY", 
-                             legendVals = seq(50,140), #seq(min(sub_bloom$medDoY), max(sub_bloom$medDoY)), # seq(50,165), 
-                             "Median Day of Year")
-    BloomMap
-  })
+      # addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #          attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
+      setView(lat = 47, lng = -120, zoom = 7) %>%
+      addCircleMarkers(data = spatial_wtr_right, 
+                       lng = ~long, lat = ~lat,
+                       label = ~ popup,
+                       layerId = ~ location,
+                       radius = 3,
+                       color = ~ color,
+                       stroke  = FALSE,
+                       fillOpacity = .95 #,
+                       # popup=paste0("<b>", title, ": </b>", 
+                       #              spatial_wtr_right$WR_Doc_ID,
+                       #              "<br/><b>Latitude: </b> ", 
+                       #              spatial_wtr_right$lat, 
+                       #              "<br/><b>Longitude: </b> ",
+                       #              spatial_wtr_right]$long)
+                       )
+    })
+  
   ###################################################################
   #
   #     Functions
@@ -140,22 +116,22 @@ shinyServer(function(input, output, session) {
                                            mapLayerData[[i]]$longitude))
     }
     
-    if(title == "Median Day of Year") {
-      map = addLegend(map, "bottomleft", 
-                      pal = pal, 
-                      values = legendVals,
-                      title = title,
-                      labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
-                      opacity = 0.7) 
-    }
-    else {
-       map = addLegend(map, "bottomleft", 
-                       pal = pal, 
-                       values = legendVals,
-                       title = title,
-                       labFormat = myLabelFormat(prefix = " "),
-                       opacity = 0.7)
-    }
+    # if(title == "Median Day of Year") {
+    #   map = addLegend(map, "bottomleft", 
+    #                   pal = pal, 
+    #                   values = legendVals,
+    #                   title = title,
+    #                   labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
+    #                   opacity = 0.7) 
+    # }
+    # else {
+       # map = addLegend(map, "bottomleft", 
+       #                 pal = pal, 
+       #                 values = legendVals,
+       #                 title = title,
+       #                 labFormat = myLabelFormat(prefix = " "),
+       #                 opacity = 0.7)
+    # }
     map
   }
 
