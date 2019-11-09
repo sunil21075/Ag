@@ -57,7 +57,7 @@ if (dir.exists(main_out) == F) {dir.create(path = main_out, recursive = T)}
 ##########################################
 # round decimal 
 cols <- names(mydf)[1:2]
-mydf[,(cols) := round(.SD,1), .SDcols=cols]
+mydf[,(cols) := round(.SD,5), .SDcols=cols]
 mydf
 
 # df[4, 5] = auc(x=data_gen$CumulativeDDF, y=data_gen$value)
