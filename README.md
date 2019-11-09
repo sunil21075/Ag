@@ -1,6 +1,6 @@
 # These codes support the hydro projects.
 
-### The website for each project
+### The website for each project:
 [Bloom Project Link](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/bloom/)
 
 [Codling Moth Project Link](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/codling_moth/)
@@ -11,7 +11,7 @@
 
 [Double Crop Fields](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/remote_sensing_pre_MS/) made for visualization purposes to know where things are at.
 
-* ### What each project is about?
+### What each project is about?
 
 1. #### Bloom and Chill project;
     Fruit needs a good winter hybernation in order for produce high volume/quality fruits. Global warming is delaying the time of hybernation, and accelerating blooming season. These two are getting close to each other. What to do? Not have apple? or grow in in other regions? or?
