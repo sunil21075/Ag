@@ -22,7 +22,8 @@
  3. #### Lagoon Over Flow;
      Global warming is causing precipitation to fall more in the form of rain. That will carry manure into the rivers and other water    resources. So, they need to know how to manage manure to keep the water clean!
 
- 4. #### Finally, remote sensing and images (yayyyy, will be more yayyyy if I move more towards science/analysis as opposed to engineering);
+ 4. #### Finally, remote sensing and images 
+     (yayyyy, will be more yayyyy if I move more towards science/analysis as opposed to engineering);
      Detect which fields are apple, cherry, pear, etc. Detect which fields are being used to double crop. 
 
 ------------------------------------------------------------------------
