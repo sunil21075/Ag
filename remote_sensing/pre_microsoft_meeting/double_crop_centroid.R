@@ -22,3 +22,10 @@ centroid_coord <- spTransform(double_crops_center,
                               CRS("+proj=longlat +datum=WGS84"))
 
 centroid_coord_dt <- data.table(centroid_coord@coords)
+
+write.table(centroid_coord_dt, 
+            paste0(data_dir, "double_crop_centroid.csv"), 
+            row.names = FALSE, col.names = TRUE, sep=",")
+
+
+
