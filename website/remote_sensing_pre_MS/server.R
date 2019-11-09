@@ -17,7 +17,17 @@ shinyServer(function(input, output, session) {
                                    addPolygons(data = Min_sp,
                                                stroke = TRUE, 
                                                fillOpacity = 0.1, 
-                                               smoothFactor = 0.9)
+                                               smoothFactor = 0.9)%>% 
+                                  # addMarkers(data = centrids)
+                                  addCircleMarkers(data = centrids, 
+                                                   lng = ~ longitude, 
+                                                   lat = ~ latitude,
+                                                   label = ~ location,
+                                                   layerId = ~ location,
+                                                   radius = 4,
+                                                   # color = ~ pal(latitude),
+                                                   stroke  = FALSE,
+                                                   fillOpacity = .95)
 
                                     })
             } else if (input$color == "OpenTopoMap"){
@@ -30,7 +40,17 @@ shinyServer(function(input, output, session) {
                             addPolygons(data = Min_sp,
                                         stroke = TRUE, 
                                         fillOpacity = 0.1, 
-                                       smoothFactor = 0.9)
+                                       smoothFactor = 0.9)%>% 
+                            # addMarkers(data = centrids)
+                            addCircleMarkers(data = centrids, 
+                                             lng = ~ longitude, 
+                                             lat = ~ latitude,
+                                             label = ~ location,
+                                             layerId = ~ location,
+                                             radius = 4,
+                                             # color = ~ pal(latitude),
+                                             stroke  = FALSE,
+                                             fillOpacity = .95)
                             })
 
             } else if (input$color == "Sattelite"){
