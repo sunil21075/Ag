@@ -7,5 +7,6 @@
 
 [Water Right Project Link](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/water_right/)
 
-[remote_sensing_pre_MS Project Link](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/remote_sensing_pre_MS/)
+Double Crop Fields made for visualization purposes to know where things are at.
+[Remote Sensing before Microsoft Meeting Project Link](http://agclimatetools.cahnrs.wsu.edu/users/hnoorazar/remote_sensing_pre_MS/)
 
