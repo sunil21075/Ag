@@ -104,31 +104,31 @@ thresh <- add_location(thresh)
 suppressWarnings({bloom <- within(bloom, remove(lat, long))})
 suppressWarnings({thresh <- within(thresh, remove(lat, long))})
 
-print(length(unique(thresh$chill_season)))
-print(length(unique(bloom$chill_season)))
+# print(length(unique(thresh$chill_season)))
+# print(length(unique(bloom$chill_season)))
 
-print(length(unique(thresh$location)))
-print(length(unique(bloom$location)))
+# print(length(unique(thresh$location)))
+# print(length(unique(bloom$location)))
 
-print(length(unique(thresh$model)))
-print(length(unique(bloom$model)))
+# print(length(unique(thresh$model)))
+# print(length(unique(bloom$model)))
 #############################################################
 emissions <- c("RCP 4.5", "RCP 8.5")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
 # apple, Cherry, Pear; Cherry 14 days shift, Pear 7 days shift
-fruit_type <- "apple"
+fruit_type <- "Pear"
 remove_NA <- "yes" 
 
 # shift the bloom days
 if (fruit_type == "Cherry"){
-   bloom$dayofyear <- bloom$dayofyear-14
-   bloom <- bloom %>% filter(dayofyear>=0)
+   bloom$chill_doy <- bloom$chill_doy-14
+   bloom <- bloom %>% filter(chill_doy>=0)
    # This is done just for purpose of for loop
    # apple_types <- c("Cripps Pink") 
    } else if (fruit_type == "Pear"){
-    bloom$dayofyear <- bloom$dayofyear-7
-    bloom <- bloom %>% filter(dayofyear>=0)
+    bloom$chill_doy <- bloom$chill_doy-7
+    bloom <- bloom %>% filter(chill_doy>=0)
     # This is done just for purpose of for loop
     # apple_types <- c("Cripps Pink") 
 }
@@ -140,14 +140,14 @@ bloom <- data.table(bloom)
 em <- emissions[2]
 app_tp <- apple_types[1]
 thresh_cut <- 75
-loc <- location_ls[1]
+loc <- location_ls$location[1]
 
 # bloom <- bloom %>% filter(location == loc)
 # thresh <- thresh %>% filter(location == loc)
 # location_ls <- c(loc)
 
 start_time <- Sys.time()
-plot_threshols <- 75 # seq(50, 75, 5)
+plot_threshols <- c(50, 75) # seq(50, 75, 5)
 
 for (thresh_cut in plot_threshols){
   col_name <- paste0("thresh_", thresh_cut)
@@ -281,10 +281,10 @@ for (thresh_cut in plot_threshols){
 
         if (fruit_type=="apple"){
            title_ <- paste0(thresh_cut, " CP threshold ", 
-                            " and bloom shifts ", "(", app_tp,", ")
+                            " and bloom shifts (", app_tp,", ")
            } else{
             title_ <- paste0(thresh_cut, " CP threshold and ", 
-                             fruit_type, " bloom shifts")
+                             fruit_type, " bloom shifts (")
         }
 
         merged_plt <- double_cloud(d1=merged_dt) + 
@@ -296,7 +296,10 @@ for (thresh_cut in plot_threshols){
                                         "bloom_thresh_in_one/no_obs/", 
                                         fruit_type, "/", col_name, "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
-            dir.create(path = bloom_thresh_plot_dir, recursive = T)}
+            dir.create(path = bloom_thresh_plot_dir, recursive = T)
+            print (bloom_thresh_plot_dir)
+          }
+
         ggsave(plot=merged_plt,
                filename = paste0(loc, "_", 
                                  gsub(" ", "_", em), "_", 

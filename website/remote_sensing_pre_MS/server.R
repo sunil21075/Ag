@@ -18,8 +18,8 @@ shinyServer(function(input, output, session) {
                                                stroke = TRUE, 
                                                fillOpacity = 0.1, 
                                                smoothFactor = 0.9)%>% 
-                                  # addMarkers(data = centrids)
-                                  addCircleMarkers(data = centrids, 
+                                  # addMarkers(data = centroids)
+                                  addCircleMarkers(data = centroids, 
                                                    lng = ~ longitude, 
                                                    lat = ~ latitude,
                                                    label = ~ location,
@@ -41,8 +41,8 @@ shinyServer(function(input, output, session) {
                                         stroke = TRUE, 
                                         fillOpacity = 0.1, 
                                        smoothFactor = 0.9)%>% 
-                            # addMarkers(data = centrids)
-                            addCircleMarkers(data = centrids, 
+                            # addMarkers(data = centroids)
+                            addCircleMarkers(data = centroids, 
                                              lng = ~ longitude, 
                                              lat = ~ latitude,
                                              label = ~ location,
@@ -65,8 +65,8 @@ shinyServer(function(input, output, session) {
                                                   stroke = TRUE, 
                                                   fillOpacity = 0.1, 
                                                  smoothFactor = 0.9) %>% 
-                                      # addMarkers(data = centrids)
-                                      addCircleMarkers(data = centrids, 
+                                      # addMarkers(data = centroids)
+                                      addCircleMarkers(data = centroids, 
                                                        lng = ~ longitude, 
                                                        lat = ~ latitude,
                                                        label = ~ location,

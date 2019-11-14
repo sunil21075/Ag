@@ -64,7 +64,7 @@ some_crops <- table %>%
 
 ##############################################
 ############                     #############
-############   read fips data    #############
+############   read Min data    #############
 
 library(foreign)
 Min <- read.dbf(paste0(fip_dir, "Min_DB/Min_VICID_CO.DBF"), as.is=T)

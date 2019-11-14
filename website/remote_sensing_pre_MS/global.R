@@ -21,19 +21,39 @@ library(RColorBrewer)
 # library(Hmisc)
 
 data_dir <- "/data/hnoorazar/remote_sensing_pre_MS/"
-shape_dir <- "/data/hnoorazar/remote_sensing_pre_MS/Min_double_crops/"
+
+
+
+
+# shape_dir <- "/data/hnoorazar/remote_sensing_pre_MS/Min_double_crops/"
 # data_dir <- paste0("/Users/hn/Desktop/Desktop/Ag/",
 #                    "check_point/pre_microsoft_meeting/", 
 #                    "filtered_shape_files/simple/Min_double_crops")
 
+# mins_file <- rgdal::readOGR(dsn=path.expand(paste0(shape_dir, 
+#                                                    "/Min_DoubleCrop.shp")),
+#                             layer = "Min_DoubleCrop", 
+#                             GDAL1_integer64_policy = TRUE)
+
+# Min_sp <- spTransform(mins_file, CRS("+init=epsg:4326"))
+
+
+##############################
+############################## TRUELY SURVEYED 2018
+##############################
+shape_dir <- "/data/hnoorazar/remote_sensing_pre_MS/double_2018/"
+
 mins_file <- rgdal::readOGR(dsn=path.expand(paste0(shape_dir, 
-                                                   "/Min_DoubleCrop.shp")),
-                            layer = "Min_DoubleCrop", 
+                                                   "/double_2018.shp")),
+                            layer = "double_2018", 
                             GDAL1_integer64_policy = TRUE)
 
 Min_sp <- spTransform(mins_file, CRS("+init=epsg:4326"))
+##############################
+##############################
+##############################
 
-centrids <- read.csv(paste0(data_dir, "double_crop_centroid.csv"),
+centroids <- read.csv(paste0(data_dir, "double_crop_centroid.csv"),
                      as.is=TRUE) %>% data.table()
 
 #######################################################
