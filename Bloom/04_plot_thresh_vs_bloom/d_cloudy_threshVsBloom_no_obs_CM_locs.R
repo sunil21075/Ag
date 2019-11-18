@@ -116,17 +116,17 @@ suppressWarnings({thresh <- within(thresh, remove(lat, long))})
 emissions <- c("RCP 4.5", "RCP 8.5")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
-# apple, Cherry, Pear; Cherry 14 days shift, Pear 7 days shift
-fruit_type <- "Pear"
+# apple, cherry, pear; cherry 14 days shift, pear 7 days shift
+fruit_type <- "pear"
 remove_NA <- "yes" 
 
 # shift the bloom days
-if (fruit_type == "Cherry"){
+if (fruit_type == "cherry"){
    bloom$chill_doy <- bloom$chill_doy-14
    bloom <- bloom %>% filter(chill_doy>=0)
    # This is done just for purpose of for loop
    # apple_types <- c("Cripps Pink") 
-   } else if (fruit_type == "Pear"){
+   } else if (fruit_type == "pear"){
     bloom$chill_doy <- bloom$chill_doy-7
     bloom <- bloom %>% filter(chill_doy>=0)
     # This is done just for purpose of for loop

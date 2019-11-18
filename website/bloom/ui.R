@@ -190,8 +190,15 @@ navbarPage(title = div("",
                                                                                     label = h4("Fruit type"), 
                                                                                     choices = list("Cripps Pink" = "Cripps_Pink", 
                                                                                                    "Gala" = "Gala", 
-                                                                                                   "Red Delicious" = "Red_Deli"),
-                                                                                    selected = "Cripps_Pink")
+                                                                                                   "Red Delicious" = "Red_Deli",
+                                                                                                   "Pear" = "pear",
+                                                                                                   "Cherry" = "cherry"),
+                                                                                    selected = "Cripps_Pink"),
+                                                                       radioButtons(inputId = "cp_thresh",
+                                                                                    label = tags$b("CP threshold"),
+                                                                                    choices = c("75 CP" = "thresh_75",
+                                                                                                "50 CP" = "thresh_50"), 
+                                                                                    selected = "thresh_75")
                                                                        ),
                                                       #####################
                                                       #

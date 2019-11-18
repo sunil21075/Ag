@@ -56,23 +56,54 @@ shinyServer(function(input, output, session) {
            { p <- input$bcf_map_marker_click$id
              lat <- substr(as.character(p), 1, 8)
              long <- substr(as.character(p), 13, 21)
-             file_dir_string <- paste0("/data/hnoorazar/", 
-                                       "bloom/plots/", 
-                                       "CM_locs/bloom_thresh_in_one",
-                                       "/no_obs/apple/thresh_75/")
+             # file_dir_string <- paste0("/data/hnoorazar/", 
+             #                           "bloom/plots/", 
+             #                           "CM_locs/bloom_thresh_in_one",
+             #                           "/no_obs/apple/thresh_75/")
              toggleModal(session,
                          modalId = "bcf_graphs", 
                          toggle =  "open")
 
              output$bcf_plot <- renderImage({
-                   image_name <- paste0(lat, "_-", long, "_", 
-                                        gsub(" ", "_", input$em_scenario), 
-                                        "_", 
-                                        input$bcf_plot_fruit_type,
-                                        ".png")
+
+                    if (!(input$bcf_plot_fruit_type %in% c("pear", "cherry"))){
+                       fruit_t = "apple" 
+                       } else if (input$bcf_plot_fruit_type == "pear"){
+                        fruit_t = "pear"
+                       } else if (input$bcf_plot_fruit_type == "cherry"){
+                         fruit_t = "cherry"
+                    }
+             
+                    file_dir_string <- paste0("/data/hnoorazar/", 
+                                              "bloom/plots/", 
+                                              "CM_locs/bloom_thresh_in_one",
+                                              "/no_obs/", 
+                                              fruit_t, "/",
+                                              input$cp_thresh, "/"
+                                              )
+
+                    if (input$bcf_plot_fruit_type == "pear"){
+                      image_name <- paste0(lat, "_-", long, "_", 
+                                           gsub(" ", "_", input$em_scenario), 
+                                           "_Cripps_Pink",
+                                           ".png")
+
+                      } else if (input$bcf_plot_fruit_type == "cherry") {
+                        image_name <- paste0(lat, "_-", long, "_", 
+                                             gsub(" ", "_", input$em_scenario), 
+                                             "_Cripps_Pink",
+                                             ".png")
+                      } else {
+                        image_name <- paste0(lat, "_-", long, "_", 
+                                      gsub(" ", "_", input$em_scenario), 
+                                      "_", 
+                                      input$bcf_plot_fruit_type,
+                                      ".png")
+                    }
 
                    filename <- normalizePath(file.path(file_dir_string, 
                                                        image_name))
+                   
                    # Return a list containing the filename and alt text
                    list(src = filename, 
                         width = 620, height = 370)
