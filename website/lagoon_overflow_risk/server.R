@@ -118,8 +118,18 @@ shinyServer(function(input, output, session) {
                                         list(src = filename, width = 300, height = 550)}, 
                                         deleteFile = FALSE)
 
-  
-  output$Western_Coastal_Annual_rain_rcp85 <- renderImage({
+  ################################
+  ########
+  ######## Regional Plots - RCP 8.5
+  ########
+  ################################
+  ########
+  ######## Western_Coastal
+  ########
+  ###
+  ###   annual
+  ###
+  output$Western_coastal_Annual_rain_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/precip/wtr_yr/',
                                                                             'wtr_yr_rain_85.png'))
@@ -127,7 +137,7 @@ shinyServer(function(input, output, session) {
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
 
-  output$Western_Coastal_Annual_runoff_rcp85 <- renderImage({
+  output$Western_coastal_Annual_runoff_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/runoff/wtr_yr/',
                                                                             'wtr_yr_RCP85.png'))
@@ -135,18 +145,673 @@ shinyServer(function(input, output, session) {
                                         list(src = filename, width = 600, height = 400)}, 
                                         deleteFile = FALSE)
 
-  output$Western_Coastal_dsi_rcp85 <- renderImage({
+  output$Western_coastal_dsi_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/storm/',
                                                                             'Western_coastal_85.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 350)}, 
                                         deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Western_coastal_seasonal_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Western_coastal_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_seasonal_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Western_coastal_monthly_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_monthly_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
   
 
   #######################################################
+  ########
+  ######## Cascade_foothills
+  ########
+  ###
+  ###   annual
+  ###
+  output$Cascade_foothills_Annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
 
-  ###################################################################
+  output$Cascade_foothills_Annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_dsi_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Cascade_foothills_seasonal_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Cascade_foothills_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_seasonal_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Cascade_foothills_monthly_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_monthly_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  
+  ##########################################
+  ########
+  ######## Northwest_Cascades
+  ########
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northwest_Cascades_Annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_Annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_dsi_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northwest_Cascades_seasonal_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northwest_Cascades_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_seasonal_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northwest_Cascades_monthly_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_monthly_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  
+  ##########################################
+  ########
+  ######## Northcentral_Cascades
+  ########
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northcentral_Cascades_Annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_Annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_dsi_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northcentral_Cascades_seasonal_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northcentral_Cascades_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_seasonal_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northcentral_Cascades_monthly_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_monthly_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  ##########################################
+  ########
+  ######## Northeast_Cascades
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northeast_Cascades_Annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_Annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_dsi_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northeast_Cascades_seasonal_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northeast_Cascades_rain_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_seasonal_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northeast_Cascades_monthly_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_monthly_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ################################
+  ########
+  ######## Regional Plots - RCP 8.5
+  ########
+  ################################
+  ########
+  ######## Western_Coastal
+  ########
+  ###
+  ###   annual
+  ###
+  output$Western_coastal_Annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_Annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_dsi_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Western_coastal_seasonal_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Western_coastal_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_seasonal_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Western_coastal_monthly_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Western_coastal_monthly_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  
+
+  #######################################################
+  ########
+  ######## Cascade_foothills
+  ########
+  ###
+  ###   annual
+  ###
+  output$Cascade_foothills_Annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_Annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_dsi_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Cascade_foothills_seasonal_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Cascade_foothills_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_seasonal_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Cascade_foothills_monthly_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Cascade_foothills_monthly_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  
+  ##########################################
+  ########
+  ######## Northwest_Cascades
+  ########
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northwest_Cascades_Annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_Annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_dsi_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northwest_Cascades_seasonal_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northwest_Cascades_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_seasonal_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northwest_Cascades_monthly_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northwest_Cascades_monthly_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  
+  ##########################################
+  ########
+  ######## Northcentral_Cascades
+  ########
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northcentral_Cascades_Annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_Annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_dsi_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northcentral_Cascades_seasonal_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northcentral_Cascades_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_seasonal_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northcentral_Cascades_monthly_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northcentral_Cascades_monthly_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+  ##########################################
+  ########
+  ######## Northeast_Cascades
+  ########
+  ###
+  ###   annual
+  ###
+  output$Northeast_Cascades_Annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'wtr_yr_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_Annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'wtr_yr_RCP45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_dsi_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 350)}, 
+                                        deleteFile = FALSE)
+  ###
+  ###   seasonal
+  ###
+  output$Northeast_Cascades_seasonal_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/seasonal/',
+                                                                            'Northeast_Cascades_rain_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_seasonal_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/seasonal/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  ###
+  ###   monthly
+  ###
+  output$Northeast_Cascades_monthly_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/monthly/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 600)}, 
+                                        deleteFile = FALSE)
+
+  output$Northeast_Cascades_monthly_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/monthly/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 600, height = 400)}, 
+                                        deleteFile = FALSE)
+
+  
+  #######################################################
   #
   #     Functions
   #
