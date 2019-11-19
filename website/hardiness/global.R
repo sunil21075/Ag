@@ -49,9 +49,11 @@ interest_counties <- c("16027", "53001", "53021", "53071",
 
 counties <- counties[counties@data$GEOID %in% interest_counties, ]
 
-spatial_bcf <- readRDS(paste0(data_dir, "cm_spatial_hardiness.rds")) %>% 
-               group_by(location, lat, long)
+spatial_hardiness_locs <- readRDS(paste0(data_dir, "cm_spatial_hardiness.rds")) %>% 
+                          group_by(location, lat, long)
 
+spatial_hardiness_locs <- readRDS(paste0(data_dir, "sub_locs.rds")) %>% 
+                          group_by(location, lat, long)
 ################################################################################
 
 

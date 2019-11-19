@@ -126,7 +126,7 @@ st_cnty_names <- read.csv(paste0(analog_param_dir,
 # Analog Plot Menu variables on pop-up page
 #
 #############################################
-detail_levels <- c("Best Analog" = "all_models", 
+detail_levels <- c("Best Analogs" = "all_models", 
                    "More Details" = "more_details")
 
 emissions <- c("RCP 8.5" = "rcp85",
