@@ -52,22 +52,7 @@ counties <- counties[counties@data$GEOID %in% interest_counties, ]
 spatial_hardiness_locs <- readRDS(paste0(data_dir, "cm_spatial_hardiness.rds")) %>% 
                           group_by(location, lat, long)
 
-spatial_hardiness_locs <- readRDS(paste0(data_dir, "sub_locs.rds")) %>% 
-                          group_by(location, lat, long)
 ################################################################################
-
-
-# analog_param_dir <- "/data/hnoorazar/bloom/params/"
-# st_cnty_names <- read.csv(paste0(analog_param_dir, 
-#                                  "17_counties_fips_unique.csv"),
-#                           header=T,
-#                           as.is=T) %>% 
-#                  data.table()
-
-# emissions <- c("RCP 8.5" = "rcp85",
-#                "RCP 4.5" = "rcp45")
-
-######################################################
 
 RdBu_reverse <- rev(brewer.pal(11, "RdBu"))
 
