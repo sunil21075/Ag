@@ -467,10 +467,6 @@ navbarPage(title = div("",
                                           column(7, imageOutput("cumdd")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_3")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                            ),
                                  ####### DD 85 END
@@ -481,10 +477,6 @@ navbarPage(title = div("",
                                           column(7, imageOutput("adult_emergence_rcp85")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_4")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                           ),
                                  ####### Adult Flight 85 END
@@ -495,10 +487,6 @@ navbarPage(title = div("",
                                           column(7, imageOutput("cum_larva_pop")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_5")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                            ),
 
@@ -516,10 +504,6 @@ navbarPage(title = div("",
                                           column(9, imageOutput("diapause_abs_rcp85")),
                                           br(),br(),br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_6")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                            ),
                                  
@@ -576,27 +560,19 @@ navbarPage(title = div("",
                                  ####### DD 45 start
                                  tabPanel("Degree Days", 
                                  	      # imageOutput("cumdd_rcp45")
-                                 	      column(7, imageOutput("cumdd_rcp45")),
+                                 	        column(7, imageOutput("cumdd_rcp45")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_9")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                  	      ),
                                  ####### DD 45 END
 
                                  ####### Adult Flight 45 start
                                  tabPanel("Adult First Flight", 
-                                 	      # imageOutput("adult_emergence_rcp45")
-                                 	      column(7, imageOutput("adult_emergence_rcp45")),
+                                 	        # imageOutput("adult_emergence_rcp45")
+                                 	        column(7, imageOutput("adult_emergence_rcp45")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_10")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                  	      ),
                                  ####### Adult Flight 45 END
@@ -604,13 +580,9 @@ navbarPage(title = div("",
                                  ####### Egg Hatch 45 start
                                  tabPanel("Egg Hatch into Larva", 
                                  	      # imageOutput("cum_larva_pop_rcp45")
-                                 	      column(7, imageOutput("cum_larva_pop_rcp45")),
+                                 	        column(7, imageOutput("cum_larva_pop_rcp45")),
                                           br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_11")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                  	      ),
                                  # tabPanel("Egg Hatch into Larva",
@@ -629,10 +601,6 @@ navbarPage(title = div("",
                                  	      column(9, imageOutput("diapause_abs_rcp45")),
                                           br(),br(),br(),br(),br(),br(),
                                           column(1, imageOutput("location_group_12")),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
-                                          br(),br(), br(),br(), br(),br(),
                                           height = 1700
                                  	      ),
                                  # tabPanel("Diapause",
