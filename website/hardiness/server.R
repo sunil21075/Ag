@@ -58,7 +58,7 @@ shinyServer(function(input, output, session) {
                      lng = ~ long, lat = ~ lat,
                      label = ~ location,
                      layerId = ~ location,
-                     radius = 3,
+                     radius = 5,
                      color = ~ factpal(freezing_years),
                      stroke  = FALSE,
                      fillOpacity = .95) %>%
@@ -67,7 +67,7 @@ shinyServer(function(input, output, session) {
               # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
               values = unique(spatial_hardiness_locs$freezing_years),
               labels = unique(spatial_hardiness_locs$freezing_years),
-              title = "Cluster Subregions")
+              title = "No. years w/ damaging events")
   })
 
   #
