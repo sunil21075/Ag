@@ -7,7 +7,7 @@ library(leaflet)
 shinyServer(function(input, output, session) {
 
   observe({
-       if (input$color == "Esri.WorldStreetMap"){
+       if (input$map_tile_ == "Esri.WorldStreetMap"){
          output$mymap = renderLeaflet({ 
                                    leaflet() %>%
                                    # Esri.WorldStreetMap or OpenTopoMap
@@ -30,7 +30,7 @@ shinyServer(function(input, output, session) {
                                                    fillOpacity = .95)
 
                                     })
-            } else if (input$color == "OpenTopoMap"){
+            } else if (input$map_tile_ == "OpenTopoMap"){
              output$mymap = renderLeaflet({ 
                             leaflet() %>%
                                              # Esri.WorldStreetMap or OpenTopoMap
@@ -53,7 +53,7 @@ shinyServer(function(input, output, session) {
                                              fillOpacity = .95)
                             })
 
-            } else if (input$color == "Sattelite"){
+            } else if (input$map_tile_ == "Sattelite"){
                output$mymap = renderLeaflet({ 
                                       leaflet() %>%
                                       addTiles(urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",

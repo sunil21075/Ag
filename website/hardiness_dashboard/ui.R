@@ -1,5 +1,8 @@
-# Bloom Pruet
+# hardiness dashboard
+
 ####  Header  ####
+vars <- c( "Sattelite", "World Street", "Open Topo", "Default")
+
 header <- dashboardHeader(
   title = tags$div(tags$img(src='WSU_logo.png', height = 30), "CAHNRS"))
 
@@ -48,7 +51,18 @@ body <- dashboardBody(
                                         "#hard_map {height: calc(100vh - 125px) !important;}"),
                              leafletOutput("hard_map")
                             )
-                        )
+                        ),
+                absolutePanel(id = "controls", 
+                    class = "panel panel-default", fixed = TRUE,
+                    draggable = TRUE, top = 40, 
+                    left = "auto", right = 20, bottom = "auto",
+                    width = "auto", height = "auto",
+
+                    h4("Tile"),
+                    selectInput("map_tile_", label=" ", 
+                                choices=vars,
+                                selected = vars[1])
+                  )
                 )
         )
     ),

@@ -1,4 +1,4 @@
-# Bloom Pruet
+# hardiness dashboard
 
 ###  Shiny Server  ###
 shinyServer(function(input, output, session) {
@@ -12,24 +12,91 @@ shinyServer(function(input, output, session) {
     factpal <- colorFactor(palette = "RdBu", 
                            levels = sort(unique(spatial_hardiness_locs$freezing_years)))
 
-    leaflet() %>%
-    addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-             attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
-    setView(lat = 47, lng = -120, zoom = 7) %>%
-    addCircleMarkers(data = spatial_hardiness_locs, 
-                     lng = ~ long, lat = ~ lat,
-                     label = ~ location,
-                     layerId = ~ location,
-                     radius = 6,
-                     color = ~ factpal(freezing_years),
-                     stroke  = FALSE,
-                     fillOpacity = .95) %>%
-    addLegend(position="bottomleft", 
-              pal = factpal, 
-              # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
-              values = unique(spatial_hardiness_locs$freezing_years),
-              labels = unique(spatial_hardiness_locs$freezing_years),
-              title = "No. years w/ damaging events")
+    if (input$map_tile_ == "World Street"){
+            leaflet() %>%
+            addProviderTiles(providers$Esri.WorldStreetMap, 
+                             options= providerTileOptions(opacity = 0.8))%>%
+            setView(lat = 47, lng = -120, zoom = 7) %>%
+            addCircleMarkers(data = spatial_hardiness_locs, 
+                             lng = ~ long, lat = ~ lat,
+                             label = ~ location,
+                             layerId = ~ location,
+                             radius = 6,
+                             color = ~ factpal(freezing_years),
+                             stroke  = FALSE,
+                             fillOpacity = .95) %>%
+            addLegend(position="bottomleft", 
+                      pal = factpal, 
+                      # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
+                      values = unique(spatial_hardiness_locs$freezing_years),
+                      labels = unique(spatial_hardiness_locs$freezing_years),
+                      title = "No. years w/ damaging events")
+        
+          } else if (input$map_tile_ == "Sattelite") {
+            leaflet() %>%
+            addTiles(urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>',
+                     layerId = "Satellite",
+                     options= providerTileOptions(opacity = 0.8)) %>%
+            setView(lat = 47, lng = -120, zoom = 7) %>%
+            addCircleMarkers(data = spatial_hardiness_locs, 
+                             lng = ~ long, lat = ~ lat,
+                             label = ~ location,
+                             layerId = ~ location,
+                             radius = 6,
+                             color = ~ factpal(freezing_years),
+                             stroke  = FALSE,
+                             fillOpacity = .95) %>%
+            addLegend(position="bottomleft", 
+                      pal = factpal, 
+                      # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
+                      values = unique(spatial_hardiness_locs$freezing_years),
+                      labels = unique(spatial_hardiness_locs$freezing_years),
+                      title = "No. years w/ damaging events")
+
+          }else if (input$map_tile_ == "Open Topo"){
+            leaflet() %>%
+            addProviderTiles(providers$OpenTopoMap,
+                             options= providerTileOptions(opacity = 0.8))%>%
+            setView(lat = 47, lng = -120, zoom = 7) %>%
+            addCircleMarkers(data = spatial_hardiness_locs, 
+                             lng = ~ long, lat = ~ lat,
+                             label = ~ location,
+                             layerId = ~ location,
+                             radius = 6,
+                             color = ~ factpal(freezing_years),
+                             stroke  = FALSE,
+                             fillOpacity = .95) %>%
+            addLegend(position="bottomleft", 
+                      pal = factpal, 
+                      # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
+                      values = unique(spatial_hardiness_locs$freezing_years),
+                      labels = unique(spatial_hardiness_locs$freezing_years),
+                      title = "No. years w/ damaging events")
+        
+
+          } else {
+            leaflet() %>%
+            addTiles(urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+                     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>') %>%
+            setView(lat = 47, lng = -120, zoom = 7) %>%
+            addCircleMarkers(data = spatial_hardiness_locs, 
+                             lng = ~ long, lat = ~ lat,
+                             label = ~ location,
+                             layerId = ~ location,
+                             radius = 6,
+                             color = ~ factpal(freezing_years),
+                             stroke  = FALSE,
+                             fillOpacity = .95) %>%
+            addLegend(position="bottomleft", 
+                      pal = factpal, 
+                      # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
+                      values = unique(spatial_hardiness_locs$freezing_years),
+                      labels = unique(spatial_hardiness_locs$freezing_years),
+                      title = "No. years w/ damaging events")
+    }
+
+
   })
 
   # plot part of bloom

@@ -23,7 +23,7 @@ navbarPage("Pre-MS", id="nav",
                     width = 330, height = "auto",
 
                     h2("Tile Choice"),
-                    selectInput("color", label=" ", 
+                    selectInput("map_tile_", label=" ", 
                                 choices=vars,
                                 selected = vars[1])
                   ),

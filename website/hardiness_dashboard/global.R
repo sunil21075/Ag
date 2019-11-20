@@ -1,4 +1,5 @@
-# Bloom Pruet
+# hardiness dashboard
+
 ###  Packages  ####
 library(shiny)
 library(cowplot) # , lib.loc = "r_lib"
