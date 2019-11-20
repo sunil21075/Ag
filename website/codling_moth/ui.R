@@ -1,3 +1,5 @@
+# codling moth
+
 library(leaflet)
 library(shinyBS)
 library(shiny)
@@ -411,11 +413,37 @@ navbarPage(title = div("",
                                  ####### No. of generations 85 start
                                  tabPanel("No. of Generations",
                                           fluidRow(tabBox(tabPanel("Adult", 
-                                                                   imageOutput("Adult_Gen_Aug_rcp85"), 
-                                                                   br(),br(),br(),br(),
-                                                                   imageOutput("location_group_1"),
-                                                                   height = 700),
-                                                          tabPanel("Larva", imageOutput("Larva_Gen_Aug_rcp85"), height=700),
+                                                                   column(7, imageOutput("Adult_Gen_Aug_rcp85")),
+                                                                   br(),br(),br(),
+                                                                   column(1, imageOutput("location_group_1")),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   height = 1700
+                                                                   # column(10,
+                                                                   #        div(style="display: inline-block; width: 70%;",img(src="Adult_Gen_Aug_rcp85.png", width=500, height=400)),
+                                                                   #        div(style="display: inline-block; width: 29%;",img(src="location-group.png", width=350, height=400))
+                                                                   #       ),
+                                                                   # br(),br(), br(),br(), br(),br(),
+                                                                   # br(),br(), br(),br(), br(),br(),
+                                                                   # br(),br(), br(),br(), br(),br(),
+                                                                   # br(),br(), br(),br(), br(),br(),
+                                                                   # br(),br(), br(),br(), br(),br()
+                                                                   ),
+                                                          tabPanel("Larva", 
+                                                                   # imageOutput("Larva_Gen_Aug_rcp85"), 
+                                                                   # br(), br(),
+                                                                   # height=700
+                                                                   column(7, imageOutput("Larva_Gen_Aug_rcp85")),
+                                                                   br(),br(),br(),
+                                                                   column(1, imageOutput("location_group_2")),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   br(),br(), br(),br(), br(),br(),
+                                                                   height = 1700
+                                                                   ), 
                                                           width = 12
                                                           )
                                                   )
@@ -423,15 +451,57 @@ navbarPage(title = div("",
                                  ####### No. of generations 85 END
                                  
                                  ####### DD 85 start
-                                 tabPanel("Degree Days", imageOutput("cumdd")),
+
+                                 # tabPanel("LLL", 
+                                    #       column(7, imageOutput("Larva_Gen_Aug_rcp85")),
+                                    #       br(),br(),
+                                    #       column(1, imageOutput("location_group_3")),
+                                    #       br(),br(), br(),br(), br(),br(),
+                                    #       br(),br(), br(),br(), br(),br(),
+                                    #       br(),br(), br(),br(), br(),br(),
+                                    #       br(),br(), br(),br(), br(),br()
+                                    #       ), 
+
+                                 tabPanel("Degree Days", 
+                                           # imageOutput("cumdd")
+                                          column(7, imageOutput("cumdd")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_3")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                           ),
                                  ####### DD 85 END
                                  
                                  ####### Adult Flight 85 start
-                                 tabPanel("Adult First Flight", imageOutput("adult_emergence_rcp85")),
+                                 tabPanel("Adult First Flight", 
+                                          # imageOutput("adult_emergence_rcp85")
+                                          column(7, imageOutput("adult_emergence_rcp85")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_4")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                          ),
                                  ####### Adult Flight 85 END
 
                                  ####### Egg Hatch into Larva start
-                                 tabPanel("Egg Hatch into Larva", imageOutput("cum_larva_pop")),
+                                 tabPanel("Egg Hatch into Larva", 
+                                           # imageOutput("cum_larva_pop")
+                                          column(7, imageOutput("cum_larva_pop")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_5")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                           ),
+
                                  # tabPanel("Egg Hatch into Larva",
                                  #          fluidRow(tabBox(tabPanel("Cumulative Larva Population Fraction", imageOutput("cum_larva_pop")),
                                  #                          width = 12
@@ -441,7 +511,18 @@ navbarPage(title = div("",
                                  ####### Egg Hatch into Larva END
 
                                  ####### DIAPAUSE 85 start
-                                 tabPanel("Diapause", imageOutput("diapause_abs_rcp85")),
+                                 tabPanel("Diapause", 
+                                           # imageOutput("diapause_abs_rcp85")
+                                          column(9, imageOutput("diapause_abs_rcp85")),
+                                          br(),br(),br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_6")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                           ),
+                                 
                                  # tabPanel("Diapause",
                                  #          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd")), # Hossein
                                  #                          tabPanel("Absolute Population Vs Cumulative DD", imageOutput("diapause_abs_rcp85")),
@@ -457,8 +538,33 @@ navbarPage(title = div("",
 
                                  ####### No. of generations 45 start
                                  tabPanel("No. of Generations",
-                                          fluidRow(tabBox(tabPanel("Adult", imageOutput("Adult_Gen_Aug_rcp45"), height=700),
-                                                          tabPanel("Larva", imageOutput("Larva_Gen_Aug_rcp45"), height=700),
+                                          fluidRow(tabBox(tabPanel("Adult", 
+                                                                   # imageOutput("Adult_Gen_Aug_rcp45"),
+                                                                   # br(), br(),
+                                                                   # height=700
+                                                                   column(7, imageOutput("Adult_Gen_Aug_rcp45")),
+                                                                          br(),br(),br(),
+                                                                          column(1, imageOutput("location_group_7")),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          height = 1700
+                                                                   ),
+
+                                                          tabPanel("Larva", 
+                                                                   # imageOutput("Larva_Gen_Aug_rcp45"), 
+                                                                   # br(), br(),
+                                                                   # height=700
+                                                                   column(7, imageOutput("Larva_Gen_Aug_rcp45")),
+                                                                          br(),br(),br(),
+                                                                          column(1, imageOutput("location_group_8")),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          br(),br(), br(),br(), br(),br(),
+                                                                          height = 1700
+                                                                   ),
                                                           width = 12
                                                           )
                                                   )
@@ -468,15 +574,45 @@ navbarPage(title = div("",
                                  ####### No. of generations 45 END
 
                                  ####### DD 45 start
-                                 tabPanel("Degree Days", imageOutput("cumdd_rcp45")),
+                                 tabPanel("Degree Days", 
+                                 	      # imageOutput("cumdd_rcp45")
+                                 	      column(7, imageOutput("cumdd_rcp45")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_9")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                 	      ),
                                  ####### DD 45 END
 
                                  ####### Adult Flight 45 start
-                                 tabPanel("Adult First Flight", imageOutput("adult_emergence_rcp45")),
+                                 tabPanel("Adult First Flight", 
+                                 	      # imageOutput("adult_emergence_rcp45")
+                                 	      column(7, imageOutput("adult_emergence_rcp45")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_10")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                 	      ),
                                  ####### Adult Flight 45 END
 
                                  ####### Egg Hatch 45 start
-                                 tabPanel("Egg Hatch into Larva", imageOutput("cum_larva_pop_rcp45")),
+                                 tabPanel("Egg Hatch into Larva", 
+                                 	      # imageOutput("cum_larva_pop_rcp45")
+                                 	      column(7, imageOutput("cum_larva_pop_rcp45")),
+                                          br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_11")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                 	      ),
                                  # tabPanel("Egg Hatch into Larva",
                                  #          fluidRow(tabBox(
                                  #                          tabPanel("Cumulative Larva Population Fraction", 
@@ -488,7 +624,17 @@ navbarPage(title = div("",
                                  ####### Egg Hatch 45 END
 
                                  ####### Diapause 45 START
-                                 tabPanel("Diapause", imageOutput("diapause_abs_rcp45")),
+                                 tabPanel("Diapause", 
+                                 	      # imageOutput("diapause_abs_rcp45")
+                                 	      column(9, imageOutput("diapause_abs_rcp45")),
+                                          br(),br(),br(),br(),br(),br(),
+                                          column(1, imageOutput("location_group_12")),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          br(),br(), br(),br(), br(),br(),
+                                          height = 1700
+                                 	      ),
                                  # tabPanel("Diapause",
                                  #          fluidRow(tabBox(# tabPanel("Relative Population Vs Cumulative DD", imageOutput("rel_pop_cumdd_rcp45")), # Hossein
                                  #                          tabPanel("Absolute Population Vs Cumulative DD", imageOutput("abs_pop_cumdd_rcp45")),

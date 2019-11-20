@@ -1,3 +1,5 @@
+# codling moth
+
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -75,8 +77,7 @@ shinyServer(function(input, output, session) {
                                                                       ".png")
                                                  curr_emission <- input$emission
                                              }
-                                             file_dir_string <- paste0("/data/hnoorazar/codling_moth/plots/analog_plots/", 
-                                                                       "1_sigma_", 
+                                             file_dir_string <- paste0(analog_plot_dir, "1_sigma_", 
                                                                        curr_emission, "/", 
                                                                        image_name)
 
@@ -95,7 +96,7 @@ shinyServer(function(input, output, session) {
   ########################### ANALOG WITH just side bar
   ########################### to choose County names from.
   output$analog_plot <- renderImage({ image_name <- paste0(input$county, "_w_precip_", input$emission, ".png")
-                                      filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/analog_plots', image_name))
+                                      filename <- normalizePath(file.path(analog_plot_dir, image_name))
                                       # Return a list containing the filename and alt text
                                       list(src = filename, width = 600, height = 600)}, 
                                      deleteFile = FALSE
@@ -103,265 +104,190 @@ shinyServer(function(input, output, session) {
   ###################################################
   ###################################################
   ###################################################
-  output$location_group <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'location-group.png'))
+  output$images <- renderUI({
+         tags$div(img(src = normalizePath(file.path(plots_dir, 
+                                                   'location-group.png')), 
+                      width = 700, height = 400), 
+                  img(src = normalizePath(file.path(plots_dir, 
+                                                    'Adult_Gen_Aug_rcp85.png')), 
+                      width = 300, height = 300))
+         })
+
+  # output$images_1 <- renderImage({filename_1 <- normalizePath(file.path(plots_dir, 'location-group.png'))
+  #                                 filename_2 <- normalizePath(file.path(plots_dir, 'Adult_Gen_Aug_rcp85.png')), 
+  #                                 # Return a list containing the filename and alt text
+  #                                  list(src = c(filename_1, filename_2), 
+  #                                       width = 400, height = 400)}, 
+  #                               deleteFile = FALSE
+  #                               )
+    
+
+  output$location_group <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                            'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
                                              width = 400, height = 400)}, 
                                         deleteFile = FALSE)
 
-  output$location_group_1 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'location-group.png'))
+  output$location_group_1 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
-                                             width = 400, height = 400)}, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+  output$location_group_2 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+output$location_group_3 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+output$location_group_4 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_5 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+
+output$location_group_6 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_7 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_8 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+
+output$location_group_9 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_10 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_11 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+output$location_group_12 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
                                         deleteFile = FALSE)
   
   output$location_summary= renderText({
     "some text heresome text heresome text heresome text heresome text here"
   })
   
-  # output$ag_vplot <- renderImage({
-  #   filename <- normalizePath(file.path('./plots/LarvaAdult', 'agenerationVsDoY.png'))
-    
-  #   # Return a list containing the filename and alt text
-  #   list(src = filename, width = 1200, height = 800)
-    
-  # }, deleteFile = FALSE) # Hossein
-  
-  # output$lg_vplot <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 
-  #                                                                     'lgenerationVsDoY.png'))
-  #                                # Return a list containing the filename and alt text
-  #                                list(src = filename, width = 1200, height = 800)}, 
-  #                                deleteFile = FALSE) # Hossein commented out
-  
   output$Adult_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                                      'Adult_Gen_Aug_rcp85.png'))
+                                  filename <- normalizePath(file.path(plots_dir, 'Adult_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
-                                  list(src = filename, width = 600, height = 450)}, 
+                                  list(src = filename, 
+                                  	   width = 600, height = 450)}, 
                                   deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp85 <- renderImage({
-                                  filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                                      'Larva_Gen_Aug_rcp85.png'))
+                                  filename <- normalizePath(file.path(plots_dir, 'Larva_Gen_Aug_rcp85.png'))
                                   # Return a list containing the filename and alt text
-                                  list(src = filename, width = 600, height = 450)}, 
+                                  list(src = filename, 
+                                  	   # width = 600, height = 450
+                                  	   width = 600, height = 450
+                                  	   )}, 
                                   deleteFile = FALSE)
   
-  # output$ag_vplot_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 
-  #                                                                 'agenerationVsDoY_rcp45.png'))
-  #                                      # Return a list containing the filename and alt text
-  #                                      list(src = filename, width = 1200, height = 800)}, 
-  #                                      deleteFile = FALSE) # Hossein
-  
-  # output$lg_vplot_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 
-  #                                                               'lgenerationVsDoY_rcp45.png'))
-  #                                       # Return a list containing the filename and alt text
-  #                                       list(src = filename, width = 1200, height = 800)}, 
-  #                                       deleteFile = FALSE) # Hossein commented out
-  
   output$Adult_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                                 'Adult_Gen_Aug_rcp45.png'))
+                                        filename <- normalizePath(file.path(plots_dir, 'Adult_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 450)}, 
                                         deleteFile = FALSE)
   
   output$Larva_Gen_Aug_rcp45 <- renderImage({
-                                        filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                            'Larva_Gen_Aug_rcp45.png'))
+                                        filename <- normalizePath(file.path(plots_dir, 'Larva_Gen_Aug_rcp45.png'))
                                         # Return a list containing the filename and alt text
                                       list(src = filename, width = 600, height = 450)}, 
                                       deleteFile = FALSE)
-
-  #  output$ap_vplot <- renderImage({
-  #    filename <- normalizePath(file.path('./plots/LarvaAdult', 'aMonthVsPop.png'))
-  #    
-  #    # Return a list containing the filename and alt text
-  #    list(src = filename, width = 1200, height = 900)
-  #    
-  #  }, deleteFile = FALSE)
-  #  
-  #  output$lp_vplot <- renderImage({
-  #    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lMonthVsPop.png'))
-  #    
-  #    # Return a list containing the filename and alt text
-  #    list(src = filename, width = 1200, height = 900)
-  #    
-  #  }, deleteFile = FALSE)
-
-  # output$gen_pop_plot <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 
-  #                                                                         'gen_pop.png'))
-  #                                     # Return a list containing the filename and alt text
-  #                                     list(src = filename, width = 1200, height = 900)}, 
-  #                                     deleteFile = FALSE) # Hossein commented out
-
-  # output$gen_pop_plot1 <- renderImage({filename <- normalizePath(file.path('./plots/LarvaAdult', 
-  #                                                                          'gen_pop1.png'))
-  #                                     # Return a list containing the filename and alt text
-  #                                     list(src = filename, width = 1200, height = 900)}, 
-  #                                     deleteFile = FALSE) # Hossein
   
-#  output$ap_bplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'apop_year.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
-#  
-#  output$lp_bplot <- renderImage({
-#    filename <- normalizePath(file.path('./plots/LarvaAdult', 'lpop_year.png'))
-#    
-#    # Return a list containing the filename and alt text
-#    list(src = filename, width = 1200, height = 900)
-#    
-#  }, deleteFile = FALSE)
-  
-  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                                     'adult_emergence_rcp85.png'))
+  output$adult_emergence_rcp85 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                                  'adult_emergence_rcp85.png'))
                                  # Return a list containing the filename and alt text
                                  list(src = filename, width = 600, height = 450)}, 
                                  deleteFile = FALSE)
-  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 
-                                                                           'adult_emergence_rcp45.png'))
+  output$adult_emergence_rcp45 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                                   'adult_emergence_rcp45.png'))
                                        # Return a list containing the filename and alt text
                                        list(src = filename, width = 600, height = 450)}, 
                                        deleteFile = FALSE)
   
-  # output$e_bplot <- renderImage({filename <- normalizePath(file.path('./plots', 'edoy_year.png'))
-  #                                # Return a list containing the filename and alt text
-  #                                list(src = filename, width = 1200, height = 900)}, 
-  #                                deleteFile = FALSE) # Hossein
-  
-  # output$d_vplot <- renderImage({filename <- normalizePath(file.path('./plots', 'diapPop.png'))
-  #                                # Return a list containing the filename and alt text
-  #                                list(src = filename, width = 900, height = 700)}, 
-  #                                deleteFile = FALSE) # Hossein
-  
-  # output$d_bplot <- renderImage({filename <- normalizePath(file.path('./plots', 'dpop_year.png'))
-  #                                # Return a list containing the filename and alt text
-  #                                list(src = filename, width = 1200, height = 900)}, 
-  #                                deleteFile = FALSE) # Hossein
- 
-  ########### 
-  # output$cumDD_mongrps_magdiff <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                     'cumDD_month_groups_magdiff.png'))
-  #                                              # Return a list containing the filename and alt text
-  #                                              list(src = filename, width = 1200, height = 900)}, 
-  #                                              deleteFile = FALSE) # hossein
-  
-  # output$cumDD_mons_magdiff <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                  'cumDD_months_magdiff.png'))
-  #                                           # Return a list containing the filename and alt text
-  #                                           list(src = filename, width = 1200, height = 1200)}, 
-  #                                           deleteFile = FALSE) # Hossein
-
-  # output$DD_mongrps_magdiff1 <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays',
-  #                                                                   'DD_month_groups_magdiff1.png'))
-  #                                            # Return a list containing the filename and alt text
-  #                                            list(src = filename, width = 1200, height = 900)}, 
-  #                                            deleteFile = FALSE) # hossein
-
-  # output$DD_mongrps <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                       'DD_month_groups.png'))
-  #                                   # Return a list containing the filename and alt text
-  #                                   list(src = filename, width = 1200, height = 900)}, 
-  #                                   deleteFile = FALSE) # hossein
-
-  # output$cumDD_mongrps_magdiff_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                   'cumDD_month_groups_magdiff_rcp45.png'))
-  #                                                    # Return a list containing the filename and alt text
-  #                                                    list(src = filename, width = 1200, height = 900)}, 
-  #                                                    deleteFile = FALSE) # hossein
-  
-  # output$cumDD_mons_magdiff_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                            'cumDD_months_magdiff_rcp45.png'))
-  #                                                 # Return a list containing the filename and alt text
-  #                                                 list(src = filename, width = 1200, height = 1200)}, 
-  #                                                 deleteFile = FALSE) # hossein
-
-  # output$DD_mongrps_magdiff_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                       'DD_month_groups_magdiff_rcp45.png'))
-  #                                                 # Return a list containing the filename and alt text
-  #                                                 list(src = filename, width = 1200, height = 900)}, 
-  #                                                 deleteFile = FALSE) # hossein
-
-  # output$DD_mongrps_rcp45 <- renderImage({filename <- normalizePath(file.path('./plots/DegreeDays', 
-  #                                                                             'DD_month_groups_rcp45.png'))
-  #                                     # Return a list containing the filename and alt text
-  #                                     list(src = filename, width = 1200, height = 900)}, 
-  #                                     deleteFile = FALSE) # hossein
-  ###########
-
-  # output$rel_pop_cumdd <- renderImage({filename <- normalizePath(file.path('./plots/Diapause', 
-  #                                                                          'rel_pop_cumdd.png'))
-  #                                      # Return a list containing the filename and alt text
-  #                                      list(src = filename, width = 800, height = 600)}, 
-  #                                      deleteFile = FALSE) # hossein
-
-  # output$rel_pop_doy <- renderImage({filename <- normalizePath(file.path('./plots/Diapause', 
-  #                                                                       'rel_pop_doy.png'))
-  #                                    # Return a list containing the filename and alt text
-  #                                     list(src = filename, width = 800, height = 900)}, 
-  #                                     deleteFile = FALSE)
-
   output$diapause_abs_rcp85 <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'diapause_abs_rcp85.png'))
+    filename <- normalizePath(file.path(plots_dir, 'diapause_abs_rcp85.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
     
   }, deleteFile = FALSE)
-
-  output$abs_pop_doy <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/Diapause', 'abs_pop_doy.png'))
-    
-    # Return a list containing the filename and alt text
-    list(src = filename, width = 800, height = 900)
-    
-  }, deleteFile = FALSE)
-
-  # output$rel_pop_cumdd_rcp45 <- renderImage({ # hossein commented out
-  #   filename <- normalizePath(file.path('./plots/Diapause', 'rel_pop_cumdd_rcp45.png'))
-    
-  #   # Return a list containing the filename and alt text
-  #   list(src = filename, width = 800, height = 600)
-    
-  # }, deleteFile = FALSE)
-
-  # output$rel_pop_doy_rcp45 <- renderImage({
-  #   filename <- normalizePath(file.path('./plots/Diapause', 'rel_pop_doy_rcp45.png'))
-    
-  #   # Return a list containing the filename and alt text
-  #   list(src = filename, width = 1200, height = 900)
-    
-  #   }, deleteFile = FALSE) # hossein
 
   output$diapause_abs_rcp45 <- renderImage({
-    filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots/', 'diapause_abs_rcp45.png'))
+    filename <- normalizePath(file.path(plots_dir, 'diapause_abs_rcp45.png'))
     
     # Return a list containing the filename and alt text
     list(src = filename, width = 800, height = 600)
     
   }, deleteFile = FALSE)
-
-  # output$abs_pop_doy_rcp45 <- renderImage({ # Hossein commented out
-  #   filename <- normalizePath(file.path('./plots/Diapause', 'abs_pop_doy_rcp45.png'))
-    
-  #   # Return a list containing the filename and alt text
-  #   list(src = filename, width = 1200, height = 900)
-    
-  # }, deleteFile = FALSE)
-  ############
-  ############ Bloom to be done in another page
-  # output$full_bloom <- renderImage({
-  #   #filename <- normalizePath(file.path('./plots', 'FullBloom.png'))
-  #   filename <- normalizePath(file.path('./plots', 'bloom_rcp85.png'))
-    
-  #   # Return a list containing the filename and alt text
-  #   list(src = filename, width = 600, height = 500)
-    
-  # }, deleteFile = FALSE)
 
   output$cumdd <- renderImage({
     filename <- normalizePath(file.path('/data/hnoorazar/codling_moth/plots', 'cumdd_rcp85.png'))
@@ -643,28 +569,6 @@ shinyServer(function(input, output, session) {
     GenDiffMap
   })
   
-#  output$map_med_pop <- renderLeaflet({
-#    pop_mon = paste0(input$type_pop, input$pop_month)
-#    #print(pop_mon)
-#    layerlist = levels(d$timeFrame) #c("Historical", "2040's", "2060's", "2080's")
-#    
-#    sub_Pop = subset(d, !is.na(timeFrame) & !is.na(get(pop_mon)), 
-#                     select = c(timeFrame, year, location, get(pop_mon)))
-#    sub_Pop[, (pop_mon) := get(pop_mon) * 100]
-#    sub_Pop = sub_Pop[, .(medianPop = median( get(pop_mon) )), by = c("timeFrame", "location")]
-#    
-#    medianPop = list( hist = subset(sub_Pop, timeFrame == layerlist[1]),
-#                      `2040` = subset(sub_Pop, timeFrame == layerlist[2]),
-#                      `2060` = subset(sub_Pop, timeFrame == layerlist[3]),
-#                      `2080` = subset(sub_Pop, timeFrame == layerlist[4]))
-#    
-#    PopMap <- constructMap(medianPop, layerlist, 
-#                           palColumn = "medianPop", 
-#                           legendVals = seq(0, 100), "Population (%)", 
-#                           RdBu_reverse)
-#
-#    PopMap
-#  })
   output$map_med_pop <- renderLeaflet({
     typeGen = paste0("Perc", input$type_pop, input$type_pop_gen)
     pop_mon = input$pop_month
@@ -942,15 +846,7 @@ shinyServer(function(input, output, session) {
                   subset(sub_Emerg, timeFrame == layerlist[3]),
                   subset(sub_Emerg, timeFrame == layerlist[4]))
     
-    # diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
-    
-    
-    #for(i in 1:length(diffEmerg)) {
-    #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
-    #}
-    # diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
+
     if(layerdiff[1] == climate_group) {
       diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")))
      }

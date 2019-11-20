@@ -1,3 +1,5 @@
+# codling moth
+
 library(scales)
 library(lattice)
 # library(ggmap)
@@ -19,6 +21,9 @@ library(RColorBrewer)
 # library(Hmisc)
 
 data_dir = "/data/hnoorazar/codling_moth/"
+plots_dir <- "/data/hnoorazar/codling_moth/plots/"
+analog_plot_dir <- "/data/hnoorazar/codling_moth/plots/analog_plots/"
+###################################################################
 d = data.table(readRDS(paste0(data_dir,"/combinedData.rds")))
 # ordering time frame levels 
 d$timeFrame <-as.factor(d$timeFrame)
