@@ -21,13 +21,7 @@ library(RColorBrewer)
 
 shinyServer(function(input, output, session) {
   #############################################
-  ############################################# Bloom W/ Global map
   #############################################
-
-  # Show page on click event for chill frost
-  # spatial_hardiness_data <- reactive({
-  #   spatial_hardiness_locs
-  # })
 
   #
   # Create the map
@@ -67,7 +61,7 @@ shinyServer(function(input, output, session) {
               # colors = c("royalblue3", "steelblue1", "maroon3", "red", "black"),
               values = unique(spatial_hardiness_locs$freezing_years),
               labels = unique(spatial_hardiness_locs$freezing_years),
-              title = "No. years w/ damaging events")
+              title = "No. years w/\ndamaging events")
   })
 
   #
@@ -82,16 +76,12 @@ shinyServer(function(input, output, session) {
                          toggle =  "open")
 
              output$hard_plot <- renderImage({
-                    
-                         image_name <- paste0(lat, "-", long, ".png")
-                         filename <- normalizePath(file.path(observed_plot_dir, 
-                                                             image_name))
-                         filename
-                         print (filename)
-                         # Return a list containing the filename and alt text
-                         list(src = filename, 
-                              width = 620, height = 370)
-                                            }, deleteFile = FALSE
+                                               image_name <- paste0(lat, "-", long, ".png")
+                                               filename <- normalizePath(file.path(observed_plot_dir, 
+                                                                                     image_name))
+                                               list(src = filename, width = 650, height = 400)
+                                             }, 
+                                            deleteFile = FALSE
                                             )
           })
 
