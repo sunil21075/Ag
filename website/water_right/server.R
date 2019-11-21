@@ -27,11 +27,13 @@ shinyServer(function(input, output, session) {
   ###################################################
   
     output$water_right_map <- renderLeaflet({
-      target_date <- as.Date(paste(as.character(input$year_input),
-                                   as.character(input$month_input),
-                                   as.character(input$day_input),
-                                   sep="-")
-                            )
+      # target_date <- as.Date(paste(as.character(input$year_input),
+      #                              as.character(input$month_input),
+      #                              as.character(input$day_input),
+      #                              sep="-")
+      #                       )
+
+      target_date <- as.Date(input$cut_date)
 
       spatial_wtr_right <- data.table(spatial_wtr_right)
       spatial_wtr_right[, color := ifelse(date < target_date, "#FF3333", "#0080FF")]

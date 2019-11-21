@@ -28,34 +28,23 @@ navbarPage(title = div("",
                                                    includeHTML("home-page/people.html")
                                                    )
                                           ),
-                                 tabPanel(tags$b("Codling Moth Life Cycle and Management"), 
-                                          tags$div(style = "width: 950px", 
-                                                   includeHTML("home-page/life-cycle.html")
-                                                   )
-                                          ),
+                            
+                                 # tabPanel(tags$b("Climate Data"), 
+                                 #          tags$div(style="width:950px", 
+                                 #                   includeHTML("home-page/climate-change-projections.html")
+                                 #                   )
+                                 #          ),
 
-                                 tabPanel(tags$b("Climate Data"), 
-                                          tags$div(style="width:950px", 
-                                                   includeHTML("home-page/climate-change-projections.html")
-                                                   )
-                                          ),
-
-                                 tabPanel(tags$b("What's the story?"), 
-                                                 tags$div(style="width: 950px", 
-                                                          includeHTML("home-page/changing-pest-pressures.html")
-                                                          )
-                                                 ),
+                                 # tabPanel(tags$b("What's the story?"), 
+                                 #                 tags$div(style="width: 950px", 
+                                 #                          includeHTML("home-page/changing-pest-pressures.html")
+                                 #                          )
+                                 #                 ),
 
                                  tabPanel(tags$b("Contact"), 
                                           tags$div(style="width:950px", 
                                                includeHTML("home-page/contact.html")
                                                )
-                                          ),
-
-                                 tabPanel(tags$b("Take a tour! (video)"), 
-                                          tags$div(style="width:950px", 
-                                                   includeHTML("home-page/take-a-tour.html")
-                                                   )
                                           ),
                                  widths = c(2,10)
                                  )
@@ -70,15 +59,35 @@ navbarPage(title = div("",
                     div(class="outer",
                         tags$head(includeCSS("styles.css")),
                         leafletOutput("water_right_map", width="100%", height="100%"),
-                        absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                      draggable = TRUE, top = 60, 
-                                      left = "auto", right = 20, bottom = "auto",
-                                      width = 250, height = "auto",
-                                      h3(tags$b("Select a Date \n")),
-                                      h3("Earlier in red, later in blue"),
-                                      numericInput("year_input", "Select a Year", min = 1800, max = 2015, value = 1800),
-                                      numericInput("month_input", "Select a Month", min = 1, max = 12, value = 1),
-                                      numericInput("day_input", "Select a Day", min = 1, max = 30, value = 1)
+                        # absolutePanel(id = "controls", 
+                        #               class = "panel panel-default", 
+                        #               fixed = TRUE,
+                        #               draggable = TRUE, 
+                        #               top = 60, right = 700,
+                        #               left = "auto", bottom = "auto",
+                        #               width = 250, height = "auto",
+                        #               h3(tags$b("Select a Date \n")),
+                        #               h3("Earlier in red, later in blue"),
+                        #               numericInput("year_input", "Select a Year", min = 1800, max = 2015, value = 1800),
+                        #               numericInput("month_input", "Select a Month", min = 1, max = 12, value = 1),
+                        #               numericInput("day_input", "Select a Day", min = 1, max = 30, value = 1)
+                        #               ),
+
+                        absolutePanel(id = "sliderControl2", 
+                                      class = "panel panel-default", 
+                                      fixed = TRUE,
+                                      draggable = TRUE, 
+                                      top = 60, right = 20,
+                                      left = "auto", bottom = "auto",
+                                      width = 330, height = "auto",
+                                      # h3(tags$b("Select a Date \n")),
+                                      h4("Earlier in red, later in blue"),
+                                      sliderInput("cut_date",
+						                          "Dates:",
+						                          min = as.Date("1800-01-01","%Y-%m-%d"),
+						                          max = as.Date("2015-12-30","%Y-%m-%d"),
+						                          value=as.Date("1800-01-01"),
+						                          timeFormat="%Y-%m-%d")
                                       )
                         )
                     )
