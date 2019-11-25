@@ -117,7 +117,7 @@ vector2[order(vector1, decreasing=TRUE)]
 
 
 # change order of columns of data table, reorder
-setcolorder(x, c("c", "b", "a"))
+data.table::setcolorder(x, c("c", "b", "a"))
 
 # reshape a vector into matrix
 d <- matrix(NN.dist, nrow = 70, byrow = FALSE)
