@@ -2,7 +2,6 @@
 
 library(scales)
 library(lattice)
-# library(ggmap)
 library(jsonlite)
 library(raster)
 
@@ -51,6 +50,17 @@ data_dir <- paste0(wtr_right_dir, "data/")
 spatial_wtr_right <- readRDS(paste0(data_dir, 
                                     "water_right_attributes.rds"))
 spatial_wtr_right$colorr <- "#ffff00"
+
+spatial_wtr_right_surface <- spatial_wtr_right %>% 
+                             filter(WaRecRCWCl == "surfaceWater") %>%
+                             data.table()
+
+spatial_wtr_right_ground <- spatial_wtr_right %>% 
+                             filter(WaRecRCWCl == "groundwater") %>%
+                             data.table()
+
+spatial_wtr_right_both <- spatial_wtr_right %>% data.table()
+
 ######################################################
 
 RdBu_reverse <- rev(brewer.pal(11, "RdBu"))

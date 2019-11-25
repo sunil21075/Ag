@@ -1,11 +1,5 @@
 # Water Rights
 
-library(leaflet)
-library(shinyBS)
-library(shiny)
-library(plotly)
-library(shinydashboard)
-
 navbarPage(title = div(""),
            id="nav", 
            windowTitle = "Water Rights",
@@ -16,7 +10,7 @@ navbarPage(title = div(""),
                     div(class="outer",
                         tags$head(includeCSS("styles.css")),
                         leafletOutput("water_right_map", width="100%", height="100%"),
-                        absolutePanel(id = "controls", 
+                        absolutePanel(id = "controlss", 
                                       class = "panel panel-default", 
                                       fixed = TRUE,
                                       draggable = TRUE, 
