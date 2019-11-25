@@ -1099,10 +1099,10 @@ output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plo
     future_version = unlist(temp[2])
 
     if(future_version == "rcp45") {
-  data = bloom_rcp45
-    }
-    else {
-  data = bloom
+       data = bloom_rcp45
+       }
+       else {
+       data = bloom
     }
 
     layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
