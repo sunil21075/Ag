@@ -43,7 +43,7 @@ body <- dashboardBody(
     
     # bloom_vs_CP tab
     tabItem(tabName = "hard_map",
-            box(id = "bcf", width = NULL,
+            box(id = "hard_box_id", width = NULL,
                 #  Main Map  #
                 tabPanel("Map",
                          div(class = "outer",
@@ -54,12 +54,13 @@ body <- dashboardBody(
                         ),
                 absolutePanel(id = "controls", 
                     class = "panel panel-default", fixed = TRUE,
-                    draggable = TRUE, top = 40, 
-                    left = "auto", right = 20, bottom = "auto",
+                    draggable = TRUE, 
+                    left = "auto", right = 20, 
+                    top = 40, bottom = "auto",
                     width = "auto", height = "auto",
 
-                    h4("Tile"),
-                    selectInput("map_tile_", label=" ", 
+                    # h4("Tile"),
+                    selectInput("map_tile_", label="", 
                                 choices=vars,
                                 selected = vars[1])
                   )
