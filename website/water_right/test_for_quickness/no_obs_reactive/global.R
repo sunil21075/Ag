@@ -17,61 +17,59 @@ library(dplyr)    # for working with data frames
 library(ggplot2)  # for plotting
 library(reshape2)
 library(RColorBrewer)
-
+#####################################################
+#####
+#####       Read Shape files
+#####
 ######################################################
-# RD <- c("1916-06-30", "1884-10-30", 
-#         "1905-05-10", "1903-05-10",
-#         "1902-05-10", "1974-08-02",
-#         "1933-08-25", "1901-06-30", 
-#         "2010-07-30", "2009-07-30")
+shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 
-# lat <- c(47.10483, 47.10483, 47.10483,
-#          47.10483, 47.10483, 47.10483,
-#          47.33486, 47.33486, 47.33486, 
-#          47.33486)
+shapefile_dir <- paste0("/Users/hn/Documents/GitHub/Ag/", 
+                        "website/water_right/", 
+                        "test_for_quickness/shapefiles/")
 
-# long <- c(-120.8522, -121.0577,
-#           -121.1509,-121.2570, -121.3508,
-#           -121.4569,
+##################
+##
+## all streams
+##
+##################
+all_streams_sp <- rgdal::readOGR(dsn=path.expand(
+                                          paste0(shapefile_dir, 
+                                                 "all_streams/")),
+                                layer = "all_streams")
+##################
+##
+## all basins
+##
+##################
 
-#           -120.8522, -121.0577,
-#           -121.1509,-121.2570)
+all_basins_sp <- rgdal::readOGR(dsn=path.expand(
+                                        paste0(shapefile_dir, 
+                                              "all_basins/")),
+                                layer = "all_basins")
+##################
+##
+## all subbasins
+##
+##################
+all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
+                                          paste0(shapefile_dir, 
+                                                 "all_subbasins/")),
+                                layer = "all_subbasins")
 
-# WRS <- c("surfaceWater", "surfaceWater", "surfaceWater", 
-#          "surfaceWater", "surfaceWater", "surfaceWater", 
-#          "groundwater", "groundwater", "groundwater",
-#          "groundwater")
-
-
-# spatial_wtr_right = data.table(right_date = RD,
-#                                lat = lat,
-#                                long = long,
-#                                WaRecRCWCl = WRS
-#                                )
-# spatial_wtr_right$location <- paste0(spatial_wtr_right$lat, spatial_wtr_right$long)
-# spatial_wtr_right$right_date <- as.Date(spatial_wtr_right$right_date)
-
-# spatial_wtr_right$popup <- 1
-
-# spatial_wtr_right$colorr <- "#ffff00"
-
-# spatial_wtr_right_surface <- spatial_wtr_right %>% 
-#                              filter(WaRecRCWCl == "surfaceWater") %>%
-#                              data.table()
-
-# spatial_wtr_right_ground <- spatial_wtr_right %>% 
-#                              filter(WaRecRCWCl == "groundwater") %>%
-#                              data.table()
-
-# spatial_wtr_right_both <- spatial_wtr_right %>% data.table()
-
+#####################################################
+#####
+#####       Water Right data
+#####
+######################################################
 d <- paste0("/Users/hn/Documents/GitHub", 
             "/Ag/website/water_right/", 
             "test_for_quickness/data/", 
             "water_right_attributes.rds")
 
 spatial_wtr_right <- readRDS(d) %>% data.table()
-spatial_wtr_right$color <- "#ffff00"
+spatial_wtr_right$colorr <- "#ffff00"
+spatial_wtr_right <- data.table(spatial_wtr_right)
 
 # curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$county_type))
@@ -85,4 +83,85 @@ subbasins <- c("Ahtanum Creek",
                "Toppenish Creek",
                "Wilson-Cherry")
 
+########################################
+######
+######       Functions
+######
+########################################
 
+###########################
+######
+######   construct map
+######
+###########################
+build_map <- function(data_dt, sub_bas){  
+  data_dt <- data_dt %>%
+             filter(subbasin %in% sub_bas) %>%
+             data.table()
+
+  mean_lat <- mean(data_dt$lat) 
+  mean_long <- mean(data_dt$long)
+
+  map <- leaflet() %>%
+         addTiles(urlTemplate = paste0("http://server.", 
+                                       "arcgisonline.com/", 
+                                       "ArcGIS/rest/services", 
+                                       "/World_Imagery/MapServer", 
+                                       "/tile/{z}/{y}/{x}"),
+
+                  attribution = paste0('Maps by ', 
+                                       '<a href="http://',
+                                       'www.mapbox.com/">', 
+                                       'Mapbox</a>'),
+                  layerId = "Satellite",
+                  options= providerTileOptions(opacity = 0.9)) %>%
+         setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
+         addCircleMarkers(data = data_dt, 
+                          lng = ~ long, lat = ~lat,
+                          label = ~ popup,
+                          # layerId = ~ location,
+                          radius = 3,
+                          color = ~ colorr,
+                          stroke  = FALSE,
+                          fillOpacity = .95 
+                           )
+
+  for(ii in 1:length(all_basins_sp@polygons)) {
+      map <- addPolygons(map = map, 
+                         data = all_basins_sp, 
+                         lng = ~all_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
+                         lat = ~all_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
+                         fill = F, 
+                         weight = 2, 
+                         color = "red", 
+                         group ="Outline")
+
+    }
+
+  for(ii in 1:length(all_subbasins_sp@polygons)) {
+      map <- addPolygons(map = map, 
+                         data = all_subbasins_sp, 
+                         lng = ~all_subbasins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
+                         lat = ~all_subbasins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
+                         fill = F, 
+                         weight = 2, 
+                         color = "yellow", 
+                         group ="Outline")
+
+    }
+
+
+  # for(ii in 1:length(all_streams_sp@lines)) {
+  #     map <- addPolygons(map = map, 
+  #                        data = all_streams_sp, 
+  #                        lng = ~all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 1], 
+  #                        lat = ~all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 2],
+  #                        fill = F, 
+  #                        weight = 2, 
+  #                        color = "blue", 
+  #                        group ="Outline")
+
+  # }
+
+  return(map)
+}

@@ -2,11 +2,26 @@
 # from 
 # https://shiny.rstudio.com/reference/shiny/latest/updateSelectInput.html
 #
+# useful in goddamn update reactivity thing:
+# https://stackoverflow.com/questions/28379937/change-selectize-choices-but-retain-previously-selected-values
+#
 
 
 shinyServer(function(input, output, session) {
   curr_spatial <- spatial_wtr_right
+  current_selection <- reactiveVal(NULL)
 
+  observeEvent(input$subbasins_id, {
+      curr_spatial <- curr_spatial %>% 
+                      filter(subbasin %in% input$subbasins_id) %>% 
+                      data.table()
+
+      subbasin_to_plot <- unique(curr_spatial$subbasin)
+      print ("___________________________")
+      print ("subbasin_to_plot")
+      print (subbasin_to_plot)
+      print ("___________________________")
+    })
 
   output$water_right_map <- renderLeaflet({
     target_date <- as.Date(input$cut_date)
@@ -24,7 +39,7 @@ shinyServer(function(input, output, session) {
                       filter(WaRecRCWCl == "groundwater")%>%
                       data.table()
        } else {
-          curr_spatial <- spatial_wtr_right
+          curr_spatial <- data.table(spatial_wtr_right)
     }
     #########################################################
     #########################################################
@@ -33,45 +48,39 @@ shinyServer(function(input, output, session) {
       curr_spatial <- curr_spatial %>% 
                       filter(county_type == input$countyType_id) %>% 
                       data.table()
-      #######################
-    
       subbasins <- sort(unique(curr_spatial$subbasin))
+      #######################
      
-      # Can also set the label and select items
-      updateSelectInput(session,
-                        inputId = 'subbasins_id',
-                        choices = subbasins,
-                        selected = head(subbasins, 1)
-                        )
+      ## Can also set the label and select items
+      # updateSelectInput(session,
+      #                   inputId = 'subbasins_id',
+      #                   choices = subbasins,
+      #                   selected = head(subbasins, 1)
+      #                   )
     # })
     ############################################# 
     #############################################
+    # current_selection <- reactiveVal(NULL)
     observeEvent(input$subbasins_id, {
-      curr_spatial <- curr_spatial %>% 
-                      filter(subbasin %in% input$subbasins_id) %>% 
-                      data.table()
-      print (unique(curr_spatial$subbasin))
-    })
+             current_selection(input$subbasins_id)
+             })
+
+    # now if you are updating your menu 
+    if (!(current_selection() %in% subbasins)){
+      sss <- subbasins[1]
+      } else {
+        sss <- current_selection()
+      }
+
+    updateSelectInput(session, 
+                      inputId = "subbasins_id", 
+                      choices = subbasins,
+                      selected = sss)
   #############################################
-    mean_lat <- mean(curr_spatial$lat) 
-    mean_long <- mean(curr_spatial$long)  
-    
-    leaflet() %>%
-    addTiles(urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-             attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>',
-             layerId = "Satellite",
-             options= providerTileOptions(opacity = 0.9)) %>%
-    setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
-    addCircleMarkers(data = curr_spatial, 
-                     lng = ~long, lat = ~lat,
-                     label = ~ popup,
-                     # layerId = ~ location,
-                     radius = 3,
-                     color = ~ colorr,
-                     stroke  = FALSE,
-                     fillOpacity = .95 
-                      )
- 
+    water_map <- build_map(data_dt = curr_spatial, 
+                           sub_bas = current_selection())
+    water_map
+
   })
 
 })

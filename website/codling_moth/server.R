@@ -143,22 +143,14 @@ shinyServer(function(input, output, session) {
                                              width = 250, height = 250)}, 
                                         deleteFile = FALSE)
 
-output$location_group_3 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_3 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
                                              width = 250, height = 250)}, 
                                         deleteFile = FALSE)
 
-output$location_group_4 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
-                                                                              'location-group.png'))
-                                        # Return a list containing the filename and alt text
-                                        list(src = filename, 
-                                             width = 250, height = 250)}, 
-                                        deleteFile = FALSE)
-
-
-output$location_group_5 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_4 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -166,24 +158,7 @@ output$location_group_5 <- renderImage({filename <- normalizePath(file.path(plot
                                         deleteFile = FALSE)
 
 
-
-output$location_group_6 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
-                                                                              'location-group.png'))
-                                        # Return a list containing the filename and alt text
-                                        list(src = filename, 
-                                             width = 250, height = 250)}, 
-                                        deleteFile = FALSE)
-
-
-output$location_group_7 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
-                                                                              'location-group.png'))
-                                        # Return a list containing the filename and alt text
-                                        list(src = filename, 
-                                             width = 250, height = 250)}, 
-                                        deleteFile = FALSE)
-
-
-output$location_group_8 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_5 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -192,7 +167,7 @@ output$location_group_8 <- renderImage({filename <- normalizePath(file.path(plot
 
 
 
-output$location_group_9 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_6 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -200,7 +175,7 @@ output$location_group_9 <- renderImage({filename <- normalizePath(file.path(plot
                                         deleteFile = FALSE)
 
 
-output$location_group_10 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_7 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -208,7 +183,7 @@ output$location_group_10 <- renderImage({filename <- normalizePath(file.path(plo
                                         deleteFile = FALSE)
 
 
-output$location_group_11 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+  output$location_group_8 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -216,14 +191,39 @@ output$location_group_11 <- renderImage({filename <- normalizePath(file.path(plo
                                         deleteFile = FALSE)
 
 
-output$location_group_12 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+
+  output$location_group_9 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
                                              width = 250, height = 250)}, 
                                         deleteFile = FALSE)
 
-output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+
+  output$location_group_10 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+  output$location_group_11 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+
+  output$location_group_12 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
+                                                                              'location-group.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, 
+                                             width = 250, height = 250)}, 
+                                        deleteFile = FALSE)
+
+  output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plots_dir, 
                                                                               'location-group.png'))
                                         # Return a list containing the filename and alt text
                                         list(src = filename, 
@@ -952,204 +952,205 @@ output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plo
     DiapDiffMap
   })
 
-
-  output$map_bloom_doy <- renderLeaflet({
-    layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
-
-    if(input$cg_bloom == "Historical") {
-      climate_group = input$cg_bloom
-      future_version = "rcp85"
-     }
-     else {
-      temp = tstrsplit(input$cg_bloom, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
-
-    if(future_version == "rcp45") {
-     bloom_d = bloom_rcp45
-     }
-     else {
-     bloom_d = bloom
-    }
-
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
-    
-    medBloom = list(hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
-    
-    BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", 
-                             legendVals = seq(85, 165), "Median Day of Year")
-    BloomMap
-  })
   ##########################################################
-  output$map_bloom_doy_100 <- renderLeaflet({
-    layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
-
-    if(input$cg_bloom_100 == "Historical") {
-      climate_group = input$cg_bloom_100
-      future_version = "rcp85"
-     } else {
-      temp = tstrsplit(input$cg_bloom_100, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
-
-    if(future_version == "rcp45") {
-     bloom_d = bloom_rcp45_100
-      } else { 
-     bloom_d = bloom_rcp85_100
-    }
-
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
-                       ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
-    
-    medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
-    
-    BloomMap <- constructMap(medBloom, layerlist, 
-                             palColumn = "medDoY", 
-                             legendVals = seq(85,165), 
-                             "Median Day of Year")
-    BloomMap
-  })
+  ######
+  ######      Bloom Maps
+  ######
   ##########################################################
-  output$map_bloom_doy_95 <- renderLeaflet({
-  layerlist = levels(diap$ClimateGroup)
+  # output$map_bloom_doy <- renderLeaflet({
+  #   layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
 
-  if(input$cg_bloom_95 == "Historical") {
-    climate_group = input$cg_bloom_95
-    future_version = "rcp85"
-    } else {
-    temp = tstrsplit(input$cg_bloom_95, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
-  }
+  #   if(input$cg_bloom == "Historical") {
+  #     climate_group = input$cg_bloom
+  #     future_version = "rcp85"
+  #    }
+  #    else {
+  #     temp = tstrsplit(input$cg_bloom, "_")
+  #     climate_group = unlist(temp[1])
+  #     future_version = unlist(temp[2])
+  #   }
 
-  if(future_version == "rcp45") {
-    bloom_d = bloom_rcp45_95
-    } else { 
-    bloom_d = bloom_rcp85_95
-  }
+  #   if(future_version == "rcp45") {
+  #    bloom_d = bloom_rcp45
+  #    }
+  #    else {
+  #    bloom_d = bloom
+  #   }
 
-  sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
-                     ClimateGroup == climate_group)
-  sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+    
+  #   medBloom = list(hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                   `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                   `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                   `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+    
+  #   BloomMap <- constructMap(medBloom, layerlist, palColumn = "medDoY", 
+  #                            legendVals = seq(85, 165), "Median Day of Year")
+  #   BloomMap
+  # })
+  # ##########################################################
+  # output$map_bloom_doy_100 <- renderLeaflet({
+  #   layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
+
+  #   if(input$cg_bloom_100 == "Historical") {
+  #     climate_group = input$cg_bloom_100
+  #     future_version = "rcp85"
+  #    } else {
+  #     temp = tstrsplit(input$cg_bloom_100, "_")
+  #     climate_group = unlist(temp[1])
+  #     future_version = unlist(temp[2])
+  #   }
+
+  #   if(future_version == "rcp45") {
+  #    bloom_d = bloom_rcp45_100
+  #     } else { 
+  #    bloom_d = bloom_rcp85_100
+  #   }
+
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
+  #                      ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+    
+  #   medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+    
+  #   BloomMap <- constructMap(medBloom, layerlist, 
+  #                            palColumn = "medDoY", 
+  #                            legendVals = seq(85,165), 
+  #                            "Median Day of Year")
+  #   BloomMap
+  # })
+  # ##########################################################
+  # output$map_bloom_doy_95 <- renderLeaflet({
+  # layerlist = levels(diap$ClimateGroup)
+
+  # if(input$cg_bloom_95 == "Historical") {
+  #   climate_group = input$cg_bloom_95
+  #   future_version = "rcp85"
+  #   } else {
+  #   temp = tstrsplit(input$cg_bloom_95, "_")
+  #   climate_group = unlist(temp[1])
+  #   future_version = unlist(temp[2])
+  # }
+
+  # if(future_version == "rcp45") {
+  #   bloom_d = bloom_rcp45_95
+  #   } else { 
+  #   bloom_d = bloom_rcp85_95
+  # }
+
+  # sub_bloom = subset(bloom_d, apple_type == input$apple_type & 
+  #                    ClimateGroup == climate_group)
+  # sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
   
-  medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                   `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                   `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                   `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+  # medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                  `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                  `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                  `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
   
-  BloomMap <- constructMap(medBloom, 
-                          layerlist, 
-                          palColumn = "medDoY", 
-                          legendVals = seq(85,165), 
-                          "Median Day of Year")
-  BloomMap
-  })
+  # BloomMap <- constructMap(medBloom, 
+  #                         layerlist, 
+  #                         palColumn = "medDoY", 
+  #                         legendVals = seq(85,165), 
+  #                         "Median Day of Year")
+  # BloomMap
+  # })
 
-  output$map_bloom_doy_50 <- renderLeaflet({
-    layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
+  # output$map_bloom_doy_50 <- renderLeaflet({
+  #   layerlist = levels(diap$ClimateGroup) # c("Historical", "2040's", "2060's", "2080's")
 
-    if(input$cg_bloom_50 == "Historical") {
-      climate_group = input$cg_bloom_50
-      future_version = "rcp85"
-     } else {
-      temp = tstrsplit(input$cg_bloom_50, "_")
-      climate_group = unlist(temp[1])
-      future_version = unlist(temp[2])
-    }
+  #   if(input$cg_bloom_50 == "Historical") {
+  #     climate_group = input$cg_bloom_50
+  #     future_version = "rcp85"
+  #    } else {
+  #     temp = tstrsplit(input$cg_bloom_50, "_")
+  #     climate_group = unlist(temp[1])
+  #     future_version = unlist(temp[2])
+  #   }
 
-    if(future_version == "rcp45") {
-     bloom_d = bloom_rcp45_50
-      } else { 
-     bloom_d = bloom_rcp85_50
-    }
+  #   if(future_version == "rcp45") {
+  #    bloom_d = bloom_rcp45_50
+  #     } else { 
+  #    bloom_d = bloom_rcp85_50
+  #   }
 
-    sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
-    sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
+  #   sub_bloom = subset(bloom_d, apple_type == input$apple_type & ClimateGroup == climate_group)
+  #   sub_bloom$location = paste0(sub_bloom$latitude, "_", sub_bloom$longitude)
     
-    medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
-                     `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
-                     `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
-                     `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
+  #   medBloom = list( hist = subset(sub_bloom, ClimateGroup == layerlist[1]),
+  #                    `2040` = subset(sub_bloom, ClimateGroup == layerlist[2]),
+  #                    `2060` = subset(sub_bloom, ClimateGroup == layerlist[3]),
+  #                    `2080` = subset(sub_bloom, ClimateGroup == layerlist[4]))
     
-    BloomMap <- constructMap(medBloom, layerlist, 
-                             palColumn = "medDoY", 
-                             legendVals = seq(85,165), 
-                             "Median Day of Year")
-    BloomMap
-  })
+  #   BloomMap <- constructMap(medBloom, layerlist, 
+  #                            palColumn = "medDoY", 
+  #                            legendVals = seq(85,165), 
+  #                            "Median Day of Year")
+  #   BloomMap
+  # })
 
-  #######################################################
-  #######################################################
-  #######################################################
-  output$map_bloom_diff <- renderLeaflet({
-    #diffType = as.integer(input$emerg_diff_type)
+  # #######################################################
+  # output$map_bloom_diff <- renderLeaflet({
+  #   #diffType = as.integer(input$emerg_diff_type)
     
-    temp = tstrsplit(input$cg_bloom_diff, "_")
-    climate_group = unlist(temp[1])
-    future_version = unlist(temp[2])
+  #   temp = tstrsplit(input$cg_bloom_diff, "_")
+  #   climate_group = unlist(temp[1])
+  #   future_version = unlist(temp[2])
 
-    if(future_version == "rcp45") {
-       data = bloom_rcp45
-       }
-       else {
-       data = bloom
-    }
+  #   if(future_version == "rcp45") {
+  #      data = bloom_rcp45
+  #      }
+  #      else {
+  #      data = bloom
+  #   }
 
-    layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
-    layerlist = levels(data$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
-    data$location = paste0(data$latitude, "_", data$longitude)
+  #   layerdiff = c("2040's - Historical", "2060's - Historical", "2080's - Historical")
+  #   layerlist = levels(data$ClimateGroup) #c("Historical", "2040's", "2060's", "2080's")
+  #   data$location = paste0(data$latitude, "_", data$longitude)
     
-    sub_Bloom = subset(data, !is.na(ClimateGroup) & 
-                       apple_type == input$apple_type_diff, 
-                       select = c(ClimateGroup, location, medDoY))
+  #   sub_Bloom = subset(data, !is.na(ClimateGroup) & 
+  #                      apple_type == input$apple_type_diff, 
+  #                      select = c(ClimateGroup, location, medDoY))
     
-    cgBloom = list(subset(sub_Bloom, ClimateGroup == layerlist[1]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[2]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[3]),
-                  subset(sub_Bloom, ClimateGroup == layerlist[4]))
+  #   cgBloom = list(subset(sub_Bloom, ClimateGroup == layerlist[1]),
+  #                 subset(sub_Bloom, ClimateGroup == layerlist[2]),
+  #                 subset(sub_Bloom, ClimateGroup == layerlist[3]),
+  #                 subset(sub_Bloom, ClimateGroup == layerlist[4]))
     
-    #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
-    #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
+  #   #diffEmerg = list(merge(tfEmerg[[2]], tfEmerg[[1]], by = c("location")),
+  #   #                merge(tfEmerg[[3]], tfEmerg[[1]], by = c("location")),
+  #   #                merge(tfEmerg[[4]], tfEmerg[[1]], by = c("location")))
     
     
-    #for(i in 1:length(diffEmerg)) {
-    #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
-    #}
-    #diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
-    if(layerdiff[1] == climate_group) {
-      diffBloom = list(merge(cgBloom[[2]], cgBloom[[1]], by = c("location")))
-    }
-    else if(layerdiff[2] == climate_group) {
-      diffBloom = list(merge(cgBloom[[3]], cgBloom[[1]], by = c("location")))
-    }
-    else if(layerdiff[3] == climate_group) {
-      diffBloom = list(merge(cgBloom[[4]], cgBloom[[1]], by = c("location")))
-    }
-    diffBloom[[1]]$diff = diffBloom[[1]]$medDoY.y - diffBloom[[1]]$medDoY.x
-    diffDomain = diffBloom[[1]]$diff
+  #   #for(i in 1:length(diffEmerg)) {
+  #   #  diffEmerg[[i]]$diff = diffEmerg[[i]]$value.y - diffEmerg[[i]]$value.x
+  #   #}
+  #   #diffDomain = c(diffEmerg[[1]]$diff, diffEmerg[[2]]$diff, diffEmerg[[3]]$diff)
+  #   if(layerdiff[1] == climate_group) {
+  #     diffBloom = list(merge(cgBloom[[2]], cgBloom[[1]], by = c("location")))
+  #   }
+  #   else if(layerdiff[2] == climate_group) {
+  #     diffBloom = list(merge(cgBloom[[3]], cgBloom[[1]], by = c("location")))
+  #   }
+  #   else if(layerdiff[3] == climate_group) {
+  #     diffBloom = list(merge(cgBloom[[4]], cgBloom[[1]], by = c("location")))
+  #   }
+  #   diffBloom[[1]]$diff = diffBloom[[1]]$medDoY.y - diffBloom[[1]]$medDoY.x
+  #   diffDomain = diffBloom[[1]]$diff
 
-    BloomDiffMap <- constructMap(diffBloom, 
-                                 layerdiff, 
-                                 palColumn = "diff", 
-                                 legendVals = seq(5,45), 
-                                 HTML("Median calendar day <br />difference from historical"), 
-                                 RdBu_reverse)
-    BloomDiffMap
-  })
+  #   BloomDiffMap <- constructMap(diffBloom, 
+  #                                layerdiff, 
+  #                                palColumn = "diff", 
+  #                                legendVals = seq(5,45), 
+  #                                HTML("Median calendar day <br />difference from historical"), 
+  #                                RdBu_reverse)
+  #   BloomDiffMap
+  # })
   
-  constructMap <- function(mapLayerData, layerlist, palColumn, 
-                           legendVals, title, gradient = "RdBu") {
+  constructMap <- function(mapLayerData, layerlist, palColumn, legendVals, title, gradient = "RdBu") {
     pal <- colorNumeric(
       palette = gradient, #Spectral_reverse, #"Spectral",
       domain = legendVals
@@ -1198,8 +1199,8 @@ output$location_group_13 <- renderImage({filename <- normalizePath(file.path(plo
                        title = title,
                        labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
                        opacity = 0.7) 
-    }
-    else {
+      }
+      else {
        map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
                        title = title,
                        labFormat = myLabelFormat(prefix = " "),

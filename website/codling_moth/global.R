@@ -61,31 +61,32 @@ diap <- data.table(readRDS(paste0(data_dir,
 diap_rcp45 <- data.table(readRDS(paste0(data_dir, 
                            "/diapause_map_data1_rcp45.rds")))
 
-# bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
+## the two lines below was commented out 
+## where as the 3rd and 4th were not
+## bloom <- data.table(readRDS(paste0(data_dir, "/bloom_data.rds")))
+## bloom_rcp45 <- data.table(readRDS(paste0(data_dir, 
+##                                 "/bloom_data_rcp45.rds")))
+
+# bloom <- data.table(readRDS(paste0(data_dir, 
+#                             "/bloom_rcp85_50_new.rds")))
 # bloom_rcp45 <- data.table(readRDS(paste0(data_dir, 
-#                                 "/bloom_data_rcp45.rds")))
+#                           "/bloom_rcp45_50_new.rds")))
 
-bloom <- data.table(readRDS(paste0(data_dir, 
-                            "/bloom_rcp85_50_new.rds")))
-bloom_rcp45 <- data.table(readRDS(paste0(data_dir, 
-                          "/bloom_rcp45_50_new.rds")))
+# print (colnames(bloom_rcp45))
+# bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp85_100_new.rds")))
+# bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp45_100_new.rds")))
 
-print (colnames(bloom_rcp45))
-##########################
-bloom_rcp85_100 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp85_100_new.rds")))
-bloom_rcp45_100 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp45_100_new.rds")))
+# bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp85_95_new.rds")))
+# bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp45_95_new.rds")))
 
-bloom_rcp85_95 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp85_95_new.rds")))
-bloom_rcp45_95 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp45_95_new.rds")))
-
-bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp85_50_new.rds")))
-bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, 
-                                  "/bloom_rcp45_50_new.rds")))
+# bloom_rcp85_50 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp85_50_new.rds")))
+# bloom_rcp45_50 <- data.table(readRDS(paste0(data_dir, 
+#                                   "/bloom_rcp45_50_new.rds")))
 
 ######################################
 ###################################### clear above
