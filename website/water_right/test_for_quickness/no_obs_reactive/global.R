@@ -24,9 +24,10 @@ library(RColorBrewer)
 ######################################################
 shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 
-shapefile_dir <- paste0("/Users/hn/Documents/GitHub/Ag/", 
-                        "website/water_right/", 
-                        "test_for_quickness/shapefiles/")
+
+shapefile_dir <- paste0("/Users/hn/Desktop/", 
+                        "Desktop/Ag/check_point/", 
+                        "water_right/shapefiles/")
 
 ##################
 ##
