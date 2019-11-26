@@ -65,12 +65,16 @@ library(RColorBrewer)
 
 # spatial_wtr_right_both <- spatial_wtr_right %>% data.table()
 
-d <- "/Users/hn/Desktop/test_for_quickness/data/water_right_attributes.rds"
+d <- paste0("/Users/hn/Documents/GitHub", 
+            "/Ag/website/water_right/", 
+            "test_for_quickness/data/", 
+            "water_right_attributes.rds")
+
 spatial_wtr_right <- readRDS(d) %>% data.table()
 spatial_wtr_right$color <- "#ffff00"
 
+# curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$county_type))
-state.name <- c("Washington", "Oregon")
 
 subbasins <- c("Ahtanum Creek", 
                "Lmumu-Burbank",

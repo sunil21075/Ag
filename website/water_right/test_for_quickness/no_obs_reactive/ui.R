@@ -41,12 +41,13 @@ navbarPage(title = div(""),
                                                   choices = all_basins
                                                   ),
 
-                                      selectizeInput(inputId = 'subbasins_id',
-                                                     label = '2. Select subbasins', 
-                                                     choices = subbasins, 
-                                                     selected = head(subbasins, 1),
-                                                     multiple = TRUE
-                                                    )
+                                      selectInput(inputId = 'subbasins_id',
+                                                  label = '2. Select subbasins',
+                                                  choices = subbasins, 
+                                                  selected = head(subbasins, 1),
+                                                  multiple = TRUE,
+                                                  selectize=TRUE
+                                                  )
                                    )
                     )
            )
