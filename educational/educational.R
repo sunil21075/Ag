@@ -6,6 +6,9 @@
 # Chill_season != "chill_2055-2056") %>% 
 # group_by(Chill_season) %>%
 
+# simple simplify
+
+counties <- rmapshaper::ms_simplify(counties)
 # strsplit a column into two columns
 A[, c("date", "time") := tstrsplit(PriorityDate, " ", fixed=TRUE)]
 

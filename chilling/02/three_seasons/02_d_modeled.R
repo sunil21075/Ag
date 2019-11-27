@@ -70,7 +70,7 @@ data_list_F <- vector(mode = "list", length = no_sites)
 hist <- basename(getwd()) == "historical"
 
 # 5. Iterate through files and process ---------------------------
-# If historical data, then run a simpler data cleaning routine
+# If historical data, then run a simpl-er data cleaning routine
 
 if(hist){
   # 5a. Iterate through historical files -------------------------

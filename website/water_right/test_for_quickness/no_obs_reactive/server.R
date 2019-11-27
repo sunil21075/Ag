@@ -17,10 +17,10 @@ shinyServer(function(input, output, session) {
                       data.table()
 
       subbasin_to_plot <- unique(curr_spatial$subbasin)
-      print ("___________________________")
-      print ("subbasin_to_plot")
-      print (subbasin_to_plot)
-      print ("___________________________")
+      # print ("___________________________")
+      # print ("subbasin_to_plot")
+      # print (subbasin_to_plot)
+      # print ("___________________________")
     })
 
   output$water_right_map <- renderLeaflet({
@@ -65,12 +65,19 @@ shinyServer(function(input, output, session) {
              current_selection(input$subbasins_id)
              })
 
-    # now if you are updating your menu 
+    # now if you are updating your menu
+    # print(current_selection())
+    # print(subbasins)
+    # print (!(current_selection() %in% subbasins))
+    # print(is.null(current_selection()))
+    # print(is.null(subbasins))
+    curr_s <- current_selection()
+    print (curr_s)
     if (!(current_selection() %in% subbasins)){
       sss <- subbasins[1]
       } else {
         sss <- current_selection()
-      }
+    }
 
     updateSelectInput(session, 
                       inputId = "subbasins_id", 
