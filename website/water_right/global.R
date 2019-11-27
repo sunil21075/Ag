@@ -72,7 +72,7 @@ spatial_wtr_right$colorr <- "#ffff00"
 
 
 # curr_spatial <- spatial_wtr_right
-all_basins <- sort(unique(spatial_wtr_right$county_type))
+all_basins <- sort(unique(spatial_wtr_right$WRIA_NM))
 
 subbasins <- c("Ahtanum Creek", 
                "Lmumu-Burbank",

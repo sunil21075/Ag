@@ -43,7 +43,7 @@ shinyServer(function(input, output, session) {
     # observeEvent(input$countyType_id, {
       #######################
       curr_spatial <- curr_spatial %>% 
-                      filter(county_type == input$countyType_id) %>% 
+                      filter(WRIA_NM == input$countyType_id) %>% 
                       data.table()
       subbasins <- sort(unique(curr_spatial$subbasin))
       #######################

@@ -46,8 +46,9 @@ shinyServer(function(input, output, session) {
     # observeEvent(input$countyType_id, {
       #######################
       curr_spatial <- curr_spatial %>% 
-                      filter(county_type == input$countyType_id) %>% 
+                      filter(WRIA_NM == input$countyType_id) %>% 
                       data.table()
+      
       subbasins <- sort(unique(curr_spatial$subbasin))
       #######################
      
@@ -73,7 +74,17 @@ shinyServer(function(input, output, session) {
     # print(is.null(subbasins))
     curr_s <- current_selection()
     print (curr_s)
-    if (!(current_selection() %in% subbasins)){
+
+    # if (length(curr_s)>1){
+    #   curr_s <- sort(curr_s)[1]
+    #   if (!(curr_s %in% subbasins)){
+    #   sss <- subbasins[1]
+    #   }
+    #  } else {
+    #     sss <- current_selection()
+    # }
+
+    if (!(curr_s %in% subbasins)){
       sss <- subbasins[1]
       } else {
         sss <- current_selection()
@@ -85,7 +96,7 @@ shinyServer(function(input, output, session) {
                       selected = sss)
   #############################################
     water_map <- build_map(data_dt = curr_spatial, 
-                           sub_bas = current_selection())
+                           sub_bas = curr_s)
     water_map
 
   })
