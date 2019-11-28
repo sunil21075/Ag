@@ -24,7 +24,6 @@ library(RColorBrewer)
 ######################################################
 shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 
-
 shapefile_dir <- paste0("/Users/hn/Desktop/", 
                         "Desktop/Ag/check_point/", 
                         "water_right/shapefiles/")
@@ -32,6 +31,10 @@ shapefile_dir <- paste0("/Users/hn/Desktop/",
 shapefile_dir <- paste0("/Users/hn/Desktop/", 
                         "Desktop/Ag/check_point", 
                         "/water_right/simple_shapefiles/")
+
+data_dir <- paste0("/Users/hn/Desktop/Desktop/",
+                   "Ag/check_point/water_right/data/"
+                   )
 
 ##################
 ##
@@ -69,11 +72,6 @@ all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
 #####       Water Right data
 #####
 ######################################################
-
-
-data_dir <- paste0("/Users/hn/Desktop/Desktop/",
-                   "Ag/check_point/water_right/data/"
-                   )
 
 spatial_wtr_right <- readRDS(paste0(data_dir,
                             "water_right_attributes.rds")) %>% 
@@ -285,6 +283,22 @@ build_map <- function(data_dt, sub_bas){
       
       print (paste0("fuck me ", unique(data_dt$WRIA_NM)))
       curr_stream <- all_streams_sp[all_streams_sp$WRIA %in% unique(data_dt$WRIA_NM), ]
+
+      # for(ii in 1:length(curr_stream@lines)) {
+      #    map <- addPolylines(map = base_map, 
+      #                   data = curr_stream, 
+      #                   lng = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 1], 
+      #                   lat = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 2],
+      #                   # fill = F, 
+      #                   stroke = TRUE,
+      #                   fillOpacity = 0.5, 
+      #                   smoothFactor = 0.5, 
+      #                   # layerId = "way",
+      #                   weight = 2, 
+      #                   color = "blue", 
+      #                   group ="rivers")
+      # }
+
       
       # for(ii in 1:length(all_streams_sp@lines)) {
       #     map <- addPolylines(map = map, 
