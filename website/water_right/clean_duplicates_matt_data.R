@@ -44,7 +44,6 @@ write.table(water_right_dups,
             row.names=FALSE, na="", 
             col.names=TRUE, sep=",")
 
-
 water_right_no_dups$location <- paste0(water_right_no_dups$lat, 
                                        " E, ", 
                                        abs(water_right_no_dups$long), 

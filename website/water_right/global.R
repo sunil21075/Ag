@@ -46,12 +46,12 @@ data_dir <- paste0(wtr_right_dir, "data/")
 ## all streams
 ##
 ##################
-# start_time <- Sys.time()
-# all_streams_sp <- rgdal::readOGR(dsn=path.expand(
-#                                           paste0(shapefile_dir, 
-#                                                  "all_streams/")),
-#                                 layer = "all_streams")
-# print (Sys.time() - start_time)
+start_time <- Sys.time()
+all_streams_sp <- rgdal::readOGR(dsn=path.expand(
+                                          paste0(shapefile_dir, 
+                                                 "all_streams/")),
+                                layer = "all_streams")
+print (Sys.time() - start_time)
 ##################
 ##
 ## all basins

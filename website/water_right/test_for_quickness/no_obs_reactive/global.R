@@ -42,10 +42,10 @@ data_dir <- paste0("/Users/hn/Desktop/Desktop/",
 ##
 ##################
 start_time <- Sys.time()
-all_streams_sp <- rgdal::readOGR(dsn=path.expand(
-                                          paste0(shapefile_dir, 
-                                                 "all_streams/")),
-                                layer = "all_streams")
+# all_streams_sp <- rgdal::readOGR(dsn=path.expand(
+#                                           paste0(shapefile_dir, 
+#                                                  "all_streams/")),
+#                                 layer = "all_streams")
 print (Sys.time() - start_time)
 ##################
 ##
@@ -74,13 +74,17 @@ all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
 ######################################################
 
 spatial_wtr_right <- readRDS(paste0(data_dir,
-                            "water_right_attributes.rds")) %>% 
+                            "water_right_attributes_not_jiggled.rds")) %>% 
                      data.table()
 
 spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
 
 spatial_wtr_right$colorr <- "#ffff00"
 spatial_wtr_right <- data.table(spatial_wtr_right)
+
+places_of_use <- readRDS(paste0(data_dir, 
+                                "places_of_use.rds")) %>% 
+                 data.table()
 
 # curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$WRIA_NM))
@@ -113,20 +117,69 @@ Walla_Walla_center <- c(46.08, -118.34)
 ######   construct map
 ######
 ###########################
-# base_map <- leaflet() %>%
-#             addTiles(urlTemplate = paste0("http://server.", 
-#                                           "arcgisonline.com/", 
-#                                           "ArcGIS/rest/services", 
-#                                           "/World_Imagery/", 
-#                                           "MapServer", 
-#                                           "/tile/{z}/{y}/{x}"),
+base_map_sat <- leaflet() %>%
+                addTiles(urlTemplate = paste0("http://server.", 
+                                              "arcgisonline.com/", 
+                                              "ArcGIS/rest/services", 
+                                              "/World_Imagery/", 
+                                              "MapServer", 
+                                              "/tile/{z}/{y}/{x}"),
 
-#                   attribution = paste0('Maps by ', 
-#                                        '<a href="http://',
-#                                        'www.mapbox.com/">', 
-#                                        'Mapbox</a>'),
-#                   layerId = "Satellite",
-#                   options= providerTileOptions(opacity = 0.9))
+                         attribution = paste0('Maps by ', 
+                                              '<a href="http://',
+                                              'www.mapbox.com/">', 
+                                              'Mapbox</a>'),
+                         layerId = "Satellite",
+                         options= providerTileOptions(opacity = 0.9))
+
+base_map_st <- leaflet() %>%
+               addTiles(urlTemplate = paste0("//{s}.tiles.mapbox.", 
+                                             "com/v3/jcheng.map-", 
+                                             "5ebohr46/{z}/{x}/{y}", 
+                                             ".png"),
+                        attribution = paste0('Maps by <a href="http://', 
+                                      'www.mapbox.com/">Mapbox</a>')
+                        )
+
+base_map_sat_st <- leaflet() %>%
+                   addTiles(urlTemplate = paste0("http://server.", 
+                                                 "arcgisonline.com/", 
+                                                 "ArcGIS/rest/services", 
+                                                 "/World_Imagery/", 
+                                                 "MapServer", 
+                                                 "/tile/{z}/{y}/{x}"),
+
+                            attribution = paste0('Maps by ', 
+                                                '<a href="http://',
+                                                'www.mapbox.com/">', 
+                                                'Mapbox</a>'),
+                           layerId = "Satellite",
+                           options= providerTileOptions(opacity = 0.9)) %>%
+               addTiles(urlTemplate = paste0("//{s}.tiles.mapbox.", 
+                                             "com/v3/jcheng.map-", 
+                                             "5ebohr46/{z}/{x}/{y}", 
+                                             ".png"),
+                        attribution = paste0('Maps by <a href="http://', 
+                                      'www.mapbox.com/">Mapbox</a>'),
+                        options= providerTileOptions(opacity = 0.4)
+                        )
+
+start_time <- Sys.time()
+# for(ii in 1:length(all_streams_sp@lines)) {
+#   base_map_sat_st <- addPolylines(map = base_map_sat_st, 
+#                                   data = all_streams_sp, 
+#                                   lng = ~ all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 1], 
+#                                   lat = ~ all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 2],
+#                                   # fill = F, 
+#                                   stroke = TRUE,
+#                                   fillOpacity = 0.5, 
+#                                   smoothFactor = 0.5, 
+#                                   # layerId = "way",
+#                                   weight = 1, 
+#                                   color = "blue", 
+#                                   group ="rivers")
+#       }
+print (Sys.time() - start_time)
 
 build_map <- function(data_dt, sub_bas){
   if (is.null(sub_bas)){
@@ -188,35 +241,22 @@ build_map <- function(data_dt, sub_bas){
       }
       # mean_lat <- mean(data_dt$lat) 
       # mean_long <- mean(data_dt$long)
-      base_map <- leaflet() %>%
-                  addTiles(urlTemplate = paste0("http://server.", 
-                                                "arcgisonline.com/", 
-                                                "ArcGIS/rest/services", 
-                                                "/World_Imagery/", 
-                                                "MapServer", 
-                                                "/tile/{z}/{y}/{x}"),
+      # base_map <- leaflet() %>%
+      #             addTiles(urlTemplate = paste0("http://server.", 
+      #                                           "arcgisonline.com/", 
+      #                                           "ArcGIS/rest/services", 
+      #                                           "/World_Imagery/", 
+      #                                           "MapServer", 
+      #                                           "/tile/{z}/{y}/{x}"),
 
-                  attribution = paste0('Maps by ', 
-                                       '<a href="http://',
-                                       'www.mapbox.com/">', 
-                                       'Mapbox</a>'),
-                  layerId = "Satellite",
-                  options= providerTileOptions(opacity = 0.9))
+      #             attribution = paste0('Maps by ', 
+      #                                  '<a href="http://',
+      #                                  'www.mapbox.com/">', 
+      #                                  'Mapbox</a>'),
+      #             layerId = "Satellite",
+      #             options= providerTileOptions(opacity = 0.9))
 
-      map <- base_map %>% 
-             addTiles(urlTemplate = paste0("http://server.", 
-                                           "arcgisonline.com/", 
-                                           "ArcGIS/rest/services", 
-                                           "/World_Imagery/", 
-                                           "MapServer", 
-                                           "/tile/{z}/{y}/{x}"),
-
-                  attribution = paste0('Maps by ', 
-                                       '<a href="http://',
-                                       'www.mapbox.com/">', 
-                                       'Mapbox</a>'),
-                  layerId = "Satellite",
-                  options= providerTileOptions(opacity = 0.9)) %>%
+      map <- base_map_sat_st %>% 
              setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
@@ -258,8 +298,8 @@ build_map <- function(data_dt, sub_bas){
       for(ii in 1:length(curr_basins_sp@polygons)) {
           map <- addPolygons(map = map, 
                              data = curr_basins_sp, 
-                             lng = ~curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
-                             lat = ~curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
+                             lng = ~ curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
+                             lat = ~ curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
                              fill = F, 
                              weight = 7, 
                              color = "red", 
@@ -281,11 +321,11 @@ build_map <- function(data_dt, sub_bas){
         }
       }
       
-      print (paste0("fuck me ", unique(data_dt$WRIA_NM)))
-      curr_stream <- all_streams_sp[all_streams_sp$WRIA %in% unique(data_dt$WRIA_NM), ]
-
+      print (paste0(" me ", unique(data_dt$WRIA_NM)))
+      # curr_stream <- all_streams_sp[all_streams_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
+      # print (length(curr_stream@lines))
       # for(ii in 1:length(curr_stream@lines)) {
-      #    map <- addPolylines(map = base_map, 
+      #    map <- addPolylines(map = map, 
       #                   data = curr_stream, 
       #                   lng = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 1], 
       #                   lat = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 2],
@@ -294,7 +334,7 @@ build_map <- function(data_dt, sub_bas){
       #                   fillOpacity = 0.5, 
       #                   smoothFactor = 0.5, 
       #                   # layerId = "way",
-      #                   weight = 2, 
+      #                   weight = 1, 
       #                   color = "blue", 
       #                   group ="rivers")
       # }

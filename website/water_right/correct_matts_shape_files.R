@@ -14,8 +14,8 @@ shapefile_dir <- paste0("/Users/hn/Desktop/",
                         "water_right/shapefiles/")
 
 simple_shapefile_dir <- paste0("/Users/hn/Desktop/", 
-                        "Desktop/Ag/check_point/", 
-                        "water_right/simple_shapefiles/")
+                               "Desktop/Ag/check_point/", 
+                               "water_right/simple_shapefiles/")
 
 if (dir.exists(file.path(shapefile_dir)) == F){
   dir.create(path=file.path(shapefile_dir), recursive=T)
@@ -73,6 +73,7 @@ all_streams_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
                                                  "all_streams/")),
                                 layer = "all_streams")
+
 all_basins_sp <- rgdal::readOGR(dsn=path.expand(
                                         paste0(shapefile_dir, 
                                               "all_basins/")),
