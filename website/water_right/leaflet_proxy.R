@@ -45,13 +45,13 @@ server <- (function(input, output, session) {
     pal <- colorpal()
     
     leafletProxy("map", data = filteredData()) %>%
-      clearShapes() %>%
-      addCircles(radius = ~10^mag/10, 
-                 weight = 1, 
-                 color = "#777777",
-                 fillColor = ~pal(mag), 
-                 fillOpacity = 0.7, 
-                 popup = ~paste(mag)
+    clearShapes() %>%
+    addCircles(radius = ~10^mag/10,
+               weight = 1, 
+               color = "#777777",
+               fillColor = ~pal(mag), 
+               fillOpacity = 0.7, 
+               popup = ~paste(mag)
       )
   })
   

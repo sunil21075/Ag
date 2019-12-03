@@ -7,7 +7,18 @@
 #
 
 
-shinyServer(function(input, output, session) {  
+shinyServer(function(input, output, session) {
+  # print(input$purpose_id)
+  # print(input$subbasins_id)
+  # observeEvent(input$purpose_id, {
+  #   if (input$purpose_id == "pod"){
+  #       plot_dt <- spatial_wtr_right
+  #      } else {
+  #       plot_dt <- places_of_use
+  #   }
+  #   curr_spatial <- plot_dt
+  # })
+  
 
   # curr_spatial <- spatial_wtr_right
   # plot_dt <- spatial_wtr_right
@@ -33,20 +44,14 @@ shinyServer(function(input, output, session) {
     target_date <- as.Date(input$cut_date)
     if (input$purpose_id == "pod"){
        plot_dt <- spatial_wtr_right
-       # curr_spatial <- plot_dt
-       plot_dt[, colorr := ifelse(right_date < target_date, 
-                                    "#FF3333", "#0080FF")]
        } else {
       plot_dt <- places_of_use
-      plot_dt <- plot_dt %>% 
-                 filter(right_date > target_date)%>%
-                 data.table()
-      # curr_spatial <- plot_dt
-
     }
-    
+    curr_spatial <- plot_dt
 
-    
+    curr_spatial[, colorr := ifelse(right_date < target_date, 
+                                    "#FF3333", "#0080FF")]
+
     #########################################################
     if (input$water_source_type == "surfaceWater") {
       curr_spatial <- plot_dt %>%
@@ -90,12 +95,21 @@ shinyServer(function(input, output, session) {
     curr_s <- current_selection()
     print (curr_s)
 
+    # if (length(curr_s)>1){
+    #   curr_s <- sort(curr_s)[1]
+    #   if (!(curr_s %in% subbasins)){
+    #   sss <- subbasins[1]
+    #   }
+    #  } else {
+    #     sss <- current_selection()
+    # }
+
     if (!(curr_s %in% subbasins)){
-       sss <- sort(unique(curr_spatial$subbasin))
+      sss <- subbasins[1]
       } else {
         sss <- current_selection()
     }
-    
+
     updateSelectInput(session, 
                       inputId = "subbasins_id", 
                       choices = subbasins,

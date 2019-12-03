@@ -7,15 +7,11 @@ shinyServer(function(input, output, session) {
   water_resource <- input$water_source_type
   if (water_resource == "surfaceWater") {
       curr_spatial <- spatial_wtr_right_surface
-       print ("surface")
 
        } else if (water_resource == "groundwater"){
           curr_spatial <- spatial_wtr_right_ground
-          print ("ground")
-
        } else {
           curr_spatial <- spatial_wtr_right_both
-         print ("both")
   }
   curr_spatial[, colorr := ifelse(right_date < target_date, "#FF3333", "#0080FF")]
   print(curr_spatial)

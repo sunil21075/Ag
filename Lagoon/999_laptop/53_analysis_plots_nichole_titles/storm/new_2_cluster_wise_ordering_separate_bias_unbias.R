@@ -28,6 +28,7 @@ head(all_storms, 2)
 all_storms <- all_storms %>% 
               filter(return_period != "1979-2016") %>% 
               data.table()
+              
 all_storms <- all_storms %>% 
               filter(return_period != "2006-2025") %>% 
               data.table()

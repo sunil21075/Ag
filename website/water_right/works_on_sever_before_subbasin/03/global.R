@@ -1,11 +1,5 @@
 # Water Rights
 
-#===============
-# LOAD PACKAGES
-#===============
-library(tidyverse)
-library(maptools)
-
 library(scales)
 library(lattice)
 library(jsonlite)
@@ -28,14 +22,15 @@ library(RColorBrewer)
 #####       Read Shape files
 #####
 ######################################################
+
 wtr_right_dir <- "/data/hnoorazar/water_right/"
 
 shapefile_dir <- paste0(wtr_right_dir, "shapefiles/")
 shapefile_dir <- paste0(wtr_right_dir, "simple_shapefiles/")
 
 data_dir <- paste0(wtr_right_dir, "data/")
-######################################################
-shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
+
+# shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 
 # shapefile_dir <- paste0("/Users/hn/Desktop/", 
 #                         "Desktop/Ag/check_point/", 
@@ -54,20 +49,12 @@ shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 ## all streams
 ##
 ##################
-# start_time <- Sys.time()
-# all_streams_sp <- rgdal::readOGR(dsn=path.expand(
-#                                           paste0(shapefile_dir, 
-#                                                  "all_streams/")),
-#                                 layer = "all_streams");
-# print (Sys.time() - start_time)
-
-
-##################
-##
-## Rivers
-##
-##################
-
+start_time <- Sys.time()
+all_streams_sp <- rgdal::readOGR(dsn=path.expand(
+                                          paste0(shapefile_dir, 
+                                                 "all_streams/")),
+                                layer = "all_streams")
+print (Sys.time() - start_time)
 ##################
 ##
 ## all basins
@@ -77,7 +64,7 @@ shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 all_basins_sp <- rgdal::readOGR(dsn=path.expand(
                                         paste0(shapefile_dir, 
                                               "all_basins/")),
-                                layer = "all_basins");
+                                layer = "all_basins")
 ##################
 ##
 ## all subbasins
@@ -86,7 +73,7 @@ all_basins_sp <- rgdal::readOGR(dsn=path.expand(
 all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
                                                  "all_subbasins/")),
-                                layer = "all_subbasins");
+                                layer = "all_subbasins")
 
 #####################################################
 #####
@@ -106,16 +93,7 @@ spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
 
 spatial_wtr_right$colorr <- "#ffff00"
 spatial_wtr_right <- data.table(spatial_wtr_right)
-old_names <- c("WaRecID", "Source_Lat", "Source_Lon", 
-               "PriorityDa", 
-               "Subbasin", "WRIA_NM", "Source_NM") 
 
-new_names <- c("WR_Doc_ID", "lat", "long", 
-               "right_date", 
-               "subbasin", "county_type", "stream")
-
-setnames(spatial_wtr_right, old=old_names, new=new_names)
-spatial_wtr_right <- data.table(spatial_wtr_right)
 ####################
 #
 # Places of use
@@ -182,8 +160,6 @@ base_map_st <- leaflet() %>%
                                       'www.mapbox.com/">Mapbox</a>')
                         )
 
-
-start_time <- Sys.time()
 base_map_sat_st <- leaflet() %>%
                    addTiles(urlTemplate = paste0("http://server.", 
                                                  "arcgisonline.com/", 
@@ -198,44 +174,39 @@ base_map_sat_st <- leaflet() %>%
                                                 'Mapbox</a>'),
                            layerId = "Satellite",
                            options= providerTileOptions(opacity = 0.9)) %>%
-                   addTiles(urlTemplate = paste0("//{s}.tiles.mapbox.", 
-                                                 "com/v3/jcheng.map-", 
-                                                 "5ebohr46/{z}/{x}/{y}", 
-                                                 ".png"),
-                             attribution = paste0('Maps by <a href="http://', 
-                                                 'www.mapbox.com/">Mapbox</a>'),
-                             options= providerTileOptions(opacity = 0.4)
-                            ) # %>%
-                   # addPolylines(# map = base_map_sat_st, 
-                   #              data = all_streams_sp,
-                   #              stroke = TRUE,
-                   #              fillOpacity = 0.5, 
-                   #              smoothFactor = 0.5, 
-                   #              weight = 1, 
-                   #              color = "#80BFFD", 
-                   #              group ="rivers")
+               addTiles(urlTemplate = paste0("//{s}.tiles.mapbox.", 
+                                             "com/v3/jcheng.map-", 
+                                             "5ebohr46/{z}/{x}/{y}", 
+                                             ".png"),
+                        attribution = paste0('Maps by <a href="http://', 
+                                      'www.mapbox.com/">Mapbox</a>'),
+                        options= providerTileOptions(opacity = 0.4)
+                        )
 
-# base_map_sat_st <- addPolylines(map = base_map_sat_st, 
-#                                 data = all_streams_sp,
-#                                 stroke = TRUE,
-#                                 fillOpacity = 0.5, 
-#                                 smoothFactor = 0.5, 
-#                                 weight = 1, 
-#                                 color = "#80BFFD", 
-#                                 group ="rivers")
-print(" ")
-print("plotting base map takes: ")
+start_time <- Sys.time()
+
+base_map_sat_st <- addPolylines(map = base_map_sat_st, 
+                                data = all_streams_sp, 
+                                # fill = F, 
+                                stroke = TRUE,
+                                fillOpacity = 0.5, 
+                                smoothFactor = 0.5, 
+                                # layerId = "way",
+                                weight = 1, 
+                                color = "blue", 
+                                group ="rivers")
+
 print (Sys.time() - start_time)
 
 build_map <- function(data_dt, sub_bas){
   if (is.null(sub_bas)){
-    map <- leaflet() %>%
-           addTiles(urlTemplate = paste0("http://server.", 
-                                         "arcgisonline.com/", 
-                                         "ArcGIS/rest/services", 
-                                         "/World_Imagery/", 
-                                         "MapServer", 
-                                         "/tile/{z}/{y}/{x}"),
+     map <- leaflet() %>%
+            addTiles(urlTemplate = paste0("http://server.", 
+                                          "arcgisonline.com/", 
+                                          "ArcGIS/rest/services", 
+                                          "/World_Imagery/", 
+                                          "MapServer", 
+                                          "/tile/{z}/{y}/{x}"),
 
                        attribution = paste0('Maps by ', 
                                           '<a href="http://',
@@ -252,14 +223,14 @@ build_map <- function(data_dt, sub_bas){
 
       if (unique(data_dt$WRIA_NM) == "Walla Walla"){
         # Walla_Walla_center <- c(46.08, -118.34)
-        mean_lat <- 46.08
-        mean_long <- -118.34
+          mean_lat <- 46.08
+          mean_long <- -118.34
 
         } else if (unique(data_dt$WRIA_NM) == "Upper Yakima"){
           # Upper_Yakima_center <- c(46.98, -120.6)
           mean_lat <- 46.98 
           mean_long <- -120.6
-      
+        
         } else if (unique(data_dt$WRIA_NM) == "Lower Yakima"){
           # Lower_Yakima_center <- c(46.47, -120.349)
           mean_lat <- 46.47
@@ -285,33 +256,126 @@ build_map <- function(data_dt, sub_bas){
           mean_lat <- 48.53
           mean_long <- -119.56
       }
+      # mean_lat <- mean(data_dt$lat) 
+      # mean_long <- mean(data_dt$long)
+      # base_map <- leaflet() %>%
+      #             addTiles(urlTemplate = paste0("http://server.", 
+      #                                           "arcgisonline.com/", 
+      #                                           "ArcGIS/rest/services", 
+      #                                           "/World_Imagery/", 
+      #                                           "MapServer", 
+      #                                           "/tile/{z}/{y}/{x}"),
 
-      curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
+      #             attribution = paste0('Maps by ', 
+      #                                  '<a href="http://',
+      #                                  'www.mapbox.com/">', 
+      #                                  'Mapbox</a>'),
+      #             layerId = "Satellite",
+      #             options= providerTileOptions(opacity = 0.9))
+
       map <- base_map_sat_st %>% 
              setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
                               label = ~ popup,
+                              # layerId = ~ location,
                               radius = 3,
                               color = ~ colorr,
                               stroke  = FALSE,
                               fillOpacity = .95 
-                              ) %>%
-             addPolygons(# map = map, 
-                         data = curr_basins_sp, 
-                         fill = F, 
-                         weight = 7, 
-                         color = "red",
-                         group ="Outline")
-        
+                               )
+
+      # map <- leaflet() %>%
+      #        addTiles(urlTemplate = paste0("http://server.", 
+      #                                      "arcgisonline.com/", 
+      #                                      "ArcGIS/rest/services", 
+      #                                      "/World_Imagery/", 
+      #                                      "MapServer", 
+      #                                      "/tile/{z}/{y}/{x}"),
+
+      #             attribution = paste0('Maps by ', 
+      #                                  '<a href="http://',
+      #                                  'www.mapbox.com/">', 
+      #                                  'Mapbox</a>'),
+      #             layerId = "Satellite",
+      #             options= providerTileOptions(opacity = 0.9)) %>%
+      #        setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
+      #        addCircleMarkers(data = data_dt, 
+      #                         lng = ~ long, lat = ~lat,
+      #                         label = ~ popup,
+      #                         # layerId = ~ location,
+      #                         radius = 3,
+      #                         color = ~ colorr,
+      #                         stroke  = FALSE,
+      #                         fillOpacity = .95 
+      #                          )
+      
+      curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
+      
+      for(ii in 1:length(curr_basins_sp@polygons)) {
+          map <- addPolygons(map = map, 
+                             data = curr_basins_sp, 
+                             lng = ~ curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
+                             lat = ~ curr_basins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
+                             fill = F, 
+                             weight = 7, 
+                             color = "red", 
+                             group ="Outline")
+        }
+
       curr_subbasins_sp <- all_subbasins_sp[all_subbasins_sp$Subbasin %in% sub_bas, ]
-      map <- addPolygons(map = map, 
-                         data = curr_subbasins_sp,
-                         fill = F, 
-                         weight = 1.5, 
-                         color = "yellow", 
-                         group ="Outline")
+      
+      if (length(curr_subbasins_sp@polygons) > 0 ){
+        for(ii in 1:length(curr_subbasins_sp@polygons)) {
+            map <- addPolygons(map = map, 
+                               data = curr_subbasins_sp, 
+                               lng = ~curr_subbasins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 1], 
+                               lat = ~curr_subbasins_sp@polygons[[ii]]@Polygons[[1]]@coords[, 2],
+                               fill = F, 
+                               weight = 1, 
+                               color = "yellow", 
+                               group ="Outline")
+        }
+      }
+      
+      print (paste0(" me ", unique(data_dt$WRIA_NM)))
+      # curr_stream <- all_streams_sp[all_streams_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
+      # print (length(curr_stream@lines))
+      # for(ii in 1:length(curr_stream@lines)) {
+      #    map <- addPolylines(map = map, 
+      #                   data = curr_stream, 
+      #                   lng = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 1], 
+      #                   lat = ~ curr_stream@lines[[ii]]@Lines[[1]]@coords[, 2],
+      #                   # fill = F, 
+      #                   stroke = TRUE,
+      #                   fillOpacity = 0.5, 
+      #                   smoothFactor = 0.5, 
+      #                   # layerId = "way",
+      #                   weight = 1, 
+      #                   color = "blue", 
+      #                   group ="rivers")
+      # }
+
+      
+      # for(ii in 1:length(all_streams_sp@lines)) {
+      #     map <- addPolylines(map = map, 
+      #                         data = all_streams_sp, 
+      #                         lng = ~ all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 1], 
+      #                         lat = ~ all_streams_sp@lines[[ii]]@Lines[[1]]@coords[, 2],
+      #                         # fill = F, 
+      #                         stroke = TRUE,
+      #                         fillOpacity = 0.5, 
+      #                         smoothFactor = 0.5, 
+      #                         # layerId = "way",
+      #                         weight = 2, 
+      #                         color = "blue", 
+      #                         group ="rivers")
+      # }
+
     }
+  
+
+  
 
   return(map)
 }
