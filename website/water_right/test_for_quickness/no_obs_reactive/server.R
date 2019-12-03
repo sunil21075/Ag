@@ -56,17 +56,12 @@ shinyServer(function(input, output, session) {
        } else {
           curr_spatial <- data.table(plot_dt)
     }
-    #########################################################
-    #########################################################
-    # observeEvent(input$countyType_id, {
-      #######################
       curr_spatial <- curr_spatial %>% 
                       filter(WRIA_NM == input$countyType_id) %>% 
                       data.table()
       
       subbasins <- sort(unique(curr_spatial$subbasin))
-    #############################################
-    # current_selection <- reactiveVal(NULL)
+      
     observeEvent(input$subbasins_id, {
              current_selection(input$subbasins_id)
              })
