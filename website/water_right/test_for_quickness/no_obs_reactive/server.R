@@ -8,10 +8,6 @@
 
 
 shinyServer(function(input, output, session) {  
-
-  # curr_spatial <- spatial_wtr_right
-  # plot_dt <- spatial_wtr_right
-
   current_selection <- reactiveVal(NULL)
 
   observeEvent(input$subbasins_id, {
@@ -69,24 +65,11 @@ shinyServer(function(input, output, session) {
                       data.table()
       
       subbasins <- sort(unique(curr_spatial$subbasin))
-      #######################
-     
-      ## Can also set the label and select items
-      # updateSelectInput(session,
-      #                   inputId = 'subbasins_id',
-      #                   choices = subbasins,
-      #                   selected = head(subbasins, 1)
-      #                   )
-    # })
-    ############################################# 
     #############################################
     # current_selection <- reactiveVal(NULL)
     observeEvent(input$subbasins_id, {
              current_selection(input$subbasins_id)
              })
-
-    # now if you are updating your menu
-    # print(current_selection())
     curr_s <- current_selection()
     print (curr_s)
 
