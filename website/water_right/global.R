@@ -1,11 +1,5 @@
 # Water Rights
 
-#===============
-# LOAD PACKAGES
-#===============
-library(tidyverse)
-library(maptools)
-
 library(scales)
 library(lattice)
 library(jsonlite)
@@ -28,6 +22,7 @@ library(RColorBrewer)
 #####       Read Shape files
 #####
 ######################################################
+
 wtr_right_dir <- "/data/hnoorazar/water_right/"
 
 shapefile_dir <- paste0(wtr_right_dir, "shapefiles/")
@@ -37,17 +32,17 @@ data_dir <- paste0(wtr_right_dir, "data/")
 ######################################################
 shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 
-# shapefile_dir <- paste0("/Users/hn/Desktop/", 
-#                         "Desktop/Ag/check_point/", 
-#                         "water_right/shapefiles/")
+shapefile_dir <- paste0("/Users/hn/Desktop/", 
+                        "Desktop/Ag/check_point/", 
+                        "water_right/shapefiles/")
 
-# shapefile_dir <- paste0("/Users/hn/Desktop/", 
-#                         "Desktop/Ag/check_point", 
-#                         "/water_right/simple_shapefiles/")
+shapefile_dir <- paste0("/Users/hn/Desktop/", 
+                        "Desktop/Ag/check_point", 
+                        "/water_right/simple_shapefiles/")
 
-# data_dir <- paste0("/Users/hn/Desktop/Desktop/",
-#                    "Ag/check_point/water_right/data/"
-#                    )
+data_dir <- paste0("/Users/hn/Desktop/Desktop/",
+                   "Ag/check_point/water_right/data/"
+                   )
 
 ##################
 ##
@@ -57,16 +52,9 @@ shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 # start_time <- Sys.time()
 # all_streams_sp <- rgdal::readOGR(dsn=path.expand(
 #                                           paste0(shapefile_dir, 
-#                                                  "all_streams/")),
-#                                 layer = "all_streams");
+#                                                  "streams_Okanogan/")),
+#                                 layer = "streams_Okanogan")
 # print (Sys.time() - start_time)
-
-
-##################
-##
-## Rivers
-##
-##################
 
 ##################
 ##
@@ -77,7 +65,7 @@ shapefile_dir <- "/data/hnoorazar/water_right/shapefiles/"
 all_basins_sp <- rgdal::readOGR(dsn=path.expand(
                                         paste0(shapefile_dir, 
                                               "all_basins/")),
-                                layer = "all_basins");
+                                layer = "all_basins")
 ##################
 ##
 ## all subbasins
@@ -86,7 +74,7 @@ all_basins_sp <- rgdal::readOGR(dsn=path.expand(
 all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
                                                  "all_subbasins/")),
-                                layer = "all_subbasins");
+                                layer = "all_subbasins")
 
 #####################################################
 #####
@@ -106,16 +94,6 @@ spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
 
 spatial_wtr_right$colorr <- "#ffff00"
 spatial_wtr_right <- data.table(spatial_wtr_right)
-old_names <- c("WaRecID", "Source_Lat", "Source_Lon", 
-               "PriorityDa", 
-               "Subbasin", "WRIA_NM", "Source_NM") 
-
-new_names <- c("WR_Doc_ID", "lat", "long", 
-               "right_date", 
-               "subbasin", "county_type", "stream")
-
-setnames(spatial_wtr_right, old=old_names, new=new_names)
-spatial_wtr_right <- data.table(spatial_wtr_right)
 ####################
 #
 # Places of use
@@ -127,17 +105,18 @@ places_of_use <- readRDS(paste0(data_dir,
 places_of_use$colorr <- "#ffff00"
 places_of_use <- data.table(places_of_use)
 
+# place_of_use_sp <- rgdal::readOGR(dsn=path.expand(
+#                                   paste0(shapefile_dir, 
+#                                          "place_of_use/")),
+#                                   layer = "place_of_use");
+
 # curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$WRIA_NM))
 
 subbasins <- c("Ahtanum Creek", 
-               "Lmumu-Burbank",
                "Lower Yakima tributaries",
-               "tributaries", 
                "Satus Creek",
-               "Taneum-Manastash",
-               "Toppenish Creek",
-               "Wilson-Cherry")
+               "Toppenish Creek")
 
 Upper_Yakima_center <- c(46.98, -120.6)
 Lower_Yakima_center <- c(46.47, -120.349)
@@ -158,32 +137,8 @@ Walla_Walla_center <- c(46.08, -118.34)
 ######   construct map
 ######
 ###########################
-base_map_sat <- leaflet() %>%
-                addTiles(urlTemplate = paste0("http://server.", 
-                                              "arcgisonline.com/", 
-                                              "ArcGIS/rest/services", 
-                                              "/World_Imagery/", 
-                                              "MapServer", 
-                                              "/tile/{z}/{y}/{x}"),
-
-                         attribution = paste0('Maps by ', 
-                                              '<a href="http://',
-                                              'www.mapbox.com/">', 
-                                              'Mapbox</a>'),
-                         layerId = "Satellite",
-                         options= providerTileOptions(opacity = 0.9))
-
-base_map_st <- leaflet() %>%
-               addTiles(urlTemplate = paste0("//{s}.tiles.mapbox.", 
-                                             "com/v3/jcheng.map-", 
-                                             "5ebohr46/{z}/{x}/{y}", 
-                                             ".png"),
-                        attribution = paste0('Maps by <a href="http://', 
-                                      'www.mapbox.com/">Mapbox</a>')
-                        )
-
-
 start_time <- Sys.time()
+
 base_map_sat_st <- leaflet() %>%
                    addTiles(urlTemplate = paste0("http://server.", 
                                                  "arcgisonline.com/", 
@@ -206,8 +161,8 @@ base_map_sat_st <- leaflet() %>%
                                                  'www.mapbox.com/">Mapbox</a>'),
                              options= providerTileOptions(opacity = 0.4)
                             ) # %>%
-                   # addPolylines(# map = base_map_sat_st, 
-                   #              data = all_streams_sp,
+                   # setView(lat = 46, lng =-121, zoom = 6) %>%
+                   # addPolylines(data = all_streams_sp,
                    #              stroke = TRUE,
                    #              fillOpacity = 0.5, 
                    #              smoothFactor = 0.5, 
@@ -215,14 +170,7 @@ base_map_sat_st <- leaflet() %>%
                    #              color = "#80BFFD", 
                    #              group ="rivers")
 
-# base_map_sat_st <- addPolylines(map = base_map_sat_st, 
-#                                 data = all_streams_sp,
-#                                 stroke = TRUE,
-#                                 fillOpacity = 0.5, 
-#                                 smoothFactor = 0.5, 
-#                                 weight = 1, 
-#                                 color = "#80BFFD", 
-#                                 group ="rivers")
+
 print(" ")
 print("plotting base map takes: ")
 print (Sys.time() - start_time)

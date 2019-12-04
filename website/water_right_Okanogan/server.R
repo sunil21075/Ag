@@ -37,12 +37,7 @@ shinyServer(function(input, output, session) {
       plot_dt <- plot_dt %>% 
                  filter(right_date > target_date)%>%
                  data.table()
-      # curr_spatial <- plot_dt
-
     }
-    
-
-    
     #########################################################
     if (input$water_source_type == "surfaceWater") {
       curr_spatial <- plot_dt %>%
@@ -61,7 +56,7 @@ shinyServer(function(input, output, session) {
                       data.table()
       
       subbasins <- sort(unique(curr_spatial$subbasin))
-      
+
     observeEvent(input$subbasins_id, {
              current_selection(input$subbasins_id)
              })

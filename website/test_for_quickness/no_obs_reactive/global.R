@@ -3,8 +3,8 @@
 #===============
 # LOAD PACKAGES
 #===============
-library(tidyverse)
-library(maptools)
+# library(tidyverse)
+# library(maptools)
 
 library(scales)
 library(lattice)
@@ -57,8 +57,8 @@ data_dir <- paste0("/Users/hn/Desktop/Desktop/",
 # start_time <- Sys.time()
 # all_streams_sp <- rgdal::readOGR(dsn=path.expand(
 #                                           paste0(shapefile_dir, 
-#                                                  "all_streams/")),
-#                                 layer = "all_streams");
+#                                                  "streams_Okanogan/")),
+#                                 layer = "streams_Okanogan");
 # print (Sys.time() - start_time)
 
 
@@ -127,6 +127,11 @@ places_of_use <- readRDS(paste0(data_dir,
 places_of_use$colorr <- "#ffff00"
 places_of_use <- data.table(places_of_use)
 
+place_of_use_sp <- rgdal::readOGR(dsn=path.expand(
+                                  paste0(shapefile_dir, 
+                                         "place_of_use/")),
+                                  layer = "place_of_use");
+
 # curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$WRIA_NM))
 
@@ -184,6 +189,7 @@ base_map_st <- leaflet() %>%
 
 
 start_time <- Sys.time()
+
 base_map_sat_st <- leaflet() %>%
                    addTiles(urlTemplate = paste0("http://server.", 
                                                  "arcgisonline.com/", 
@@ -205,10 +211,9 @@ base_map_sat_st <- leaflet() %>%
                              attribution = paste0('Maps by <a href="http://', 
                                                  'www.mapbox.com/">Mapbox</a>'),
                              options= providerTileOptions(opacity = 0.4)
-                            ) %>%
-                   setView(lat = 46, lng =-121, zoom = 5) # %>%
-                   # addPolylines(# map = base_map_sat_st, 
-                   #              data = all_streams_sp,
+                            ) # %>%
+                   # setView(lat = 46, lng =-121, zoom = 6) %>%
+                   # addPolylines(data = all_streams_sp,
                    #              stroke = TRUE,
                    #              fillOpacity = 0.5, 
                    #              smoothFactor = 0.5, 
@@ -243,8 +248,8 @@ build_map <- function(data_dt, sub_bas){
                                           'www.mapbox.com/">', 
                                           'Mapbox</a>'),
                        layerId = "Satellite",
-                       options= providerTileOptions(opacity = 0.9))# %>%
-                       # setView(lat = 46, lng =-121, zoom = 5)
+                       options= providerTileOptions(opacity = 0.9)) %>%
+                       setView(lat = 46, lng =-121, zoom = 5)
 
     } else {
       data_dt <- data_dt %>%
@@ -289,7 +294,7 @@ build_map <- function(data_dt, sub_bas){
 
       curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
       map <- base_map_sat_st %>% 
-             # setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
+             setView(lat = mean_lat, lng = mean_long, zoom = 7) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
                               label = ~ popup,

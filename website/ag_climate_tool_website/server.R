@@ -4,11 +4,11 @@ shinyServer(function(input, output, session) {
   ## Interactive Map ## 
   
   map = leaflet(data = cbStates) %>%
-    addPolygons(color="black", weight=3, stroke = TRUE)%>%
-    addTiles(
-      urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-    ) 
+        addPolygons(color="black", weight=3, stroke = TRUE)%>%
+        addTiles(
+               urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+               attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+                 ) 
   output$map <- renderLeaflet(map)
   
   pal = colorBin(palette = "Reds", domain = as.numeric(crb_locations$num_crops), bins = 8, pretty=FALSE)
