@@ -1,4 +1,4 @@
-# Water Rights Okanogan
+# Water Rights streams_LowerYakima
 
 library(scales)
 library(lattice)
@@ -36,17 +36,17 @@ data_dir <- paste0(wtr_right_dir, "data/")
 ### laptop directory
 ###
 ########################
-# shapefile_dir <- paste0("/Users/hn/Desktop/", 
-#                         "Desktop/Ag/check_point/", 
-#                         "water_right/shapefiles/")
+shapefile_dir <- paste0("/Users/hn/Desktop/", 
+                        "Desktop/Ag/check_point/", 
+                        "water_right/shapefiles/")
 
-# shapefile_dir <- paste0("/Users/hn/Desktop/", 
-#                         "Desktop/Ag/check_point", 
-#                         "/water_right/simple_shapefiles/")
+shapefile_dir <- paste0("/Users/hn/Desktop/", 
+                        "Desktop/Ag/check_point", 
+                        "/water_right/simple_shapefiles/")
 
-# data_dir <- paste0("/Users/hn/Desktop/Desktop/",
-#                    "Ag/check_point/water_right/data/"
-#                    )
+data_dir <- paste0("/Users/hn/Desktop/Desktop/",
+                   "Ag/check_point/water_right/data/"
+                   )
 
 ##################
 ##
@@ -56,8 +56,8 @@ data_dir <- paste0(wtr_right_dir, "data/")
 # start_time <- Sys.time()
 all_streams_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
-                                                 "streams_Okanogan/")),
-                                layer = "streams_Okanogan");
+                                                 "streams_LowerYakima/")),
+                                layer = "streams_LowerYakima");
 # print (Sys.time() - start_time)
 
 ##################
@@ -92,7 +92,7 @@ all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
 #
 ####################
 spatial_wtr_right <- readRDS(paste0(data_dir,
-                            "spatial_wtr_right_okanagon.rds")) %>% 
+                            "spatial_wtr_right_lower_yakima.rds")) %>% 
                      data.table()
 
 spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
@@ -117,6 +117,7 @@ places_of_use <- data.table(places_of_use)
 #                                   paste0(shapefile_dir, 
 #                                          "place_of_use/")),
 #                                   layer = "place_of_use");
+# place_of_use_sp <- place_of_use_sp[place_of_use_sp$WRIA_NM == unique(spatial_wtr_right$WRIA_NM), ]
 
 # curr_spatial <- spatial_wtr_right
 all_basins <- sort(unique(spatial_wtr_right$WRIA_NM))
@@ -196,7 +197,7 @@ build_map <- function(data_dt, sub_bas){
                                           'Mapbox</a>'),
                        layerId = "Satellite",
                        options= providerTileOptions(opacity = 0.9)) %>%
-                       setView(lat = 46, lng =-121, zoom = 9)
+                       setView(lat = 46, lng =-121, zoom = 8)
 
     } else {
       data_dt <- data_dt %>%
@@ -241,7 +242,7 @@ build_map <- function(data_dt, sub_bas){
 
       curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
       map <- base_map_sat_st %>% 
-             setView(lat = mean_lat, lng = mean_long + 1, zoom = 9) %>%
+             setView(lat = mean_lat, lng = mean_long + .8, zoom = 8) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
                               label = ~ popup,

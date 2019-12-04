@@ -64,7 +64,7 @@ data_dir <- paste0("/Users/hn/Desktop/Desktop/",
 
 all_basins_sp <- rgdal::readOGR(dsn=path.expand(
                                         paste0(shapefile_dir, 
-                                              "all_basins/")),
+                                               "all_basins/")),
                                 layer = "all_basins")
 ##################
 ##
