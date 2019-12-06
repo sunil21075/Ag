@@ -12,7 +12,7 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$subbasins_id, {
     if (input$purpose_id == "pod"){
-        plot_dt <- spatial_wtr_right
+       plot_dt <- spatial_wtr_right
        } else {
         plot_dt <- places_of_use
     }

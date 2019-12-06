@@ -1,4 +1,4 @@
-# Water Rights Methow
+# Water Rights streams_LowerYakima
 
 library(scales)
 library(lattice)
@@ -31,11 +31,11 @@ data_dir <- paste0(wtr_right_dir, "data/")
 ######################################################
 
 
-#######################################################
+########################
 ###
 ### laptop directory
 ###
-###################################################
+########################
 # shapefile_dir <- paste0("/Users/hn/Desktop/", 
 #                         "Desktop/Ag/check_point/", 
 #                         "water_right/shapefiles/")
@@ -56,8 +56,8 @@ data_dir <- paste0(wtr_right_dir, "data/")
 # start_time <- Sys.time()
 all_streams_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
-                                                 "streams_Methow/")),
-                                layer = "streams_Methow");
+                                                 "streams_LowerYakima/")),
+                                layer = "streams_LowerYakima");
 # print (Sys.time() - start_time)
 
 ##################
@@ -92,7 +92,7 @@ all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
 #
 ####################
 spatial_wtr_right <- readRDS(paste0(data_dir,
-                            "spatial_wtr_right_methow.rds")) %>% 
+                            "spatial_wtr_right_lower_yakima.rds")) %>% 
                      data.table()
 
 spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
@@ -197,7 +197,7 @@ build_map <- function(data_dt, sub_bas){
                                           'Mapbox</a>'),
                        layerId = "Satellite",
                        options= providerTileOptions(opacity = 0.9)) %>%
-                       setView(lat = 46, lng =-121, zoom = 9)
+                       setView(lat = 46, lng =-121, zoom = 8)
 
     } else {
       data_dt <- data_dt %>%
@@ -242,7 +242,7 @@ build_map <- function(data_dt, sub_bas){
 
       curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
       map <- base_map_sat_st %>% 
-             setView(lat = mean_lat + .15, lng = mean_long + .3, zoom = 9) %>%
+             setView(lat = mean_lat, lng = mean_long + .8, zoom = 8) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
                               label = ~ popup,
@@ -250,21 +250,22 @@ build_map <- function(data_dt, sub_bas){
                               color = ~ colorr,
                               stroke  = FALSE,
                               fillOpacity = .95 
-                              )
+                              ) # %>%
+             # addPolygons(# map = map, 
+             #             data = curr_basins_sp, 
+             #             fill = F, 
+             #             weight = 7, 
+             #             color = "red",
+             #             group ="Outline")
         
       curr_subbasins_sp <- all_subbasins_sp[all_subbasins_sp$Subbasin %in% sub_bas, ]
       map <- addPolygons(map = map, 
                          data = curr_subbasins_sp,
-                         fillColor = "green", 
-                         fillOpacity = 0.005, 
+                         fill = F, 
                          weight = 1.5, 
-                         color = "yellow", # border color
-                         group ="Outline",
-                         smoothFactor = 0.5,
-                         highlightOptions = highlightOptions(color="white", 
-                                                             weight=2, 
-                                                             bringToFront = TRUE),
-                         label= ~ Subbasin)
+                         color = "yellow", 
+                         group ="Outline"
+                         )
     }
 
   return(map)

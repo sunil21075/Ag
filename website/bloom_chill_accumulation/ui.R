@@ -52,11 +52,11 @@ navbarPage(title = div("",
                                                )
                                           ),
 
-                                 tabPanel(tags$b("Take a tour! (video)"), 
-                                          tags$div(style="width:950px", 
-                                                   includeHTML("home-page/take-a-tour.html")
-                                                   )
-                                          ),
+                                 # tabPanel(tags$b("Take a tour! (video)"), 
+                                 #          tags$div(style="width:950px", 
+                                 #                   includeHTML("home-page/take-a-tour.html")
+                                 #                   )
+                                 #          ),
                                  widths = c(2,10)
                                  )
                     ),

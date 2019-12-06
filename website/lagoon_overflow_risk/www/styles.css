@@ -1,3 +1,19 @@
+
+
+/* add to remove white space in the app*/
+.shiny-plot-output {
+  height: 200px !important;
+}
+
+.shiny-image-output {
+  height: 200px !important;
+}
+
+/* add to remove white space in the app*/
+/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+
+
 input[type="number"] {
   max-width: 80%;
 }

@@ -20,7 +20,7 @@ options(digits=9)
 base_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
 in_dir <- paste0(base_dir, "storm/")
 plot_dir <- paste0(base_dir, "plots/storm/new_2_storm/")
-if (dir.exists(plot_dir) == F) {
+if (dir.exists(plot_dir) == F){
   dir.create(path = plot_dir, recursive = T)}
 
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))
@@ -56,6 +56,7 @@ for (clust in clusters){
   AV_title <- paste0("25-year/24-hr design storm intensity")
   quans_85 <- storm_25_quantiles(curr_dt_85, 
                                  tgt_col= "twenty_five_years")
+
   quans_45 <- storm_25_quantiles(curr_dt_45, 
                                  tgt_col= "twenty_five_years")
 
@@ -76,9 +77,11 @@ for (clust in clusters){
   ########################
   box_title <- "Difference (%) in design storm intensity"
 
-  unbias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt =curr_dt_45, 
-                                               diff_from="1950-2005")
-  quans_45 <- storm_25_quantiles(unbias_diffs_45, tgt_col= "perc_diff") 
+  unbias_diffs_45 <- storm_diff_obs_or_modeled(dt_dt = curr_dt_45, 
+                                               diff_from = "1950-2005")
+  
+  quans_45 <- storm_25_quantiles(unbias_diffs_45,
+                                 tgt_col = "perc_diff") 
   
   unbias_diffs_perc_box_45 <- storm_diff_box_25yr(unbias_diffs_45, 
                                                   tgt_col="perc_diff") + 

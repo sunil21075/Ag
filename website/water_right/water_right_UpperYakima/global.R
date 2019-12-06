@@ -1,4 +1,4 @@
-# Water Rights streams_Naches
+# Water Rights UpperYakima
 
 library(scales)
 library(lattice)
@@ -56,8 +56,8 @@ data_dir <- paste0(wtr_right_dir, "data/")
 # start_time <- Sys.time()
 all_streams_sp <- rgdal::readOGR(dsn=path.expand(
                                           paste0(shapefile_dir, 
-                                                 "streams_Naches/")),
-                                layer = "streams_Naches");
+                                                 "streams_UpperYakima/")),
+                                layer = "streams_UpperYakima");
 # print (Sys.time() - start_time)
 
 ##################
@@ -92,7 +92,7 @@ all_subbasins_sp <- rgdal::readOGR(dsn=path.expand(
 #
 ####################
 spatial_wtr_right <- readRDS(paste0(data_dir,
-                            "spatial_wtr_right_naches.rds")) %>% 
+                            "spatial_wtr_right_upper_yakima.rds")) %>% 
                      data.table()
 
 spatial_wtr_right <- na.omit(spatial_wtr_right, cols=c("subbasin"))
@@ -242,7 +242,7 @@ build_map <- function(data_dt, sub_bas){
 
       curr_basins_sp <- all_basins_sp[all_basins_sp$WRIA_NM %in% unique(data_dt$WRIA_NM), ]
       map <- base_map_sat_st %>% 
-             setView(lat = mean_lat + 0.2, lng = mean_long + .2, zoom = 9) %>%
+             setView(lat = mean_lat + 0.15, lng = mean_long + .4, zoom = 9) %>%
              addCircleMarkers(data = data_dt, 
                               lng = ~ long, lat = ~lat,
                               label = ~ popup,
@@ -261,16 +261,10 @@ build_map <- function(data_dt, sub_bas){
       curr_subbasins_sp <- all_subbasins_sp[all_subbasins_sp$Subbasin %in% sub_bas, ]
       map <- addPolygons(map = map, 
                          data = curr_subbasins_sp,
-                         fillColor = "green", 
-                         fillOpacity = 0.005, 
+                         fill = F, 
                          weight = 1.5, 
-                         color = "yellow", # border color
-                         group ="Outline",
-                         smoothFactor = 0.5,
-                         highlightOptions = highlightOptions(color="white", 
-                                                             weight=2, 
-                                                             bringToFront = TRUE),
-                         label= ~ Subbasin)
+                         color = "yellow", 
+                         group ="Outline")
     }
 
   return(map)

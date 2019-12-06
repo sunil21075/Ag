@@ -703,16 +703,16 @@ geo_map_perc_diff <- function(dt_dt, col_col, color_limit){
              alpha=1, size=2.5) +
   guides(fill = guide_colourbar(barwidth=.1, barheight=2,
          direction = "vertical")) +
-  scale_color_viridis_c(option = "plasma", 
-                        name = "storm", direction = -1,
-                        limits = c(color_limit[1], color_limit[2]),
-                        breaks = pretty_breaks(n=8)) +
-  # scale_color_gradient2(midpoint = 0, mid = "white", 
-  #                       high = muted("blue"), low = muted("red"), 
-  #                       guide = "colourbar", space = "Lab",
-  #                       limit = c(color_limit[1], color_limit[2]),
-  #                       breaks = c(-200, -100, -50, -25, -10, -5, 0,
-  #                                   5, 10, 25, 50, 100, 200)) + 
+  # scale_color_viridis_c(option = "plasma", 
+  #                       name = "storm", direction = -1,
+  #                       limits = c(color_limit[1], color_limit[2]),
+  #                       breaks = pretty_breaks(n=8)) +
+  scale_color_gradient2(midpoint = 0, mid = "white", 
+                        high = muted("blue"), low = muted("red"), 
+                        guide = "colourbar", space = "Lab",
+                        limit = c(color_limit[1], color_limit[2]),
+                        breaks = c(-200, -100, -50, -25, -20, -15, -10, -5, 0,
+                                    5, 10, 15, 20, 25, 50, 100, 200)) + 
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         axis.ticks.y = element_blank(), 
@@ -2280,3 +2280,168 @@ geo_map_of_diffs_discrete_cuts <- function(dt, col_col, ttl, subttl){
   ggtitle(ttl, subtitle=subttl)
   
 }
+
+box_dt_25_clust_x <- function(dt_25){
+  categ_lab <- sort(unique(dt_25$return_period))
+  
+  if (length(unique(dt_25$return_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  medians <- data.frame(dt_25) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise(med_25 = median(twenty_five_years)) %>% 
+             data.table()
+
+  melted <- melt(dt_25, 
+                 id = c("cluster", "return_period", "emission"))
+
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.65
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", 
+                                          color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  box_p <- ggplot(data = melted, 
+                  aes(x=cluster, y=value, fill=return_period)) +
+           # geom_hline(yintercept= 0, color = "red", size=.3) +
+           geom_boxplot(outlier.size = -0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.85), 
+                        outlier.shape=NA
+                        ) +
+           the +
+           # facet_grid(~ cluster) +
+           # xlab("precip. group") + 
+           ylab("design storm intensity (mm/hr)") + 
+           # ylim(quantile(melted$value, probs = c(0.05, 0.95))) + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = categ_lab) + 
+           scale_y_continuous(breaks = seq(0, 20, by=2)) + 
+           geom_text(data = medians, 
+                     aes(label = sprintf("%1.1f", medians$med_25), 
+                         y = medians$med_25),
+                     size = 2, fontface = "bold",
+                     position = position_dodge(.8), vjust = -.3)
+ return(box_p)
+}
+
+
+storm_diff_box_25yr_clust_x <- function(data_tb, tgt_col){
+  data_tb <- data_tb %>% 
+             filter(time_interval=="twenty_five_years") %>% 
+             data.table()
+
+  needed_cols <- c("return_period", "emission", "cluster", tgt_col)
+  data_tb <- subset(data_tb, select=needed_cols)
+
+  time_label <- sort(unique(data_tb$return_period))
+  data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
+  data_tb$cluster <- factor(data_tb$cluster, 
+                            levels=c("Western coastal", 
+                                     "Cascade foothills", 
+                                     "Northwest Cascades", 
+                                     "Northcentral Cascades", 
+                                     "Northeast Cascades"))
+     
+  if (length(time_label) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+  ax_txt_size <- 8; ax_ttl_size <- 10; box_width = 0.53
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.6
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks = element_line(size = .1, color = "black"),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_text(size = ax_txt_size, face = "bold", 
+                                          color="black",
+                                          margin=margin(t=.05, r=5, l=5, b=0,"pt")
+                                          ),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  if (tgt_col=="perc_diff"){
+     y_labb <- "differences (%)"
+     } else {
+      y_labb <- "magnitude of differences"
+  }
+  # box_title <- "diff. of 25 yr/24 hr. design storm"
+
+  medians <- data.frame(data_tb) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  box_p <- ggplot(data = data_tb, 
+                  aes(x=cluster, y=get(tgt_col), fill=return_period)) +
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
+           geom_boxplot(outlier.size = - 0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.8), outlier.shape=NA
+                        ) +
+           # labs(x="", y="") + # theme_bw() + 
+           # facet_grid(~ emission, scales="free") + # , ncol=4 goes with facet_wrap
+           ylab(y_labb) + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = time_label) + 
+           the +
+           scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
+           geom_text(data = medians, 
+                     aes(label = sprintf("%1.1f", medians$med), y = medians$med),
+                     size = 2, fontface = "bold",
+                     position = position_dodge(.8), vjust = -.3)
+}
+
