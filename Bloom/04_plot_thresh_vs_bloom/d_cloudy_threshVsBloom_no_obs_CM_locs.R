@@ -117,7 +117,7 @@ emissions <- c("RCP 4.5", "RCP 8.5")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
 # apple, cherry, pear; cherry 14 days shift, pear 7 days shift
-fruit_type <- "pear"
+fruit_type <- "apple"
 remove_NA <- "yes" 
 
 # shift the bloom days
@@ -281,7 +281,7 @@ for (thresh_cut in plot_threshols){
 
         if (fruit_type=="apple"){
            title_ <- paste0(thresh_cut, " CP threshold and ", 
-                            app_tp, " bloom shifts (",)
+                            app_tp, " bloom shifts (")
            } else{
             title_ <- paste0(thresh_cut, " CP threshold and ", 
                              fruit_type, " bloom shifts (")
