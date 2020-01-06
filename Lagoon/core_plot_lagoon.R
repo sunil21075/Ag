@@ -2356,7 +2356,6 @@ box_dt_25_clust_x <- function(dt_25){
  return(box_p)
 }
 
-
 storm_diff_box_25yr_clust_x <- function(data_tb, tgt_col){
   data_tb <- data_tb %>% 
              filter(time_interval=="twenty_five_years") %>% 
@@ -2443,5 +2442,336 @@ storm_diff_box_25yr_clust_x <- function(data_tb, tgt_col){
                      aes(label = sprintf("%1.1f", medians$med), y = medians$med),
                      size = 2, fontface = "bold",
                      position = position_dodge(.8), vjust = -.3)
+}
+
+##############################################################
+########
+########           Jan 6th, 2020
+########           Separate clusters for annual plots
+########           to make them similar to monthly and seasonal.
+########           This sucks
+########
+##############################################################
+
+ann_box_sep_cluster <- function(dt, y_lab, tgt_col, ttl, subttl){
+
+  # toss unwanted time periods
+  dt <- dt %>% 
+        filter(# time_period != "1950-2005" & 
+               time_period != "2006-2025") %>% 
+        data.table()
+
+  dt <- subset(dt, select=c("time_period", "emission", # "location",
+                            "cluster", tgt_col))
+  medians <- data.frame(dt) %>% 
+             group_by(cluster, time_period, emission) %>% 
+             summarise(med = median(get(tgt_col))) %>% 
+             data.table()
+  melted <- melt(dt, id = c("emission", # "location", 
+                            "time_period", "cluster")); rm(dt)
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  categ_label <- c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
+  melted$cluster <- factor(melted$cluster, levels=categ_label)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.4
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks.y = element_line(size = .1, color = "black"),
+               axis.ticks.x = element_blank(),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
+  ########
+  ########    PLOT
+  ########
+  bx <- ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+        the + 
+        # geom_hline(yintercept= 0, color = "red", size=.3) +
+        geom_boxplot(outlier.size = - 0.3, notch=F, 
+                     width = box_width, lwd=.1,
+                     position = position_dodge(0.6), outlier.shape=NA) +
+        scale_x_discrete(expand=c(0.1, 0)) + 
+        ylab(y_lab) + 
+        scale_fill_manual(values = color_ord, labels = time_label) +
+        geom_text(data = medians, 
+                  aes(label = sprintf(signif, medians$med), y = medians$med), 
+                      size = 2, fontface = "bold",
+                      position = position_dodge(.6), vjust = -.3)
+
+  if (tgt_col=="perc_diff"){
+   bx <- bx + geom_hline(yintercept= 0, color = "red", size=.3)
+  }
+   return(bx)  
+}
+
+annual_frac_sep_clust <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain_fraction"){
+  data_tb$rain_fraction <- data_tb$rain_fraction * 100
+  data_tb$snow_fraction <- data_tb$snow_fraction * 100
+  if (tgt_col=="rain_fraction"){
+     data_tb <- within(data_tb, remove(model, year, location, 
+                                       annual_cum_precip, snow_fraction))
+     } else {
+       data_tb <- within(data_tb, remove(model, year, location, 
+                                         annual_cum_precip, rain_fraction))
+   }
+
+  region_levels <-  c("Western coastal", "Cascade foothills", 
+                   "Northwest Cascades", "Northcentral Cascades", 
+                   "Northeast Cascades")
+  data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
+  medians <- data.frame(data_tb) %>% 
+             group_by(cluster, time_period, emission) %>% 
+             summarise(med = median(get(tgt_col))) %>% 
+             data.table()
+
+  melted <- melt(data_tb, id = c("emission", "time_period", "cluster"))
+  rm(data_tb)
+  
+  time_label <- sort(unique(melted$time_period))
+  if (length(unique(melted$time_period)) == 3){
+     color_ord = c("dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 4){
+       color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+     } else if (length(unique(melted$time_period)) == 5){
+     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  melted$cluster <- factor(melted$cluster, levels=region_levels)
+  melted$time_period <- factor(melted$time_period, levels=time_label)
+
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.4
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=-0.2, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size=8, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks.y = element_line(size = .1, color = "black"),
+               axis.ticks.x = element_blank(),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  signif <- if (grepl("diff", tgt_col)) "%1.1f" else "%1.0f"
+  ########################################################################
+  ######
+  ###### plot
+  ######
+  ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
+  the + 
+  # geom_hline(yintercept= 0, color = "red", size=.3) +
+  geom_boxplot(outlier.size = - 0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.6), outlier.shape=NA
+               ) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  # labs(x="", y="") + # theme_bw() + 
+  # facet_grid(~ emission, scales="free") +
+  xlab("precip. group") +
+  ylab(y_lab) +
+  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
+  scale_fill_manual(values = color_ord, labels = time_label) +
+  geom_text(data = medians, 
+            aes(label = sprintf(signif, medians$med), y = medians$med), 
+            size = 2, fontface = "bold",
+            position = position_dodge(.6), vjust = -.4)
+  # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
+}
+
+box_dt_25_sep_clust <- function(dt_25){
+  categ_lab <- sort(unique(dt_25$return_period))
+  
+  if (length(unique(dt_25$return_period)) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(unique(dt_25$return_period)) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  medians <- data.frame(dt_25) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise(med_25 = median(twenty_five_years)) %>% 
+             data.table()
+
+  melted <- melt(dt_25, 
+                 id = c("cluster", "return_period", "emission"))
+
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.4
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks.y = element_line(size = .1, color = "black"),
+               axis.ticks.x = element_blank(),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  box_p <- ggplot(data = melted, 
+                  aes(x=cluster, y=value, fill=return_period)) +
+           geom_boxplot(outlier.size = -0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.85), 
+                        outlier.shape=NA
+                        ) +
+           the +
+           ylab("design storm intensity (mm/hr)") + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = categ_lab) + 
+           scale_y_continuous(breaks = seq(0, 20, by=2)) + 
+           geom_text(data = medians, 
+                    aes(label = sprintf("%1.1f", medians$med), 
+                         y = medians$med), 
+                    size = 2, fontface = "bold",
+                    position = position_dodge(.85), vjust = -.3)
+ return(box_p)
+}
+
+storm_diff_box_25yr_sep_clust <- function(data_tb, tgt_col){
+  data_tb <- data_tb %>% 
+             filter(time_interval=="twenty_five_years") %>% 
+             data.table()
+
+  needed_cols <- c("return_period", "emission", "cluster", tgt_col)
+  data_tb <- subset(data_tb, select=needed_cols)
+
+  time_label <- sort(unique(data_tb$return_period))
+  data_tb$return_period <- factor(data_tb$return_period, levels=time_label)
+  data_tb$cluster <- factor(data_tb$cluster, 
+                            levels=c("Western coastal", 
+                                     "Cascade foothills", 
+                                     "Northwest Cascades", 
+                                     "Northcentral Cascades", 
+                                     "Northeast Cascades"))
+     
+  if (length(time_label) == 3){
+    color_ord = c("dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 4){
+      color_ord = c("grey47", "dodgerblue2", "olivedrab4", "gold")
+    } else if (length(time_label) == 5){
+    color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
+  }
+
+  ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.4
+  the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
+               panel.border = element_rect(fill=NA, size=.3),
+               panel.grid.major = element_line(size = 0.05),
+               panel.grid.minor = element_blank(),
+               panel.spacing = unit(.35, "line"),
+               legend.position = "bottom", 
+               legend.key.size = unit(.8, "line"),
+               legend.spacing.x = unit(.1, 'line'),
+               panel.spacing.y = unit(.5, 'line'),
+               legend.text = element_text(size = ax_ttl_size, face="bold"),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
+               legend.title = element_blank(),
+               plot.title = element_text(size = ax_ttl_size, face = "bold",
+                                         margin = margin(t=.15, r=.1, b=0, l=0, "line")),
+               plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
+               strip.text.x = element_text(size = ax_ttl_size, face = "bold",
+                                           margin = margin(.15, 0, .15, 0, "line")),
+               axis.ticks.y = element_line(size = .1, color = "black"),
+               axis.ticks.x = element_blank(),
+               axis.text.y = element_text(size = ax_txt_size, face = "bold", 
+                                          color = "black"),
+               axis.text.x = element_blank(),
+               axis.title.y = element_text(size = ax_ttl_size, face = "bold", 
+                                           margin = margin(t=0, r=2, b=0, l=0)),
+               axis.title.x = element_blank()
+              )
+
+  if (tgt_col=="perc_diff"){
+     y_labb <- "differences (%)"
+     } else {
+      y_labb <- "magnitude of differences"
+  }
+
+  medians <- data.frame(data_tb) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
+
+  box_p <- ggplot(data = data_tb, 
+                  aes(x=cluster, y=get(tgt_col), fill=return_period)) +
+           geom_hline(yintercept= 0, color = "red", size=.3) + 
+           geom_boxplot(outlier.size = -0.3, notch=F, 
+                        width = box_width, lwd=.1, 
+                        position = position_dodge(0.8), outlier.shape=NA
+                        ) +
+           ylab(y_labb) + 
+           scale_fill_manual(values = color_ord,
+                             name = "Return\nPeriod", 
+                             labels = time_label) + 
+           the +
+           scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
+           geom_text(data = medians, 
+                     aes(label = sprintf("%1.1f", medians$med), y = medians$med),
+                     size = 2, fontface = "bold",
+                     position = position_dodge(.8), vjust = -.4)
 }
 

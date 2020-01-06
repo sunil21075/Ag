@@ -98,14 +98,14 @@ for (clust_g in cluster_types){
                                      p_type="box",
                                      y_lab = AV_y_lab, 
                                      tgt_col = AV_tg_col) +
-               ggtitle(paste0(AV_title, clust_g)) + 
+               ggtitle(paste0(AV_title)) + 
                coord_cartesian(ylim = c(quans_85[1], quans_85[2]))
 
   AV_box_45 <- box_trend_monthly_cum(dt=curr_AVs_45, 
                                      p_type="box",
                                      y_lab=AV_y_lab, 
                                      tgt_col=AV_tg_col) + 
-               ggtitle(paste0(AV_title, clust_g)) + 
+               ggtitle(paste0(AV_title)) + 
       coord_cartesian(ylim = c(quans_45[1], quans_45[2]))
   #########
   ######### difference plot
