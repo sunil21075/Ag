@@ -122,9 +122,6 @@ shinyServer(function(input, output, session) {
   ########
   ######## Regional Plots - RCP 8.5
   ########
-  ################################
-  ########
-  ######## Western_Coastal
   ########
   ###
   ###   annual
@@ -137,10 +134,26 @@ shinyServer(function(input, output, session) {
                                  list(src = filename, width = 600, height = 600)}, 
                                       deleteFile = FALSE)
 
+  output$rain_45 <- renderImage({
+                                 filename <- normalizePath(file.path(plot_dir, 
+                                                                     '/precip/wtr_yr/',
+                                                                     'wtr_yr_rain_45.png'))
+                                 # Return a list containing the filename and alt text
+                                 list(src = filename, width = 600, height = 600)}, 
+                                      deleteFile = FALSE)
+
   output$runoff_85 <- renderImage({
                                    filename <- normalizePath(file.path(plot_dir, 
                                                                        '/runoff/wtr_yr/',
                                                                        'wtr_yr_RCP85.png'))
+                                   # Return a list containing the filename and alt text
+                                   list(src = filename, width = 600, height = 400)}, 
+                                   deleteFile = FALSE)
+
+  output$runoff_45 <- renderImage({
+                                   filename <- normalizePath(file.path(plot_dir, 
+                                                                       '/runoff/wtr_yr/',
+                                                                       'wtr_yr_RCP45.png'))
                                    # Return a list containing the filename and alt text
                                    list(src = filename, width = 600, height = 400)}, 
                                    deleteFile = FALSE)
@@ -162,6 +175,34 @@ shinyServer(function(input, output, session) {
                                   list(src = filename, width = 600, height = 400)}, 
                                   deleteFile = FALSE
                                 )
+  ################################
+  ########
+  ######## Western_Coastal
+  ########
+  ###
+  ###   annual
+  ###
+  output$Western_coastal_annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Western_coastal_annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Western_coastal_storm_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Western_coastal_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
 
   # output$Western_coastal_dsi_rcp85 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
@@ -180,7 +221,6 @@ shinyServer(function(input, output, session) {
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
-
   output$Western_coastal_seasonal_runoff_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/runoff/seasonal/',
@@ -199,7 +239,6 @@ shinyServer(function(input, output, session) {
                                         # Return a list containing the filename and alt text
                                         list(src = filename, width = 600, height = 600)}, 
                                         deleteFile = FALSE)
-
   output$Western_coastal_monthly_runoff_rcp85 <- renderImage({
                                         filename <- normalizePath(file.path(plot_dir, 
                                                                             '/runoff/monthly/',
@@ -208,7 +247,6 @@ shinyServer(function(input, output, session) {
                                         list(src = filename, width = 600, height = 400)}, 
                                         deleteFile = FALSE)
   
-
   #######################################################
   ########
   ######## Cascade_foothills
@@ -216,6 +254,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Cascade_foothills_annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Cascade_foothills_annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Cascade_foothills_storm_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Cascade_foothills_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
   # output$Cascade_foothills_Annual_rain_rcp85 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -285,6 +344,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northwest_Cascades_annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northwest_Cascades_annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northwest_Cascades_storm_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northwest_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
   # output$Northwest_Cascades_Annual_rain_rcp85 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -354,6 +434,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northcentral_Cascades_annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northcentral_Cascades_annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northcentral_Cascades_storm_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northcentral_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
   # output$Northcentral_Cascades_Annual_rain_rcp85 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -421,6 +522,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northeast_Cascades_annual_rain_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northeast_Cascades_annual_runoff_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northeast_Cascades_storm_rcp85 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northeast_Cascades_85.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
   # output$Northeast_Cascades_Annual_rain_rcp85 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -484,7 +606,7 @@ shinyServer(function(input, output, session) {
 
   ################################
   ########
-  ######## Regional Plots - RCP 8.5
+  ######## Regional Plots - RCP 4.5
   ########
   ################################
   ########
@@ -493,21 +615,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
-  output$rain_45 <- renderImage({
-                                 filename <- normalizePath(file.path(plot_dir, 
-                                                                     '/precip/wtr_yr/',
-                                                                     'wtr_yr_rain_45.png'))
-                                 # Return a list containing the filename and alt text
-                                 list(src = filename, width = 600, height = 600)}, 
-                                      deleteFile = FALSE)
-
-  output$runoff_45 <- renderImage({
-                                   filename <- normalizePath(file.path(plot_dir, 
-                                                                       '/runoff/wtr_yr/',
-                                                                       'wtr_yr_RCP45.png'))
-                                   # Return a list containing the filename and alt text
-                                   list(src = filename, width = 600, height = 400)}, 
-                                   deleteFile = FALSE)
+  output$Western_coastal_annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Western_coastal_annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Western_coastal_storm_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Western_coastal_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
 
   # output$Western_coastal_dsi_rcp45 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
@@ -562,6 +690,28 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Cascade_foothills_annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Cascade_foothills_annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Cascade_foothills_storm_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Cascade_foothills_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+
   # output$Cascade_foothills_Annual_rain_rcp45 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -631,6 +781,27 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northwest_Cascades_annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northwest_Cascades_annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northwest_Cascades_storm_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northwest_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
   # output$Northwest_Cascades_Annual_rain_rcp45 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -700,6 +871,28 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northcentral_Cascades_annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northcentral_Cascades_annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northcentral_Cascades_storm_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northcentral_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+
   # output$Northcentral_Cascades_Annual_rain_rcp45 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',
@@ -767,6 +960,28 @@ shinyServer(function(input, output, session) {
   ###
   ###   annual
   ###
+  output$Northeast_Cascades_annual_rain_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/precip/wtr_yr/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 600)}, 
+                                        deleteFile = FALSE)
+  output$Northeast_Cascades_annual_runoff_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/runoff/wtr_yr/',
+                                                                            'Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+  output$Northeast_Cascades_storm_rcp45 <- renderImage({
+                                        filename <- normalizePath(file.path(plot_dir, 
+                                                                            '/storm/',
+                                                                            'storm_Northeast_Cascades_45.png'))
+                                        # Return a list containing the filename and alt text
+                                        list(src = filename, width = 350, height = 400)}, 
+                                        deleteFile = FALSE)
+
   # output$Northeast_Cascades_Annual_rain_rcp45 <- renderImage({
   #                                       filename <- normalizePath(file.path(plot_dir, 
   #                                                                           '/precip/wtr_yr/',

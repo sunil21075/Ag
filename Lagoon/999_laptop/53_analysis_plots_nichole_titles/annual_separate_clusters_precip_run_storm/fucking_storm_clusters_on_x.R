@@ -92,7 +92,7 @@ for (em in emissions){
                              aaa, 
                              ".png"),
            plot = storm_plt, 
-           width=3.5, height=4, units = "in", 
+           width=3.5, height=3.3, units = "in", 
            dpi=600, device = "png", 
            path = plot_dir)
   }

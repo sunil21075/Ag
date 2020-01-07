@@ -2518,7 +2518,7 @@ ann_box_sep_cluster <- function(dt, y_lab, tgt_col, ttl, subttl){
   bx <- ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
         the + 
         # geom_hline(yintercept= 0, color = "red", size=.3) +
-        geom_boxplot(outlier.size = - 0.3, notch=F, 
+        geom_boxplot(outlier.size = -0.3, notch=F, 
                      width = box_width, lwd=.1,
                      position = position_dodge(0.6), outlier.shape=NA) +
         scale_x_discrete(expand=c(0.1, 0)) + 
@@ -2546,9 +2546,9 @@ annual_frac_sep_clust <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain
                                          annual_cum_precip, rain_fraction))
    }
 
-  region_levels <-  c("Western coastal", "Cascade foothills", 
-                   "Northwest Cascades", "Northcentral Cascades", 
-                   "Northeast Cascades")
+  region_levels <- c("Western coastal", "Cascade foothills", 
+                     "Northwest Cascades", "Northcentral Cascades", 
+                     "Northeast Cascades")
   data_tb$cluster <- factor(data_tb$cluster, levels=region_levels, order=T)
   medians <- data.frame(data_tb) %>% 
              group_by(cluster, time_period, emission) %>% 
@@ -2605,23 +2605,18 @@ annual_frac_sep_clust <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain
   ######
   ggplot(data = melted, aes(x=cluster, y=value, fill=time_period)) +
   the + 
-  # geom_hline(yintercept= 0, color = "red", size=.3) +
-  geom_boxplot(outlier.size = - 0.3, notch=F, 
+  geom_boxplot(outlier.size = -0.3, notch=F, 
                width = box_width, lwd=.1, 
                position = position_dodge(0.6), outlier.shape=NA
                ) +
   scale_x_discrete(expand=c(0.1, 0)) + 
-  # labs(x="", y="") + # theme_bw() + 
-  # facet_grid(~ emission, scales="free") +
   xlab("precip. group") +
   ylab(y_lab) +
-  # ylim(quantile(melted$value, probs = c(0.05, 0.95))) +
   scale_fill_manual(values = color_ord, labels = time_label) +
   geom_text(data = medians, 
             aes(label = sprintf(signif, medians$med), y = medians$med), 
             size = 2, fontface = "bold",
             position = position_dodge(.6), vjust = -.4)
-  # + coord_cartesian(ylim = (boxplot.stats(melted$value)$stats[c(1, 5)])*1.05)
 }
 
 box_dt_25_sep_clust <- function(dt_25){
@@ -2716,6 +2711,15 @@ storm_diff_box_25yr_sep_clust <- function(data_tb, tgt_col){
     } else if (length(time_label) == 5){
     color_ord = c("red", "grey47", "dodgerblue2", "olivedrab4", "gold")
   }
+  if (tgt_col=="perc_diff"){
+     y_labb <- "differences (%)"
+     } else {
+      y_labb <- "magnitude of differences"
+  }
+  medians <- data.frame(data_tb) %>% 
+             group_by(return_period, emission, cluster) %>% 
+             summarise( med = median(get(tgt_col))) %>% 
+             data.table()
 
   ax_txt_size <- 6; ax_ttl_size <- 8; box_width = 0.4
   the <- theme(plot.margin = unit(c(t=.1, r=.2, b=.1, l=0.2), "cm"),
@@ -2745,23 +2749,12 @@ storm_diff_box_25yr_sep_clust <- function(data_tb, tgt_col){
                axis.title.x = element_blank()
               )
 
-  if (tgt_col=="perc_diff"){
-     y_labb <- "differences (%)"
-     } else {
-      y_labb <- "magnitude of differences"
-  }
-
-  medians <- data.frame(data_tb) %>% 
-             group_by(return_period, emission, cluster) %>% 
-             summarise( med = median(get(tgt_col))) %>% 
-             data.table()
-
   box_p <- ggplot(data = data_tb, 
                   aes(x=cluster, y=get(tgt_col), fill=return_period)) +
            geom_hline(yintercept= 0, color = "red", size=.3) + 
            geom_boxplot(outlier.size = -0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.8), outlier.shape=NA
+                        position = position_dodge(0.85), outlier.shape=NA
                         ) +
            ylab(y_labb) + 
            scale_fill_manual(values = color_ord,

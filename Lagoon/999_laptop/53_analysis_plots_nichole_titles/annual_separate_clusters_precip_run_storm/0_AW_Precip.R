@@ -150,13 +150,11 @@ for (timeP_ty in 1:1){ # annual or wtr_yr?
       
       if (em == "RCP 4.5"){aaa="45"} else {aaa = "85"}
       
-      ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_",
-                               str_replace(clust, " ", "_"),
-                               "_rain_", 
-                               aaa, 
+      ggsave(filename = paste0(str_replace(clust, " ", "_"),
+                               "_", aaa, 
                                ".png"),
              plot = rain, 
-             width=3.5, height=4, units = "in", 
+             width=3.5, height=5, units = "in", 
              dpi=600, device = "png", path = plot_3_in_1_dir)
 
     }

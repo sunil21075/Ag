@@ -128,13 +128,11 @@ for (dt_type in in_dir_ext){
              dir.create(path=run_n_diff, recursive = T)}
         
         if (em == "RCP 4.5"){aaa="45"} else {aaa = "85"}
-        ggsave(filename = paste0(timeP_ty_middN[timeP_ty], "_",
-                                 str_replace(clust, " ", "_"),
-                                 "_rain_", 
-                                 aaa, 
+        ggsave(filename = paste0(str_replace(clust, " ", "_"),
+                                 "_", aaa, 
                                  ".png"),
                plot = RCP,  units = "in",
-               width=3.5, height=5,
+               width=3.5, height=3.3,
                dpi=600, device = "png", path = run_n_diff)
         print (run_n_diff)
       }

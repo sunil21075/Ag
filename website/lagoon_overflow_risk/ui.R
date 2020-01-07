@@ -186,6 +186,18 @@ navbarPage(title = div("",
                                  ####### Western Coastal 85 start
                                  tabPanel("Western coastal",
                                           fluidRow(tabBox(
+                                                          tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Western_coastal_annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Western_coastal_annual_runoff_rcp85"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Western_coastal_storm_rcp85")
+                                                                   ),
+
                                                           tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Western_coastal_seasonal_rain_rcp85"),
@@ -211,7 +223,18 @@ navbarPage(title = div("",
 
                                  ####### Cascade foothills 85 start
                                  tabPanel("Cascade foothills",
-                                          fluidRow(tabBox(
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Cascade_foothills_annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Cascade_foothills_annual_runoff_rcp85"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Cascade_foothills_storm_rcp85")
+                                                                   ),
+
                                                           tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Cascade_foothills_seasonal_rain_rcp85"),
@@ -238,7 +261,18 @@ navbarPage(title = div("",
                                  ####### Northwest Cascades 85 start
                                  tabPanel("Northwest Cascades",
                                           fluidRow(tabBox(
-                                                           tabPanel("Seasonal", 
+                                                          tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northwest_Cascades_annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northwest_Cascades_annual_runoff_rcp85"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northwest_Cascades_storm_rcp85")
+                                                                   ), 
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northwest_Cascades_seasonal_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -247,7 +281,7 @@ navbarPage(title = div("",
                                                                    imageOutput("Northwest_Cascades_seasonal_runoff_rcp85")
                                                                    ),
 
-                                                           tabPanel("Monthly", 
+                                                          tabPanel("Monthly", 
                                                                    tags$blockquote("Below we see monthly precipitation ranges."),
                                                                    imageOutput("Northwest_Cascades_monthly_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -263,8 +297,18 @@ navbarPage(title = div("",
 
                                  ####### Northcentral Cascades 85 start
                                  tabPanel("Northcentral Cascades",
-                                          fluidRow(tabBox(
-                                                           tabPanel("Seasonal", 
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northcentral_Cascades_annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northcentral_Cascades_annual_runoff_rcp85"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northcentral_Cascades_storm_rcp85")
+                                                                   ),
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northcentral_Cascades_seasonal_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -273,7 +317,7 @@ navbarPage(title = div("",
                                                                    imageOutput("Northcentral_Cascades_seasonal_runoff_rcp85")
                                                                    ),
 
-                                                           tabPanel("Monthly", 
+                                                          tabPanel("Monthly", 
                                                                    tags$blockquote("Below we see monthly precipitation ranges."),
                                                                    imageOutput("Northcentral_Cascades_monthly_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -289,8 +333,18 @@ navbarPage(title = div("",
 
                                  ####### Northeast Cascades 85 start
                                  tabPanel("Northeast Cascades",
-                                          fluidRow(tabBox(
-                                                           tabPanel("Seasonal", 
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northeast_Cascades_annual_rain_rcp85"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northeast_Cascades_annual_runoff_rcp85"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northeast_Cascades_storm_rcp85")
+                                                                   ),
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northeast_Cascades_seasonal_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -299,7 +353,7 @@ navbarPage(title = div("",
                                                                    imageOutput("Northeast_Cascades_seasonal_runoff_rcp85")
                                                                    ),
 
-                                                           tabPanel("Monthly", 
+                                                          tabPanel("Monthly", 
                                                                    tags$blockquote("Below we see monthly precipitation ranges."),
                                                                    imageOutput("Northeast_Cascades_monthly_rain_rcp85"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -320,7 +374,17 @@ navbarPage(title = div("",
                                  HTML("<b>RCP 4.5</b>"),
                                  ####### Western Coastal 45 start
                                  tabPanel("Western coastal",
-                                          fluidRow(tabBox(
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Western_coastal_annual_rain_rcp45"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Western_coastal_annual_runoff_rcp45"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Western_coastal_storm_rcp45")
+                                                                   ),
                                                           tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Western_coastal_seasonal_rain_rcp45"),
@@ -346,7 +410,17 @@ navbarPage(title = div("",
 
                                  ####### Cascade foothills 45 start
                                  tabPanel("Cascade foothills",
-                                          fluidRow(tabBox(
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Cascade_foothills_annual_rain_rcp45"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Cascade_foothills_annual_runoff_rcp45"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Cascade_foothills_storm_rcp45")
+                                                                   ),
                                                           tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Cascade_foothills_seasonal_rain_rcp45"),
@@ -372,8 +446,18 @@ navbarPage(title = div("",
 
                                  ####### Northwest Cascades 45 start
                                  tabPanel("Northwest Cascades",
-                                          fluidRow(tabBox(
-                                                           tabPanel("Seasonal", 
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northwest_Cascades_annual_rain_rcp45"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northwest_Cascades_annual_runoff_rcp45"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northwest_Cascades_storm_rcp45")
+                                                                   ),
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northwest_Cascades_seasonal_rain_rcp45"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -398,8 +482,19 @@ navbarPage(title = div("",
 
                                  ####### Northcentral Cascades 45 start
                                  tabPanel("Northcentral Cascades",
-                                          fluidRow(tabBox(
-                                                           tabPanel("Seasonal", 
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northcentral_Cascades_annual_rain_rcp45"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northcentral_Cascades_annual_runoff_rcp45"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northcentral_Cascades_storm_rcp45")
+                                                                   ),
+
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northcentral_Cascades_seasonal_rain_rcp45"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -424,8 +519,19 @@ navbarPage(title = div("",
 
                                  ####### Northeast Cascades 45 start
                                  tabPanel("Northeast Cascades",
-                                          fluidRow(tabBox( 
-                                                           tabPanel("Seasonal", 
+                                          fluidRow(tabBox(tabPanel("Annual", 
+                                                                   tags$blockquote("Below we see annual precipitation ranges."),
+                                                                   imageOutput("Northeast_Cascades_annual_rain_rcp45"),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   br(),br(), br(),br(),br(), br(),
+                                                                   tags$blockquote("Below we see annual runoff ranges."),
+                                                                   imageOutput("Northeast_Cascades_annual_runoff_rcp45"),
+                                                                   br(),br(), br(),
+                                                                   tags$blockquote("and finally 25-year/24-hour design storm intensity"),
+                                                                   imageOutput("Northeast_Cascades_storm_rcp45")
+                                                                   ),
+
+                                                          tabPanel("Seasonal", 
                                                                    tags$blockquote("Below we see seasonal precipitation ranges."),
                                                                    imageOutput("Northeast_Cascades_seasonal_rain_rcp45"),
                                                                    br(),br(), br(),br(),br(), br(),
@@ -434,7 +540,7 @@ navbarPage(title = div("",
                                                                    imageOutput("Northeast_Cascades_seasonal_runoff_rcp45")
                                                                    ),
 
-                                                           tabPanel("Monthly", 
+                                                          tabPanel("Monthly", 
                                                                    tags$blockquote("Below we see monthly precipitation ranges."),
                                                                    imageOutput("Northeast_Cascades_monthly_rain_rcp45"),
                                                                    br(),br(), br(),br(),br(), br(),
