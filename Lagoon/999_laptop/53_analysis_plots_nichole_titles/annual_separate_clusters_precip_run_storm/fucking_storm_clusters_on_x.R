@@ -55,7 +55,7 @@ for (em in emissions){
     quans <- storm_25_quantiles(curr_dt, 
                                 tgt_col= "twenty_five_years")
     
-    AV_plt <- box_dt_25_sep_clust(within(curr_dt, remove(location, model))) +
+    AV_plt <- storm_box_25_sep_clust(within(curr_dt, remove(location, model))) +
               ggtitle(label = AV_title) +
               coord_cartesian(ylim = c(quans[1], quans[2]))
   
@@ -92,7 +92,7 @@ for (em in emissions){
                              aaa, 
                              ".png"),
            plot = storm_plt, 
-           width=3.5, height=3.3, units = "in", 
+           width=3.5, height=4, units = "in", 
            dpi=600, device = "png", 
            path = plot_dir)
   }

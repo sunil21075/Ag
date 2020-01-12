@@ -10,7 +10,7 @@ library(foreign)
 ########## Directories
 ##########
 data_dir <- paste0("/Users/hn/Desktop/Desktop/Ag/", 
-                   "check_point/pre_microsoft_meeting/")
+                   "check_point/remote_sensing/")
 
 ##########
 ########## TRUE SHAPEFILE
@@ -35,19 +35,19 @@ print (paste0("Reading Min's shapefile takes:",
 ########## read weird 2012-2017
 ##########
 start_time <- Sys.time()
-weird_2012_2017_dir <- paste0(data_dir, 
-                         "2012_2017_weird_shapefile.gdb"
-                         )
+weird_2012_2018_dir <- paste0(data_dir, 
+                              "2012_2018_weird_shapefile.gdb")
 
 # list the layer names in their to read desired layer
-ogrListLayers(weird_2012_2017_dir);
-gdb <- path.expand(weird_2012_2017_dir)
+ogrListLayers(weird_2012_2018_dir);
+gdb <- path.expand(weird_2012_2018_dir)
 WSDACrop_2012 <- readOGR(gdb, "WSDACrop_2012")
 WSDACrop_2013 <- readOGR(gdb, "WSDACrop_2013")
 WSDACrop_2014 <- readOGR(gdb, "WSDACrop_2014")
 WSDACrop_2015 <- readOGR(gdb, "WSDACrop_2015")
 WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
 WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
+WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
 
 print (paste0("Reading 2012-2017 shapefile takes:", 
               Sys.time() - start_time ))

@@ -15,9 +15,10 @@ library(sf)
 ############      Directories      #############
 
 data_dir <- paste0("/Users/hn/Desktop/Desktop/Ag/", 
-                   "check_point/pre_microsoft_meeting/")
+                   "check_point/remote_sensing/")
 
-shape_file_dir <- paste0(data_dir, "2018WSDACrop.gdb") 
+shape_file_dir <- paste0(data_dir, 
+                         "2018_weird_shape_file/2018WSDACrop.gdb") 
 
 ##############################################
 ############                     #############

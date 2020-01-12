@@ -2581,9 +2581,9 @@ annual_frac_sep_clust <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain
                legend.spacing.x = unit(.1, 'line'),
                panel.spacing.y = unit(.5, 'line'),
                legend.text = element_text(size = ax_ttl_size, face="bold"),
-               legend.margin = margin(t=-0.2, r=0, b=0, l=0, unit = 'line'),
+               legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'line'),
                legend.title = element_blank(),
-               plot.title = element_text(size=8, face = "bold",
+               plot.title = element_text(size=ax_ttl_size, face = "bold",
                                          margin = margin(t=.15, r=.1, b=0, l=0, "line")), # b=-1.5
                plot.subtitle = element_text(size=ax_txt_size, face = "plain"),
                strip.text.x = element_text(size = ax_ttl_size, face = "bold",
@@ -2619,7 +2619,7 @@ annual_frac_sep_clust <-function(data_tb,y_lab="rain fraction (%)",tgt_col="rain
             position = position_dodge(.6), vjust = -.4)
 }
 
-box_dt_25_sep_clust <- function(dt_25){
+storm_box_25_sep_clust <- function(dt_25){
   categ_lab <- sort(unique(dt_25$return_period))
   
   if (length(unique(dt_25$return_period)) == 3){
@@ -2670,9 +2670,10 @@ box_dt_25_sep_clust <- function(dt_25){
                   aes(x=cluster, y=value, fill=return_period)) +
            geom_boxplot(outlier.size = -0.3, notch=F, 
                         width = box_width, lwd=.1, 
-                        position = position_dodge(0.85), 
+                        position = position_dodge(0.6), 
                         outlier.shape=NA
                         ) +
+           scale_x_discrete(expand=c(0.1, 0)) + 
            the +
            ylab("design storm intensity (mm/hr)") + 
            scale_fill_manual(values = color_ord,
@@ -2683,7 +2684,7 @@ box_dt_25_sep_clust <- function(dt_25){
                     aes(label = sprintf("%1.1f", medians$med), 
                          y = medians$med), 
                     size = 2, fontface = "bold",
-                    position = position_dodge(.85), vjust = -.3)
+                    position = position_dodge(.6), vjust = -.4)
  return(box_p)
 }
 
@@ -2749,22 +2750,23 @@ storm_diff_box_25yr_sep_clust <- function(data_tb, tgt_col){
                axis.title.x = element_blank()
               )
 
-  box_p <- ggplot(data = data_tb, 
-                  aes(x=cluster, y=get(tgt_col), fill=return_period)) +
-           geom_hline(yintercept= 0, color = "red", size=.3) + 
-           geom_boxplot(outlier.size = -0.3, notch=F, 
-                        width = box_width, lwd=.1, 
-                        position = position_dodge(0.85), outlier.shape=NA
-                        ) +
-           ylab(y_labb) + 
-           scale_fill_manual(values = color_ord,
-                             name = "Return\nPeriod", 
-                             labels = time_label) + 
-           the +
-           scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
-           geom_text(data = medians, 
-                     aes(label = sprintf("%1.1f", medians$med), y = medians$med),
-                     size = 2, fontface = "bold",
-                     position = position_dodge(.8), vjust = -.4)
+  ggplot(data = data_tb, 
+         aes(x=cluster, y=get(tgt_col), fill=return_period)) +
+  geom_hline(yintercept= 0, color = "red", size=.3) + 
+  geom_boxplot(outlier.size = -0.3, notch=F, 
+               width = box_width, lwd=.1, 
+               position = position_dodge(0.6), outlier.shape=NA
+               ) +
+  scale_x_discrete(expand=c(0.1, 0)) + 
+  ylab(y_labb) + 
+  scale_fill_manual(values = color_ord,
+                    name = "Return\nPeriod", 
+                    labels = time_label) + 
+  the +
+  scale_y_continuous(breaks = seq(-100, 100, by=10)) + 
+  geom_text(data = medians, 
+            aes(label = sprintf("%1.1f", medians$med), y = medians$med),
+            size = 2, fontface = "bold",
+            position = position_dodge(.6), vjust = -.4)
 }
 
