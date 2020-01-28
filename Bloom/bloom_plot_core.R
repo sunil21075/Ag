@@ -142,7 +142,7 @@ plot_bloom_box <- function(dt, colname, ct){
 
   box_width <- 0.35
   title_ <- paste0(title_, ", ",ct)
-  the_theme <- theme(plot.title = element_text(size=13, face="bold"),
+  the_theme<-theme(plot.title = element_text(size=13, face="bold"),
                    panel.grid.minor = element_blank(),
                    panel.spacing=unit(.5, "cm"),
                    legend.margin=margin(t=.1, r = 0, b = .1, l = 0, unit = 'cm'),
