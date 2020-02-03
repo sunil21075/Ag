@@ -3,7 +3,7 @@ library(data.table)
 library(rgdal)
 library(dplyr)
 library(sp)
-library(sf)
+# library(sf)
 library(foreign)
 
 source_1 = "/Users/hn/Documents/GitHub/Ag/remote_sensing/remote_core.R"
@@ -119,13 +119,13 @@ dim(WSDACrop_2014@data)
 dim(WSDACrop_2013@data)
 dim(WSDACrop_2012@data)
 
-WSDACrop_2018 <- transfer_projection_to_lat_long(WSDACrop_2018)
-WSDACrop_2017 <- transfer_projection_to_lat_long(WSDACrop_2017)
-WSDACrop_2016 <- transfer_projection_to_lat_long(WSDACrop_2016)
-WSDACrop_2015 <- transfer_projection_to_lat_long(WSDACrop_2015)
-WSDACrop_2014 <- transfer_projection_to_lat_long(WSDACrop_2014)
-WSDACrop_2013 <- transfer_projection_to_lat_long(WSDACrop_2013)
-WSDACrop_2012 <- transfer_projection_to_lat_long(WSDACrop_2012)
+# WSDACrop_2018 <- transfer_projection_to_lat_long(WSDACrop_2018)
+# WSDACrop_2017 <- transfer_projection_to_lat_long(WSDACrop_2017)
+# WSDACrop_2016 <- transfer_projection_to_lat_long(WSDACrop_2016)
+# WSDACrop_2015 <- transfer_projection_to_lat_long(WSDACrop_2015)
+# WSDACrop_2014 <- transfer_projection_to_lat_long(WSDACrop_2014)
+# WSDACrop_2013 <- transfer_projection_to_lat_long(WSDACrop_2013)
+# WSDACrop_2012 <- transfer_projection_to_lat_long(WSDACrop_2012)
 
 WSDACrop_2012_2018_no_2017 <- rbind(WSDACrop_2012, WSDACrop_2013,
                                     WSDACrop_2014, WSDACrop_2015,
@@ -150,7 +150,7 @@ WSDACrop_2012_2018 <- rbind(WSDACrop_2012, WSDACrop_2013,
                             WSDACrop_2016, WSDACrop_2017,
                             WSDACrop_2018)
 
-write_dir <- paste0(data_dir)
+write_dir <- paste0(data_dir, "weird_projections")
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }
@@ -165,8 +165,7 @@ writeOGR(obj = WSDACrop_2012_2018_no_2017,
          layer="WSDACrop_2012_2018_no_2017", 
          driver="ESRI Shapefile")
 
-#########
-
+########################################################################
 
 double_dbl_2018 <- readOGR(paste0("/Users/hn/Desktop/Desktop/", 
                                   "Ag/check_point/remote_sensing/", 

@@ -31,7 +31,7 @@ WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
 ########## write TRUE shapefiles
 ##########
 
-write_dir <- paste0(data_dir, "/2012_2018_true_shapefiles")
+write_dir <- paste0(data_dir, "/2012_2018_true_shapefiles/")
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }

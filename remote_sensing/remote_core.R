@@ -1,19 +1,14 @@
-rm(list=ls())
 library(data.table)
 library(rgdal)
 library(dplyr)
 library(sp)
-library(sf)
-library(foreign)
-
-
-
 ############################################
 ############################################
 ############################################
 ###########
 ###########     Weird ShapeFiles section
 ###########
+############################################
 ############################################
 transfer_projection_to_lat_long <- function(shape_file){
   crs <- CRS("+proj=lcc 

@@ -72,7 +72,7 @@ writeOGR(obj=some_crops_2018,
 one_apple <- apple_2018[1, ]
 one_potato <- potato_2018[1, ]
 one_grape <- wine_grape_2018[1, ]
-one_alfalfa<- alfalfa_hay_2018[1, ]
+one_alfalfa <- alfalfa_hay_2018[1, ]
 one_double <- doublecrop_2018[1, ]
 
 
