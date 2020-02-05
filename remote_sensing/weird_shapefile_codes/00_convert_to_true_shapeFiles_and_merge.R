@@ -9,12 +9,10 @@ library(foreign)
 ##########
 ########## Directories
 ##########
-data_dir <- paste0("/Users/hn/Desktop/Desktop/Ag/", 
-                   "check_point/remote_sensing/")
+data_dir <- paste0("/Users/hn/Documents/01_research_data/", 
+                   "Ag_check_point/remote_sensing/")
 
-weird_2012_2018_dir <- paste0(data_dir, 
-                         "2012_2018_weird_shapefile.gdb"
-                         )
+weird_2012_2018_dir <- paste0(data_dir, "2012_2018_weird_shapefile.gdb")
 
 # list the layer names in their to read desired layer
 ogrListLayers(weird_2012_2018_dir);
@@ -27,11 +25,29 @@ WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
 WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
 WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
 
+setnames(WSDACrop_2012@data, old=c("Rt1CrpT", "County"), new=c("RtCrpTy", "county"))
+
+setnames(WSDACrop_2013@data, old=c("County"), new=c("county"))
+
+setnames(WSDACrop_2014@data, old=c("Rt1CrpT", "LstSrvy", "County"), 
+                             new=c("RtCrpTy", "LstSrvD", "county"))
+
+setnames(WSDACrop_2015@data, old=c("SHAPE_A", "SHAPE_L", "County"), 
+                             new=c("Shap_Ar", "Shp_Lng", "county"))
+
+setnames(WSDACrop_2016@data, old=c("SHAPE_A", "SHAPE_L", "County"), 
+                             new=c("Shap_Ar", "Shp_Lng", "county"))
+
+setnames(WSDACrop_2017@data, old=c("SHAPE_A", "SHAPE_L", "RttnCrT", "County"), 
+                             new=c("Shap_Ar", "Shp_Lng", "RtCrpTy", "county"))
+
+setnames(WSDACrop_2018@data, old=c("RttnCrp", "County"), new=c("RtCrpTy", "county"))
+
 ##########
 ########## write TRUE shapefiles
 ##########
 
-write_dir <- paste0(data_dir, "/2012_2018_true_shapefiles/")
+write_dir <- paste0(data_dir, "/01_true_shapefiles_separate_years/")
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }

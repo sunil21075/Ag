@@ -28,14 +28,14 @@ pick_correct_year <- function(a_shape_file, year){
 }
 
 pick_proper_cols_w_notes <- function(a_shape_file){
-  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", 
+  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
                     "Irrigtn", "TRS", "RtCrpTy", "Notes")
   a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
   return(a_shape_file)
 }
 
 pick_proper_cols_no_notes <- function(a_shape_file){
-  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", 
+  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
                     "Irrigtn", "TRS", "RtCrpTy")
   a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
   return(a_shape_file)
