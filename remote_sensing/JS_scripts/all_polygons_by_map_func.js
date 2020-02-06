@@ -11,13 +11,16 @@ var first_grant_region = ee.FeatureCollection(first_grant_SF);
 var second_grant_region = ee.FeatureCollection(second_grant_SF);
 var third_grant_region = ee.FeatureCollection(third_grant_SF);
 
-print(three_grant_regions.geometry())
-print(first_grant_region.geometry())
+// print ("---------- 1 print start ----------")
+// print(three_grant_regions.geometry())
+// print(first_grant_region.geometry())
+// print ("---------- 1 print end   ----------")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 ///
 ///                           functions definitions start
 ///
+
 // Function to mask clouds using the Sentinel-2 QA band.
 function maskS2clouds(image) {
     var qa = image.select('QA60')
@@ -78,6 +81,10 @@ var extract_sentinel_IC = function(a_feature){
                 //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
                 .select(['B8', 'B4']);
+                
+    imageC = addDate_to_collection(imageC)
+    imageC = add_NDVI_collection(imageC)
+    //imageC = imageC.map(add_NDVI_collection)
   return imageC;
 }
 ///
@@ -94,8 +101,9 @@ var first_field_image = ee.ImageCollection('COPERNICUS/S2')
                         .filterBounds(first_grant_region)
                         .filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                         //.select(['B8', 'B4']);
-                
+print ("---------- 2 print start ----------")
 print ("first_field_image", first_field_image.size().getInfo())
+print ("---------- 2 print end   ----------")
 ////////////////////////////////////////////////////////////////////////////////////////
 ///
 ///
@@ -105,8 +113,9 @@ var second_field_image = ee.ImageCollection('COPERNICUS/S2')
                         .filterBounds(second_grant_region)
                         .filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                         .select(['B8', 'B4']);
-                
+print ("---------- 3 print start ----------")
 print ("second_field_image", second_field_image.size().getInfo())
+print ("---------- 3 print end   ----------")
 ////////////////////////////////////////////////////////////////////////////////////////
 ///
 ///      Third field - get it directly
@@ -116,17 +125,21 @@ var third_field_image = ee.ImageCollection('COPERNICUS/S2')
                         .filterBounds(third_grant_region)
                         .filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                         .select(['B8', 'B4']);
-                        
+print ("---------- 4 print start ----------")
 print ("third_field_image", third_field_image.size().getInfo())
 print(third_field_image)
-
+print ("---------- 4 print end   ----------")
 ////////////////////////////////////////////////////////////////////////////////////////
 ///
 ///      Third field - get it via map() and extract_sentinel_IC
 ///
+
 var third_field_image_2 = third_grant_region.map(extract_sentinel_IC)
+
+print ("---------- 5 print start ----------")
 print ("third_field_image_2", third_field_image_2.size().getInfo())
 print(third_field_image_2.first())
+print ("---------- 5 print end   ----------")
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // image = image.map(function(image) { return image.clip(geom); });
@@ -134,12 +147,14 @@ print(third_field_image_2.first())
 // print ("three_fields_IC", three_fields_IC.size().getInfo())
 
 var three_fields_IC = three_grant_regions.map(extract_sentinel_IC)
+
+print ("---------- 6 print start ----------")
 print ("three_fields_IC", three_fields_IC.size().getInfo())
 print(three_fields_IC)
 print(three_fields_IC.first())
 
 print(three_fields_IC.getInfo())
-
+print ("---------- 6 print end   ----------")
 
 Map.setCenter(-119, 47.2, 9)
 var vizParams = {
