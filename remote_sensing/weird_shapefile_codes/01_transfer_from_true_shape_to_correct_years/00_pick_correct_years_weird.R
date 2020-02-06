@@ -52,6 +52,8 @@ WSDACrop_2018 <- readOGR(paste0(data_dir,
                         layer = "WSDACrop_2018", 
                         GDAL1_integer64_policy = TRUE)
 
+WSDACrop_2017@data$Notes <- "No Notes 2017"
+
 dim(WSDACrop_2018@data)
 dim(WSDACrop_2017@data)
 dim(WSDACrop_2016@data)
@@ -60,7 +62,7 @@ dim(WSDACrop_2014@data)
 dim(WSDACrop_2013@data)
 dim(WSDACrop_2012@data)
 
-WSDACrop_2017@data$Notes <- "No Notes"
+
 #######################################################################
 ######
 ######       Change names to be consistent - Moved to 00_convert to ttue shapefile
@@ -88,6 +90,9 @@ WSDACrop_2017@data$Notes <- "No Notes"
 ######       pick correct year
 ######
 #######################################################################
+head(WSDACrop_2018@data, 2)
+head(WSDACrop_2012@data, 2)
+
 WSDACrop_2018 <- pick_correct_year(WSDACrop_2018, year=2018)
 WSDACrop_2017 <- pick_correct_year(WSDACrop_2017, year=2017)
 WSDACrop_2016 <- pick_correct_year(WSDACrop_2016, year=2016)
@@ -96,8 +101,11 @@ WSDACrop_2014 <- pick_correct_year(WSDACrop_2014, year=2014)
 WSDACrop_2013 <- pick_correct_year(WSDACrop_2013, year=2013)
 WSDACrop_2012 <- pick_correct_year(WSDACrop_2012, year=2012)
 
+head(WSDACrop_2018@data, 2)
+head(WSDACrop_2012@data, 2)
+
 write_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                    "Ag_check_point/remote_sensing/02_correct_years_separate")
+                    "Ag_check_point/remote_sensing/02_correct_years_separate/weird_projections/")
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }
@@ -137,13 +145,6 @@ writeOGR(obj = WSDACrop_2018,
          layer="WSDACrop_2018", 
          driver="ESRI Shapefile")
 
-dim(WSDACrop_2018@data)
-dim(WSDACrop_2017@data)
-dim(WSDACrop_2016@data)
-dim(WSDACrop_2015@data)
-dim(WSDACrop_2014@data)
-dim(WSDACrop_2013@data)
-dim(WSDACrop_2012@data)
 #######################################################################
 ######
 ######       pick proper cols (columns that are in common among all)
@@ -163,10 +164,16 @@ dim(WSDACrop_2014@data)
 dim(WSDACrop_2013@data)
 dim(WSDACrop_2012@data)
 
+
+head(WSDACrop_2018@data, 2)
+head(WSDACrop_2012@data, 2)
+
 WSDACrop_2012_2018 <- rbind(WSDACrop_2012, WSDACrop_2013,
                             WSDACrop_2014, WSDACrop_2015,
                             WSDACrop_2016, WSDACrop_2017,
                             WSDACrop_2018)
+
+head(WSDACrop_2012_2018@data, 2)
 
 write_dir <- paste0("/Users/hn/Documents/01_research_data/Ag_check_point/", 
                     "remote_sensing/03_cleaned_shapeFiles/WSDACrop_2012_2018_weird_projection/")
@@ -180,83 +187,3 @@ writeOGR(obj = WSDACrop_2012_2018,
          layer="WSDACrop_2012_2018_weird_projection", 
          driver="ESRI Shapefile")
 rm(WSDACrop_2012_2018)
-########################################################################
-
-WSDACrop_2018 <- transfer_projection_to_lat_long(WSDACrop_2018)
-WSDACrop_2017 <- transfer_projection_to_lat_long(WSDACrop_2017)
-WSDACrop_2016 <- transfer_projection_to_lat_long(WSDACrop_2016)
-WSDACrop_2015 <- transfer_projection_to_lat_long(WSDACrop_2015)
-WSDACrop_2014 <- transfer_projection_to_lat_long(WSDACrop_2014)
-WSDACrop_2013 <- transfer_projection_to_lat_long(WSDACrop_2013)
-WSDACrop_2012 <- transfer_projection_to_lat_long(WSDACrop_2012)
-
-
-
-write_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                    "Ag_check_point/remote_sensing/02_correct_years_separate/lat_long_projections/")
-if (dir.exists(file.path(write_dir)) == F){
-  dir.create(path=file.path(write_dir), recursive=T)
-}
-
-writeOGR(obj = WSDACrop_2012, 
-         dsn = paste0(write_dir, "/WSDACrop_2012/"), 
-         layer="WSDACrop_2012", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2013, 
-         dsn = paste0(write_dir, "/WSDACrop_2013/"), 
-         layer="WSDACrop_2013", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2014, 
-         dsn = paste0(write_dir, "/WSDACrop_2014/"), 
-         layer="WSDACrop_2014", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2015, 
-         dsn = paste0(write_dir, "/WSDACrop_2015/"), 
-         layer="WSDACrop_2015", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2016, 
-         dsn = paste0(write_dir, "/WSDACrop_2016/"), 
-         layer="WSDACrop_2016", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2017, 
-         dsn = paste0(write_dir, "/WSDACrop_2017/"), 
-         layer="WSDACrop_2017", 
-         driver="ESRI Shapefile")
-
-writeOGR(obj = WSDACrop_2018, 
-         dsn = paste0(write_dir, "/WSDACrop_2018/"), 
-         layer="WSDACrop_2018", 
-         driver="ESRI Shapefile")
-###############################################################
-#########
-#########     Bond them together in one file
-#########
-###############################################################
-WSDACrop_2012_2018 <- rbind(WSDACrop_2012, WSDACrop_2013,
-                            WSDACrop_2014, WSDACrop_2015,
-                            WSDACrop_2016, WSDACrop_2017,
-                            WSDACrop_2018)
-
-rm(WSDACrop_2012, WSDACrop_2013,
-   WSDACrop_2014, WSDACrop_2015,
-   WSDACrop_2016, WSDACrop_2017,
-   WSDACrop_2018)
-
-write_dir <- paste0("/Users/hn/Documents/01_research_data/Ag_check_point/", 
-                    "remote_sensing/03_cleaned_shapeFiles/")
-
-if (dir.exists(file.path(write_dir)) == F){
-  dir.create(path=file.path(write_dir), recursive=T)
-}
-
-writeOGR(obj = WSDACrop_2012_2018, 
-         dsn = paste0(write_dir, "/WSDACrop_2012_2018_lat_long/"), 
-         layer="WSDACrop_2012_2018_lat_long", 
-         driver="ESRI Shapefile")
-
-

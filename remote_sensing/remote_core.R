@@ -1,3 +1,4 @@
+
 library(data.table)
 library(rgdal)
 library(dplyr)
@@ -24,22 +25,23 @@ transfer_projection_to_lat_long <- function(shape_file){
 pick_correct_year <- function(a_shape_file, year){
   year_chr <- as.character(year)
   a_shape_file <- a_shape_file[grepl(year_chr, a_shape_file$LstSrvD), ]
+  a_shape_file$year <- year
   return(a_shape_file)
 }
 
 pick_proper_cols_w_notes <- function(a_shape_file){
   cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
-                    "Irrigtn", "TRS", "RtCrpTy", "Notes")
+                    "Irrigtn", "TRS", "RtCrpTy", "Notes", "year")
   a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
   return(a_shape_file)
 }
 
-pick_proper_cols_no_notes <- function(a_shape_file){
-  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
-                    "Irrigtn", "TRS", "RtCrpTy")
-  a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
-  return(a_shape_file)
-}
+# pick_proper_cols_no_notes <- function(a_shape_file){
+#   cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
+#                     "Irrigtn", "TRS", "RtCrpTy")
+#   a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
+#   return(a_shape_file)
+# }
 
 
 
