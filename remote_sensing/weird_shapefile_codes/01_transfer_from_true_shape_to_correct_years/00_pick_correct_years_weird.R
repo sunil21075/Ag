@@ -105,7 +105,7 @@ head(WSDACrop_2018@data, 2)
 head(WSDACrop_2012@data, 2)
 
 write_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                    "Ag_check_point/remote_sensing/02_correct_years_separate/weird_projections/")
+                    "Ag_check_point/remote_sensing/02_2012_2018_all_years/weird_projections/")
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }
