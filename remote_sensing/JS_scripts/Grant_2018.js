@@ -11,8 +11,10 @@
 //##    GLOBAL Variables
 //##
 var grant_2018_regions = ee.FeatureCollection(grant_2018_SF);
-var start_date = '2019-01-01';
-var end_date = '2019-12-31';
+// print ("Number of fields in the shapefile is", grant_2018_regions.size());
+
+var start_date = '2018-01-01';
+var end_date = '2018-12-31';
     
 // print(grant_2018_regions);
 
@@ -126,6 +128,8 @@ function extract_sentinel_IC(a_feature){
 }
 
 function mosaic_and_reduce_IC_mean(an_IC){
+  an_IC = ee.ImageCollection(an_IC);
+  
   var reduction_geometry = ee.Feature(ee.Geometry(an_IC.get('original_polygon')));
   var WSDA = an_IC.get('WSDA');
   var start_date_DateType = ee.Date(start_date);
@@ -136,7 +140,8 @@ function mosaic_and_reduce_IC_mean(an_IC){
   var diff = end_date_DateType.difference(start_date_DateType, 'day');
 
   // Make a list of all dates
-  var range = ee.List.sequence(0, diff.subtract(1)).map(function(day){return start_date_DateType.advance(day,'day')});
+  var range = ee.List.sequence(0, diff.subtract(1)).map(function(day){
+                                    return start_date_DateType.advance(day,'day')});
 
   // Funtion for iteraton over the range of dates
   function day_mosaics(date, newlist) {
@@ -156,7 +161,7 @@ function mosaic_and_reduce_IC_mean(an_IC){
 
   // Iterate over the range to make a new list, and then cast the list to an imagecollection
   var newcol = ee.ImageCollection(ee.List(range.iterate(day_mosaics, ee.List([]))));
-  print("newcol 1", newcol);
+  //print("newcol 1", newcol);
   //######**************************************
 
   var reduced = newcol.map(function(image){
@@ -186,70 +191,47 @@ function mosaic_and_reduce_IC_mean(an_IC){
 
 var Grant_2018_IC = grant_2018_regions.map(extract_sentinel_IC);
 
-// var Grant_2018_IC_reduced_mean = reduce_collection_of_collections_mean(Grant_2018_IC);
-// print(Grant_2018_IC_reduced_mean);
-
-var Grant_2018_IC_first = ee.ImageCollection(Grant_2018_IC.first());
-print("1", Grant_2018_IC_first);
-
-
-//############################################################################
-//##########
-//##########          Mosaic Per Day
-//##########
-
-// print("reduced", reduced);
-// Export.table.toDrive({
-//   collection: reduced,
-//   description:'mosaiced_reduced',
-//   folder:"Grant_2018_IC_first_IC",
-//   fileFormat: 'CSV'
-// });
-
-
-// ### change the reduce_IC_mean() to work on mosaiced image
-
-//############################################################################
-
+// var Grant_2018_IC_first = ee.ImageCollection(Grant_2018_IC.first());
+// print("1", Grant_2018_IC.first());
 
 // var an_imggg = Grant_2018_IC_first.first();
 // print("2", an_imggg);
 
-var aa = mosaic_and_reduce_IC_mean(Grant_2018_IC_first);
-print ("3", aa);
+// var Grant_2018_IC_first_reduced = mosaic_and_reduce_IC_mean(Grant_2018_IC_first);
+// print ("3", Grant_2018_IC_first_reduced);
 
-// Export.table.toDrive({
-//   collection: aa,
-//   description:'Grant_2018_IC_first_IC',
-//   folder:"Grant_2018_IC_first_IC",
-//   fileFormat: 'SHP'
-// });
+var all_fields_TS = Grant_2018_IC.map(mosaic_and_reduce_IC_mean);
 
 Export.table.toDrive({
-  collection: aa,
-  description:'Grant_2018_IC_first_IC',
-  folder:"Grant_2018_IC_first_IC",
+  collection: all_fields_TS.flatten(),
+  description:'Grant_2018_TS',
+  folder:"Grant_2018",
   fileFormat: 'CSV'
 });
 
-var first_region = grant_2018_regions.first();
+// Export.table.toDrive({
+//   collection:all_fields_TS.flatten(),
+//   description:'Grant_2018_TS',
+//   folder:"Grant_2018",
+//   fileFormat: 'SHP'
+// });
 
-// print(Grant_2018_IC_first.get(1).geometries())
+
 
 //#############################################################
 //
-//                        Plot Charts on right (Console)
+//           Plot Charts on the right panel (Console)
 //
 //#############################################################
 
-
-var first_NDVI_TS = ui.Chart.image.doySeriesByYear({
-                            imageCollection: Grant_2018_IC_first, 
-                            bandName: 'NDVI', 
-                            region: first_region.geometry(), 
-                            regionReducer: ee.Reducer.mean() 
-                            // scale: plot_scale
-                              });
+// var first_region = grant_2018_regions.first();
+// var first_NDVI_TS = ui.Chart.image.doySeriesByYear({
+//                             imageCollection: Grant_2018_IC_first, 
+//                             bandName: 'NDVI', 
+//                             region: first_region.geometry(), 
+//                             regionReducer: ee.Reducer.mean() 
+//                             // scale: plot_scale
+//                               });
 
 // print(first_NDVI_TS);
 
@@ -259,9 +241,9 @@ var first_NDVI_TS = ui.Chart.image.doySeriesByYear({
 //
 //#############################################################
 
-Map.setCenter(-119.525, 47.525995, 16);
-// Map.addLayer(first_region.geometry())
-Map.addLayer(first_region.geometry(), 
-             {color: 'FF0000'}, 
-             'The farm is plotted in red');
+// Map.setCenter(-119.525, 47.525995, 16);
+// // Map.addLayer(first_region.geometry())
+// Map.addLayer(first_region.geometry(), 
+//             {color: 'FF0000'}, 
+//             'The farm is plotted in red');
 

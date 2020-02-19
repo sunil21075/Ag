@@ -24,7 +24,9 @@ WSDACrop_2014 <- readOGR(gdb, "WSDACrop_2014")
 WSDACrop_2015 <- readOGR(gdb, "WSDACrop_2015")
 WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
 WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
-WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
+
+# After updating R we receive some error about polygons. So, we need to add (require_geomType="wkbPolygon") at the end.
+WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018", require_geomType="wkbPolygon") 
 
 setnames(WSDACrop_2012@data, old=c("Rt1CrpT", "County", "SHAPE_Area", "SHAPE_Length"), 
                              new=c("RtCrpTy", "county", "Shap_Ar", "Shp_Lng"))
