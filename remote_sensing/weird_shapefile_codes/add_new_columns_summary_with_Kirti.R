@@ -1,3 +1,10 @@
+rm(list=ls())
+library(data.table)
+library(rgdal)
+library(dplyr)
+library(sp)
+library(sf)
+library(foreign)
 
 
 options("scipen"=100, "digits"=2)
