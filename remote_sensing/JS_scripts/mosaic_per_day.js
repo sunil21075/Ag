@@ -1,3 +1,5 @@
+// This is a copy of stackoverflow code
+// https://gis.stackexchange.com/questions/280156/mosaicking-a-image-collection-by-date-day-in-google-earth-engine
 var start = ee.Date('2014-10-01');
 var finish = ee.Date('2018-03-31');
 
@@ -34,3 +36,9 @@ function day_mosaics(date, newlist) {
 // Iterate over the range to make a new list, and then cast the list to an imagecollection
 var newcol = ee.ImageCollection(ee.List(range.iterate(day_mosaics, ee.List([]))))
 print(newcol)
+
+
+
+
+
+

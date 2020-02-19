@@ -7,7 +7,13 @@
 /////     now.
 /////
 
+//##
+//##    GLOBAL Variables
+//##
 var grant_2018_regions = ee.FeatureCollection(grant_2018_SF);
+var start_date = '2019-01-01';
+var end_date = '2019-12-31';
+    
 // print(grant_2018_regions);
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -82,14 +88,12 @@ function add_NDVI_collection(image_IC){
 /// dates etc are hard-coded to enable us to use map() function
 
 function extract_sentinel_IC(a_feature){
-    // var start_date = 
-    // var end_date = 
     // var cloud_percentage = 
     // var geom = ee.Feature(feature_col).geometry();
     var geom = a_feature.geometry();
     var newDict = {'original_polygon_1': geom};
     var imageC = ee.ImageCollection('COPERNICUS/S2')
-                .filterDate('2012-01-01', '2019-12-31')
+                .filterDate(start_date, end_date)
                 .filterBounds(geom)
                 //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
@@ -121,26 +125,55 @@ function extract_sentinel_IC(a_feature){
   return imageC;
 }
 
-function reduce_IC_mean(an_IC){
+function mosaic_and_reduce_IC_mean(an_IC){
   var reduction_geometry = ee.Feature(ee.Geometry(an_IC.get('original_polygon')));
   var WSDA = an_IC.get('WSDA');
-  
-  var reduced = an_IC.map(function(image){
+  var start_date_DateType = ee.Date(start_date);
+  var end_date_DateType = ee.Date(end_date);
+  //######**************************************
+  // Difference in days between start and end_date
+
+  var diff = end_date_DateType.difference(start_date_DateType, 'day');
+
+  // Make a list of all dates
+  var range = ee.List.sequence(0, diff.subtract(1)).map(function(day){return start_date_DateType.advance(day,'day')});
+
+  // Funtion for iteraton over the range of dates
+  function day_mosaics(date, newlist) {
+    // Cast
+    date = ee.Date(date);
+    newlist = ee.List(newlist);
+
+    // Filter an_IC between date and the next day
+    var filtered = an_IC.filterDate(date, date.advance(1, 'day'));
+
+    // Make the mosaic
+    var image = ee.Image(filtered.mosaic());
+
+    // Add the mosaic to a list only if the an_IC has images
+    return ee.List(ee.Algorithms.If(filtered.size(), newlist.add(image), newlist));
+  }
+
+  // Iterate over the range to make a new list, and then cast the list to an imagecollection
+  var newcol = ee.ImageCollection(ee.List(range.iterate(day_mosaics, ee.List([]))));
+  print("newcol 1", newcol);
+  //######**************************************
+
+  var reduced = newcol.map(function(image){
                             return image.reduceRegions({
-                                                          collection:reduction_geometry,
-                                                          reducer:ee.Reducer.mean(), 
-                                                          scale: 10
+                                                        collection:reduction_geometry,
+                                                        reducer:ee.Reducer.mean(), 
+                                                        scale: 10
                                                       });
                                           }
-                          ).flatten();
+                        ).flatten();
                           
   reduced = reduced.set({ 'original_polygon': reduction_geometry,
-                          'WSDA':WSDA
-                        });
-  print("ssss");
+                        'WSDA':WSDA
+                      });
   WSDA = ee.Feature(WSDA);
   WSDA = WSDA.toDictionary();
-  print(WSDA);
+  
   // var newDict = {'WSDA':WSDA};
   reduced = reduced.map(function(im){return(im.set(WSDA))}); 
   return(reduced);
@@ -157,31 +190,47 @@ var Grant_2018_IC = grant_2018_regions.map(extract_sentinel_IC);
 // print(Grant_2018_IC_reduced_mean);
 
 var Grant_2018_IC_first = ee.ImageCollection(Grant_2018_IC.first());
-print("1");
-print(Grant_2018_IC_first);
+print("1", Grant_2018_IC_first);
 
-var an_imggg = Grant_2018_IC_first.first();
-print("2");
-print(an_imggg);
 
-var aa = reduce_IC_mean(Grant_2018_IC_first);
-print("3");
-print (aa);
+//############################################################################
+//##########
+//##########          Mosaic Per Day
+//##########
 
+// print("reduced", reduced);
 // Export.table.toDrive({
-//   collection: aa,
-//   description:'flatten_finallyyy',
-//   folder:"Grant_2018_IC_first_IC",
-//   fileFormat: 'SHP'
-// });
-
-// Export.table.toDrive({
-//   collection: aa,
-//   description:'flatten_finallyyy',
+//   collection: reduced,
+//   description:'mosaiced_reduced',
 //   folder:"Grant_2018_IC_first_IC",
 //   fileFormat: 'CSV'
 // });
 
+
+// ### change the reduce_IC_mean() to work on mosaiced image
+
+//############################################################################
+
+
+// var an_imggg = Grant_2018_IC_first.first();
+// print("2", an_imggg);
+
+var aa = mosaic_and_reduce_IC_mean(Grant_2018_IC_first);
+print ("3", aa);
+
+// Export.table.toDrive({
+//   collection: aa,
+//   description:'Grant_2018_IC_first_IC',
+//   folder:"Grant_2018_IC_first_IC",
+//   fileFormat: 'SHP'
+// });
+
+Export.table.toDrive({
+  collection: aa,
+  description:'Grant_2018_IC_first_IC',
+  folder:"Grant_2018_IC_first_IC",
+  fileFormat: 'CSV'
+});
 
 var first_region = grant_2018_regions.first();
 
