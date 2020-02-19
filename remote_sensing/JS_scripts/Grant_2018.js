@@ -82,14 +82,14 @@ function add_NDVI_collection(image_IC){
 /// dates etc are hard-coded to enable us to use map() function
 
 function extract_sentinel_IC(a_feature){
-    var start_dt = '2018-01-01'
-    var end_dt = '2018-12-31'
+    // var start_date = 
+    // var end_date = 
     // var cloud_percentage = 
     // var geom = ee.Feature(feature_col).geometry();
     var geom = a_feature.geometry();
     var newDict = {'original_polygon_1': geom};
     var imageC = ee.ImageCollection('COPERNICUS/S2')
-                .filterDate(start_dt, end_dt)
+                .filterDate('2012-01-01', '2019-12-31')
                 .filterBounds(geom)
                 //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
                 .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
@@ -150,6 +150,7 @@ function reduce_IC_mean(an_IC){
 ///                         functions definitions end
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
+
 var Grant_2018_IC = grant_2018_regions.map(extract_sentinel_IC);
 
 // var Grant_2018_IC_reduced_mean = reduce_collection_of_collections_mean(Grant_2018_IC);
@@ -167,71 +168,20 @@ var aa = reduce_IC_mean(Grant_2018_IC_first);
 print("3");
 print (aa);
 
-Export.table.toDrive({
-  collection: aa,
-  description:'flatten_finallyyy',
-  folder:"Grant_2018_IC_first_IC",
-  fileFormat: 'SHP'
-});
-
-Export.table.toDrive({
-  collection: aa,
-  description:'flatten_finallyyy',
-  folder:"Grant_2018_IC_first_IC",
-  fileFormat: 'CSV'
-});
-
-
-// var Grant_2018_IC_first_geom = Grant_2018_IC_first.get('original_polygon');
-
-// var an_im = Grant_2018_IC_first.first();
-// var red = an_im.reduceRegion({reducer: ee.Reducer.mean(),
-//                   geometry: Grant_2018_IC_first_geom,
-//                   scale: 10
-//                   });
-// print (red);
-
-// var reduced = Grant_2018_IC_first.map(function(image){
-//   return image.reduceRegions({
-//           collection:ee.Feature(ee.Geometry(Grant_2018_IC_first_geom)),
-//           reducer:ee.Reducer.mean(), 
-//           scale: 10
-//   });
+// Export.table.toDrive({
+//   collection: aa,
+//   description:'flatten_finallyyy',
+//   folder:"Grant_2018_IC_first_IC",
+//   fileFormat: 'SHP'
 // });
-// print(reduced.flatten())
 
+// Export.table.toDrive({
+//   collection: aa,
+//   description:'flatten_finallyyy',
+//   folder:"Grant_2018_IC_first_IC",
+//   fileFormat: 'CSV'
+// });
 
-// var aaa = Grant_2018_IC_first.map(function(ima){
-//                                     var vv = ima.reduceRegion({reducer: ee.Reducer.mean(),
-//                                                       geometry: Grant_2018_IC_first_geom,
-//                                                       scale: 10
-//                                                       });
-//                                     vv = ee.Image(vv)     
-//                                       return (vv)
-//                                                 }
-//                                   );
-// print (aaa);
-
-// red = red.set("a", Grant_2018_IC_first_geom);
-// print (red);
-
-// red = red.set('original_polygon', Grant_2018_IC_first.get('original_polygon'));
-// print(red);
-
-// var IC_reduced = Grant_2018_IC_first.map(function(im1){
-//                           var reduced_image = im1.reduceRegion({
-//                                                           reducer: ee.Reducer.mean(),
-//                                                           geometry: Grant_2018_IC_first_geom,
-//                                                           scale: 10
-//                                                                   });
-//                           reduced_image = ee.feature(reduced_image)
-//                           return reduced_image;
-    
-//                                         }
-//                           );
-// print(IC_reduced)
-
-// print(typeof(Grant_2018_IC_first));
 
 var first_region = grant_2018_regions.first();
 
