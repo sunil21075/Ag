@@ -34,8 +34,8 @@ season_start = args[3]
 # 2. Script setup ----------------------------------------------------
 
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
+main_out <- file.path(chill_out, model_type, "02_with_May", season_start)
 
-main_out <- file.path(chill_out, model_type, "02", season_start)
 if (overlap_type == "non_overlap" ){
   main_out <- file.path(main_out, "non_overlap/")
   } else if (overlap_type == "overlap" ) {
@@ -50,6 +50,8 @@ if (dir.exists(file.path(main_out)) == F){
 
 # List of filenames
 the_dir <- dir()
+print ("line 53")
+print (the_dir)
 
 # Remove file names that aren't data, if they exist
 the_dir <- the_dir[grep(pattern = "chill_output_data", x = the_dir)]
@@ -70,7 +72,7 @@ data_list_F <- vector(mode = "list", length = no_sites)
 hist <- basename(getwd()) == "historical"
 
 # 5. Iterate through files and process ---------------------------
-# If historical data, then run a simpl-er data cleaning routine
+# If historical data, then run a simpler data cleaning routine
 
 if(hist){
   # 5a. Iterate through historical files -------------------------

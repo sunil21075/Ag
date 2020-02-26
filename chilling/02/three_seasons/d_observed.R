@@ -31,7 +31,7 @@ season_start = args[2]
 ######################################################################
 chill_out = "/data/hydro/users/Hossein/chill/data_by_core/"
 
-main_out <- file.path(chill_out, model_type, "02", season_start, "/")
+main_out <- file.path(chill_out, model_type, "02_with_May", season_start, "/")
 
 # Create a figures-specific output pathway if it doesn't exist
 if (dir.exists(file.path(main_out)) == F) {

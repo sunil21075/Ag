@@ -97,11 +97,13 @@ WSDACrop_2012_2018 <- rbind(WSDACrop_2012, WSDACrop_2013,
                             WSDACrop_2018)
 
 write_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                    "Ag_check_point/remote_sensing/02_2012_2018_all_years/weird_projections/")
+                    "Ag_check_point/remote_sensing/", 
+                    "02_2012_2018_all_years_not_corrected_last_survey/", 
+                    "weird_projections/")
+
 if (dir.exists(file.path(write_dir)) == F){
   dir.create(path=file.path(write_dir), recursive=T)
 }
-
 
 writeOGR(obj = WSDACrop_2012_2018, 
          dsn = paste0(write_dir), 

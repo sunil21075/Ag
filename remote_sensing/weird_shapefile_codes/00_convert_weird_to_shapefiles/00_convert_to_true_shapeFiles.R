@@ -10,7 +10,7 @@ library(foreign)
 ########## Directories
 ##########
 data_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                   "Ag_check_point/remote_sensing/")
+                   "Ag_check_point/remote_sensing/00_shapeFiles/")
 
 weird_2012_2018_dir <- paste0(data_dir, "00_Kirti_weird_files/2012_2018_weird_shapefile.gdb")
 

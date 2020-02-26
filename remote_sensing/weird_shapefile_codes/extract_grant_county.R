@@ -1,9 +1,9 @@
 rm(list=ls())
 library(data.table)
-library(rgdal)
 library(dplyr)
-# library(sp) # rgdal appears to load this already
 library(foreign)
+library(rgdal)
+# library(sp) # rgdal appears to load this already
 
 
 base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/remote_sensing/03_cleaned_shapeFiles/"

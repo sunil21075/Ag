@@ -10,6 +10,7 @@ library(lubridate)
 library(purrr)
 library(scales)
 library(tidyverse)
+library(maps)
 #library(data.table)
 options(digits=9)
 options(digit=9)
@@ -50,7 +51,8 @@ if (model_name=="utah"){
   thresh_max = dynamic_thresh_max
 }
 
-in_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/sum_stats_4_maps/sept/"
+start = "sept"
+in_dir <- paste0("/Users/hn/Documents/01_research_data/Ag_check_point/chilling/sum_stats_4_maps/", start, "/")
 setwd(in_dir)
 plot_path <- in_dir
 getwd()
@@ -68,20 +70,38 @@ stats_comp <- do.call(bind_rows, stats_comp)
 # stats_comp <- stats_comp %>% data.table()
 stats_comp$time_period[is.na(stats_comp$time_period)] <- "Historical"
 
-stats_comp$time_period <- factor(stats_comp$time_period, 
-                                 levels = c("Historical", "2005_2024", "2025_2050", "2051_2075", "2076_2100"),
-                                 order=T)
-
 # remove time period 2005_2024
 stats_comp <- stats_comp %>% filter(time_period != "2005_2024")
 stats_comp$time_period <- factor(stats_comp$time_period)
 
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
                                      header=T, sep=",", as.is=T)
 
-stats_comp <- remove_montana_add_warm_cold(stats_comp, LocationGroups_NoMontana)
-stats_comp <- within(stats_comp, remove(warm_cold))
+# stats_comp <- remove_montana_add_warm_cold(stats_comp, LocationGroups_NoMontana)
+# stats_comp <- within(stats_comp, remove(warm_cold))
+
+remove_montana <- function(data_dt, LocationGroups_NoMontana){
+  if (!("location" %in% colnames(data_dt))){
+    data_dt$location <- paste0(data_dt$lat, "_", data_dt$long)
+  }
+  data_dt <- data_dt %>% filter(location %in% LocationGroups_NoMontana$location)
+  return(data_dt)
+}
+
+stats_comp <- remove_montana(stats_comp, LocationGroups_NoMontana)
+
+stats_comp$time_period <- as.character(stats_comp$time_period)
+stats_comp$time_period[stats_comp$model== "observed"] <- "Observed historical"
+
+## stats_comp$time_period[stats_comp$time_period== "2005_2024"] = "2005-2024"
+stats_comp$time_period[stats_comp$time_period== "2025_2050"] = "2025-2050"
+stats_comp$time_period[stats_comp$time_period== "2051_2075"] = "2051-2075"
+stats_comp$time_period[stats_comp$time_period== "2076_2100"] = "2076-2100"
+
+stats_comp$time_period <- factor(stats_comp$time_period, 
+                                 levels = c("Observed historical", "Historical", "2025-2050", "2051-2075", "2076-2100"),
+                                 order=T)
 
 # Take a mean across models
 stats_comp_ensemble <- stats_comp %>%
@@ -120,82 +140,104 @@ states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
 # make sure all plots have same limits up front and thus make a new observed
 # hist map for each time ggarrange is called, using function below.
 
-observed_hist_map <- function(min, max, month_col) {
-  
-  stats_comp %>%
-    filter(model == "observed") %>%
-    ggplot() +
-    geom_polygon(data = states_cluster, 
-                 aes(x = long, y = lat, group = group),
-                 fill = "grey", color = "black") +
-    
-    geom_point(aes_string(x = "long", y = "lat",
-                          color = month_col), alpha = 0.4) +
-    scale_color_viridis_c(option = "plasma", 
-                          name = "Median", direction = -1,
-                          limits = c(min, max),
-                          breaks = pretty_breaks(n = 4)) +
-
-    coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ time_period, nrow = 1) +
-    theme(axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.ticks.y = element_blank(), 
-          axis.ticks.x = element_blank(),
-          strip.text = element_text(size=12, face="bold")) +
-    ggtitle("Observed historical")
-}
-
 # Make a function to plot the future scenarios. Note that it requires the main
 # data frame to be called stats_comp and the base map to be called
 #states_cluster.
 
 model_map <- function(model_name, scenario_name, month_col, min, max) {
+  if (scenario_name == "rcp45"){
+    NN = "RCP 4.5"
+    } else if(scenario_name=="rcp85") {
+    NN = "RCP 8.5"
+   } else {
+    NN = "Figrue it out"
+  }
   
   stats_comp %>%
-    filter(model == model_name,
-           scenario == scenario_name | scenario == "historical") %>%
-    ggplot() +
-    geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
-                 fill = "grey", color = "black") +
-    # aes_string to allow naming of column in function 
-    geom_point(aes_string(x = "long", y = "lat",
-                          color = month_col), alpha = 0.4) +
-    scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
-                          limits = c(min, max),
-                          breaks = pretty_breaks(n = 4)) +
-    coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ time_period, nrow = 1) +
-    theme(axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.ticks.y = element_blank(), 
-          axis.ticks.x = element_blank(),
-          strip.text = element_text(size=12, face="bold")) + 
-    ggtitle(paste0(model_name))
+  filter(model == model_name,
+         scenario == scenario_name | scenario == "historical") %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  # aes_string to allow naming of column in function 
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = month_col), alpha = 0.4) +
+  scale_color_viridis_c(option = "plasma", name = "Mean", direction = -1,
+                        limits = c(min, max),
+                        breaks = pretty_breaks(n = 4)) +
+  coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+  facet_wrap(~ time_period, nrow = 1) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.text = element_text(size=12, face="bold")) + 
+  ggtitle(paste0(model_name))
+}
+
+observed_hist_map <- function(min, max, month_col) {
+  
+  stats_comp %>%
+  filter(model == "observed") %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, 
+               aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = month_col), alpha = 0.4) +
+  scale_color_viridis_c(option = "plasma", direction = -1,
+                        limits = c(min, max),
+                        name = "Mean",
+                        breaks = pretty_breaks(n = 4)) +
+
+  coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+  facet_wrap(~ time_period, nrow = 1) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm'),
+        strip.text = element_text(size=12, face="bold"))
 }
 
 # A function to make a map from the averaged dataset. Note that it uses the
 # ensemble data frame.
 ensemble_map <- function(scenario_name, month_col, min, max) {
+  if (scenario_name == "rcp45"){
+    NN = "RCP 4.5"
+   } else if(scenario_name=="rcp85") {
+    NN = "RCP 8.5"
+  } else{
+    NN = "Figrue it out"
+  }
+
   stats_comp_ensemble %>%
-    filter(scenario == scenario_name | scenario == "historical") %>%
-    ggplot() +
-    geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
-                 fill = "grey", color = "black") +
-    # aes_string to allow naming of column in function 
-    geom_point(aes_string(x = "long", y = "lat",
-                          color = month_col), alpha = 0.4) +
-    scale_color_viridis_c(option = "plasma", name = "Median", direction = -1,
-                          limits = c(min, max),
-                          breaks = pretty_breaks(n = 4)) +
-    coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-    facet_wrap(~ time_period, nrow = 1) +
-    theme(axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.ticks.y = element_blank(), 
-          axis.ticks.x = element_blank(),
-          strip.text = element_text(size=12, face="bold")) + 
-    ggtitle("Ensemble means") 
+  filter(scenario == scenario_name | scenario == "historical") %>%
+  ggplot() +
+  geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
+               fill = "grey", color = "black") +
+  # aes_string to allow naming of column in function 
+  geom_point(aes_string(x = "long", y = "lat",
+                        color = month_col), alpha = 0.4) +
+  scale_color_viridis_c(option = "plasma", name = "Mean", direction = -1,
+                        limits = c(min, max),
+                        breaks = pretty_breaks(n = 4)) +
+  coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+  facet_wrap(~ time_period, nrow = 1) +
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        strip.text = element_text(size=12, face="bold"),
+        plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm'),
+        )
 }
 
 # 3b. RCP45 monthly accum figs --------------------------------------------
@@ -214,6 +256,10 @@ accum_jan45_max <- max(df_45$median_J1)
 
 accum_jan45_min = chill_min
 accum_jan45_max = chill_max
+
+#*** To go with Sept-Jan 85 be indentical for comparison
+accum_jan45_min = 31
+accum_jan45_max = 75
 
 cat("accum_jan45_min= ", accum_jan45_min, "-- accum_jan45_max= ", accum_jan45_max)
 
@@ -236,46 +282,50 @@ ensemble_map_jan45 <- ensemble_map(scenario_name = "rcp45",
                                    min = accum_jan45_min,
                                    max = accum_jan45_max)
 
-# Need to add historical observed to this:
-accum_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45,
-                                              ensemble_map_jan45,
-                                              bcc_csm1_1_m_map_jan45,
-                                              bcc_csm1_1_map_jan45,
-                                              BNU_ESM_map_jan45,
-                                              CanESM2_map_jan45,
-                                              CCSM4_map_jan45, 
-                                              CNRM_CM5_map_jan45,
-                                              CSIRO_Mk3_6_0_map_jan45,
-                                              GFDL_ESM2G_map_jan45,
-                                              GFDL_ESM2M_map_jan45,
-                                              HadGEM2_CC365_map_jan45,
-                                              HadGEM2_ES365_map_jan45,
-                                              inmcm4_map_jan45,
-                                              IPSL_CM5A_LR_map_jan45, 
-                                              IPSL_CM5A_MR_map_jan45,
-                                              IPSL_CM5B_LR_map_jan45,
-                                              MIROC_ESM_CHEM_map_jan45,
-                                              MIROC5_map_jan45, 
-                                              MRI_CGCM3_map_jan45,
-                                              NorESM1_M_map_jan45),
-                              ncol = 2, nrow = 11,
-                              common.legend = TRUE)
-
-accum_jan45_figs <- annotate_figure(p = accum_jan45_figs,
-                                    top = text_grob(label = "Median accumulated chill units by Jan. 1 under RCP 4.5",
-                                                   face = "bold", size = 18))
-
-ggsave(filename = "accum_jan45.png", plot = accum_jan45_figs, device = "png",
-       width = 15, height = 40, units = "in", dpi=400, path=plot_path)
-
 hist_ensemble_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45, ensemble_map_jan45),
-                                      ncol = 2, nrow = 1,
+                                      ncol = 2, widths = c(0.26, 1), 
+                                      nrow = 1,
                                       common.legend = TRUE)
 
-ggsave(filename = "accum_jan45_obs_ensemble.png", plot = hist_ensemble_jan45_figs, 
+ggsave(filename = paste0("accum_", start, "_jan_45_obs_ensemble_mean_models_median_years.png"), 
+       plot = hist_ensemble_jan45_figs, 
        device = "png",
-       width = 10, height = 4, units = "in", 
-       dpi=400, path=plot_path)
+       width = 10, height = 3, units = "in", 
+       dpi=600, path=plot_path)
+
+# Need to add historical observed to this:
+# accum_jan45_figs <- ggarrange(plotlist = list(observed_map_jan45,
+#                                               ensemble_map_jan45,
+#                                               bcc_csm1_1_m_map_jan45,
+#                                               bcc_csm1_1_map_jan45,
+#                                               BNU_ESM_map_jan45,
+#                                               CanESM2_map_jan45,
+#                                               CCSM4_map_jan45, 
+#                                               CNRM_CM5_map_jan45,
+#                                               CSIRO_Mk3_6_0_map_jan45,
+#                                               GFDL_ESM2G_map_jan45,
+#                                               GFDL_ESM2M_map_jan45,
+#                                               HadGEM2_CC365_map_jan45,
+#                                               HadGEM2_ES365_map_jan45,
+#                                               inmcm4_map_jan45,
+#                                               IPSL_CM5A_LR_map_jan45, 
+#                                               IPSL_CM5A_MR_map_jan45,
+#                                               IPSL_CM5B_LR_map_jan45,
+#                                               MIROC_ESM_CHEM_map_jan45,
+#                                               MIROC5_map_jan45, 
+#                                               MRI_CGCM3_map_jan45,
+#                                               NorESM1_M_map_jan45),
+#                               ncol = 2, nrow = 11,
+#                               common.legend = TRUE)
+
+# accum_jan45_figs <- annotate_figure(p = accum_jan45_figs,
+#                                     top = text_grob(label = "Median accumulated chill units by Jan. 1 under RCP 4.5",
+#                                                    face = "bold", size = 18))
+
+# ggsave(filename = "accum_jan45.png", plot = accum_jan45_figs, device = "png",
+#        width = 15, height = 40, units = "in", dpi=400, path=plot_path)
+
+
 
 rm(list = ls(pattern = "jan45"))
 ######################################################
@@ -468,8 +518,11 @@ df_85 <- filter(stats_comp, scenario == "rcp85" | scenario == "historical")
 accum_jan85_min <- min(df_85$median_J1)
 accum_jan85_max <- max(df_85$median_J1)
 
-accum_jan85_min = chill_min
-accum_jan85_max = chill_max
+# accum_jan85_min = chill_min 
+# accum_jan85_max = chill_max
+
+accum_jan85_min = 31
+accum_jan85_max = 75
 
 for(h in unique(stats_comp$model)) {
   assign(x = paste(gsub(pattern = "-", replacement = "_", x = h), "map",
@@ -485,6 +538,24 @@ observed_map_jan85 <- observed_hist_map(min = accum_jan85_min, max = accum_jan85
 ensemble_map_jan85 <- ensemble_map(scenario_name = "rcp85", 
                                    month_col = "median_J1", min = accum_jan85_min,
                                    max = accum_jan85_max)
+
+hist_ensemble_jan85_figs <- ggarrange(plotlist = list(observed_map_jan85, ensemble_map_jan85),
+                                      ncol = 2, widths = c(0.26, 1), 
+                                      nrow = 1,
+                                      common.legend = TRUE)
+annotate_figure(hist_ensemble_jan85_figs,
+               # top = text_grob("Visualizing Tooth Growth", color = "red", face = "bold", size = 14),
+               # bottom = text_grob("Data source: \n ToothGrowth data set", color = "blue",
+               #                    hjust = 1, x = 1, face = "italic", size = 10),
+               # left = text_grob("Figure arranged using ggpubr", color = "green", rot = 90),
+               # right = "I'm done, thanks :-)!",
+               fig.lab = "RCP 8.5", fig.lab.face = "bold")
+
+ggsave(filename = paste0("accum_", start, "_jan_85_obs_ensemble_mean_models_median_years.png"), 
+       plot = hist_ensemble_jan85_figs, 
+       device = "png",
+       width = 10, height = 3, units = "in", 
+       dpi=600, path=plot_path)
 
 # Need to add historical observed to this:
 accum_jan85_figs <- ggarrange(plotlist = list(observed_map_jan85,
