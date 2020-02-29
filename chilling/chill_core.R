@@ -249,6 +249,8 @@ count_years_threshs_met_all_locations <- function(dataT, due){
       col_name = "sum_M1"
      } else if(due =="Apr"){
       col_name = "sum_A1"
+     } else if (due=="mid_Apr"){
+     col_name = "sum_mid_Apr"
      } else if (due=="May"){
      col_name = "sum_May1"
      } else if (due=="mid_May"){
@@ -337,9 +339,11 @@ count_years_threshs_met_limit_location <- function(dataT, due){
       col_name = "sum_M1"
      } else if(due =="Apr"){
       col_name = "sum_A1"
+     } else if (due=="mid_Apr"){
+      col_name = "sum_mid_Apr"
      } else if (due=="May"){
      col_name = "sum_May1"
-     }else if (due=="mid_May"){
+     } else if (due=="mid_May"){
      col_name = "sum_mid_May"
     }
 
@@ -458,6 +462,7 @@ get_medians <- function(a_list){
                                                    sum_F1 = x[, "sum_F1"],
                                                    sum_M1 = x[, "sum_M1"],
                                                    sum_A1 = x[, "sum_A1"],
+                                                   sum_mid_Apr = x[, "sum_mid_Apr"],
                                                    sum_May1 = x[, "sum_May1"],
                                                    sum_mid_May = x[, "sum_mid_May"]
                                                    ))
@@ -469,7 +474,7 @@ medians <- function(thresh_20, thresh_25, thresh_30,
                     thresh_35, thresh_40, thresh_45,
                     thresh_50, thresh_55, thresh_60,
                     thresh_65, thresh_70, thresh_75, 
-                    sum_J1, sum_F1, sum_M1, sum_A1, 
+                    sum_J1, sum_F1, sum_M1, sum_A1, sum_mid_Apr,
                     sum_May1, sum_mid_May) {
   c(median_20 = median(thresh_20),
     median_25 = median(thresh_25),
@@ -487,6 +492,7 @@ medians <- function(thresh_20, thresh_25, thresh_30,
     median_F1 = median(sum_F1),
     median_M1 = median(sum_M1),
     median_A1 = median(sum_A1),
+    median_mid_Apr = median(sum_mid_Apr),
     median_May1 = median(sum_May1),
     median_sum_mid_May = median(sum_mid_May)
     )
@@ -623,6 +629,7 @@ threshold_func <- function(file, data_type){
                  sum_F1 = case_when(month == 2 & day == 1 ~ cume_portions),
                  sum_M1 = case_when(month == 3 & day == 1 ~ cume_portions),
                  sum_A1 = case_when(month == 4 & day == 1 ~ cume_portions),
+                 sum_mid_Apr = case_when(month == 4 & day == 15 ~ cume_portions),
                  sum_May1 = case_when(month == 5 & day == 1 ~ cume_portions),
                  sum_mid_May = case_when(month == 5 & day == 15 ~ cume_portions)
                  ) %>% 
@@ -643,6 +650,7 @@ threshold_func <- function(file, data_type){
                     sum_F1 = na.omit(sum_F1),
                     sum_M1 = na.omit(sum_M1),
                     sum_A1 = na.omit(sum_A1),
+                    sum_mid_Apr = na.omit(sum_mid_Apr),
                     sum_May1 = na.omit(sum_May1),
                     sum_mid_May = na.omit(sum_mid_May)
                     ) %>%
