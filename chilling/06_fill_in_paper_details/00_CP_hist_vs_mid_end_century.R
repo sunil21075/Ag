@@ -23,7 +23,7 @@ sept_summary_comp <- sept_summary_comp %>%
                      data.table()
 
 keep_cols <- c("chill_season", "location", "sum", 
-               "sum_M1", "year", "model", "emission", "time_period", 
+               "sum_A1", "year", "model", "emission", "time_period", 
                "start")
 
 sept_summary_comp <- subset(sept_summary_comp, select=keep_cols)
