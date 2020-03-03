@@ -3,7 +3,6 @@
 # To plot densities for specific locations
 #
 
-
 #####################################################
 ###                                               ###
 ###             Sept. thru Apr.                   ###
@@ -67,7 +66,7 @@ plot_dens <- function(data, month_name){
                        plot.title = element_text(size=12, face="bold"),
                        axis.title.x = element_text(size=12, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
                        axis.title.y = element_text(size=12, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
-                       axis.text.x = element_text(size =8, face = "plain", color="black", angle=-90),
+                       axis.text.x = element_text(size =8, face = "plain", color="black"), # , angle=-90
                        axis.text.y = element_text(size =8, face = "bold", color="black")
                        )
     
@@ -82,18 +81,16 @@ plot_dens <- function(data, month_name){
                xlab("hourly temp.") + 
                # ggtitle(label = gtitle) +
                scale_fill_manual(values=color_ord,
-                      name="Time\nPeriod", 
-                      labels=c("Historical", "2025-2050", "2051-2075", "2076-2099")) + 
+                                 name="Time\nPeriod", 
+                                 labels=c("Historical", "2026-2050", "2051-2075", "2076-2099")) + 
                scale_color_manual(values=color_ord,
-                       name="Time\nPeriod", 
-                       limits = color_ord,
-                       labels=c("Historical", "2025-2050", "2051-2075", "2076-2099")) + 
+                                  name="Time\nPeriod", 
+                                  limits = color_ord,
+                                  labels=c("Historical", "2026-2050", "2051-2075", "2076-2099")) + 
                scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
                the_theme
     return(obs_plot)
 }
-
-print ("line 94")
 
 modeled  <- readRDS(paste0(data_dir, "/modeled.rds")) %>% data.table()
 
@@ -102,26 +99,31 @@ modeled <- modeled %>% filter(scenario != "historical")
 
 modeled$scenario[modeled$scenario=="rcp45"] <- "RCP 4.5"
 modeled$scenario[modeled$scenario=="rcp85"] <- "RCP 8.5"
+print ("line 102")
+print (sort(unique(modeled$year)))
+modeled$time_period[modeled$year > 2026 & modeled$year <= 2051] <- "2026-2050"
+modeled$time_period[modeled$year > 2051  & modeled$year <= 2076] <- "2051-2075"
+modeled$time_period[modeled$year > 2076] <- "2076-2099"
 
+print ("line 109")
+print (sort(unique(modeled$year)))
+print (sort(unique(modeled$time_period)))
 observed <- readRDS(paste0(data_dir, "/observed.rds")) %>% data.table()
 observed$scenario <- "Historical"
+observed$time_period <- "Historical"
 
-dt_df <- rbind(modeled, observed)
-rm(modeled, observed)
-
-dt_df$time_period[dt_df$year <= 2016] <- "Historical"
-dt_df$time_period[dt_df$year > 2026 & dt_df$year <= 2050] <- "2026-2050"
-dt_df$time_period[dt_df$year > 2051  & dt_df$year <= 2075] <- "2051-2075"
-dt_df$time_period[dt_df$year > 2076] <- "2076-2099"
+modeled <- rbind(modeled, observed)
+modeled <- na.omit(modeled)
+print ("line 119")
+print (sort(unique(modeled$time_period)))
 
 # order the climate groups
-dt_df$time_period <- factor(dt_df$time_period, 
-                            levels = c("Historical", "2025-2050", "2051-2075", "2076-2099"))
+modeled$time_period <- factor(modeled$time_period, 
+                              levels = c("Historical", "2026-2050", "2051-2075", "2076-2099"),
+                              order=TRUE)
 
-dt_df <- na.omit(dt_df)
-
-for (ct in unique(dt_df$city)){
-  dt_df_ct <- dt_df %>% filter(city == ct)
+for (ct in unique(modeled$city)){
+  dt_df_ct <- modeled %>% filter(city == ct)
 
   dt_df_45 <- dt_df_ct %>% filter(scenario %in% c("Historical", "RCP 4.5"))
   dt_df_85 <- dt_df_ct %>% filter(scenario %in% c("Historical", "RCP 8.5"))
@@ -129,9 +131,14 @@ for (ct in unique(dt_df$city)){
   plot_85 <- plot_dens(data=dt_df_85)
   plot_45 <- plot_dens(data=dt_df_45)
 
-  print ("line 132")
+  print ("line 134")
+  print ("plot_85$time_period")
+  print (plot_85$time_period)
 
-  ggsave(filename = paste0("sept_apr1_dens_", ct, "rcp85.png"),
+  print ("plot_45$time_period")
+  print (plot_45$time_period)
+
+  ggsave(filename = paste0("sept_apr1_dens_", ct, "_rcp85.png"),
          path = plot_dir, 
          plot = plot_85,
          width = 6, height = 4, units = "in",
@@ -139,7 +146,7 @@ for (ct in unique(dt_df$city)){
          device = "png",
          limitsize = FALSE)
 
-  ggsave(filename = paste0("sept_apr1_dens_", ct, "rcp45.png"),
+  ggsave(filename = paste0("sept_apr1_dens_", ct, "_rcp45.png"),
          path = plot_dir, 
          plot = plot_45,
          width = 6, height = 4, units = "in",
