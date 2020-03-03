@@ -6,8 +6,8 @@ library(tidyverse)
 library(data.table)
 library(dplyr)
 library(ggplot2)
-
-b <- "/Users/hn/Documents/GitHub/Ag/Lagoon/"
+      
+b <- "/Users/hn/Documents/00_GitHub/Ag/Lagoon/"
 source_path_1 = paste0(b, "core_lagoon.R")
 source_path_2 = paste0(b, "core_plot_lagoon.R")
 source(source_path_1)
@@ -17,7 +17,7 @@ options(digit=9)
 options(digits=9)
 ##############################################################
 ##############################################################
-base <- "/Users/hn/Desktop/Desktop/Ag/check_point/lagoon/"
+base <- "/Users/hn/Documents/01_research_data/Ag_check_point/lagoon/"
 in_dir <- paste0(base, "storm/")
 ##############################################################
 all_storms <- readRDS(paste0(in_dir, "all_storms.rds"))

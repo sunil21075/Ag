@@ -41,38 +41,37 @@ start_time <- Sys.time()
 
 for (cs in climate_scenarios){
     if (cs == "observed"){
-, curr_path = file.path(read_dir, cs)
-, for (count in seq(1, nrow(limited_locations))){
-,     f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
-,     f$climateScenario = "observed"
-,     f$location = file_names[count]
-,     f$city = city_names[count]
-,     observed <- rbind(observed, f)
-, }
+  curr_path = file.path(read_dir, cs)
+  for (count in seq(1, nrow(limited_locations))){
+      f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
+      f$climateScenario = "observed"
+      f$location = file_names[count]
+      f$city = city_names[count]
+      observed <- rbind(observed, f)
+  }
     } else {
-, for (proj in projection_type){
-,     curr_path = file.path(read_dir, cs, proj)
+  for (proj in projection_type){
+     curr_path = file.path(read_dir, cs, proj)
 
-,     for (count in seq(1, nrow(limited_locations))){
-, , f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
-, , f$climateScenario = cs
-, , f$location = file_names[count]
-, , f$city = city_names[count]
-, , 
-, , if (proj=="historical"){
-, ,     modeled_hist <- rbind(modeled_hist, f)
-, ,     } else if (proj=="rcp45"){
-, , , rcp45 <- rbind(rcp45, f)
-, ,     } else {
-, , , rcp85 <- rbind(rcp85, f)
-, , }
-,     }
-, }
+      for (count in seq(1, nrow(limited_locations))){
+    f = data.table(readRDS(paste0(curr_path, "/met_hourly_data_", file_names[count], ".rds")))
+    f$climateScenario = cs
+    f$location = file_names[count]
+    f$city = city_names[count]
+
+     if (proj=="historical"){
+           modeled_hist <- rbind(modeled_hist, f)
+          } else if (proj=="rcp45"){
+        rcp45 <- rbind(rcp45, f)
+        } else {
+         rcp85 <- rbind(rcp85, f)
+    }
+      }
+  }
     }
 }
 # pick up the variables we need
-needed_cols = c("year", "month", "Temp",
-, , "chill_season", "climateScenario", "location", "city")
+needed_cols = c("year", "month", "Temp", "chill_season", "climateScenario", "location", "city")
 
 observed = subset(observed, select=needed_cols)
 rcp45 = subset(rcp45, select=needed_cols)
@@ -109,9 +108,8 @@ saveRDS(modeled, paste0(write_dir, "modeled.rds"))
 rm(rcp85, rcp45, modeled_hist)
 
 mos = c(9, 10, 11, 12, 1, 2, 3)
-month_names = c("Jan", "Feb", "Mar", "Apr", 
-, , "May", "Jun", "Jul", "Aug" ,
-, , "Sept", "Oct", "Nov", "Dec")
+month_names = c("Jan", "Feb", "Mar", "Apr" , "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec")
+
 for (montH in mos){
     data <- modeled %>% filter(month == montH)
     saveRDS(data, paste0(write_dir, month_names[montH], ".rds"))
@@ -120,28 +118,18 @@ for (montH in mos){
     saveRDS(data, paste0(write_dir, "observed_", month_names[montH], ".rds"))
 }
 ########################################################
-#######, , , , ,   #######
-#######     Sept-through-Jan (includes Jan.)     #######
-#######, , , , ,   #######
+#######                                          #######
+#######     Sept-through-Apr (excludes April)    #######
+#######                                          #######
 ########################################################
-mos = c(9, 10, 11, 12, 1)
+mos = c(9, 10, 11, 12, 1, 2, 3)
 modeled <- modeled  %>% filter(month %in% mos)
-saveRDS(modeled, paste0(write_dir, "sept_thru_jan_modeled.rds"))
+saveRDS(modeled, paste0(write_dir, "sept_thru_Apr_modeled.rds"))
 
 observed <- observed  %>% filter(month %in% mos)
-saveRDS(observed, paste0(write_dir, "sept_thru_jan_observed.rds"))
+saveRDS(observed, paste0(write_dir, "sept_thru_Apr_observed.rds"))
 
-
-########################################################
-#######, , , , ,   #######
-#######    Sept-through-Feb (includes Feb.)      #######
-#######, , , , ,   #######
-########################################################
-mos = c(9, 10, 11, 12)
-modeled <- modeled  %>% filter(month %in% mos)
-saveRDS(modeled, paste0(write_dir, "sept_thru_dec_modeled.rds"))
-
-observed <- observed  %>% filter(month %in% mos)
-saveRDS(observed, paste0(write_dir, "sept_thru_dec_observed.rds"))
 
 print( Sys.time() - start_time)
+
+

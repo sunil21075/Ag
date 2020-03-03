@@ -753,3 +753,66 @@ put_chill_season <- function(data_tb, chill_start="sept"){
   }
   return(data_tb)
 }
+
+
+projec_diff_from_hist <- function(dt_dt, diff_from="Observed"){
+  #
+  # diff_from in {"1979-2016", "1950-2005"}
+  #
+  if (diff_from=="Observed"){
+      toss_rp <- "modeled hist"
+     } else {
+     toss_rp <- "Observed"
+  }
+
+  dt_dt <- dt_dt %>% 
+           filter(time_period != toss_rp)%>% 
+           data.table()
+
+  # we have to have unique historical to be able
+  # to subtract it from future stuff
+  # suppressWarnings({ dt_dt_hist <- dt_dt %>% 
+  #                                  filter(time_period == diff_from)%>% 
+  #                                  select(-c("emission")) %>%
+  #                                  unique() %>% 
+  #                                  data.table()
+  #                 })
+
+  # dt_dt_hist$emission = "hist"
+  # dt_dt_hist$model = "hist"
+  # dt_dt <- dt_dt %>% 
+  #          filter(time_period != diff_from)%>% 
+  #          data.table()
+  
+  # dt_dt <- rbind(dt_dt, dt_dt_hist)
+
+  # melt to get differences
+  dt_dt <- melt(dt_dt, id = c("location", "model",
+                              "time_period", "emission"))
+
+  dt_dt <-within(dt_dt, remove("variable"))
+
+  setnames(dt_dt, old = c("value"), new = c("CP_median_A1"))
+
+  diffs <- dt_dt %>%
+           group_by(location) %>%
+           mutate(CP_diff = CP_median_A1 - CP_median_A1[time_period == diff_from])%>%
+           data.table()
+
+  # remove the historical data itself for which diffs. are zeros
+  diffs <- diffs %>% filter(model != "observed")
+
+  # to do percentages
+  #**** The following 4 lines can be replaced by the 5th one ****
+  # histor <- dt_dt %>% filter(model == "hist") %>% data.table()
+  # histor <- subset(histor, select=c("location", "time_interval", "storm_value"))
+  # setnames(histor, old="storm_value", new="hist_storm_val")
+  # diffs <- merge(diffs, histor, by= c("location", "time_interval"), all.x=T)
+  
+  diffs$hist_CP <- diffs$CP_median_A1 +  diffs$CP_diff
+
+  diffs$perc_diff <- (diffs$CP_diff * 100) / (diffs$hist_CP)
+  return(diffs)
+}
+
+

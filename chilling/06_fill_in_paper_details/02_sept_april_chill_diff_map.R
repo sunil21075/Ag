@@ -46,9 +46,7 @@ sept_summary_comp <- readRDS(paste0(data_dir, "sept_summary_comp.rds")) %>%
 head(sept_summary_comp, 2)
 dim(sept_summary_comp)
 
-keep_cols <- c("chill_season", "location", 
-               "sum_A1", "year", "model", "emission", "time_period", 
-               "start")
+keep_cols <- c("location", "sum_A1", "model", "emission", "time_period")
 
 sept_summary_comp <- subset(sept_summary_comp, select=keep_cols)
 
@@ -66,7 +64,39 @@ sept_summary_comp <- remove_montana(sept_summary_comp, LocationGroups_NoMontana)
 
 sept_summary_comp$time_period[sept_summary_comp$model== "observed"] <- "Observed"
 
+sept_summary_comp$emission[sept_summary_comp$emission== "rcp45"] = "RCP 4.5"
+sept_summary_comp$emission[sept_summary_comp$emission== "rcp85"] = "RCP 8.5"
+sept_summary_comp$emission[sept_summary_comp$emission== "historical"] = "Observed"
 
+
+time_periods = c("Observed","2026-2050", "2051-2075", "2076-2099")
+sept_summary_comp$time_period = factor(sept_summary_comp$time_period, levels = time_periods, order=T)
+
+sept_summary_comp_yearsMedian_perModel <- sept_summary_comp %>%
+                                          group_by(location, model, emission, time_period) %>%
+                                          summarise(CP_median_A1=median(sum_A1)) %>%
+                                          data.table()
+ 
+diffs <- projec_diff_from_hist(sept_summary_comp_yearsMedian_perModel)
+
+diffs_median <- diffs %>% 
+                group_by(location, time_period, emission) %>%
+                summarise(CP_diff_median = median(perc_diff)) %>%
+                data.table()
+
+
+plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/")
+if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
+
+core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
+plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
+source(core_path)
+source(plot_core_path)
+a_map <- diff_CP_map(data = diffs_median, color_col = "CP_diff_median")
+ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered.png"), 
+       plot=a_map, 
+       width=4, height=3, units="in", 
+       dpi=600, device="png", path=plot_base)
 
 
 

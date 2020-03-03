@@ -12,7 +12,7 @@ options(digit=9)
 
 # 2. Pull data from current directory -------------------------------------
 
-model = "dynamic"
+# model = "dynamic"
 # if (model == "dynamic"){
 #   setwd(write_dir_dynamic)
 #   write_dir = write_dir_dynamic
@@ -26,9 +26,9 @@ model = "dynamic"
 #
 #######################################################
 
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
-main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
-write_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
+param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
+main_in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/"
+write_dir <- main_in_dir
 summary_comp <- data.table(readRDS(paste0(main_in_dir, "sept_summary_comp.rds")))
 
 # remove montana and add Warm_Cool to it.
@@ -47,9 +47,9 @@ remove_montana_add_warm_cold <- function(data_dt, LocationGroups_NoMontana){
 
 summary_comp <- remove_montana_add_warm_cold(summary_comp, LocationGroups_NoMontana)
 
-summary_comp$scenario[summary_comp$scenario=="historical"] = "Historical"
-summary_comp$scenario[summary_comp$scenario=="rcp45"] = "RCP 4.5"
-summary_comp$scenario[summary_comp$scenario=="rcp85"] = "RCP 8.5"
+summary_comp$emission[summary_comp$emission=="historical"] = "Historical"
+summary_comp$emission[summary_comp$emission=="rcp45"] = "RCP 4.5"
+summary_comp$emission[summary_comp$emission=="rcp85"] = "RCP 8.5"
 summary_comp <- summary_comp %>% filter(year!=2025)
 # summary_comp <- summary_comp %>% filter(year<=2096)
 
@@ -57,10 +57,10 @@ summary_comp <- summary_comp %>% filter(year!=2025)
 # summary_comp$warm_cold <- factor(summary_comp$warm_cold, order=T, level=weather)
 
 # 3. Plotting -------------------------------------------------------------
-quality = 300
+quality = 500
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
-                            group_by(year, model, scenario) %>%
+                            group_by(year, model, emission) %>%
                             summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>% 
                             data.table()
 
@@ -73,9 +73,9 @@ thresh_new_plot <- function(data, percentile){
   y = eval(parse(text =paste0( "data$", "thresh_", percentile, "_med")))
   lab = paste0("Median days to reach ", percentile , " accumulated chill units")
   the_plot <- ggplot(data = data) +
-              geom_point(aes(x = year, y = y, fill = scenario),
+              geom_point(aes(x = year, y = y, fill = emission),
                              alpha = 0.25, shape = 21, size = .25) +
-              geom_smooth(aes(x = year, y = y, color = scenario),
+              geom_smooth(aes(x = year, y = y, color = emission),
                               method = "lm", size=1, se=F) +
               # facet_wrap( ~ warm_cold) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
@@ -263,9 +263,9 @@ accum_plot <- function(data, y_name, due){
   lab = paste0("Median chill units accumulated by ", due)
 
   acc_plot <- ggplot(data = data) +
-              geom_point(aes(x = year, y = y, fill = scenario),
+              geom_point(aes(x = year, y = y, fill = emission),
                          alpha = 0.25, shape = 21) +
-              geom_smooth(aes(x = year, y = y, color = scenario),
+              geom_smooth(aes(x = year, y = y, color = emission),
                           method = "lm", size=1.2, se = F) +
               # facet_wrap( ~ warm_cold) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
@@ -403,14 +403,6 @@ ggsave(plot = A1_figs, "chill_plot_accum_Apr1.png",
        height = 9, width = 9, units = "in")
 
 
-
-
-
-
-
-
-
-
 ##################################################################
 ##################################################################
 ################################################################## Limited Locations
@@ -435,10 +427,10 @@ options(digit=9)
 # main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/overlapping/"
 # main_in_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/non_overlapping/"
 
-write_dir_utah = paste0(main_in_dir, "utah_model_stats/")
-write_dir_dynamic = paste0(main_in_dir, "dynamic_model_stats/")
+# write_dir_utah = paste0(main_in_dir, "utah_model_stats/")
+# write_dir_dynamic = paste0(main_in_dir, "dynamic_model_stats/")
 
-model = "dynamic"
+# model = "dynamic"
 # if (model=="dynamic"){
 #   setwd(write_dir_dynamic)
 #   write_dir = write_dir_dynamic
@@ -452,14 +444,15 @@ model = "dynamic"
 #############              ********** start from here **********
 #############
 ##############################################################################
-param_dir <- "/Users/hn/Documents/GitHub/Kirti/chilling/parameters/"
+param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 limited_locs <- read.csv(paste0(param_dir, "limited_locations.csv"), 
                                 header=T, sep=",", as.is=T)
 
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
                                      header=T, sep=",", as.is=T)
 
-write_dir <- "/Users/hn/Desktop/Desktop/Kirti/check_point/chilling/"
+main_in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/"
+write_dir <- main_in_dir
 summary_comp <- data.table(readRDS(paste0(write_dir, "sept_summary_comp.rds")))
 
 summary_comp$location <- paste0(summary_comp$lat, "_", summary_comp$long)
@@ -481,9 +474,9 @@ accum_plot <- function(data, y_name, due){
   lab = paste0("Median chill units accumulated by ", due)
 
   acc_plot <- ggplot(data = data) +
-              geom_point(aes(x = year, y = y, fill = scenario),
+              geom_point(aes(x = year, y = y, fill = emission),
                          alpha = 0.25, shape = 21) +
-              geom_smooth(aes(x = year, y = y, color = scenario),
+              geom_smooth(aes(x = year, y = y, color = emission),
                           method = "lm", size=.8, se = F) +
               facet_wrap( ~ city) +
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
@@ -548,11 +541,16 @@ accum_hist_plot <- function(data, y_name, due){
   return(hist_plt)
 }
 
+
 summary_comp_loc_medians <- summary_comp %>%
                             filter(model != "observed") %>%
-                            group_by(city, year, model, scenario) %>%
+                            group_by(city, year, model, emission, time_period, chill_season) %>%
                             summarise_at(.funs = funs(med = median), vars(thresh_20:sum_A1)) %>% 
                             data.table()
+
+summary_comp <- data.table(summary_comp)
+summary_comp <- summary_comp[order(city, year, model, emission),]
+summary_comp_loc_medians <- summary_comp_loc_medians[order(city, year, model, emission),]
 
 # Data frame for historical values to be used for these figures
 summary_comp_hist <- summary_comp %>%

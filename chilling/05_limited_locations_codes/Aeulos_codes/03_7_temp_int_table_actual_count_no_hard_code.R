@@ -131,4 +131,3 @@ perc_table[, 4:11] = perc_table[, 4:11] * 100
 write.table(x = perc_table, row.names=F, col.names = T, sep=",", file = "perc_table.csv")
 write.table(x = the_table, row.names=F, col.names = T, sep=",", file = "actual_counts.csv")
 
-
