@@ -86,6 +86,31 @@ function add_NDVI_collection(image_IC){
 ////////////////////////////////////////////////
 ///
 ///
+/// add EVI to an image
+
+function addEVI_to_image(image) {
+  var evi = image.expression(
+                      '2.5 * ((NIR - RED) / (NIR + 6 * RED - 7.5 * BLUE + 1.0))', {
+                      'NIR': image.select('B8'),
+                      'RED': image.select('B4'),
+                      'BLUE': image.select('B2')
+                  }).rename('EVI');
+  return image.addBands(evi);
+}
+
+////////////////////////////////////////////////
+///
+///
+/// add EVI to an imageCollection
+
+function add_EVI_collection(image_IC){
+  var EVI_IC = image_IC.map(addEVI_to_image);
+  return EVI_IC;
+}
+
+////////////////////////////////////////////////
+///
+///
 /// Extract ImageCollection from Sentinel 2- level 1C 
 /// dates etc are hard-coded to enable us to use map() function
 
@@ -98,7 +123,8 @@ function extract_sentinel_IC(a_feature){
                 .filterDate(start_date, end_date)
                 .filterBounds(geom)
                 //.filterMetadata('CLOUDY_PIXEL_PERCENTAGE', "less_than", 10)
-                .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+                // .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+                .filter('CLOUDY_PIXEL_PERCENTAGE < 70')
                 .sort('system:time_start', true);
     
     // toss out cloudy pixels
@@ -112,6 +138,9 @@ function extract_sentinel_IC(a_feature){
     
     // add NDVI as a band
     imageC = add_NDVI_collection(imageC);
+    
+    // add EVI as a band
+    imageC = add_EVI_collection(imageC);
     
     // add original geometry to each image
     // we do not need to do this really:
