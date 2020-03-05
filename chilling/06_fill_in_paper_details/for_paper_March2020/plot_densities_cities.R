@@ -20,6 +20,9 @@ library(ggpubr) # for ggarrange
 options(digit=9)
 options(digits=9)
 
+start_time <- Sys.time()
+
+
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
 plot_dir <- file.path(base_in, "plots/AUC/")
@@ -78,7 +81,8 @@ plot_dens <- function(data, month_name){
                geom_vline(xintercept = iof_breaks, 
                           linetype = "solid", color = "red", size = 0.2) +
                facet_grid( ~ city) +
-               xlab("hourly temp.") + 
+               xlab("temperature") + 
+               ylab("hourly temp. density") +
                # ggtitle(label = gtitle) +
                scale_fill_manual(values=color_ord,
                                  name="Time\nPeriod", 
@@ -87,7 +91,7 @@ plot_dens <- function(data, month_name){
                                   name="Time\nPeriod", 
                                   limits = color_ord,
                                   labels=c("Historical", "2026-2050", "2051-2075", "2076-2099")) + 
-               scale_x_continuous(name="hourly temp.", breaks=x_breaks, limits=c(-30, 50)) + 
+               scale_x_continuous(name="temperature", breaks=x_breaks, limits=c(-30, 50)) + 
                the_theme
     return(obs_plot)
 }
@@ -138,7 +142,7 @@ for (ct in unique(modeled$city)){
   print ("plot_45$time_period")
   print (plot_45$time_period)
 
-  ggsave(filename = paste0("sept_apr1_dens_", ct, "_rcp85.png"),
+  ggsave(filename = paste0("sept_apr1_dens_", gsub(" ", "_", ct), "_rcp85.png"),
          path = plot_dir, 
          plot = plot_85,
          width = 6, height = 4, units = "in",
@@ -146,7 +150,7 @@ for (ct in unique(modeled$city)){
          device = "png",
          limitsize = FALSE)
 
-  ggsave(filename = paste0("sept_apr1_dens_", ct, "_rcp45.png"),
+  ggsave(filename = paste0("sept_apr1_dens_", gsub(" ", "_", ct), "_rcp45.png"),
          path = plot_dir, 
          plot = plot_45,
          width = 6, height = 4, units = "in",
@@ -156,3 +160,6 @@ for (ct in unique(modeled$city)){
   print ("line 149")
 
 }
+
+end_time <- Sys.time()
+print( end_time - start_time)
