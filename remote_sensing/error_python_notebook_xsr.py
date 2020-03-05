@@ -1,5 +1,3 @@
-# import libraries
-
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -10,6 +8,7 @@ from math import factorial
 import datetime
 import time
 import scipy
+
 from statsmodels.sandbox.regression.predstd import wls_prediction_std
 from sklearn.linear_model import LinearRegression
 from patsy import cr
@@ -18,11 +17,9 @@ from pprint import pprint
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-################################################################
-#####
-#####                   Function definitions
-#####
-################################################################
+
+
+
 def filter_out_unwanted(dt_df):
     unwanted_plants = ["Almond", "Apple", "Alfalfa/Grass Hay",
                        "Apricot", "Asparagus", "Berry, Unknown",  
@@ -302,16 +299,263 @@ def convert_TS_to_a_row(a_dt):
     a_dt = keep_WSDA_columns(a_dt)
     a_dt = a_dt.drop_duplicates()
     return(a_dt)
+    
 
 
 
-def save_matlab_matrix(filename, matDict):
+data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/remote_sensing/01_NDVI_TS/Grant/"
+
+file_names = ["Grant_2018_TS.csv"]
+file_N = file_names[0]
+
+
+a_df = pd.read_csv(data_dir + file_N)
+a_df = initial_clean(a_df)
+a_df.head(2)
+
+
+
+
+# Count distict values, use nunique:
+pprint (a_df['geo'].nunique())
+
+# Count only non-null values, use count:
+print (a_df['geo'].count())
+
+# Count total values including null values, use size attribute:
+print (a_df['geo'].size)
+
+
+
+
+
+
+
+polygon_list = a_df['geo'].unique()
+
+
+
+
+
+
+output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+                  'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                  'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
+                  'peak_Doy', 'peak_value']
+
+all_polygons_and_their_peaks = pd.DataFrame(data=None, 
+                                            columns=output_columns)
+for a_poly in polygon_list:
+    a_field = a_df[a_df['geo']==a_poly]
+    
+    ### 
+    ###  There is a chance that a polygon is repeated twice?
+    ###
+    
+    X = a_field['doy']
+    y = a_field['NDVI']
+    freedom_df = 7
+    #############################################
+    ###
+    ###             Smoothen
+    ###
+    #############################################
+    
+    # Generate spline basis with "freedom_df" degrees of freedom
+    x_basis = cr(X, df=freedom_df, constraints='center')
+
+    # Fit model to the data
+    model = LinearRegression().fit(x_basis, y)
+
+    # Get estimates
+    y_hat = model.predict(x_basis)
+    
+    #############################################
+    ###
+    ###             find peaks
+    ###
+    #############################################
+    # peaks_LWLS_1 = peakdetect(LWLS_1[:, 1], lookahead = 10, delta=0)
+    # max_peaks = peaks_LWLS_1[0]
+    # peaks_LWLS_1 = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+    peaks_spline = peakdetect(y_hat, lookahead = 10, delta=0)
+    max_peaks = peaks_spline[0]
+    peaks_spline = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+    
+    DoYs_series = pd.Series(int(peaks_spline[0]))
+    peaks_series = pd.Series(peaks_spline[1])
+    
+    peak_df = pd.DataFrame({ 
+                       'peak_Doy': pd.Series(int(peaks_spline[0])), 
+                       'peak_value': pd.Series(peaks_spline[1]) 
+                      }) 
+
+    
+    WSDA_df = keep_WSDA_columns(a_field)
+    WSDA_df = WSDA_df.drop_duplicates()
+    
+    WSDA_df = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index()
+    # WSDA_df = pd.concat([WSDA_df, peak_df], axis=1, ignore_index=True)
+    WSDA_df = WSDA_df.join(peak_df)
+    
     """
-    Write a MATLAB-formatted matrix file given a dictionary of
-    variables.
+    # first I decided to add all DoY and peaks in one row to avoid
+    # multiple rows per (field, year)
+    # However, in this way, each pair of (field, year)
+    # can have different column sizes.
+    # So, we cannot have one dataframe to include everything in it.
+    # so, we will have to do dictionary to save out puts.
+    # Lets just do replicates... easier to handle perhaps down the road.
+    #
+    DoY_colNames = [i + j for i, j in zip(\
+                                          ["DoY_"]*(len(DoYs_series)+1), \
+                                          [str(i) for i in range(1, len(DoYs_series)+1)] )] 
+   
+    peak_colNames = [i + j for i, j in zip(\
+                                           ["peak_"]*(len(peaks_series)+1), \
+                                           [str(i) for i in range(1, len(peaks_series)+1)] )]
+    
+    WSDA_df[DoY_colNames] = pd.DataFrame([DoYs_series], index=WSDA_df.index)
+    WSDA_df[peak_colNames] = pd.DataFrame([peaks_series], index=WSDA_df.index)
     """
-    try:
-        sio.savemat(filename, matDict)
-    except:
-        print("ERROR: could not write matrix file " + filename)
+
+
+
+
+
+output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+                  'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                  'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
+                  'peak_Doy', 'peak_value']
+
+all_polygons_and_their_peaks = pd.DataFrame(data=None, 
+                                            columns=output_columns)
+
+
+
+a_field = a_df[a_df['geo']==polygon_list[0]]
+
+### 
+###  There is a chance that a polygon is repeated twice?
+###
+
+X = a_field['doy']
+y = a_field['NDVI']
+freedom_df = 7
+#############################################
+###
+###             Smoothen
+###
+#############################################
+
+# Generate spline basis with "freedom_df" degrees of freedom
+x_basis = cr(X, df=freedom_df, constraints='center')
+
+# Fit model to the data
+model = LinearRegression().fit(x_basis, y)
+
+# Get estimates
+y_hat = model.predict(x_basis)
+
+#############################################
+###
+###             find peaks
+###
+#############################################
+# peaks_LWLS_1 = peakdetect(LWLS_1[:, 1], lookahead = 10, delta=0)
+# max_peaks = peaks_LWLS_1[0]
+# peaks_LWLS_1 = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+peaks_spline = peakdetect(y_hat, lookahead = 10, delta=0)
+max_peaks = peaks_spline[0]
+peaks_spline = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+DoYs_series = pd.Series(int(peaks_spline[0]))
+peaks_series = pd.Series(peaks_spline[1])
+
+peak_df = pd.DataFrame({ 
+                   'peak_Doy': pd.Series(int(peaks_spline[0])), 
+                   'peak_value': pd.Series(peaks_spline[1]) 
+                  }) 
+
+WSDA_df = keep_WSDA_columns(a_field)
+WSDA_df = WSDA_df.drop_duplicates()
+
+
+
+
+
+WSDA_df = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index(drop=True)
+WSDA_df = WSDA_df.join(peak_df)
+
+
+all_polygons_and_their_peaks.append(all_polygons_and_their_peaks, WSDA_df)
+
+
+#########################
+X = a_field['doy']
+y = a_field['NDVI']
+freedom_df = 7
+
+# Generate spline basis with "freedom_df" degrees of freedom
+x_basis = cr(X, df=freedom_df, constraints='center')
+
+# Fit model to the data
+model = LinearRegression().fit(x_basis, y)
+
+# Get estimates
+y_hat = model.predict(x_basis)
+
+
+
+# find peaks
+# peaks_LWLS_1 = peakdetect(LWLS_1[:, 1], lookahead = 10, delta=0)
+# max_peaks = peaks_LWLS_1[0]
+# peaks_LWLS_1 = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+peaks_spline = peakdetect(y_hat, lookahead = 10, delta=0)
+max_peaks = peaks_spline[0]
+peaks_spline = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+
+plt.scatter(X, y, s=7);
+plt.scatter(peaks_spline[0], peaks_spline[1], s=120, c='c', marker='*');
+plt.plot(X, y_hat, 'r');
+plt.title(f'Natural cubic spline with {freedom_df} degrees of freedom \n and peak point in red');
+
+
+peaks_spline
+
+WSDA_df = convert_TS_to_a_row(a_field)
+WSDA_df
+WSDA_df = WSDA_df.reset_index(drop=True)
+WSDA_df
+
+# DoYs_df = pd.Series(int(peaks_spline[0]), name='peak_Doy').to_frame()
+# peaks_df = pd.Series(peaks_spline[1], name="peak_value").to_frame()
+
+peak_df = pd.DataFrame({ 
+                       'peak_Doy': pd.Series(int(peaks_spline[0])), 
+                       'peak_value': pd.Series(peaks_spline[1]) 
+                      }) 
+
+peak_df = pd.DataFrame({ 
+                       'peak_Doy': np.array([147, 148, 2]), 
+                       'peak_value': np.array([10.2, 14.8, 33.4])
+                      }) 
+
+peak_df
+
+AAA = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index(drop=True)
+AAA
+
+# pd.merge(WSDA_df, peak_df)
+# pd.merge(left=WSDA_df, right=peak_df, how='outer', on='index')
+pd.concat([AAA, peak_df], axis=1, ignore_index=True)
+
+AAA.join(peak_df)
+
+
+pd.concat([WSDA_df]*peak_df.shape[0]).reset_index(drop=True)
 
