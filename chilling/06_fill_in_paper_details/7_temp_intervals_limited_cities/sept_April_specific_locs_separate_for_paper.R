@@ -145,7 +145,7 @@ for (ct in cities){
   A <- dt_df %>% filter(city == ct) %>% data.table()
   sep_apr_plot <- plot_intervals(data=A, month_name = "Sept. through Apr.")
   ggsave(plot = sep_apr_plot,
-         filename = paste0("sep_thru_Apr_modeled_", ct, ".png"),
+         filename = paste0("sep_thru_Apr_modeled_", gsub(" ", "_", ct), ".png"),
          path = plot_dir,
          device = "png",
          height = 6, width = 4, 

@@ -85,7 +85,7 @@ diffs_median <- diffs %>%
                 data.table()
 
 
-plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/")
+plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/cp_diff_map/")
 if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
 
 core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
@@ -99,7 +99,15 @@ ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered.png"),
        dpi=600, device="png", path=plot_base)
 
 
+diffs_median_85 <- diffs_median %>% filter(emission=="RCP 8.5")
 
-
-
-
+core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
+plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
+source(core_path)
+source(plot_core_path)
+a_map <- diff_CP_map_one_emission(data = diffs_median_85, color_col = "CP_diff_median")
+ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered_85.png"), 
+       plot=a_map, 
+       width=3, height=1.5, units="in", 
+       dpi=600, device="png", 
+       path=plot_base)

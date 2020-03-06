@@ -138,25 +138,23 @@ plot_bloom_box <- function(dt, colname, ct){
   safe_b <- ggplot(data = dt, aes(x=time_period, 
                                   y=get(colname), 
                                   fill=time_period)) +
-
             geom_boxplot(outlier.size = -.05, 
                          notch=F, width=box_width, 
                          lwd=.3, alpha=.8) +
-
             facet_grid(~ emission) +
             the_theme + 
             scale_fill_manual(values = color_ord, name = "Time\nPeriod", 
                               labels = categ_lab) + 
-            
+
             scale_color_manual(values = color_ord, labels = categ_lab,
                                name = "Time\nPeriod", limits = color_ord) + 
-            
+
             scale_x_discrete(breaks = c("1979-2016", "2026-2050", 
                                         "2051-2075", "2076-2095"),
                              labels = categ_lab) +
-            
+
             ggtitle(lab=title_) +
-            
+
             geom_text(data = medians, 
                       aes(label = sprintf("%1.0f", medians$med), 
                           y=medians$med), 
@@ -275,8 +273,8 @@ boxplot_frost_dayofyear <- function(dt, kth_day, sub_title){
                      axis.ticks.x = element_blank())
   
   if (length(unique(dt$location)) <= 15){
-  	box_width <- 0.35
-  	title_ <- paste0(title_, ", ",ct)
+    box_width <- 0.35
+    title_ <- paste0(title_, ", ",ct)
     the_theme <- theme(plot.title = element_text(size=13, face="bold"),
                        panel.grid.minor = element_blank(),
                        panel.spacing=unit(.5, "cm"),
@@ -453,9 +451,11 @@ ensemble_map <- function(data, color_col, due) {
                                  space ="Lab")
 }
 
+
 produce_data_4_plots <- function(data){
-  needed_cols = c("chill_season", "sum_J1", "sum_F1", "sum_M1", "sum_A1", "year", "model", 
-                  "scenario", "lat", "long", "warm_cold")
+  needed_cols = c("chill_season", "sum_J1", 
+                  "sum_F1", "sum_M1", "sum_A1", "year", "model", 
+                  "emission", "lat", "long")
 
   ################### CLEAN DATA
   data = subset(data, select=needed_cols)
@@ -673,7 +673,7 @@ produce_data_4_safe_chill_box_plots_new_seasons <- function(data){
 }
 
 organize_non_over_time_period_two_hist <- function(data){
-  data = data %>% filter(year<=2005 | year>=2025)
+  data = data %>% filter(year <=2005 | year>=2025)
   time_periods = c("Historical","2025_2050", "2051_2075", "2076_2099")
   
   data$time_period = 0L
@@ -699,6 +699,125 @@ organize_non_over_time_period_two_hist <- function(data){
   return(data)
 }
 
+####################################################################################
+############
+############
+############             Written on March 5th to fill in the paper:
+############
+############
+####################################################################################
+diff_SC_map_one_emission <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  low_lim = min(data$SC_diff_median)
+  up_lim = max(data$SC_diff_median)
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black", size=.3) +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid( ~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme_bw() + 
+           theme(legend.position = "bottom",
+                 legend.title = element_blank(),
+                 legend.key.size = unit(1, "line"),
+                 legend.text=element_text(size=6),
+                 plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text = element_blank(),
+                 plot.title=element_text(size=10, face="bold"),
+                 strip.text = element_text(size=8, face="bold"),
+                 # axis.text.x = element_text(size=3, face="plain", color="black"),
+                 # axis.text.y = element_text(size=3, face="plain", color="black"),
+                 legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
+                ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim+10),
+                                 breaks = c(-150, -100, -50, 0, 50)) 
+}
+
+diff_CP_map_one_emission <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  if (color_col=="CP_diff_median"){
+     low_lim = min(data$CP_diff_median)
+     up_lim = max(data$CP_diff_median)
+  } else if (color_col=="median_over_model"){
+     low_lim = min(data$median_over_model)
+     up_lim = max(data$median_over_model)
+  }
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black", size=.3) +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid(~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme_bw() + 
+           theme(legend.position = "bottom",
+                 legend.title = element_blank(),
+                 legend.key.size = unit(.5, "line"),
+                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 legend.text=element_text(size=4),
+                 plot.margin = margin(t=0.05, r=0.1, b=0.05, l=0.1, unit = 'cm'),
+                 axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text = element_blank(),
+                 plot.title=element_text(size=10, face="bold"),
+                 strip.text = element_text(size=8, face="bold"),
+                 # axis.text.x = element_text(size=3, face="plain", color="black"),
+                 # axis.text.y = element_text(size=3, face="plain", color="black"),
+                 legend.margin = margin(t=-.1, r=0, b=-0.1, l=0, unit = 'cm')
+                ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim),
+                                 breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
+}
 
 diff_CP_map <- function(data, color_col) {
   states <- map_data("state")
@@ -737,6 +856,8 @@ diff_CP_map <- function(data, color_col) {
                  legend.key.size = unit(1, "line"),
                  legend.text=element_text(size=6),
                  plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
                  axis.title.y = element_blank(),
                  axis.title.x = element_blank(),
                  axis.ticks.y = element_blank(), 
@@ -757,7 +878,211 @@ diff_CP_map <- function(data, color_col) {
                                  breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
 }
 
+organize_time_period_two_hist_w_only_observed <- function(data){
+  data$time_period[data$time_period == "1979-2015"] <- "Historical"
+  time_periods = c("Historical","2026-2050", "2051-2075", "2076-2099")
+  data$time_period = factor(data$time_period, levels = time_periods, order=T)
+  data_f <- data %>% filter(time_period != "Historical")
+  
+  data_h_rcp85 <- data %>% filter(time_period == "Historical")
+  data_h_rcp45 <- data %>% filter(time_period == "Historical")
+  
+  data_h_rcp85$emission = "RCP 8.5"
+  data_h_rcp45$emission = "RCP 4.5"
+  
+  data_f$emission[data_f$emission=="rcp85"] = "RCP 8.5"
+  data_f$emission[data_f$emission=="rcp45"] = "RCP 4.5"
+
+  data = rbind(data_f, data_h_rcp45, data_h_rcp85)
+  rm(data_h_rcp45, data_h_rcp85, data_f)
+  return(data)
+}
+
+produce_data_4_plots_w_noly_observed <- function(data){
+  needed_cols = c("chill_season", "sum_A1", "year", "model", 
+                  "emission", "lat", "long", "location", "time_period")
+
+  ################### CLEAN DATA
+  data = subset(data, select=needed_cols)
+  # pick up future data
+  # data = data %>% filter(emission != "historical")
+  data <- organize_time_period_two_hist_w_only_observed(data)
+
+  ################### GENERATE STATS
+  #######################################################################
+  ##                                                                   ##
+  ##   Find the 90th percentile of the chill units                     ##
+  ##   Grouped by location, model, time_period and rcp                 ##
+  ##   This could be used for box plots, later compute the mean.       ##
+  ##   for maps                                                        ##
+  ##                                                                   ##
+  #######################################################################
+
+  quan_per_loc_period_model_apr <- data %>% 
+                                   group_by(time_period, emission, model, location) %>%
+                                   summarise(quan_90 = quantile(sum_A1, probs = 0.1)) %>%
+                                   data.table()
+
+  # it seems there is a library, perhaps tidyverse, that messes up
+  # the above line, so the two variables above are 1-by-1. 
+  # just close and re-open R Studio
+  ########################################################################
+  #######                                                          #######
+  #######                     Means                              #######
+  #######                                                          #######
+  ########################################################################
+  
+  mean_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                        group_by(time_period, location, emission) %>%
+                                        summarise(mean_over_model = mean(quan_90)) %>%
+                                        data.table()
+  ########################################################################
+  #######                                                          #######
+  #######                     Medians                              #######
+  #######                                                          #######
+  ########################################################################
+  
+  median_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                          group_by(time_period, location, emission) %>%
+                                          summarise(median_over_model = median(quan_90)) %>%
+                                          data.table()
+  
+  # quan_per_loc_period_model_jan$time_period = factor(quan_per_loc_period_model_jan$time_period, order=T)
+  # mean_quan_per_loc_period_model_jan$time_period = factor(mean_quan_per_loc_period_model_jan$time_period, order=T)
+  # median_quan_per_loc_period_model_jan$time_period = factor(median_quan_per_loc_period_model_jan$time_period, order=T)
+
+  # quan_per_loc_period_model_feb$time_period_feb = factor(quan_per_loc_period_model_feb$time_period, order=T)
+  # mean_quan_per_loc_period_model_feb$time_period = factor(mean_quan_per_loc_period_model_feb$time_period, order=T)
+  # median_quan_per_loc_period_model_feb$time_period= factor(median_quan_per_loc_period_model_feb$time_period, order=T)
+
+  return(list(quan_per_loc_period_model_apr,
+              mean_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr
+              )
+        )
+}
 
 
+safe_box_plot_per_city <- function(data, due, chill_start){
+  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
+
+  data$time_period <- as.character(data$time_period)
+  if ("2025_2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025_2050"] <- "2026_2050"
+  }
+
+  if ("2025-2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025-2050"] <- "2026-2050"
+  }
 
 
+  categ_lab = c("Historical", "2026-2050", "2051-2075", "2076-2099")
+  box_width = 0.4
+  data$time_period <- gsub("_", "-", data$time_period)
+  data$time_period <- factor(data$time_period, levels = categ_lab, order=TRUE)
+
+  df <- data.frame(data)
+  df <- df %>% group_by(time_period, emission, city)
+  medians <- (df %>% summarise(med = median(quan_90)))
+  
+  the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                    panel.border = element_rect(fill=NA, size=.3),
+                    panel.grid.major = element_line(size = 0.05),
+                    panel.grid.minor = element_blank(),
+                    panel.spacing = unit(.25, "cm"),
+                    legend.position = "bottom", 
+                    legend.key.size = unit(1.2, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
+                    panel.spacing.y = unit(.5, 'cm'),
+                    legend.text = element_text(size=12),
+                    legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
+                    legend.title = element_blank(),
+                    plot.title = element_text(size=14, face = "bold"),
+                    plot.subtitle = element_text(face = "bold"),
+                    strip.text.x = element_text(size=14, face="bold"),
+                    strip.text.y = element_text(size=14, face="bold"),
+                    axis.ticks = element_line(size=.1, color="black"),
+                    axis.text.y = element_text(size=14, face="bold", color="black"),
+                    axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.x = element_blank(),
+                    axis.title.x = element_blank()
+                    )
+  
+  safe_apr <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
+            geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
+            labs(x="", y="safe chill") +
+            facet_grid(~ emission ~ city ) + 
+            the_theme + 
+            scale_fill_manual(values = color_ord,
+                              name = "Time\nPeriod", 
+                              labels = categ_lab) + 
+            scale_color_manual(values = color_ord,
+                               name = "Time\nPeriod", 
+                               limits = color_ord,
+                               labels = categ_lab) + 
+            scale_x_discrete(breaks = categ_lab,
+                             labels = categ_lab)  +
+            geom_text(data = medians, 
+                      aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                          size=6.5, 
+                          position =  position_dodge(.09),
+                          vjust = 0, hjust=.5) # +
+            # ggtitle(lab=paste0("Safe chill accumulation")) 
+            #, subtitle = paste0("chill season started on ", chill_start)
+  
+  return(safe_apr)
+}
+
+diff_SC_map <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  low_lim = min(data$SC_diff_median)
+  up_lim = max(data$SC_diff_median)
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black", size=.3) +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid(~ emission ~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme_bw() + 
+           theme(legend.position = "bottom",
+                 legend.title = element_blank(),
+                 legend.key.size = unit(1, "line"),
+                 legend.text=element_text(size=6),
+                 plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+                 axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text = element_blank(),
+                 plot.title=element_text(size=10, face="bold"),
+                 strip.text = element_text(size=10, face="bold"),
+                 # axis.text.x = element_text(size=3, face="plain", color="black"),
+                 # axis.text.y = element_text(size=3, face="plain", color="black"),
+                 legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
+                ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim+10),
+                                 breaks = c(-150, -100, -50, 0, 50)) 
+}

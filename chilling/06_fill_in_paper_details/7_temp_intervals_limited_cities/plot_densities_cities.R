@@ -80,7 +80,7 @@ plot_dens <- function(data, month_name){
                geom_density(alpha=.5, size=.1) + 
                geom_vline(xintercept = iof_breaks, 
                           linetype = "solid", color = "red", size = 0.2) +
-               facet_grid( ~ city) +
+               facet_grid( ~ city ~ scenario) +
                xlab("temperature") + 
                ylab("hourly temp. density") +
                # ggtitle(label = gtitle) +
