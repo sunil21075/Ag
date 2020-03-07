@@ -88,14 +88,9 @@ for (time_period_type in time_period_types){
     #######
     # The two followings are the same!
     data_medians <- data %>% 
-                    group_by(climate_type, scenario, ClimateGroup) %>%
+                    group_by(climate_type, scenario, ClimateGroup) %>% # climate_type is warm or cold which we do not have any more
                     summarise_at(.funs = funs(med = median), vars(thresh_20:thresh_75)) %>%
                     data.table()
-
-    # data_medians <- data %>% 
-    #               group_by(climate_type, scenario, ClimateGroup) %>%
-    #               summarise_all(list(Q90 = quantile), probs = 0.9) %>%
-    #               data.table()
 
     data_90th <- data %>% 
                  group_by(climate_type, scenario, ClimateGroup) %>%

@@ -80,7 +80,7 @@ plot_dens <- function(data, month_name){
                geom_density(alpha=.5, size=.1) + 
                geom_vline(xintercept = iof_breaks, 
                           linetype = "solid", color = "red", size = 0.2) +
-               facet_grid( ~ city ~ scenario) +
+               facet_grid( ~ scenario ~ city ) +
                xlab("temperature") + 
                ylab("hourly temp. density") +
                # ggtitle(label = gtitle) +
@@ -113,8 +113,23 @@ print ("line 109")
 print (sort(unique(modeled$year)))
 print (sort(unique(modeled$time_period)))
 observed <- readRDS(paste0(data_dir, "/observed.rds")) %>% data.table()
-observed$scenario <- "Historical"
 observed$time_period <- "Historical"
+observed$scenario <- "Historical"
+#####################################################################
+###
+###     If you want to facet by scenario as well, then we need
+###     to have historical part for both scenarions, so we do 
+###     the following
+###
+#####################################################################
+observed_45 <- observed
+observed_85 <- observed
+observed_45$scenario <- "RCP 4.5"
+observed_85$scenario <- "RCP 8.5"
+observed <- rbind(observed_45, observed_85)
+
+#####################################################################
+#####################################################################
 
 modeled <- rbind(modeled, observed)
 modeled <- na.omit(modeled)
