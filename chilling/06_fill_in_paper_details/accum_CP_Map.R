@@ -166,6 +166,7 @@ observed_hist_map <- function(dt=stats_comp, minn, maxx, month_col) {
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(), 
         axis.ticks.x = element_blank(),
+        legend.title = element_blank(),
         plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm'),
         strip.text = element_text(size=12, face="bold"))
 }
@@ -200,7 +201,8 @@ ensemble_map <- function(dt, scenario_name, month_col, legend_label) {
                panel.grid.major = element_line(size = 0.1),
                legend.position="bottom", 
                strip.text = element_text(size=12, face="bold"),
-               plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+               plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm'),
+               legend.title = element_blank()
                )
 }
 
