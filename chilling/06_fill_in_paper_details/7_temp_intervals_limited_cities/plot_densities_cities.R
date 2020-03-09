@@ -25,7 +25,7 @@ start_time <- Sys.time()
 
 base_in <- "/data/hydro/users/Hossein/chill/7_time_intervals/"
 data_dir <- file.path(base_in, "RDS_files/")
-plot_dir <- file.path(base_in, "plots/AUC/")
+plot_dir <- file.path(base_in, "plots/AUC/consistent_colors")
 
                      
 # data_dir <- file.path(paste0("/Users/hn/Documents/01_research_data/Ag_check_point/", 
@@ -50,6 +50,7 @@ small_pic_height <- 6 # 4
 
 plot_dens <- function(data, month_name){
     color_ord = c("grey47", "dodgerblue", "olivedrab4", "khaki2")
+    color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
     iof_breaks = c(-Inf, -2, 4, 6, 8, 13, 16, Inf)
     x_breaks = c(-30, -20, -10, -2, 0, 4, 6, 8, 10, 13, 16, 20, 30, 40, 50)
     the_theme <- theme(plot.margin = unit(c(t=0.4, r=0.3, b=.3, l=0.1), "cm"),

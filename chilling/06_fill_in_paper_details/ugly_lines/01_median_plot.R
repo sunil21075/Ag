@@ -6,8 +6,11 @@ library(dplyr)
 library(ggpubr)
 library(ggplot2)
 ###########################################
+post_fix <- "/0/" # _replaced_with_20000
 
 data_dir = "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/tables/table_for_ugly_lines_plots/"
+data_dir <- paste0(data_dir, post_fix)
+
 param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/"
 
 ###########################################
@@ -33,13 +36,15 @@ data <- data %>% filter(time_period != "2006-2025") %>% data.table()
 data$time_period[data$time_period == "1979-2015"] <- "Historical"
 
 time_periods = c("Historical", "2026-2050", "2051-2075", "2076-2099")
-data$time_period = factor(data$time_period, levels = time_periods, order=TRUE)
+data$time_period <- factor(data$time_period, levels = time_periods, order=TRUE)
 
 data_melt = melt(data, id=c("city", "emission", "time_period"))
 
 # Convert the column variable to integers
 data_melt[,] <- lapply(data_melt, factor)
 data_melt[,] <- lapply(data_melt, function(x) type.convert(as.character(x), as.is = TRUE))
+time_periods = c("Historical", "2026-2050", "2051-2075", "2076-2099")
+data_melt$time_period <- factor(data_melt$time_period, levels = time_periods, order=TRUE)
 
 
 the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
@@ -68,7 +73,12 @@ the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
 color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")
 color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
 
-plot_path = "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/ugly_lines/median_Doy/"
+plot_path = "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/ugly_lines/"
+plot_path <- paste0(plot_path, post_fix, "/median_Doy/")
+
+if (dir.exists(plot_path) == F) {
+  dir.create(path = plot_path, recursive = T)
+}
 
 for (ct in unique(data$city)){
   for (em in unique(data$emission)) {
@@ -85,17 +95,11 @@ for (ct in unique(data$city)){
            scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
            the_thm
 
-    output_name = paste0(gsub(" ", "_", ct), "_quan90_DoY_thresh", gsub(" ", "_", gsub("\\.", "", em)),".png")
+    output_name = paste0(gsub(" ", "_", ct), "_medianDoY_thresh", gsub(" ", "_", gsub("\\.", "", em)),".png")
     ggsave(filename=output_name, plot=plot, device="png", 
            path=plot_path, width=5, height=5, unit="in",
            dpi=600)
   }
 }
-
-
-
-
-
-
 
 

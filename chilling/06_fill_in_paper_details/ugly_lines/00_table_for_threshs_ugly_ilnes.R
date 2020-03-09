@@ -73,6 +73,17 @@ sept_summary <- dplyr::left_join(x = sept_summary, y = limited_cities, by = "loc
 # remove extra columns
 #
 sept_summary <- clean_data(sept_summary)
+Eugene_85_F3 <- sept_summary %>% filter(city %in% c("Eugene") & emission == "RCP 8.5" & time_period == "2076-2099")
+Omak_85_F3 <- sept_summary %>% filter(city %in% c("Omak") & emission == "RCP 8.5" & time_period == "2076-2099")
+
+# index_Omak <- data.table(Omak_85_F3 == 0)
+# index_Eugene <- data.table(Eugene_85_F3 == 0)
+
+#
+# replace zeros with 367 for places that did not meet chill thresholds
+#
+index <- sept_summary == 0
+sept_summary[index] <- 20000
 
 #######
 #######     Compute Medians
@@ -83,6 +94,11 @@ sept_summary <- clean_data(sept_summary)
 data_medians <- sept_summary %>% 
                 group_by(emission, time_period, city) %>%
                 summarise_at(.funs = funs(med = median), vars(thresh_20:thresh_75)) %>%
+                data.table()
+
+data_means <- sept_summary %>% 
+                group_by(emission, time_period, city) %>%
+                summarise_at(.funs = funs(mean = mean), vars(thresh_20:thresh_75)) %>%
                 data.table()
 
 
@@ -112,6 +128,14 @@ write.table(data_medians,
             row.names = FALSE, 
             col.names = TRUE, 
             sep = ",")
+
+
+write.table(data_means, 
+            file = paste0(write_dir, "means.csv"), 
+            row.names = FALSE, 
+            col.names = TRUE, 
+            sep = ",")
+
 
 write.table(data_IQR, 
             file = paste0(write_dir, "IQR.csv"), 
