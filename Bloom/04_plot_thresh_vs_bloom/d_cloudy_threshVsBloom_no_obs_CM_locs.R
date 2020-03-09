@@ -45,7 +45,7 @@ source(source_2)
 base <- "/data/hydro/users/Hossein/bloom/"
 in_dir <- paste0(base, "03_merge_02_Step/")
 param_dir <- paste0(source_dir, "parameters/")
-plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/CM_locs/")
+plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/all_locs/") # It was CM_locs
 #############################################################
 ###
 ###               Read data off the disk
@@ -118,7 +118,7 @@ apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
 # apple, cherry, pear; cherry 14 days shift, pear 7 days shift
 fruit_type <- "apple"
-remove_NA <- "yes" 
+remove_NA <- "no" 
 
 # shift the bloom days
 if (fruit_type == "cherry"){
@@ -174,8 +174,8 @@ for (thresh_cut in plot_threshols){
       #
       if (remove_NA == "yes"){
         curr_thresh <- curr_thresh %>% 
-                     filter(get(col_name)<365) %>% 
-                     data.table()
+                       filter(get(col_name)<365) %>% 
+                       data.table()
       }
       #############################################################
       #######*********#######*********#######*********#######*********
@@ -291,10 +291,15 @@ for (thresh_cut in plot_threshols){
                       ggtitle(lab=paste0(title_, curr_lat, " N, ",
                                        curr_long, " W), ",
                                        em))
+        if (remove_NA=="yes"){
+          LP <- "NA_removed"
+          } else{
+          LP <- "NA_NOTremoved"
+        }
 
         bloom_thresh_plot_dir <- paste0(plot_base_dir, 
                                         "bloom_thresh_in_one/no_obs/", 
-                                        fruit_type, "/", col_name, "/")
+                                        fruit_type, "/", col_name, "/", LP, "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
             dir.create(path = bloom_thresh_plot_dir, recursive = T)
             print (bloom_thresh_plot_dir)
