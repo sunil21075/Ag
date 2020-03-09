@@ -20,7 +20,7 @@ plot_dir <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/safe_ch
 param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), header=T, as.is=T)
 
-main_in = "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/"
+main_in = "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
 files_name = c("sept_summary_comp.rds")
 
 datas = data.table(readRDS(paste0(main_in, "sept_summary_comp.rds")))
@@ -75,10 +75,10 @@ plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(core_path)
 source(plot_core_path)
 
-a_map <- diff_SC_map(data = diffs_median, color_col = "SC_diff_median")
+both_rcps_map <- diff_SC_map(data = diffs_median, color_col = "SC_diff_median")
 ggsave(filename = paste0("SC_diff_perc_Sept_Apr_centered.png"), 
-       plot=a_map, 
-       width=4, height=3, units="in", 
+       plot=both_rcps_map, 
+       width=7.5, height=5.7, units="in", 
        dpi=600, device="png", path=plot_base)
 
 
@@ -88,9 +88,10 @@ core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
 plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(core_path)
 source(plot_core_path)
-a_map <- diff_SC_map_one_emission(data = diffs_median_85, color_col = "SC_diff_median")
+
+rcp85_map <- diff_SC_map_one_emission(data = diffs_median_85, color_col = "SC_diff_median")
 ggsave(filename = paste0("SC_diff_perc_Sept_Apr_centered_RCP85.png"), 
-       plot=a_map, 
-       width=3, height=1.5, units="in", 
+       plot=rcp85_map, 
+       width=7.5, height=3.6, units="in", 
        dpi=600, device="png", path=plot_base)
 

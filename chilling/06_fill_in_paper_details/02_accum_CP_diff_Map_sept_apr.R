@@ -92,10 +92,11 @@ core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
 plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(core_path)
 source(plot_core_path)
+
 a_map <- diff_CP_map(data = diffs_median, color_col = "CP_diff_median")
 ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered.png"), 
        plot=a_map, 
-       width=4, height=3, units="in", 
+       width=7.5, height=5.7, units="in", 
        dpi=600, device="png", path=plot_base)
 
 
@@ -105,9 +106,13 @@ core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
 plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(core_path)
 source(plot_core_path)
-a_map <- diff_CP_map_one_emission(data = diffs_median_85, color_col = "CP_diff_median")
+rcp85_map <- diff_CP_map_one_emission(data = diffs_median_85, color_col = "CP_diff_median")
+
 ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered_85.png"), 
-       plot=a_map, 
-       width=3, height=1.5, units="in", 
+       plot=rcp85_map, 
+       width=7.5, height=3.6, units="in", 
        dpi=600, device="png", 
        path=plot_base)
+
+
+

@@ -431,7 +431,7 @@ ensemble_map <- function(data, color_col, due) {
   
   data %>% ggplot() +
            geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black", size=.3) +
+                        fill = "grey", color = "black") +
             # aes_string to allow naming of column in function 
             geom_point(aes_string(x = "long", y = "lat",
                        color = color_col), alpha = 0.4, size=.4) +
@@ -706,177 +706,6 @@ organize_non_over_time_period_two_hist <- function(data){
 ############
 ############
 ####################################################################################
-diff_SC_map_one_emission <- function(data, color_col) {
-  states <- map_data("state")
-  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
-
-  low_lim = min(data$SC_diff_median)
-  up_lim = max(data$SC_diff_median)
-
-  x <- data$location
-  x <- sapply(x, 
-             function(x) strsplit(x, "_")[[1]], 
-              USE.NAMES=FALSE)
-  lat = x[1, ]
-  long = x[2, ]
-  
-  data$lat <- as.numeric(lat)
-  data$long <- as.numeric(long)
-  data <- data.table(data)
-
-  data %>% ggplot() +
-           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black", size=.3) +
-            # aes_string to allow naming of column in function 
-           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
-           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-           facet_grid( ~ time_period) +
-           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
-           theme_bw() + 
-           theme(legend.position = "bottom",
-                 legend.title = element_blank(),
-                 legend.key.size = unit(1, "line"),
-                 legend.text=element_text(size=6),
-                 plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
-                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 axis.title.y = element_blank(),
-                 axis.title.x = element_blank(),
-                 axis.ticks.y = element_blank(), 
-                 axis.ticks.x = element_blank(),
-                 axis.text = element_blank(),
-                 plot.title=element_text(size=10, face="bold"),
-                 strip.text = element_text(size=8, face="bold"),
-                 # axis.text.x = element_text(size=3, face="plain", color="black"),
-                 # axis.text.y = element_text(size=3, face="plain", color="black"),
-                 legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
-                ) +
-           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
-           #                       space ="Lab") 
-           scale_color_gradient2(midpoint = 0, mid = "white", 
-                                 high = "blue", low = "red", 
-                                 guide = "colourbar", space = "Lab",
-                                 limit = c(low_lim, up_lim+10),
-                                 breaks = c(-150, -100, -50, 0, 50)) 
-}
-
-diff_CP_map_one_emission <- function(data, color_col) {
-  states <- map_data("state")
-  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
-
-  if (color_col=="CP_diff_median"){
-     low_lim = min(data$CP_diff_median)
-     up_lim = max(data$CP_diff_median)
-  } else if (color_col=="median_over_model"){
-     low_lim = min(data$median_over_model)
-     up_lim = max(data$median_over_model)
-  }
-
-  x <- data$location
-  x <- sapply(x, 
-             function(x) strsplit(x, "_")[[1]], 
-              USE.NAMES=FALSE)
-  lat = x[1, ]
-  long = x[2, ]
-  
-  data$lat <- as.numeric(lat)
-  data$long <- as.numeric(long)
-  data <- data.table(data)
-
-  data %>% ggplot() +
-           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black", size=.3) +
-            # aes_string to allow naming of column in function 
-           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
-           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-           facet_grid(~ time_period) +
-           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
-           theme_bw() + 
-           theme(legend.position = "bottom",
-                 legend.title = element_blank(),
-                 legend.key.size = unit(.5, "line"),
-                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 legend.text=element_text(size=4),
-                 plot.margin = margin(t=0.05, r=0.1, b=0.05, l=0.1, unit = 'cm'),
-                 axis.title.y = element_blank(),
-                 axis.title.x = element_blank(),
-                 axis.ticks.y = element_blank(), 
-                 axis.ticks.x = element_blank(),
-                 axis.text = element_blank(),
-                 plot.title=element_text(size=10, face="bold"),
-                 strip.text = element_text(size=8, face="bold"),
-                 # axis.text.x = element_text(size=3, face="plain", color="black"),
-                 # axis.text.y = element_text(size=3, face="plain", color="black"),
-                 legend.margin = margin(t=-.1, r=0, b=-0.1, l=0, unit = 'cm')
-                ) +
-           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
-           #                       space ="Lab") 
-           scale_color_gradient2(midpoint = 0, mid = "white", 
-                                 high = "blue", low = "red", 
-                                 guide = "colourbar", space = "Lab",
-                                 limit = c(low_lim, up_lim),
-                                 breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
-}
-
-diff_CP_map <- function(data, color_col) {
-  states <- map_data("state")
-  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
-
-  if (color_col=="CP_diff_median"){
-     low_lim = min(data$CP_diff_median)
-     up_lim = max(data$CP_diff_median)
-  } else if (color_col=="median_over_model"){
-     low_lim = min(data$median_over_model)
-     up_lim = max(data$median_over_model)
-  }
-
-  x <- data$location
-  x <- sapply(x, 
-             function(x) strsplit(x, "_")[[1]], 
-              USE.NAMES=FALSE)
-  lat = x[1, ]
-  long = x[2, ]
-  
-  data$lat <- as.numeric(lat)
-  data$long <- as.numeric(long)
-  data <- data.table(data)
-
-  data %>% ggplot() +
-           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black", size=.3) +
-            # aes_string to allow naming of column in function 
-           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
-           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-           facet_grid(~ emission ~ time_period) +
-           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
-           theme_bw() + 
-           theme(legend.position = "bottom",
-                 legend.title = element_blank(),
-                 legend.key.size = unit(1, "line"),
-                 legend.text=element_text(size=6),
-                 plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
-                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 axis.title.y = element_blank(),
-                 axis.title.x = element_blank(),
-                 axis.ticks.y = element_blank(), 
-                 axis.ticks.x = element_blank(),
-                 axis.text = element_blank(),
-                 plot.title=element_text(size=10, face="bold"),
-                 strip.text = element_text(size=10, face="bold"),
-                 # axis.text.x = element_text(size=3, face="plain", color="black"),
-                 # axis.text.y = element_text(size=3, face="plain", color="black"),
-                 legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
-                ) +
-           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
-           #                       space ="Lab") 
-           scale_color_gradient2(midpoint = 0, mid = "white", 
-                                 high = "blue", low = "red", 
-                                 guide = "colourbar", space = "Lab",
-                                 limit = c(low_lim, up_lim),
-                                 breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
-}
 
 organize_time_period_two_hist_w_only_observed <- function(data){
   data$time_period[data$time_period == "1979-2015"] <- "Historical"
@@ -1033,6 +862,217 @@ safe_box_plot_per_city <- function(data, due, chill_start){
   return(safe_apr)
 }
 
+diff_SC_map_one_emission <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  low_lim = min(data$SC_diff_median)
+  up_lim = max(data$SC_diff_median)
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black") +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.1) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid(~ emission ~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme(axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text.x = element_blank(),
+                 axis.text.y = element_blank(),
+                 panel.grid.major = element_line(size = 0.1),
+                 legend.position="bottom", 
+                 legend.title = element_blank(),
+                 strip.text = element_text(size=12, face="bold"),
+                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 ) + 
+
+           # theme_bw() + 
+           # theme(legend.position = "bottom",
+           #       legend.title = element_blank(),
+           #       legend.key.size = unit(1, "line"),
+           #       legend.text=element_text(size=6),
+           #       plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+           #       panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       axis.title.y = element_blank(),
+           #       axis.title.x = element_blank(),
+           #       axis.ticks.y = element_blank(), 
+           #       axis.ticks.x = element_blank(),
+           #       axis.text = element_blank(),
+           #       plot.title=element_text(size=10, face="bold"),
+           #       strip.text = element_text(size=8, face="bold"),
+           #       # axis.text.x = element_text(size=3, face="plain", color="black"),
+           #       # axis.text.y = element_text(size=3, face="plain", color="black"),
+           #       legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
+           #      ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim+10),
+                                 breaks = c(-150, -100, -50, 0, 50)) 
+}
+
+diff_CP_map_one_emission <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  if (color_col=="CP_diff_median"){
+     low_lim = min(data$CP_diff_median)
+     up_lim = max(data$CP_diff_median)
+  } else if (color_col=="median_over_model"){
+     low_lim = min(data$median_over_model)
+     up_lim = max(data$median_over_model)
+  }
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black") +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.1) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid(~ emission ~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme(axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text.x = element_blank(),
+                 axis.text.y = element_blank(),
+                 panel.grid.major = element_line(size = 0.1),
+                 legend.position="bottom", 
+                 legend.title = element_blank(),
+                 strip.text = element_text(size=12, face="bold"),
+                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 ) + 
+
+           # theme_bw() + 
+           # theme(legend.position = "bottom",
+           #       legend.title = element_blank(),
+           #       legend.key.size = unit(.5, "line"),
+           #       panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       legend.text=element_text(size=4),
+           #       plot.margin = margin(t=0.05, r=0.1, b=0.05, l=0.1, unit = 'cm'),
+           #       axis.title.y = element_blank(),
+           #       axis.title.x = element_blank(),
+           #       axis.ticks.y = element_blank(), 
+           #       axis.ticks.x = element_blank(),
+           #       axis.text = element_blank(),
+           #       plot.title=element_text(size=10, face="bold"),
+           #       strip.text = element_text(size=8, face="bold"),
+           #       # axis.text.x = element_text(size=3, face="plain", color="black"),
+           #       # axis.text.y = element_text(size=3, face="plain", color="black"),
+           #       legend.margin = margin(t=-.1, r=0, b=-0.1, l=0, unit = 'cm')
+           #      ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim),
+                                 breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
+}
+
+diff_CP_map <- function(data, color_col) {
+  states <- map_data("state")
+  states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
+
+  if (color_col=="CP_diff_median"){
+     low_lim = min(data$CP_diff_median)
+     up_lim = max(data$CP_diff_median)
+  } else if (color_col=="median_over_model"){
+     low_lim = min(data$median_over_model)
+     up_lim = max(data$median_over_model)
+  }
+
+  x <- data$location
+  x <- sapply(x, 
+             function(x) strsplit(x, "_")[[1]], 
+              USE.NAMES=FALSE)
+  lat = x[1, ]
+  long = x[2, ]
+  
+  data$lat <- as.numeric(lat)
+  data$long <- as.numeric(long)
+  data <- data.table(data)
+
+  data %>% ggplot() +
+           geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
+                        fill = "grey", color = "black") +
+            # aes_string to allow naming of column in function 
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.1) +
+           coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+           facet_grid(~ emission ~ time_period) +
+           # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
+           theme(axis.title.y = element_blank(),
+                 axis.title.x = element_blank(),
+                 axis.ticks.y = element_blank(), 
+                 axis.ticks.x = element_blank(),
+                 axis.text.x = element_blank(),
+                 axis.text.y = element_blank(),
+                 panel.grid.major = element_line(size = 0.1),
+                 legend.position="bottom", 
+                 legend.title = element_blank(),
+                 strip.text = element_text(size=12, face="bold"),
+                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 ) + 
+
+           # theme_bw() + 
+           # theme(legend.position = "bottom",
+           #       legend.title = element_blank(),
+           #       legend.key.size = unit(1, "line"),
+           #       legend.text=element_text(size=6),
+           #       plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+           #       panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       axis.title.y = element_blank(),
+           #       axis.title.x = element_blank(),
+           #       axis.ticks.y = element_blank(), 
+           #       axis.ticks.x = element_blank(),
+           #       axis.text = element_blank(),
+           #       plot.title=element_text(size=10, face="bold"),
+           #       strip.text = element_text(size=10, face="bold"),
+           #       # axis.text.x = element_text(size=3, face="plain", color="black"),
+           #       # axis.text.y = element_text(size=3, face="plain", color="black"),
+           #       legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
+           #      ) +
+           # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
+           #                       space ="Lab") 
+           scale_color_gradient2(midpoint = 0, mid = "white", 
+                                 high = "blue", low = "red", 
+                                 guide = "colourbar", space = "Lab",
+                                 limit = c(low_lim, up_lim),
+                                 breaks = c(-200, -75, -50, -25, 0, 25, 50, 75, 200)) 
+}
+
 diff_SC_map <- function(data, color_col) {
   states <- map_data("state")
   states_cluster <- subset(states, region %in% c("oregon", "washington", "idaho"))
@@ -1053,31 +1093,44 @@ diff_SC_map <- function(data, color_col) {
 
   data %>% ggplot() +
            geom_polygon(data = states_cluster, aes(x=long, y=lat, group = group),
-                        fill = "grey", color = "black", size=.3) +
+                        fill = "grey", color = "black") +
             # aes_string to allow naming of column in function 
-           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.4) +
+           geom_point(aes_string(x = "long", y = "lat", color = color_col), alpha = 0.4, size=.1) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
            facet_grid(~ emission ~ time_period) +
            # ggtitle(paste0("CP accumulation percentage differeces between projections and observed data")) +
-           theme_bw() + 
-           theme(legend.position = "bottom",
-                 legend.title = element_blank(),
-                 legend.key.size = unit(1, "line"),
-                 legend.text=element_text(size=6),
-                 plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
-                 panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
-                 axis.title.y = element_blank(),
+           theme(axis.title.y = element_blank(),
                  axis.title.x = element_blank(),
                  axis.ticks.y = element_blank(), 
                  axis.ticks.x = element_blank(),
-                 axis.text = element_blank(),
-                 plot.title=element_text(size=10, face="bold"),
-                 strip.text = element_text(size=10, face="bold"),
-                 # axis.text.x = element_text(size=3, face="plain", color="black"),
-                 # axis.text.y = element_text(size=3, face="plain", color="black"),
-                 legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
-                ) +
+                 axis.text.x = element_blank(),
+                 axis.text.y = element_blank(),
+                 panel.grid.major = element_line(size = 0.1),
+                 legend.position="bottom", 
+                 legend.title = element_blank(),
+                 strip.text = element_text(size=12, face="bold"),
+                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 ) + 
+           
+           # theme_bw() + 
+           # theme(legend.position = "bottom",
+           #       legend.title = element_blank(),
+           #       legend.key.size = unit(1, "line"),
+           #       legend.text=element_text(size=6),
+           #       plot.margin = margin(t=0.1, r=0.2, b=0.1, l=0.2, unit = 'cm'),
+           #       panel.grid.major = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       panel.grid.minor = element_line(size = 0.1, linetype = 'solid', colour = "grey"),
+           #       axis.title.y = element_blank(),
+           #       axis.title.x = element_blank(),
+           #       axis.ticks.y = element_blank(), 
+           #       axis.ticks.x = element_blank(),
+           #       axis.text = element_blank(),
+           #       plot.title=element_text(size=10, face="bold"),
+           #       strip.text = element_text(size=10, face="bold"),
+           #       # axis.text.x = element_text(size=3, face="plain", color="black"),
+           #       # axis.text.y = element_text(size=3, face="plain", color="black"),
+           #       legend.margin = margin(t=0, r=0, b=-0.1, l=0, unit = 'cm')
+           #      ) +
            # scale_color_gradient2(midpoint=(low_lim + up_lim)/2, low="red", mid="white", high="blue", 
            #                       space ="Lab") 
            scale_color_gradient2(midpoint = 0, mid = "white", 
