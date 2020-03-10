@@ -1,11 +1,11 @@
 # import libraries
-
+import os, os.path
 import numpy as np
 import pandas as pd
-import geopandas as gpd
+# import geopandas as gpd
 import sys
 from IPython.display import Image
-from shapely.geometry import Point, Polygon
+# from shapely.geometry import Point, Polygon
 from math import factorial
 import datetime
 import time
@@ -303,8 +303,6 @@ def convert_TS_to_a_row(a_dt):
     a_dt = a_dt.drop_duplicates()
     return(a_dt)
 
-
-
 def save_matlab_matrix(filename, matDict):
     """
     Write a MATLAB-formatted matrix file given a dictionary of
@@ -317,6 +315,14 @@ def save_matlab_matrix(filename, matDict):
 
 
 def generate_peak_df(an_EE_TS):
+    """
+    input an_EE_TS is a file with several polygon 
+          where for each polygon it includes the time series of NDVI.
+
+    output: a dataframe that includes only the peak values and their corresponding
+            DoY per field. It also includes the WSDA information.
+    """
+    an_EE_TS = initial_clean(an_EE_TS)
 
     ### List of unique polygons
     polygon_list = an_EE_TS['geo'].unique()
@@ -325,7 +331,6 @@ def generate_peak_df(an_EE_TS):
                       'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
                       'peak_Doy', 'peak_value']
-
     # all_polygons_and_their_peaks = pd.DataFrame(data=None, 
     #                                             columns=output_columns)
 
@@ -336,9 +341,25 @@ def generate_peak_df(an_EE_TS):
     all_polygons_and_their_peaks = pd.DataFrame(data=None, 
                                                 index=np.arange(3*len(an_EE_TS)), 
                                                 columns=output_columns)
+
+    double_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+                      'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo']
+
+    double_polygons = pd.DataFrame(data=None, 
+                                   index=np.arange(2*len(an_EE_TS)), 
+                                   columns=double_columns)
+
+
     pointer = 0
+    double_pointer = 0
     for a_poly in polygon_list:
         curr_field = an_EE_TS[an_EE_TS['geo']==a_poly]
+
+        year = int(curr_field['year'].unique())
+        plant = curr_field['CropTyp'].unique()[0]
+        county = curr_field['county'].unique()[0]
+        TRS = curr_field['TRS'].unique()[0]
 
         ### 
         ###  There is a chance that a polygon is repeated twice?
@@ -375,35 +396,43 @@ def generate_peak_df(an_EE_TS):
         max_peaks =  peaks_spline[0]
         peaks_spline = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
 
-        DoYs_series = pd.Series(int(peaks_spline[0]))
+        DoYs_series = pd.Series(peaks_spline[0])
         peaks_series = pd.Series(peaks_spline[1])
 
         peak_df = pd.DataFrame({ 
-                           'peak_Doy': pd.Series(int(peaks_spline[0])), 
-                           'peak_value': pd.Series(peaks_spline[1]) 
+                           'peak_Doy': DoYs_series,
+                           'peak_value': peaks_series
                           }) 
 
 
         WSDA_df = keep_WSDA_columns(curr_field)
         WSDA_df = WSDA_df.drop_duplicates()
+        
+        if (len(peak_df)>0):
+            WSDA_df = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index()
+            # WSDA_df = pd.concat([WSDA_df, peak_df], axis=1, ignore_index=True)
+            WSDA_df = WSDA_df.join(peak_df)
+            if ("index" in WSDA_df.columns):
+                WSDA_df = WSDA_df.drop(columns=['index'])
 
-        WSDA_df = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index()
-        # WSDA_df = pd.concat([WSDA_df, peak_df], axis=1, ignore_index=True)
-        WSDA_df = WSDA_df.join(peak_df)
-        if ("index" in WSDA_df.columns):
-            WSDA_df = WSDA_df.drop(columns=['index'])
+            # all_polygons_and_their_peaks = all_polygons_and_their_peaks.append(WSDA_df, sort=False)
 
-        # all_polygons_and_their_peaks = all_polygons_and_their_peaks.append(WSDA_df, sort=False)
+            """
+            copy the .values. Otherwise the index inconsistency between
+            WSDA_df and all_poly... will prevent the copying.
+            """
+            all_polygons_and_their_peaks.iloc[pointer:(pointer + len(WSDA_df))] = WSDA_df.values
 
-        """
-        copy the .values. Otherwise the index inconsistency between
-        WSDA_df and all_poly... will prevent the copying.
-        """
-        all_polygons_and_their_peaks.iloc[pointer:(pointer + len(WSDA_df))] = WSDA_df.values
-        pointer += len(WSDA_df)
+            if (len(WSDA_df) == 2):
+                WSDA_df = WSDA_df.drop(columns=['peak_Doy', 'peak_value'])
+                WSDA_df = WSDA_df.drop_duplicates()
+                double_polygons.iloc[double_pointer:(double_pointer + len(WSDA_df))] = WSDA_df.values
+                double_pointer += len(WSDA_df)
 
-        # to make sure the reference by address thing 
-        # will not cause any problem.
+            pointer += len(WSDA_df)
+
+            # to make sure the reference by address thing 
+            # will not cause any problem.
         del(WSDA_df)
 
 
@@ -427,4 +456,14 @@ def generate_peak_df(an_EE_TS):
         WSDA_df[DoY_colNames] = pd.DataFrame([DoYs_series], index=WSDA_df.index)
         WSDA_df[peak_colNames] = pd.DataFrame([peaks_series], index=WSDA_df.index)
         """
-    return(all_polygons_and_their_peaks[0:(pointer+1)])
+
+    """
+    Instead of the following two we can do drop_duplicates()
+    """
+    all_polygons_and_their_peaks = all_polygons_and_their_peaks[0:(pointer+1)]
+    double_polygons = double_polygons[0:(double_pointer+1)]
+    return(all_polygons_and_their_peaks, double_polygons)
+
+
+
+
