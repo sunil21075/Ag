@@ -315,3 +315,116 @@ def save_matlab_matrix(filename, matDict):
     except:
         print("ERROR: could not write matrix file " + filename)
 
+
+def generate_peak_df(an_EE_TS):
+
+    ### List of unique polygons
+    polygon_list = an_EE_TS['geo'].unique()
+
+    output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+                      'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
+                      'peak_Doy', 'peak_value']
+
+    # all_polygons_and_their_peaks = pd.DataFrame(data=None, 
+    #                                             columns=output_columns)
+
+    #
+    # for each polygon assume there will be 3 peaks.
+    # for memory allocation and speed up
+    #
+    all_polygons_and_their_peaks = pd.DataFrame(data=None, 
+                                                index=np.arange(3*len(an_EE_TS)), 
+                                                columns=output_columns)
+    pointer = 0
+    for a_poly in polygon_list:
+        curr_field = an_EE_TS[an_EE_TS['geo']==a_poly]
+
+        ### 
+        ###  There is a chance that a polygon is repeated twice?
+        ###
+
+        X = curr_field['doy']
+        y = curr_field['NDVI']
+        freedom_df = 7
+        #############################################
+        ###
+        ###             Smoothen
+        ###
+        #############################################
+
+        # Generate spline basis with "freedom_df" degrees of freedom
+        x_basis = cr(X, df=freedom_df, constraints='center')
+
+        # Fit model to the data
+        model = LinearRegression().fit(x_basis, y)
+
+        # Get estimates
+        y_hat = model.predict(x_basis)
+
+        #############################################
+        ###
+        ###             find peaks
+        ###
+        #############################################
+        # peaks_LWLS_1 = peakdetect(LWLS_1[:, 1], lookahead = 10, delta=0)
+        # max_peaks = peaks_LWLS_1[0]
+        # peaks_LWLS_1 = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+        peaks_spline = peakdetect(y_hat, lookahead = 10, delta=0)
+        max_peaks =  peaks_spline[0]
+        peaks_spline = form_xs_ys_from_peakdetect(max_peak_list = max_peaks, doy_vect=X)
+
+        DoYs_series = pd.Series(int(peaks_spline[0]))
+        peaks_series = pd.Series(peaks_spline[1])
+
+        peak_df = pd.DataFrame({ 
+                           'peak_Doy': pd.Series(int(peaks_spline[0])), 
+                           'peak_value': pd.Series(peaks_spline[1]) 
+                          }) 
+
+
+        WSDA_df = keep_WSDA_columns(curr_field)
+        WSDA_df = WSDA_df.drop_duplicates()
+
+        WSDA_df = pd.concat([WSDA_df]*peak_df.shape[0]).reset_index()
+        # WSDA_df = pd.concat([WSDA_df, peak_df], axis=1, ignore_index=True)
+        WSDA_df = WSDA_df.join(peak_df)
+        if ("index" in WSDA_df.columns):
+            WSDA_df = WSDA_df.drop(columns=['index'])
+
+        # all_polygons_and_their_peaks = all_polygons_and_their_peaks.append(WSDA_df, sort=False)
+
+        """
+        copy the .values. Otherwise the index inconsistency between
+        WSDA_df and all_poly... will prevent the copying.
+        """
+        all_polygons_and_their_peaks.iloc[pointer:(pointer + len(WSDA_df))] = WSDA_df.values
+        pointer += len(WSDA_df)
+
+        # to make sure the reference by address thing 
+        # will not cause any problem.
+        del(WSDA_df)
+
+
+        """
+        # first I decided to add all DoY and peaks in one row to avoid
+        # multiple rows per (field, year)
+        # However, in this way, each pair of (field, year)
+        # can have different column sizes.
+        # So, we cannot have one dataframe to include everything in it.
+        # so, we will have to do dictionary to save out puts.
+        # Lets just do replicates... easier to handle perhaps down the road.
+        #
+        DoY_colNames = [i + j for i, j in zip(\
+                                              ["DoY_"]*(len(DoYs_series)+1), \
+                                              [str(i) for i in range(1, len(DoYs_series)+1)] )] 
+
+        peak_colNames = [i + j for i, j in zip(\
+                                               ["peak_"]*(len(peaks_series)+1), \
+                                               [str(i) for i in range(1, len(peaks_series)+1)] )]
+
+        WSDA_df[DoY_colNames] = pd.DataFrame([DoYs_series], index=WSDA_df.index)
+        WSDA_df[peak_colNames] = pd.DataFrame([peaks_series], index=WSDA_df.index)
+        """
+    return(all_polygons_and_their_peaks[0:(pointer+1)])
