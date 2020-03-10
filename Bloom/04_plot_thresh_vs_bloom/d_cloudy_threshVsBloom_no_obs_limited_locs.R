@@ -261,7 +261,7 @@ for (thresh_cut in plot_threshols){
 
         ggsave(plot=merged_plt,
                filename = paste0(gsub(" ", "_", loc), "_", 
-                                 gsub(" ", "_", em), "_", 
+                                 gsub(" ", "_", gsub("\\.", "", em)), "_", 
                                  gsub(" ", "_", app_tp), ".png"), 
                width=10, height=6, units = "in", 
                dpi=400, device = "png",
