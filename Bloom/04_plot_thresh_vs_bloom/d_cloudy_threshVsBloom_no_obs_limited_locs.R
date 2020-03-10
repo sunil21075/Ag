@@ -154,6 +154,13 @@ loc <- limited_locations$location[1]
 start_time <- Sys.time()
 plot_threshols <- seq(20, 75, 5) # seq(25, 75, 5)
 
+basee <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
+source_1 = paste0(basee, "bloom_core.R")
+source_2 = paste0(basee, "/bloom_plot_core.R")
+source(source_1)
+source(source_2)
+
+
 for (thresh_cut in plot_threshols){
   col_name <- paste0("thresh_", thresh_cut)
 
@@ -237,14 +244,14 @@ for (thresh_cut in plot_threshols){
 
         if (fruit_type=="apple"){
            title_ <- paste0(thresh_cut, " CP threshold and ", 
-                            app_tp, " bloom shifts, ")
+                            app_tp, " bloom shifts")
            } else{
             title_ <- paste0(thresh_cut, " CP threshold and ", 
-                             fruit_type, " bloom shifts, ")
+                             fruit_type, " bloom shifts")
         }
 
         merged_plt <- double_cloud(d1=merged_dt) + 
-                      ggtitle(lab=paste0(title_, loc, ", ", em))
+                      ggtitle(lab=paste0(title_)) # , ", ", loc, ", ", em
         if (remove_NA=="yes"){
           LP <- "NA_removed"
           } else{

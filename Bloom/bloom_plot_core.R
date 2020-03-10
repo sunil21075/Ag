@@ -75,7 +75,7 @@ double_cloud <- function(d1){
   ggplot(d1, aes(x=chill_season, y=value, fill=factor(variable))) +
   labs(x = "chill year", y = "day of year", fill = "data type") +
   guides(fill=guide_legend(title="")) + 
-  # facet_grid(. ~ emission ~ location, scales="free") +
+  facet_grid(. ~ emission ~ location, scales="free") +
   # geom_line(aes(fill=factor(Timeframe), color=factor(Timeframe) )) +
   stat_summary(geom="ribbon", fun.y=function(z) { quantile(z,0.5) }, 
                               fun.ymin=function(z) { quantile(z,0) }, 
@@ -108,18 +108,18 @@ double_cloud <- function(d1){
   
   theme(panel.grid.major = element_line(size=0.2),
         panel.spacing=unit(.5, "cm"),
-        legend.text=element_text(size=12, face="bold"),
+        legend.text=element_text(size=18, face="bold"),
         legend.title = element_blank(),
         legend.position = "bottom",
         strip.text = element_text(face="bold", size=16, color="black"),
-        axis.text = element_text(face="bold", size=10, color="black"),
+        axis.text = element_text(size=16, color="black"), # face="bold",
         axis.text.x = element_text(angle=20, hjust = 1),
         axis.ticks = element_line(color = "black", size = .2),
-        axis.title.x = element_text(face="bold", size=16, 
+        axis.title.x = element_text(size=18,  face="bold", 
                                     margin=margin(t=10, r=0, b=0, l=0)),
-        axis.title.y = element_text(face="bold", size=16, 
+        axis.title.y = element_text(size=18, face="bold",
                                     margin=margin(t=0, r=10, b=0, l=0)),
-        plot.title = element_text(lineheight=.8, face="bold")
+        plot.title = element_text(lineheight=.8, face="bold", size=20)
         )
 
 }
