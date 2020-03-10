@@ -26,7 +26,7 @@ source(source_2)
 
 in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
 param_dir <- paste0(basee, "parameters/")
-plot_base_dir <- in_dir
+plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plots/limited_locations/"
 ############################################################
 ###
 ###             Aeolus source
@@ -253,14 +253,14 @@ for (thresh_cut in plot_threshols){
 
         bloom_thresh_plot_dir <- paste0(plot_base_dir, LP,
                                         "/bloom_thresh_in_one/no_obs/", 
-                                        fruit_type, "/", col_name, "/", "/")
+                                        fruit_type, "/", col_name, "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
             dir.create(path = bloom_thresh_plot_dir, recursive = T)
             print (bloom_thresh_plot_dir)
           }
 
         ggsave(plot=merged_plt,
-               filename = paste0(loc, "_", 
+               filename = paste0(gsub(" ", "_", loc), "_", 
                                  gsub(" ", "_", em), "_", 
                                  gsub(" ", "_", app_tp), ".png"), 
                width=10, height=6, units = "in", 
