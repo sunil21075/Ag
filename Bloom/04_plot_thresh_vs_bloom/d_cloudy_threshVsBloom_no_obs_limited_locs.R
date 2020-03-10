@@ -18,15 +18,15 @@ options(digit=9)
 ###             local computer source
 ###
 ############################################################
-# basee <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
-# source_1 = paste0(basee, "bloom_core.R")
-# source_2 = paste0(basee, "/bloom_plot_core.R")
-# source(source_1)
-# source(source_2)
+basee <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
+source_1 = paste0(basee, "bloom_core.R")
+source_2 = paste0(basee, "/bloom_plot_core.R")
+source(source_1)
+source(source_2)
 
-# in_dir <- "/Users/hn/Desktop/Desktop/Ag/check_point/bloom/"
-# param_dir <- paste0(basee, "parameters/")
-# plot_base_dir <- in_dir
+in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
+param_dir <- paste0(basee, "parameters/")
+plot_base_dir <- in_dir
 ############################################################
 ###
 ###             Aeolus source
@@ -37,10 +37,9 @@ source_1 <- paste0(source_dir, "bloom_core.R")
 source_2 <- paste0(source_dir, "bloom_plot_core.R")
 source(source_1)
 source(source_2)
-############################################################
-###
-###             Aeolus Directories
-###
+
+###   Aeolus Directories
+
 
 base <- "/data/hydro/users/Hossein/bloom/"
 in_dir <- paste0(base, "03_merge_02_Step/")
@@ -54,9 +53,25 @@ plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/all_locs/") # It was CM_lo
 #
 # for sake of iteration
 #
-location_ls <- read.csv(file = paste0(param_dir, "close_locs_4_bloom.csv"), 
+# close_locs <- read.csv(file = paste0(param_dir, "close_locs_4_bloom.csv"), 
+#                         header=TRUE, as.is=TRUE)
+# close_locs <- within(close_locs, remove(lat, long, latDiff, distance, longDiff))
+
+limited_locations <- read.csv(file = paste0(param_dir, "limited_locations.csv"), 
                         header=TRUE, as.is=TRUE)
-location_ls <- within(location_ls, remove(lat, long, latDiff, distance, longDiff))
+
+limited_locations$location <- paste0(limited_locations$lat, "_", limited_locations$long)
+limited_locations <- within(limited_locations, remove(lat, long))
+
+# limited_locations <- limited_locations %>% 
+#                      filter(city %in% c("Omak", "Richland"))
+
+
+# close_locs <- close_locs %>% 
+#                filter(city %in% c("Corvallis", "Eugene", "Hillsboro" , "Hood River", "Salem",
+#                                    "Walla Walla", "Wenatchee", "Yakima"))
+
+# close_locs <- rbind(close_locs, limited_locations)
 #
 # convert chill day of year to readable day of year!
 #
@@ -90,12 +105,11 @@ thresh <- add_location(thresh)
 suppressWarnings({bloom <- within(bloom, remove(lat, long))})
 suppressWarnings({thresh <- within(thresh, remove(lat, long))})
 
+bloom <- bloom %>% filter(location %in% limited_locations$location)
+thresh <- thresh %>% filter(location %in% limited_locations$location)
 
-bloom <- bloom %>% filter(location %in% location_ls$location)
-thresh <- thresh %>% filter(location %in% location_ls$location)
-
-bloom <- dplyr::left_join(x = bloom, y = location_ls, by = "location")
-thresh <- dplyr::left_join(x = thresh, y = location_ls, by = "location")
+bloom <- dplyr::left_join(x = bloom, y = limited_locations, by = "location")
+thresh <- dplyr::left_join(x = thresh, y = limited_locations, by = "location")
 
 bloom <- data.table(bloom)
 thresh <- data.table(thresh)
@@ -134,7 +148,7 @@ setnames(thresh, old=c("city"), new=c("location"))
 em <- emissions[2]
 app_tp <- apple_types[1]
 thresh_cut <- 75
-loc <- location_ls$location[1]
+loc <- limited_locations$location[1]
 
 
 start_time <- Sys.time()
@@ -230,16 +244,16 @@ for (thresh_cut in plot_threshols){
         }
 
         merged_plt <- double_cloud(d1=merged_dt) + 
-                      ggtitle(lab=paste0(title_, ct, ", ", em))
+                      ggtitle(lab=paste0(title_, loc, ", ", em))
         if (remove_NA=="yes"){
           LP <- "NA_removed"
           } else{
           LP <- "NA_NOTremoved"
         }
 
-        bloom_thresh_plot_dir <- paste0(plot_base_dir, 
-                                        "bloom_thresh_in_one/no_obs/", 
-                                        fruit_type, "/", col_name, "/", LP, "/")
+        bloom_thresh_plot_dir <- paste0(plot_base_dir, LP,
+                                        "/bloom_thresh_in_one/no_obs/", 
+                                        fruit_type, "/", col_name, "/", "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
             dir.create(path = bloom_thresh_plot_dir, recursive = T)
             print (bloom_thresh_plot_dir)
