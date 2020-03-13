@@ -46,17 +46,15 @@ limited_cities <- within(limited_cities, remove("location", "long"))
 sept_summary_comp_summary <- dplyr::left_join(x = sept_summary_comp_summary, y = limited_cities, by = "city") %>% data.table()
 sept_summary_comp_summary <- sept_summary_comp_summary[order(-lat),]
 sept_summary_comp_summary <- within(sept_summary_comp_summary, remove("lat"))
-
-sept_summary_comp_summary <- round(sept_summary_comp_summary, digits = 3)
 ##############
 
 write.csv(sept_summary_comp_summary, 
           file = paste0("/Users/hn/Documents/00_GitHub/", 
                         "Ag_papers/Chill_Paper/tables/", 
-                       "CP_medians.csv"))
+                        "CP_medians.csv"))
 
 
-sept_summary_comp_no_model_hist <- within(sept_summary_comp_summary, remove("historical_1950-2005") )
+sept_summary_comp_no_model_hist <- within(sept_summary_comp_summary, remove("historical_1950-2005"))
 
 write.csv(sept_summary_comp_no_model_hist, 
           file = paste0("/Users/hn/Documents/00_GitHub/", 

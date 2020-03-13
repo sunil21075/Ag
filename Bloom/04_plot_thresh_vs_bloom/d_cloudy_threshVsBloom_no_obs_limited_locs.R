@@ -18,33 +18,34 @@ options(digit=9)
 ###             local computer source
 ###
 ############################################################
-basee <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
-source_1 = paste0(basee, "bloom_core.R")
-source_2 = paste0(basee, "/bloom_plot_core.R")
-source(source_1)
-source(source_2)
-
+source_dir <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
 in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
 param_dir <- paste0(basee, "parameters/")
-plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plots/limited_locations/"
+plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plots/"
 ############################################################
 ###
 ###             Aeolus source
 ###
 ############################################################
 source_dir <- "/home/hnoorazar/bloom_codes/"
+
+
+###   Aeolus Directories
+base <- "/data/hydro/users/Hossein/bloom/"
+in_dir <- paste0(base, "03_merge_02_Step/")
+param_dir <- paste0(source_dir, "parameters/")
+plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/limited_locs/") # It was CM_locs
+
+
+#############################################################
+###
+###              
+###
+#############################################################
 source_1 <- paste0(source_dir, "bloom_core.R")
 source_2 <- paste0(source_dir, "bloom_plot_core.R")
 source(source_1)
 source(source_2)
-
-###   Aeolus Directories
-
-
-base <- "/data/hydro/users/Hossein/bloom/"
-in_dir <- paste0(base, "03_merge_02_Step/")
-param_dir <- paste0(source_dir, "parameters/")
-plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/all_locs/") # It was CM_locs
 #############################################################
 ###
 ###               Read data off the disk
@@ -95,8 +96,7 @@ thresh <- pick_obs_and_F(thresh)
 #              clean up each data table
 #
 #############################################################
-bloom <- within(bloom, remove(year, month, day, dayofyear, 
-                              bloom_perc))
+bloom <- within(bloom, remove(year, month, day, dayofyear, bloom_perc))
 
 # for sake of iteration:
 bloom <- add_location(bloom)
@@ -119,7 +119,7 @@ emissions <- c("RCP 4.5", "RCP 8.5")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
 # apple, cherry, pear; cherry 14 days shift, pear 7 days shift
-fruit_type <- "apple"
+fruit_type <- "cherry"
 remove_NA <- "no" 
 
 # shift the bloom days
@@ -153,12 +153,6 @@ loc <- limited_locations$location[1]
 
 start_time <- Sys.time()
 plot_threshols <- seq(20, 75, 5) # seq(25, 75, 5)
-
-basee <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
-source_1 = paste0(basee, "bloom_core.R")
-source_2 = paste0(basee, "/bloom_plot_core.R")
-source(source_1)
-source(source_2)
 
 
 for (thresh_cut in plot_threshols){
@@ -258,7 +252,7 @@ for (thresh_cut in plot_threshols){
           LP <- "NA_NOTremoved"
         }
 
-        bloom_thresh_plot_dir <- paste0(plot_base_dir, LP,
+        bloom_thresh_plot_dir <- paste0(plot_base_dir, "limited_locations_", LP,
                                         "/bloom_thresh_in_one/no_obs/", 
                                         fruit_type, "/", col_name, "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
@@ -269,7 +263,7 @@ for (thresh_cut in plot_threshols){
         ggsave(plot=merged_plt,
                filename = paste0(gsub(" ", "_", loc), "_", 
                                  gsub(" ", "_", gsub("\\.", "", em)), "_", 
-                                 gsub(" ", "_", app_tp), ".png"), 
+                                 gsub(" ", "_", app_tp), "_", thresh_cut, "CP.png"), 
                width=10, height=6, units = "in", 
                dpi=400, device = "png",
                path=bloom_thresh_plot_dir)

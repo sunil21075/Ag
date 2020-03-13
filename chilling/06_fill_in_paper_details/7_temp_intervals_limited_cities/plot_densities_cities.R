@@ -71,7 +71,7 @@ plot_dens <- function(data, month_name){
                        axis.title.x = element_text(size=12, face = "bold", margin = margin(t=8, r=0, b=0, l=0)),
                        axis.title.y = element_text(size=12, face = "bold", margin = margin(t=0, r=8, b=0, l=0)),
                        axis.text.x = element_text(size =8, face = "plain", color="black"), # , angle=-90
-                       axis.text.y = element_text(size =8, face = "bold", color="black")
+                       axis.text.y = element_text(size =8, face = "plain", color="black")
                        )
     
     

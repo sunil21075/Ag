@@ -59,7 +59,7 @@ sept_summary_comp_2049_2050 <- sept_summary_comp %>%
 #                 FUN=min)
 A <- sept_summary_comp_2049_2050 %>% 
      group_by(chill_season, location, city, emission, start) %>% 
-     slice(which.min(sum_M1))
+     slice(which.min(sum_A1)) # or A1?
 View(A)
 
 # A <- aggregate(sept_summary_comp_2049_2050$sum_M1, 
@@ -71,7 +71,7 @@ View(A)
 #                 FUN=max)
 A <- sept_summary_comp_2049_2050 %>% 
      group_by(chill_season, location, city, emission, start) %>% 
-     slice(which.max(sum_M1))
+     slice(which.max(sum_A1)) # or A1?
 View(A)
 
 ######
@@ -84,13 +84,13 @@ sept_summary_comp_2097_2098 <- sept_summary_comp %>%
 
 A <- sept_summary_comp_2097_2098 %>% 
      group_by(chill_season, location, city, emission, start) %>% 
-     slice(which.min(sum_M1))
+     slice(which.min(sum_A1))
 View(A)
 
 
 A <- sept_summary_comp_2097_2098 %>% 
      group_by(chill_season, location, city, emission, start) %>% 
-     slice(which.max(sum_M1))
+     slice(which.max(sum_M1)) # or A1?
 View(A)
 
 

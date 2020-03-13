@@ -22,7 +22,7 @@ param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 limited_locs <- read.csv(paste0(param_dir, "limited_locations.csv"), 
                                 header=T, sep=",", as.is=T)
 
-main_in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/"
+main_in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
 write_dir <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/Accum_CP_Sept_Apr/"
 if (dir.exists(file.path(write_dir)) == F) { dir.create(path = write_dir, recursive = T)}
 
@@ -70,8 +70,8 @@ accum_plot <- function(data, y_name, due){
               # ggtitle(label = lab) +
               theme(plot.title = element_text(size = 14, face="bold", color="black"),
                     plot.subtitle = element_text(size = 12, face="plain", color="black"),
-                    axis.text.x = element_text(size = 10, face = "bold", color="black"),
-                    axis.text.y = element_text(size = 10, face = "bold", color="black"),
+                    axis.text.x = element_text(size = 10, color="black"),
+                    axis.text.y = element_text(size = 10, color="black"),
                     axis.title.x = element_text(size = 12, face = "bold", color="black", 
                                                 margin = margin(t=8, r=0, b=0, l=0)),
                     axis.title.y = element_text(size = 12, face = "bold", color="black",
@@ -131,7 +131,9 @@ summary_comp <- within(summary_comp, remove(location, lat, long, thresh_20,
                                             sum))
 
 for (ct in unique(summary_comp$city)){
+  
   A <- summary_comp %>% filter(city == ct)
+    
   # summary_comp_loc_medians <- A %>%
   #                            filter(model != "observed") %>%
   #                            group_by(city, year, model, emission, time_period, chill_season) %>%
@@ -153,7 +155,7 @@ for (ct in unique(summary_comp$city)){
   sum_A1_plot <- accum_plot(data=A, y_name="sum_A1", due="Apr. 1")
   
   ggsave(plot = sum_A1_plot, paste0("CP_accum_sept_Apr1_", ct, ".png"),
-         dpi=400, path=write_dir,
+         dpi=600, path=write_dir,
          height = 4, width = 4, units = "in")
 
 

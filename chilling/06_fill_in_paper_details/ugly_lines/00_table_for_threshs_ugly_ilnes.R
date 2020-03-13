@@ -83,7 +83,7 @@ Omak_85_F3 <- sept_summary %>% filter(city %in% c("Omak") & emission == "RCP 8.5
 # replace zeros with 367 for places that did not meet chill thresholds
 #
 index <- sept_summary == 0
-sept_summary[index] <- 20000
+sept_summary[index] <- 367
 
 #######
 #######     Compute Medians

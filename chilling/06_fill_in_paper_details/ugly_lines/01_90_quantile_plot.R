@@ -6,7 +6,7 @@ library(dplyr)
 library(ggpubr)
 library(ggplot2)
 ###########################################
-post_fix <- "/0/" # _replaced_with_20000
+post_fix <- "/0_replaced_with_367/" # _replaced_with_20000
 
 data_dir = "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/tables/table_for_ugly_lines_plots/"
 data_dir <- paste0(data_dir, post_fix)
@@ -66,15 +66,15 @@ the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                  axis.ticks = element_line(size=.1, color="black"),
                  axis.title.x = element_text(size=14, face="bold", margin = margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
-                 axis.text.x = element_text(size=10, face="bold", color="black"),
-                 axis.text.y = element_text(size=10, face="bold", color="black")
+                 axis.text.x = element_text(size=10, face="plain", color="black"),
+                 axis.text.y = element_text(size=10, face="plain", color="black")
                 )
 
 color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")
 color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
 
 plot_path = "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/ugly_lines/"
-plot_path <- paste0(plot_path, post_fix, "/quan_90_Doy/")
+plot_path <- paste0(plot_path, post_fix, "quan_90_Doy/")
 
 if (dir.exists(plot_path) == F) {
   dir.create(path = plot_path, recursive = T)

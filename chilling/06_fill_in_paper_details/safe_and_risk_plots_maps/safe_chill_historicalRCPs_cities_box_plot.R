@@ -6,8 +6,8 @@ library(ggplot2)
 options(digit=9)
 options(digits=9)
 
-source_path_plot = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source_path_core = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
+source_path_plot = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(source_path_plot)
 source(source_path_core)
 
@@ -21,7 +21,7 @@ param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 limited_locations <- read.csv(paste0(param_dir, "limited_locations.csv"), header=T, as.is=T)
 limited_locations$location <- paste0(limited_locations$lat, "_", limited_locations$long)
 
-main_in = "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/"
+main_in <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
 files_name = c("sept_summary_comp.rds")
 
 datas = data.table(readRDS(paste0(main_in, "sept_summary_comp.rds")))
@@ -46,6 +46,8 @@ ch_start = "Sept. 1"
 box_width = 10
 box_height = 8
 
+source_path_plot = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
+source(source_path_plot)
 
 for (ct in unique(limited_locations$city)){
     for (em in c("RCP 4.5", "RCP 8.5")){

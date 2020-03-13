@@ -831,8 +831,8 @@ safe_box_plot_per_city <- function(data, due, chill_start){
                     strip.text.x = element_text(size=14, face="bold"),
                     strip.text.y = element_text(size=14, face="bold"),
                     axis.ticks = element_line(size=.1, color="black"),
-                    axis.text.y = element_text(size=14, face="bold", color="black"),
                     axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.y = element_text(size=10, face="plain", color="black"),
                     axis.text.x = element_blank(),
                     axis.title.x = element_blank()
                     )
@@ -853,7 +853,7 @@ safe_box_plot_per_city <- function(data, due, chill_start){
                              labels = categ_lab)  +
             geom_text(data = medians, 
                       aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-                          size=6.5, 
+                          size=4.5, 
                           position =  position_dodge(.09),
                           vjust = 0, hjust=.5) # +
             # ggtitle(lab=paste0("Safe chill accumulation")) 

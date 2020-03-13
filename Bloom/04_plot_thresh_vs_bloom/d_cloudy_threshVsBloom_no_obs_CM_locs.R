@@ -94,8 +94,7 @@ thresh <- pick_obs_and_F(thresh)
 #              clean up each data table
 #
 #############################################################
-bloom <- within(bloom, remove(year, month, day, dayofyear, 
-                              bloom_perc))
+bloom <- within(bloom, remove(year, month, day, dayofyear, bloom_perc))
 
 # for sake of iteration:
 bloom <- add_location(bloom)
