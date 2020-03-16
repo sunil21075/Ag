@@ -89,7 +89,7 @@ for (ct in unique(data$city)){
     plot = ggplot(curr_dt, aes(x=variable, y=value), fill=factor(time_period)) + 
            geom_path(aes(colour = factor(time_period))) + 
            facet_grid( ~ emission ~ city, scales = "free") + 
-           labs(x = "Accum. CP", y = "DoY", fill = "Climate Group") +
+           labs(x = "Accum. CP", y = "Day of Year", fill = "Climate Group") +
            scale_color_manual(labels = time_periods, values = color_ord) + 
            scale_y_continuous(breaks = DoY_map$day_count_since_sept, labels= DoY_map$letter_day) + 
            scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +

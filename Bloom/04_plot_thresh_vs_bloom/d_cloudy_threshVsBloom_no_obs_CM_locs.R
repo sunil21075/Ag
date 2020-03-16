@@ -279,11 +279,9 @@ for (thresh_cut in plot_threshols){
         merged_dt <- merged_dt %>% filter(time_period=="future")
 
         if (fruit_type=="apple"){
-           title_ <- paste0(thresh_cut, " CP threshold and ", 
-                            app_tp, " bloom shifts (")
+           title_ <- paste0(thresh_cut, " CP threshold and ", app_tp, " bloom shifts (")
            } else{
-            title_ <- paste0(thresh_cut, " CP threshold and ", 
-                             fruit_type, " bloom shifts (")
+            title_ <- paste0(thresh_cut, " CP threshold and ", fruit_type, " bloom shifts (")
         }
 
         merged_plt <- double_cloud(d1=merged_dt) + 

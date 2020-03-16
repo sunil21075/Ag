@@ -20,7 +20,7 @@ options(digit=9)
 ############################################################
 source_dir <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
 in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
-param_dir <- paste0(basee, "parameters/")
+param_dir <- paste0(source_dir, "parameters/")
 plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plots/"
 ############################################################
 ###
@@ -29,19 +29,18 @@ plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plot
 ############################################################
 source_dir <- "/home/hnoorazar/bloom_codes/"
 
-
 ###   Aeolus Directories
 base <- "/data/hydro/users/Hossein/bloom/"
 in_dir <- paste0(base, "03_merge_02_Step/")
 param_dir <- paste0(source_dir, "parameters/")
 plot_base_dir <- paste0(base, "04_bloom_vs_frost_plot/limited_locs/") # It was CM_locs
 
-
 #############################################################
 ###
 ###              
 ###
 #############################################################
+
 source_1 <- paste0(source_dir, "bloom_core.R")
 source_2 <- paste0(source_dir, "bloom_plot_core.R")
 source(source_1)
@@ -148,7 +147,7 @@ setnames(thresh, old=c("city"), new=c("location"))
 em <- emissions[2]
 app_tp <- apple_types[1]
 thresh_cut <- 75
-loc <- limited_locations$location[1]
+loc <- unique(bloom$location)[1]
 
 
 start_time <- Sys.time()
@@ -197,6 +196,7 @@ for (thresh_cut in plot_threshols){
                              fruit_type == gsub("\ ", "_", 
                                                tolower(app_tp))) %>% 
                       data.table()
+
         if (fruit_type=="apple"){
              title_ <- paste0(app_tp, " bloom shift (")
            } else {
@@ -237,15 +237,13 @@ for (thresh_cut in plot_threshols){
         merged_dt <- merged_dt %>% filter(time_period=="future")
 
         if (fruit_type=="apple"){
-           title_ <- paste0(thresh_cut, " CP threshold and ", 
-                            app_tp, " bloom shifts")
+           title_ <- paste0(thresh_cut, " CP threshold and ", app_tp, " bloom shifts")
            } else{
-            title_ <- paste0(thresh_cut, " CP threshold and ", 
-                             fruit_type, " bloom shifts")
+            title_ <- paste0(thresh_cut, " CP threshold and ", fruit_type, " bloom shifts")
         }
 
-        merged_plt <- double_cloud(d1=merged_dt) + 
-                      ggtitle(lab=paste0(title_)) # , ", ", loc, ", ", em
+        merged_plt <- double_cloud(d1=merged_dt) + ggtitle(lab=paste0(title_)) 
+
         if (remove_NA=="yes"){
           LP <- "NA_removed"
           } else{
@@ -265,7 +263,7 @@ for (thresh_cut in plot_threshols){
                                  gsub(" ", "_", gsub("\\.", "", em)), "_", 
                                  gsub(" ", "_", app_tp), "_", thresh_cut, "CP.png"), 
                width=10, height=6, units = "in", 
-               dpi=400, device = "png",
+               dpi=600, device = "png",
                path=bloom_thresh_plot_dir)
       }
     }

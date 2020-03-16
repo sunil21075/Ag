@@ -70,6 +70,8 @@ accum_plot <- function(data, y_name, due){
               # ggtitle(label = lab) +
               theme(plot.title = element_text(size = 14, face="bold", color="black"),
                     plot.subtitle = element_text(size = 12, face="plain", color="black"),
+                    panel.grid.major = element_line(size=0.1),
+                    panel.grid.minor = element_line(size=0.1),
                     axis.text.x = element_text(size = 10, color="black"),
                     axis.text.y = element_text(size = 10, color="black"),
                     axis.title.x = element_text(size = 12, face = "bold", color="black", 
