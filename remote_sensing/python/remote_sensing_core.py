@@ -315,6 +315,7 @@ def save_matlab_matrix(filename, matDict):
 
 
 def generate_peak_df(an_EE_TS):
+    
     """
     input an_EE_TS is a file with several polygon 
           where for each polygon it includes the time series of NDVI.

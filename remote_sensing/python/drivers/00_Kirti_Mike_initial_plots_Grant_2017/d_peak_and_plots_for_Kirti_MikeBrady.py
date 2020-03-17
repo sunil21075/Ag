@@ -18,7 +18,7 @@ from statsmodels.sandbox.regression.predstd import wls_prediction_std
 from sklearn.linear_model import LinearRegression
 from patsy import cr
 
-from pprint import pprint
+# from pprint import pprint
 import matplotlib.pyplot as plt
 import seaborn as sb
 
@@ -44,7 +44,6 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/" + \
            "remote_sensing/01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2017/"
 
-
 ####################################################################################
 ###
 ###                      Aeolus Core path
@@ -52,15 +51,15 @@ data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/" + \
 ####################################################################################
 
 # sys.path.append('/home/hnoorazar/remote_sensing_codes/')
+
 ####################################################################################
 ###
 ###                   Aeolus Directories
 ###
 ####################################################################################
+
 # data_dir = "/data/hydro/users/Hossein/remote_sensing/" + \
 #            "01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2017/"
-
-
 
 ####################################################################################
 ###
@@ -84,7 +83,6 @@ plot_dir_base = data_dir + "/plots/"
 file_names = ["Grant_2017_TS.csv"]
 file_N = file_names[0]
 a_df = pd.read_csv(data_dir + file_N)
-
 
 ####################################################################################
 ###
@@ -219,16 +217,19 @@ for a_poly in polygon_list:
         #############################################        
         sub_out = "/" + plant + "/"
         plot_path = plot_dir_base + sub_out
+        os.makedirs(plot_path, exist_ok=True)
+
         # print(plot_path)
         # print(sub_out)
         # print(county)
         # print(plant)
         # print(year)
-        os.makedirs(plot_path, exist_ok=True)
-        if (len(os.listdir(plot_path))<100):
+        if peak_df.shape[0]==2:
+            double_plot_path = plot_dir_base + "/double_peaks/" + sub_out
+            os.makedirs(double_plot_path, exist_ok=True)
             plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
             sb.set();
-            fig, ax = plt.subplots(figsize=(8,6));
+            fig, ax = plt.subplots(figsize=(8, 6));
             ax.plot(X, y, label="NDVI data");
             ax.plot(X, y_hat, 'r', label="smoothing spline result")
             ax.scatter(DoYs_series, peaks_series, s=100, c='g', marker='*');
@@ -236,12 +237,36 @@ for a_poly in polygon_list:
             ax.set(xlabel='DoY', ylabel='NDVI')
             ax.legend(loc="best");
 
-            fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+            fig_name = double_plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
             plt.savefig(fname = fig_name, \
-                        dpi=500, 
+                        dpi=500,
                         bbox_inches='tight')
+            if (len(os.listdir(plot_path))<100):
+                fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+                plt.savefig(fname = fig_name, \
+                            dpi=500, 
+                            bbox_inches='tight')
             plt.close()
             del(plot_path, sub_out, county, plant, year)
+
+        else:
+            if (len(os.listdir(plot_path))<100):
+                plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
+                sb.set();
+                fig, ax = plt.subplots(figsize=(8,6));
+                ax.plot(X, y, label="NDVI data");
+                ax.plot(X, y_hat, 'r', label="smoothing spline result")
+                ax.scatter(DoYs_series, peaks_series, s=100, c='g', marker='*');
+                ax.set_title(plot_title);
+                ax.set(xlabel='DoY', ylabel='NDVI')
+                ax.legend(loc="best");
+
+                fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+                plt.savefig(fname = fig_name, \
+                            dpi=500, 
+                            bbox_inches='tight')
+                plt.close()
+                del(plot_path, sub_out, county, plant, year)
 
         # to make sure the reference by address thing 
         # will not cause any problem.
