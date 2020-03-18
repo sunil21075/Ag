@@ -50,7 +50,7 @@ data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/" + \
 ###
 ####################################################################################
 
-# sys.path.append('/home/hnoorazar/remote_sensing_codes/')
+sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
 ####################################################################################
 ###
@@ -58,8 +58,8 @@ data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/" + \
 ###
 ####################################################################################
 
-# data_dir = "/data/hydro/users/Hossein/remote_sensing/" + \
-#            "01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2017/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/" + \
+           "01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2017/"
 
 ####################################################################################
 ###
@@ -224,11 +224,30 @@ for a_poly in polygon_list:
         plot_path = plot_dir_base + sub_out
         os.makedirs(plot_path, exist_ok=True)
 
+        plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
+        sb.set();
+        fig, ax = plt.subplots(figsize=(8, 6));
+        ax.plot(X, y, label="NDVI data");
+        ax.plot(X, y_hat, 'r', label="smoothing spline result")
+        ax.scatter(DoYs_series, peaks_series, s=100, c='g', marker='*');
+        ax.set_title(plot_title);
+        ax.set(xlabel='DoY', ylabel='NDVI')
+        ax.legend(loc="best");
+
+        plot_path = plot_path + str(peak_df.shape[0]) + "_peaks/" 
+        os.makedirs(plot_path, exist_ok=True)
+        fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+
+        plt.savefig(fname = fig_name, \
+                    dpi=500,
+                    bbox_inches='tight')
+
         # print(plot_path)
         # print(sub_out)
         # print(county)
         # print(plant)
         # print(year)
+        """
         if peak_df.shape[0]==2:
             double_plot_path = plot_dir_base + "/double_peaks/" + sub_out
             os.makedirs(double_plot_path, exist_ok=True)
@@ -273,6 +292,7 @@ for a_poly in polygon_list:
                             bbox_inches='tight')
                 plt.close()
                 del(plot_path, sub_out, county, plant, year)
+        """
 
         # to make sure the reference by address thing 
         # will not cause any problem.
