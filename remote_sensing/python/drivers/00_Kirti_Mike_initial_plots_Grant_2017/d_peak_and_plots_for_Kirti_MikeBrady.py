@@ -133,7 +133,12 @@ for a_poly in polygon_list:
 
     year = int(curr_field['year'].unique())
     plant = curr_field['CropTyp'].unique()[0]
-    plant = plant.replace("/", ",")
+    
+    # Take care of names, replace "/" and "," and " " by "_"
+    plant = plant.replace("/", "_")
+    plant = plant.replace(",", "_")
+    plant = plant.replace(" ", "_")
+
     county = curr_field['county'].unique()[0]
     TRS = curr_field['TRS'].unique()[0]
 
@@ -215,7 +220,7 @@ for a_poly in polygon_list:
         ###             plot
         ###
         #############################################        
-        sub_out = "/" + plant + "/"
+        sub_out = "/plant_based_plots/" + plant + "/"
         plot_path = plot_dir_base + sub_out
         os.makedirs(plot_path, exist_ok=True)
 
@@ -241,6 +246,7 @@ for a_poly in polygon_list:
             plt.savefig(fname = fig_name, \
                         dpi=500,
                         bbox_inches='tight')
+            
             if (len(os.listdir(plot_path))<100):
                 fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
                 plt.savefig(fname = fig_name, \
