@@ -6,13 +6,19 @@ library(sp)
 library(sf)
 library(foreign)
 
+source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/remote_core.R"
+source(source_1)
+options(digits=9)
+options(digit=9)
+
+
 ##########
 ########## Directories
 ##########
 data_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                   "Ag_check_point/remote_sensing/00_shapeFiles/")
+                   "/remote_sensing/00_shapeFiles/00_WSDA_original_weird_files/")
 
-weird_2012_2018_dir <- paste0(data_dir, "00_Kirti_weird_files/2012_2018_weird_shapefile.gdb")
+weird_2012_2018_dir <- paste0(data_dir, "/2012_2018_weird_shapefile.gdb")
 
 # list the layer names in their to read desired layer
 # ogrInfo(weird_2012_2018_dir, require_geomType="wkbPolygon")
@@ -23,7 +29,25 @@ WSDACrop_2013 <- readOGR(gdb, "WSDACrop_2013")
 WSDACrop_2014 <- readOGR(gdb, "WSDACrop_2014")
 WSDACrop_2015 <- readOGR(gdb, "WSDACrop_2015")
 WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
+
 WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
+WSDACrop_2017@data$Notes <- "No Notes 2017"
+
+########################################################################################
+######
+######     add the goddamn numeric identifier.
+######
+########################################################################################
+
+WSDACrop_2012 <- add_identifier(dt_df=WSDACrop_2012, year="2012")
+WSDACrop_2013 <- add_identifier(dt_df=WSDACrop_2013, year="2013")
+WSDACrop_2014 <- add_identifier(dt_df=WSDACrop_2014, year="2014")
+WSDACrop_2015 <- add_identifier(dt_df=WSDACrop_2015, year="2015")
+WSDACrop_2016 <- add_identifier(dt_df=WSDACrop_2016, year="2016")
+WSDACrop_2017 <- add_identifier(dt_df=WSDACrop_2017, year="2017")
+WSDACrop_2018 <- add_identifier(dt_df=WSDACrop_2018, year="2018")
+
+########################################################################################
 
 # After updating R we receive some error about polygons. So, we need to add (require_geomType="wkbPolygon") at the end.
 WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018", require_geomType="wkbPolygon") 

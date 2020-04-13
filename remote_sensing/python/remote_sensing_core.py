@@ -23,6 +23,36 @@ import seaborn as sb
 #####                   Function definitions
 #####
 ################################################################
+def divide_double_nonDouble_peaks(dt_dt):
+    
+    # subset the double-peaked
+    double_peaked = dt_dt[dt_dt["peak_count"] == 2.0]
+
+    # subset the not double-peaked
+    not_double_peaked = dt_dt[dt_dt["peak_count"] != 2.0 ]
+
+    return (double_peaked, not_double_peaked)
+
+
+def divide_double_nonDouble_by_notes(dt_dt):
+    # convert NaN and NAs to string so we can subset/index 
+    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+
+    # convert to lower case
+    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+
+    # replace dbl with double
+    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    
+    # subset the notes with double in it.
+    double_cropped = dt_dt[dt_dt["Notes"].str.contains("double")]
+
+    # subset the notes without double in it.
+    not_double_cropped = dt_dt[~dt_dt["Notes"].str.contains("double")]
+
+    return (double_cropped, not_double_cropped)
+
+
 def filter_out_unwanted(dt_df):
     unwanted_plants = ["Almond", "Apple", "Alfalfa/Grass Hay",
                        "Apricot", "Asparagus", "Berry, Unknown",  
@@ -52,7 +82,8 @@ def filter_out_unwanted(dt_df):
     
     return dt_df
     
-def initial_clean(dt):
+def initial_clean_NDVI(df):
+    dt = df.copy()
     # remove the useles system:index column
     if ("system:index" in list(dt.columns)):
         dt = dt.drop(columns=['system:index'])
@@ -63,6 +94,20 @@ def initial_clean(dt):
     # rename the column .geo to "geo"
     dt = dt.rename(columns={".geo": "geo"})
     return (dt)
+
+def initial_clean_EVI(df):
+    dt = df.copy()
+    # remove the useles system:index column
+    if ("system:index" in list(dt.columns)):
+        dt = dt.drop(columns=['system:index'])
+    
+    # Drop rows whith NA in NDVI column.
+    dt = dt[dt['EVI'].notna()]
+    
+    # rename the column .geo to "geo"
+    dt = dt.rename(columns={".geo": "geo"})
+    return (dt)
+
 
 def order_by_doy(dt):
     return dt.sort_values(by='doy', axis=0, ascending=True)

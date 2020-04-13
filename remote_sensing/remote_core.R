@@ -11,6 +11,13 @@ library(sp)
 ###########
 ############################################
 ############################################
+
+add_identifier <- function(dt_df, year){
+  dt_df@data <- tibble::rowid_to_column(dt_df@data, "ID")
+  dt_df@data$ID <- paste0(dt_df@data$ID, "_WSDA_SF_", year)
+  return(dt_df)
+}
+
 transfer_projection_to_lat_long <- function(shape_file){
   crs <- CRS("+proj=lcc 
              +lat_1=45.83333333333334 
