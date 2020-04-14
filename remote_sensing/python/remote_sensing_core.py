@@ -199,7 +199,7 @@ def _datacheck_peakdetect(x_axis, y_axis):
     x_axis = np.array(x_axis)
     return x_axis, y_axis
 
-def peakdetect(y_axis, x_axis = None, lookahead = 300, delta=0):
+def peakdetect(y_axis, x_axis = None, lookahead=10, delta=0):
     """
     Converted from/based on a MATLAB script at: 
     http://billauer.co.il/peakdet.html
@@ -242,7 +242,7 @@ def peakdetect(y_axis, x_axis = None, lookahead = 300, delta=0):
     """
     max_peaks = []
     min_peaks = []
-    dump = []   #Used to pop the first hit which almost always is false
+    dump = []   # Used to pop the first hit which almost always is false
        
     # check input data
     x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
@@ -250,19 +250,19 @@ def peakdetect(y_axis, x_axis = None, lookahead = 300, delta=0):
     length = len(y_axis)
     
     
-    #perform some checks
+    # perform some checks
     if lookahead < 1:
         raise ValueError ( "Lookahead must be '1' or above in value")
     if not (np.isscalar(delta) and delta >= 0):
         raise ValueError ( "delta must be a positive number" )
     
-    #maxima and minima candidates are temporarily stored in
-    #mx and mn respectively
+    # maxima and minima candidates are temporarily stored in
+    # mx and mn respectively
     mn, mx = np.Inf, -np.Inf
     
-    #Only detect peak if there is 'lookahead' amount of points after it
+    # Only detect peak if there is 'lookahead' amount of points after it
     for index, (x, y) in enumerate(zip(x_axis[:-lookahead], 
-                                        y_axis[:-lookahead])):
+                                       y_axis[:-lookahead])):
         if y > mx:
             mx = y
             mxpos = x
@@ -270,43 +270,44 @@ def peakdetect(y_axis, x_axis = None, lookahead = 300, delta=0):
             mn = y
             mnpos = x
         
-        ####look for max####
+        #### look for max ####
         if y < mx-delta and mx != np.Inf:
-            #Maxima peak candidate found
-            #look ahead in signal to ensure that this is a peak and not jitter
+            # Maxima peak candidate found
+            # look ahead in signal to ensure that this is a peak and not jitter
             if y_axis[index:index+lookahead].max() < mx:
                 max_peaks.append([mxpos, mx])
                 dump.append(True)
-                #set algorithm to only find minima now
+
+                # set algorithm to only find minima now
                 mx = np.Inf
                 mn = np.Inf
                 if index+lookahead >= length:
-                    #end is within lookahead no more peaks can be found
+                    # end is within lookahead no more peaks can be found
                     break
                 continue
-            #else:  #slows shit down this does
+            # else:  # slows shit down this does
             #    mx = ahead
             #    mxpos = x_axis[np.where(y_axis[index:index+lookahead]==mx)]
         
-        ####look for min####
+        #### look for min ####
         if y > mn+delta and mn != -np.Inf:
-            #Minima peak candidate found 
-            #look ahead in signal to ensure that this is a peak and not jitter
+            # Minima peak candidate found 
+            # look ahead in signal to ensure that this is a peak and not jitter
             if y_axis[index:index+lookahead].min() > mn:
                 min_peaks.append([mnpos, mn])
                 dump.append(False)
-                #set algorithm to only find maxima now
+                # set algorithm to only find maxima now
                 mn = -np.Inf
                 mx = -np.Inf
                 if index+lookahead >= length:
-                    #end is within lookahead no more peaks can be found
+                    # end is within lookahead no more peaks can be found
                     break
-            #else:  #slows shit down this does
+            # else:  # slows shit down this does
             #    mn = ahead
             #    mnpos = x_axis[np.where(y_axis[index:index+lookahead]==mn)]
     
     
-    #Remove the false hit on the first value of the y_axis
+    # Remove the false hit on the first value of the y_axis
     try:
         if dump[0]:
             max_peaks.pop(0)
@@ -318,6 +319,69 @@ def peakdetect(y_axis, x_axis = None, lookahead = 300, delta=0):
         pass
         
     return [max_peaks, min_peaks]
+
+
+def my_peakdetect(y_axis, x_axis=None, delta=0):
+    # 
+    # This actually is the conversion of the MATLAB code whose link
+    # is given above.
+    #
+    maxtab = []
+    mintab = []
+    dump = []   # Used to pop the first hit which almost always is false
+       
+    # check input data
+    x_axis, y_axis = _datacheck_peakdetect(x_axis, y_axis)
+    
+    # store data length for later use
+    length = len(y_axis)
+    
+    
+    # perform some checks
+    if not (np.isscalar(delta) and delta >= 0):
+        raise ValueError ( "delta must be a positive number" )
+    
+    # maxima and minima candidates are temporarily stored in
+    # mx and mn respectively
+    mn, mx = np.Inf, -np.Inf
+
+    lookformax = True
+    
+    for index, (x, y) in enumerate(zip(x_axis, y_axis)):
+        this = y_axis[index];
+        if this > mx:
+            mx = this
+            mxpos = x_axis[index]
+        if this < mn:
+            mn = this
+            mnpos = x_axis[index]
+
+        if lookformax:
+            if this < mx-delta:
+                maxtab.append([mxpos, mx])
+                mn = this; mnpos = x_axis[index];
+                lookformax = 0;
+        else:
+            if this > mn+delta:
+                mintab.append([mnpos, mn])
+                mx = this
+                mxpos = x_axis[index]
+                lookformax = 1;
+
+    # Remove the false hit on the first value of the y_axis
+    
+    # try:
+    #     if dump[0]:
+    #         max_peaks.pop(0)
+    #     else:
+    #         min_peaks.pop(0)
+    #     del dump
+    # except IndexError:
+    #     # no peaks were found, should the function return empty lists?
+    #     pass
+        
+    return [maxtab, mintab]
+
 
 def form_xs_ys_from_peakdetect(max_peak_list, doy_vect):
     dd = np.array(doy_vect)
