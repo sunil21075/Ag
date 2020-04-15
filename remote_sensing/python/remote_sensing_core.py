@@ -575,5 +575,19 @@ def generate_peak_df(an_EE_TS):
     return(all_polygons_and_their_peaks, double_polygons)
 
 
+def separate_x_and_y(max_peak_list):
+    #
+    #  input is a list whose elements are arrays of size 2: (DoY, peak)
+    #  
+    #  output: two vectors DoY = [d1, d2, ..., dn] and peaks[p1, p2, ..., pn]
+    #
+    DoY_vec = np.zeros(len(max_peak_list))
+    peaks_vec = np.zeros(len(max_peak_list))
+    counter = 0
+    for entry in max_peak_list:  
+        DoY_vec[counter] = int(entry[0])
+        peaks_vec[counter] = entry[1]
+        counter += 1
+    return (DoY_vec, peaks_vec)
 
 
