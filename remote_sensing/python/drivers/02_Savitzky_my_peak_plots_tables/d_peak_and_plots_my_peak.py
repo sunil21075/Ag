@@ -134,11 +134,11 @@ max_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
                       'max_Doy', 'max_value', 'max_count']
 
-all_polygons_and_their_max_spline = pd.DataFrame(data=None, 
+all_poly_and_maxs_spline = pd.DataFrame(data=None, 
                                                  index=np.arange(3*len(an_EE_TS)), 
                                                  columns=max_output_columns)
 
-all_polygons_and_their_max_savitzky = pd.DataFrame(data=None, 
+all_poly_and_maxs_savitzky = pd.DataFrame(data=None, 
                                                    index=np.arange(3*len(an_EE_TS)), 
                                                    columns=max_output_columns)
 
@@ -148,11 +148,11 @@ min_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
                       'min_Doy', 'min_value', 'min_count']
 
-all_polygons_and_their_min_spline = pd.DataFrame(data=None, 
+all_poly_and_mins_spline = pd.DataFrame(data=None, 
                                                  index=np.arange(3*len(an_EE_TS)), 
                                                  columns=min_output_columns)
 
-all_polygons_and_their_min_savitzky = pd.DataFrame(data=None, 
+all_poly_and_mins_savitzky = pd.DataFrame(data=None, 
                                                    index=np.arange(3*len(an_EE_TS)), 
                                                    columns=min_output_columns)
 
@@ -359,11 +359,11 @@ for a_poly in polygon_list:
         copy the .values. Otherwise the index inconsistency between
         WSDA_max_df_spline and all_poly... will prevent the copying.
         """
-        if (pointer_max_spline > all_polygons_and_their_max_spline.shape[0]):
+        if (pointer_max_spline > all_poly_and_maxs_spline.shape[0]):
             empty = pd.DataFrame(data=None, index=np.arange(500), columns=max_output_columns)
-            all_polygons_and_their_max_spline = pd.concat([all_polygons_and_their_max_spline, empty]).reset_index()
+            all_poly_and_maxs_spline = pd.concat([all_poly_and_maxs_spline, empty]).reset_index()
 
-        all_polygons_and_their_max_spline.iloc[pointer_max_spline:(pointer_max_spline + \
+        all_poly_and_maxs_spline.iloc[pointer_max_spline:(pointer_max_spline + \
                                                 len(WSDA_max_df_spline))] = WSDA_max_df_spline.values
         pointer_max_spline += len(WSDA_max_df_spline)
 
@@ -377,11 +377,11 @@ for a_poly in polygon_list:
         copy the .values. Otherwise the index inconsistency between
         WSDA_min_df_spline and all_poly... will prevent the copying.
         """
-        if (pointer_min_spline > all_polygons_and_their_min_spline.shape[0]):
+        if (pointer_min_spline > all_poly_and_mins_spline.shape[0]):
             empty = pd.DataFrame(data=None, index=np.arange(500), columns=min_output_columns)
-            all_polygons_and_their_min_spline = pd.concat([all_polygons_and_their_min_spline, empty]).reset_index()
+            all_poly_and_mins_spline = pd.concat([all_poly_and_mins_spline, empty]).reset_index()
 
-        all_polygons_and_their_min_spline.iloc[pointer_min_spline:(pointer_min_spline + \
+        all_poly_and_mins_spline.iloc[pointer_min_spline:(pointer_min_spline + \
                                                             len(WSDA_min_df_spline))] = WSDA_min_df_spline.values        
         pointer_min_spline += len(WSDA_min_df_spline)
 
@@ -395,11 +395,11 @@ for a_poly in polygon_list:
         copy the .values. Otherwise the index inconsistency between
         WSDA_max_df_savitzky and all_poly... will prevent the copying.
         """
-        if (pointer_max_savitzky > all_polygons_and_their_max_savitzky.shape[0]):
+        if (pointer_max_savitzky > all_poly_and_maxs_savitzky.shape[0]):
             empty = pd.DataFrame(data=None, index=np.arange(500), columns=min_output_columns)
-            all_polygons_and_their_max_savitzky = pd.concat([all_polygons_and_their_max_savitzky, empty]).reset_index()
+            all_poly_and_maxs_savitzky = pd.concat([all_poly_and_maxs_savitzky, empty]).reset_index()
 
-        all_polygons_and_their_max_savitzky.iloc[pointer_max_savitzky:(pointer_max_savitzky + \
+        all_poly_and_maxs_savitzky.iloc[pointer_max_savitzky:(pointer_max_savitzky + \
                                                                     len(WSDA_max_df_savitzky))] = WSDA_max_df_savitzky.values
         pointer_max_savitzky += len(WSDA_max_df_savitzky)
 
@@ -413,11 +413,11 @@ for a_poly in polygon_list:
         copy the .values. Otherwise the index inconsistency between
         WSDA_min_df_savitzky and all_poly... will prevent the copying.
         """
-        if (pointer_min_savitzky > all_polygons_and_their_min_savitzky.shape[0]):
+        if (pointer_min_savitzky > all_poly_and_mins_savitzky.shape[0]):
             empty = pd.DataFrame(data=None, index=np.arange(500), columns=min_output_columns)
-            all_polygons_and_their_min_savitzky = pd.concat([all_polygons_and_their_min_savitzky, empty]).reset_index()
+            all_poly_and_mins_savitzky = pd.concat([all_poly_and_mins_savitzky, empty]).reset_index()
 
-        all_polygons_and_their_min_savitzky.iloc[pointer_min_savitzky:(pointer_min_savitzky + \
+        all_poly_and_mins_savitzky.iloc[pointer_min_savitzky:(pointer_min_savitzky + \
                                                                   len(WSDA_min_df_savitzky))] = WSDA_min_df_savitzky.values
         pointer_min_savitzky += len(WSDA_min_df_savitzky)
     
@@ -433,25 +433,25 @@ for a_poly in polygon_list:
 ########### max
 ###########
 
-all_polygons_and_their_max_spline = all_polygons_and_their_max_spline[0:(pointer_max_spline+1)]
-out_name = output_dir + "_df_"+ str(freedom_df) + "_all_polygons_and_their_max_spline.csv"
-all_polygons_and_their_max_spline.to_csv(out_name, index = False)
+all_poly_and_maxs_spline = all_poly_and_maxs_spline[0:(pointer_max_spline+1)]
+out_name = output_dir + "_df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
+all_poly_and_maxs_spline.to_csv(out_name, index = False)
 
-all_polygons_and_their_max_savitzky = all_polygons_and_their_max_savitzky[0:(pointer_max_savitzky+1)]
-out_name = output_dir + "_df_"+ str(freedom_df) + "_all_polygons_and_their_max_savitzky.csv"
-all_polygons_and_their_max_savitzky.to_csv(out_name, index = False)
+all_poly_and_maxs_savitzky = all_poly_and_maxs_savitzky[0:(pointer_max_savitzky+1)]
+out_name = output_dir + "_df_"+ str(freedom_df) + "_all_poly_and_maxs_savitzky.csv"
+all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 
 ###########
 ########### min
 ###########
 
-all_polygons_and_their_min_spline = all_polygons_and_their_min_spline[0:(pointer_min_spline+1)]
-out_name = output_dir + "_df_"+ str(freedom_df) + "_all_polygons_and_their_min_spline.csv"
-all_polygons_and_their_min_spline.to_csv(out_name, index = False)
+all_poly_and_mins_spline = all_poly_and_mins_spline[0:(pointer_min_spline+1)]
+out_name = output_dir + "_df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
+all_poly_and_mins_spline.to_csv(out_name, index = False)
 
-all_polygons_and_their_min_savitzky = all_polygons_and_their_min_savitzky[0:(pointer_min_savitzky+1)]
-out_name = output_dir + "_df_"+ str(freedom_df) + "_all_polygons_and_their_min_savitzky.csv"
-all_polygons_and_their_min_savitzky.to_csv(out_name, index = False)
+all_poly_and_mins_savitzky = all_poly_and_mins_savitzky[0:(pointer_min_savitzky+1)]
+out_name = output_dir + "_df_"+ str(freedom_df) + "_all_poly_and_mins_savitzky.csv"
+all_poly_and_mins_savitzky.to_csv(out_name, index = False)
 
 
 # out_name = output_dir + "_df_"+ str(freedom_df) + "_double_polygons_spline.csv"
