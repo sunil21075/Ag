@@ -26,7 +26,7 @@ dynamic_thresh_max = 185
 ##### either choose utah or dynamic
 
 start = "sept"
-in_dir <- paste0("/Users/hn/Documents/01_research_data/Ag_check_point/chilling/sum_stats_4_maps/", start, "/")
+in_dir <- paste0("/Users/hn/Documents/01_research_data/chilling/sum_stats_4_maps/", start, "/")
 setwd(in_dir)
 plot_path <- in_dir
 getwd()
@@ -201,7 +201,7 @@ ensemble_map <- function(dt, scenario_name, month_col, legend_label) {
                panel.grid.major = element_line(size = 0.1),
                legend.position="bottom", 
                strip.text = element_text(size=12, face="bold"),
-               plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm'),
+               plot.margin = margin(t=-0.5, r=0.2, b=-0.5, l=0.2, unit = 'cm'),
                legend.title = element_blank()
                )
 }
@@ -221,7 +221,7 @@ plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures
 if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
 
 plt_width <- 10
-plt_height <- 3.6
+plt_height <- 3.3
 ggsave(filename = paste0("accumutaled_CP_by_Apr_85_mean_of_models_median_of_years.png"), 
        plot=mean_of_models, 
        width=plt_width, height=plt_height, units="in", 
@@ -235,6 +235,29 @@ ggsave(filename = paste0("accumutaled_CP_by_Apr_85_median_of_models_median_of_ye
        path=plot_base)
 
 
+
+
+mean_of_models <- ensemble_map(dt = stats_comp_ensemble_mean, 
+                               scenario_name= "RCP 4.5", 
+                               month_col = "median_A1", 
+                               legend_label = "Mean")
+
+median_of_models <- ensemble_map(dt = stats_comp_ensemble_median, 
+                                 scenario_name = "RCP 4.5", 
+                                 month_col = "median_A1", 
+                                 legend_label = "Median")
+
+ggsave(filename = paste0("accumutaled_CP_by_Apr_45_mean_of_models_median_of_years.png"), 
+       plot=mean_of_models, 
+       width=plt_width, height=plt_height, units="in", 
+       dpi=600, device="png", 
+       path=plot_base)
+
+ggsave(filename = paste0("accumutaled_CP_by_Apr_45_median_of_models_median_of_years.png"), 
+       plot=median_of_models, 
+       width=plt_width, height=plt_height, units="in", 
+       dpi=600, device="png", 
+       path=plot_base)
 
 
 

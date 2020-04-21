@@ -118,7 +118,7 @@ emissions <- c("RCP 4.5", "RCP 8.5")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli")
 
 # apple, cherry, pear; cherry 14 days shift, pear 7 days shift
-fruit_type <- "cherry"
+fruit_type <- "apple"
 remove_NA <- "no" 
 
 # shift the bloom days

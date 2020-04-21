@@ -144,8 +144,6 @@ double_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
 double_polygons = pd.DataFrame(data=None, 
                                index=np.arange(2*len(an_EE_TS)), 
                                columns=double_columns)
-
-
 pointer = 0
 double_pointer = 0
 counter = 0

@@ -22,7 +22,7 @@ param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 limited_locs <- read.csv(paste0(param_dir, "limited_locations.csv"), 
                                 header=T, sep=",", as.is=T)
 
-main_in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
+main_in_dir <- "/Users/hn/Documents/01_research_data/chilling/01_data/02/"
 write_dir <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/Accum_CP_Sept_Apr/"
 if (dir.exists(file.path(write_dir)) == F) { dir.create(path = write_dir, recursive = T)}
 
@@ -41,10 +41,16 @@ summary_comp <- left_join(summary_comp, limited_locs)
 #####
 #######################################################################
 summary_comp <- summary_comp %>% filter(time_period != "1950-2005") %>% data.table()
-summary_comp$emission[summary_comp$time_period=="1979-2015"] <- "Observed"
+summary_comp <- summary_comp %>% filter(time_period != "1979-2015") %>% data.table()
+# summary_comp$emission[summary_comp$time_period=="1979-2015"] <- "Observed"
 
+# summary_comp <- summary_comp %>% filter(emission != "rcp85") %>% data.table()
 summary_comp$emission[summary_comp$emission=="rcp45"] <- "RCP 4.5"
+
 summary_comp$emission[summary_comp$emission=="rcp85"] <- "RCP 8.5"
+
+unique(summary_comp$emission)
+unique(summary_comp$time_period)
 
 # 3. Plotting -------------------------------------------------------------
 ##################################
@@ -61,7 +67,7 @@ accum_plot <- function(data, y_name, due){
                          alpha = 0.25, shape = 21) +
               geom_smooth(aes(x = year, y = y, color = emission),
                           method = "lm", size=.8, se = F) +
-              facet_wrap( ~ city) +
+              facet_wrap( ~ city) + # ~ emission
               scale_color_viridis_d(option = "plasma", begin = 0, end = .7,
                                     name = "Model scenario", 
                                     aesthetics = c("color", "fill")) +              
@@ -81,7 +87,7 @@ accum_plot <- function(data, y_name, due){
                     strip.text = element_text(size=14, face = "bold"),
                     legend.margin=margin(t=.1, r=0, b=0, l=0, unit='cm'),
                     legend.title = element_blank(),
-                    legend.position="bottom", 
+                    legend.position="bottom", # none
                     legend.key.size = unit(1.5, "line"),
                     legend.spacing.x = unit(.05, 'cm'),
                     legend.text=element_text(size=12),

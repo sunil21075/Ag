@@ -25,7 +25,7 @@ source(core_path)
 source(plot_core_path)
 
 
-data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
+data_dir = "/Users/hn/Documents/01_research_data/chilling/01_data/02/"
 param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), 
@@ -46,7 +46,7 @@ sept_summary_comp <- readRDS(paste0(data_dir, "sept_summary_comp.rds")) %>%
 head(sept_summary_comp, 2)
 dim(sept_summary_comp)
 
-keep_cols <- c("location", "sum_A1", "model", "emission", "time_period")
+keep_cols <- c("location", "sum_J1", "model", "emission", "time_period")
 
 sept_summary_comp <- subset(sept_summary_comp, select=keep_cols)
 
@@ -74,7 +74,7 @@ sept_summary_comp$time_period = factor(sept_summary_comp$time_period, levels = t
 
 sept_summary_comp_yearsMedian_perModel <- sept_summary_comp %>%
                                           group_by(location, model, emission, time_period) %>%
-                                          summarise(CP_median_A1=median(sum_A1)) %>%
+                                          summarise(CP_median_A1=median(sum_J1)) %>%
                                           data.table()
  
 diffs <- projec_diff_from_hist(sept_summary_comp_yearsMedian_perModel)
@@ -94,7 +94,7 @@ source(core_path)
 source(plot_core_path)
 
 a_map <- diff_CP_map(data = diffs_median, color_col = "CP_diff_median")
-ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered.png"), 
+ggsave(filename = paste0("CP_diff_perc_Sept_Jan_centered.png"), 
        plot=a_map, 
        width=7.5, height=5.7, units="in", 
        dpi=600, device="png", path=plot_base)
@@ -108,7 +108,7 @@ source(core_path)
 source(plot_core_path)
 rcp85_map <- diff_CP_map_one_emission(data = diffs_median_85, color_col = "CP_diff_median")
 
-ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered_85.png"), 
+ggsave(filename = paste0("CP_diff_perc_Sept_Jan_centered_85.png"), 
        plot=rcp85_map, 
        width=7.5, height=3.6, units="in", 
        dpi=600, device="png", 

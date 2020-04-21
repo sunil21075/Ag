@@ -24,7 +24,7 @@ options(digits=9)
 ############################## Global variables
 ##############################
 
-# input_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/7_temp_int_limit_locs/untitled/RDS_files/"
+# input_dir <- "/Users/hn/Documents/01_research_data/chilling/7_temp_int_limit_locs/untitled/RDS_files/"
 # plot_dir <- input_dir
 # param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 
