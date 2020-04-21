@@ -165,7 +165,7 @@ all_poly_and_mins_savitzky = pd.DataFrame(data=None,
 #                                       index=np.arange(2*len(an_EE_TS)), 
 #                                       columns=double_max_columns)
 
-# double_poly_max_savitzly = pd.DataFrame(data=None, 
+# double_poly_max_savitzky = pd.DataFrame(data=None, 
 #                                         index=np.arange(2*len(an_EE_TS)), 
 #                                         columns=double_max_columns)
 
@@ -179,7 +179,7 @@ all_poly_and_mins_savitzky = pd.DataFrame(data=None,
 #                                       index=np.arange(2*len(an_EE_TS)), 
 #                                       columns=double_min_columns)
 
-# double_poly_min_savitzly = pd.DataFrame(data=None, 
+# double_poly_min_savitzky = pd.DataFrame(data=None, 
 #                                         index=np.arange(2*len(an_EE_TS)), 
 #                                         columns=double_min_columns)
 
@@ -193,8 +193,8 @@ counter = 0
 # double_max_spline_pointer = 0
 # double_min_spline_pointer = 0
 
-# double_max_savitzly_pointer = 0
-# double_min_savitzly_pointer = 0
+# double_max_savitzky_pointer = 0
+# double_min_savitzky_pointer = 0
 
 
 for a_poly in polygon_list:
@@ -321,7 +321,7 @@ for a_poly in polygon_list:
     #############################################        
     sub_out = "/plant_based_plots/" + plant + "/"
     plot_path = plot_dir_base + sub_out
-    plot_path = plot_path + str(savitzly_max_df.shape[0]) + "_peaks/"
+    plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
     os.makedirs(plot_path, exist_ok=True)
     if (len(os.listdir(plot_path))<100):
         
@@ -349,6 +349,9 @@ for a_poly in polygon_list:
         plt.close()
         del(plot_path, sub_out) #  county, plant, year
 
+    WSDA_df = rc.keep_WSDA_columns(curr_field)
+    WSDA_df = WSDA_df.drop_duplicates()
+    
     if (len(spline_max_df)>0):
         WSDA_max_df_spline = pd.concat([WSDA_df]*spline_max_df.shape[0]).reset_index()
         # WSDA_max_df_spline = pd.concat([WSDA_max_df_spline, spline_max_df], axis=1, ignore_index=True)
