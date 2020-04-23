@@ -436,7 +436,7 @@ ensemble_map <- function(data, color_col, due) {
             geom_point(aes_string(x = "long", y = "lat",
                        color = color_col), alpha = 0.4, size=.4) +
            coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
-           facet_grid(~ scenario ~ time_period) +
+           facet_grid(~ emission ~ time_period) +
            ggtitle(paste0("Ensemble ", unlist(strsplit(color_col, "_"))[1] , " by ", due, " 1st")) + 
            theme_bw() + 
            theme(legend.position = "bottom",
@@ -451,11 +451,9 @@ ensemble_map <- function(data, color_col, due) {
                                  space ="Lab")
 }
 
-
 produce_data_4_plots <- function(data){
-  needed_cols = c("chill_season", "sum_J1", 
-                  "sum_F1", "sum_M1", "sum_A1", "year", "model", 
-                  "emission", "lat", "long")
+  needed_cols = c("chill_season", "sum_J1", "sum_F1", "sum_M1", "sum_A1", 
+                  "year", "model", "emission", "lat", "long")
 
   ################### CLEAN DATA
   data = subset(data, select=needed_cols)
@@ -497,7 +495,7 @@ produce_data_4_plots <- function(data){
   # just close and re-open R Studio
   ########################################################################
   #######                                                          #######
-  #######                     Means                              #######
+  #######                     Means                                #######
   #######                                                          #######
   ########################################################################
   
@@ -838,24 +836,24 @@ safe_box_plot_per_city <- function(data, due, chill_start){
                     )
   
   safe_apr <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
-            geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
-            labs(x="", y="safe chill") +
-            facet_grid(~ emission ~ city ) + 
-            the_theme + 
-            scale_fill_manual(values = color_ord,
-                              name = "Time\nPeriod", 
-                              labels = categ_lab) + 
-            scale_color_manual(values = color_ord,
-                               name = "Time\nPeriod", 
-                               limits = color_ord,
-                               labels = categ_lab) + 
-            scale_x_discrete(breaks = categ_lab,
-                             labels = categ_lab)  +
-            geom_text(data = medians, 
-                      aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-                          size=4.5, 
-                          position =  position_dodge(.09),
-                          vjust = 0, hjust=.5) # +
+              geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
+              labs(x="", y="safe chill") +
+              facet_grid(~ emission ~ city ) + 
+              the_theme + 
+              scale_fill_manual(values = color_ord,
+                                name = "Time\nPeriod", 
+                                labels = categ_lab) + 
+              scale_color_manual(values = color_ord,
+                                 name = "Time\nPeriod", 
+                                 limits = color_ord,
+                                 labels = categ_lab) + 
+              scale_x_discrete(breaks = categ_lab,
+                               labels = categ_lab)  +
+              geom_text(data = medians, 
+                        aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                            size=4.5, 
+                            position =  position_dodge(.09),
+                            vjust = 0, hjust=.5) # +
             # ggtitle(lab=paste0("Safe chill accumulation")) 
             #, subtitle = paste0("chill season started on ", chill_start)
   
@@ -898,7 +896,7 @@ diff_SC_map_one_emission <- function(data, color_col) {
                  legend.position="bottom", 
                  legend.title = element_blank(),
                  strip.text = element_text(size=12, face="bold"),
-                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 plot.margin = margin(t=-0.5, r=0.2, b=-0.5, l=0.2, unit = 'cm')
                  ) + 
 
            # theme_bw() + 
@@ -970,7 +968,7 @@ diff_CP_map_one_emission <- function(data, color_col) {
                  legend.position="bottom", 
                  legend.title = element_blank(),
                  strip.text = element_text(size=12, face="bold"),
-                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 plot.margin = margin(t=-0.5, r=0.2, b=-0.5, l=0.2, unit = 'cm')
                  ) + 
 
            # theme_bw() + 
@@ -1042,7 +1040,7 @@ diff_CP_map <- function(data, color_col) {
                  legend.position="bottom", 
                  legend.title = element_blank(),
                  strip.text = element_text(size=12, face="bold"),
-                 plot.margin = margin(t=-0.5, r=0.2, b=0, l=0.2, unit = 'cm')
+                 plot.margin = margin(t=-0.5, r=0.2, b=-0.5, l=0.2, unit = 'cm')
                  ) + 
 
            # theme_bw() + 

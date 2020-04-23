@@ -87,8 +87,6 @@ double_crop_potential_plants.head(2)
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
-output_dir = data_dir + "/savitzky/"
-plot_dir_base = output_dir 
 
 ####################################################################################
 ###
@@ -96,10 +94,13 @@ plot_dir_base = output_dir
 ###
 ####################################################################################
 freedom_df = 7
+delt = 0.2
 file_names = ["Grant_2017_TS.csv"]
 file_N = file_names[0]
 a_df = pd.read_csv(data_dir + file_N)
 
+output_dir = data_dir + "/savitzky/delta_" + str(delt) + "/just_potentials/"
+plot_dir_base = output_dir
 ####################################################################################
 ###
 ###                   process data
@@ -122,7 +123,7 @@ an_EE_TS = a_df.copy()
 ###
 ################
 
-# a_df = a_df[a_df.CropTyp.isin(double_crop_potential_plants['Crop_Type'])]
+a_df = a_df[a_df.CropTyp.isin(double_crop_potential_plants['Crop_Type'])]
 
 
 ### List of unique polygons
@@ -135,12 +136,12 @@ max_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'max_Doy', 'max_value', 'max_count']
 
 all_poly_and_maxs_spline = pd.DataFrame(data=None, 
-                                                 index=np.arange(3*len(an_EE_TS)), 
-                                                 columns=max_output_columns)
+                                        index=np.arange(3*len(an_EE_TS)), 
+                                        columns=max_output_columns)
 
 all_poly_and_maxs_savitzky = pd.DataFrame(data=None, 
-                                                   index=np.arange(3*len(an_EE_TS)), 
-                                                   columns=max_output_columns)
+                                          index=np.arange(3*len(an_EE_TS)), 
+                                          columns=max_output_columns)
 
 
 min_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
@@ -249,7 +250,7 @@ for a_poly in polygon_list:
     # 
     # Spline peaks
     # 
-    spline_max_min = rc.my_peakdetect(y_axis=spline_pred, x_axis=X, delta=0.1);
+    spline_max_min = rc.my_peakdetect(y_axis=spline_pred, x_axis=X, delta=delt);
 
     spline_max =  spline_max_min[0];
     spline_min =  spline_max_min[1];
@@ -283,7 +284,7 @@ for a_poly in polygon_list:
     #    savitzky
     #
 
-    savitzky_max_min = rc.my_peakdetect(y_axis=savitzky_pred, x_axis=X, delta=0.1);
+    savitzky_max_min = rc.my_peakdetect(y_axis=savitzky_pred, x_axis=X, delta=delt);
 
     savitzky_max =  savitzky_max_min[0];
     savitzky_min =  savitzky_max_min[1];
@@ -385,7 +386,7 @@ for a_poly in polygon_list:
             all_poly_and_mins_spline = pd.concat([all_poly_and_mins_spline, empty]).reset_index()
 
         all_poly_and_mins_spline.iloc[pointer_min_spline:(pointer_min_spline + \
-                                                            len(WSDA_min_df_spline))] = WSDA_min_df_spline.values        
+                                                            len(WSDA_min_df_spline))] = WSDA_min_df_spline.values
         pointer_min_spline += len(WSDA_min_df_spline)
 
     if (len(savitzky_max_df)>0):

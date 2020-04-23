@@ -84,8 +84,9 @@ diffs_median <- diffs %>%
                 summarise(CP_diff_median = median(perc_diff)) %>%
                 data.table()
 
+diffs_median$CP_diff_median[diffs_median$CP_diff_median < -40] = -40
 
-plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/cp_diff_map/")
+plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/CP_map_diff/")
 if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
 
 core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_core.R"
@@ -94,9 +95,13 @@ source(core_path)
 source(plot_core_path)
 
 a_map <- diff_CP_map(data = diffs_median, color_col = "CP_diff_median")
-ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered.png"), 
+
+qual = 450
+W = 7.5
+H = 5.5
+ggsave(filename = paste0("CP_diff_perc_Sept_Apr1_centered.png"), 
        plot=a_map, 
-       width=7.5, height=5.7, units="in", 
+       width=W, height=H, units="in", 
        dpi=600, device="png", path=plot_base)
 
 
@@ -108,9 +113,12 @@ source(core_path)
 source(plot_core_path)
 rcp85_map <- diff_CP_map_one_emission(data = diffs_median_85, color_col = "CP_diff_median")
 
-ggsave(filename = paste0("CP_diff_perc_Sept_Apr_centered_85.png"), 
+W = 7.5
+H = 3.3
+
+ggsave(filename = paste0("CP_diff_perc_Sept_Apr1st_centered_85.png"), 
        plot=rcp85_map, 
-       width=7.5, height=3.6, units="in", 
+       width=W, height=H, units="in", 
        dpi=600, device="png", 
        path=plot_base)
 

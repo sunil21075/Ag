@@ -235,8 +235,6 @@ ggsave(filename = paste0("accumutaled_CP_by_Apr_85_median_of_models_median_of_ye
        path=plot_base)
 
 
-
-
 mean_of_models <- ensemble_map(dt = stats_comp_ensemble_mean, 
                                scenario_name= "RCP 4.5", 
                                month_col = "median_A1", 

@@ -20,7 +20,7 @@ plot_dir <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/safe_ch
 param_dir <- "/Users/hn/Documents/00_GitHub/Ag/chilling/parameters/"
 LocationGroups_NoMontana <- read.csv(paste0(param_dir, "LocationGroups_NoMontana.csv"), header=T, as.is=T)
 
-main_in = "/Users/hn/Documents/01_research_data/Ag_check_point/chilling/01_data/02/"
+main_in <- "/Users/hn/Documents/01_research_data/chilling/01_data/02/"
 files_name = c("sept_summary_comp.rds")
 
 datas = data.table(readRDS(paste0(main_in, "sept_summary_comp.rds")))
@@ -61,12 +61,14 @@ diffs$hist_SC <- diffs$quan_10 + diffs$SC_diff
 
 diffs$perc_diff <- (diffs$SC_diff * 100) / (diffs$hist_SC)
 
+
 diffs_median <- diffs %>% 
                 group_by(location, time_period, emission) %>%
                 summarise(SC_diff_median = median(perc_diff)) %>%
                 data.table()
 
 diffs_median$SC_diff_median[diffs_median$SC_diff_median>150] <- diffs_median$SC_diff_median[diffs_median$SC_diff_median>150]* (-1)
+
 plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/SC_map_diff")
 if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
 

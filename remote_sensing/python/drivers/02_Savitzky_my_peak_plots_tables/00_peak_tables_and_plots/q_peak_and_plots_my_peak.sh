@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N 00_Kirt_Mike_initial
+#PBS -N 00_Savitzky
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1

@@ -49,12 +49,14 @@ box_height = 8
 source_path_plot = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(source_path_plot)
 
+# Eugene_safe_chill_sept_Apr_RCP_85
+
 for (ct in unique(limited_locations$city)){
     for (em in c("RCP 4.5", "RCP 8.5")){
         curr_dt = information[[1]] %>% filter(city == ct & emission == em)
         output_name = paste0(gsub(" ", "_", ct), "_safe_chill_sept_Apr_", gsub('\\.',  "", gsub(" ", "_", em)), ".png")
         safe_apr <- safe_box_plot_per_city(data = curr_dt, due="Apr.", chill_start= ch_start)
-        ggsave(output_name, safe_apr, path=plot_dir, width=5, height=5, unit="in", dpi=600)
+        ggsave(output_name, safe_apr, path=plot_dir, width=5, height=5, unit="in", dpi=400)
     }
 }
 

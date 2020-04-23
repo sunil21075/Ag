@@ -4,15 +4,15 @@
 ## batch job.
 #PBS -V
 
-#PBS -N filter_RCP85_limitedLoc	
+#PBS -N d_combine_sept_April	
 
 #PBS -l nodes=1:dev:ppn=1,walltime=01:00:00
 #PBS -l mem=100gb
 
 #PBS -k o
   ##PBS -j oe
-#PBS -e /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/filter_RCP85_limitedLoc.e
-#PBS -o /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/filter_RCP85_limitedLoc.o
+#PBS -e /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/d_combine_sept_April.e
+#PBS -o /home/hnoorazar/chilling_codes/current_draft/03_make_figures/7_intervals/error/d_combine_sept_April.o
 
 #PBS -m abe
 
@@ -31,7 +31,7 @@ module load libxml2/2.9.4
 module load gdal/2.1.2_gcc proj/4.9.2
 module load gcc/7.3.0 r/3.5.1/gcc/7.3.0
 
-Rscript --vanilla ./filter_RCP85_limitedLoc.R
+Rscript --vanilla ./d_combine_sept_April.R
 
 echo
 echo "----- DONE -----"
