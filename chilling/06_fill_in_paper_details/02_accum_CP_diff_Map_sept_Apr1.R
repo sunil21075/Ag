@@ -62,11 +62,11 @@ sept_summary_comp <- remove_montana(sept_summary_comp, LocationGroups_NoMontana)
 # sept_summary_comp$time_period[sept_summary_comp$time_period== "2051_2075"] = "2051-2075"
 # sept_summary_comp$time_period[sept_summary_comp$time_period== "2076_2100"] = "2076-2099"
 
-sept_summary_comp$time_period[sept_summary_comp$model== "observed"] <- "Observed"
+sept_summary_comp$time_period[sept_summary_comp$model == "observed"] <- "Observed"
 
-sept_summary_comp$emission[sept_summary_comp$emission== "rcp45"] = "RCP 4.5"
-sept_summary_comp$emission[sept_summary_comp$emission== "rcp85"] = "RCP 8.5"
-sept_summary_comp$emission[sept_summary_comp$emission== "historical"] = "Observed"
+sept_summary_comp$emission[sept_summary_comp$emission == "rcp45"] = "RCP 4.5"
+sept_summary_comp$emission[sept_summary_comp$emission == "rcp85"] = "RCP 8.5"
+sept_summary_comp$emission[sept_summary_comp$emission == "historical"] = "Observed"
 
 
 time_periods = c("Observed","2026-2050", "2051-2075", "2076-2099")
