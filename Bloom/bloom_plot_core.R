@@ -72,6 +72,9 @@ double_cloud <- function(d1){
   xbreaks <- sort(unique(d1$chill_season))
   xbreaks <- xbreaks[seq(1, length(xbreaks), 10)]
   # xbreaks <- c(xbreaks, 2097)
+  ylow = min(d1$value) - 5
+  ymax = min(260, max(d1$value))
+  ymax = 260
   
   ggplot(d1, aes(x=chill_season, y=value, fill=factor(variable))) +
   labs(x = "chill year", y = "day of year", fill = "data type") +
@@ -105,7 +108,8 @@ double_cloud <- function(d1){
   
   scale_x_continuous(breaks = xbreaks, label = xlabels) +
   scale_y_continuous(breaks = chill_doy_map$day_count_since_sept, 
-                     labels = chill_doy_map$letter_day) + 
+                     labels = chill_doy_map$letter_day
+                     ) + # limits = c(ylow, ymax) This shit removes data beyod the limits, use coord_cartesian(xlim = c(-5000, 5000)) 
   
   theme(panel.grid.major = element_line(size=0.2),
         panel.spacing=unit(.5, "cm"),
@@ -121,7 +125,8 @@ double_cloud <- function(d1){
         axis.title.y = element_text(size=18, face="bold",
                                     margin=margin(t=0, r=10, b=0, l=0)),
         plot.title = element_text(lineheight=.8, face="bold", size=20)
-        )
+        ) + 
+  coord_cartesian(ylim = c(ylow, ymax)) 
 
 }
 ####################################################################################

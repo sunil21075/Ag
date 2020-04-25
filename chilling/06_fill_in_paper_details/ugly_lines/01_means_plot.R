@@ -66,12 +66,12 @@ the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                  axis.ticks = element_line(size=.1, color="black"),
                  axis.title.x = element_text(size=14, face="bold", margin = margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
-                 axis.text.x = element_text(size=10, face="plain", color="black"),
+                 axis.text.x = element_text(size=9, face="plain", color="black"),
                  axis.text.y = element_text(size=10, face="plain", color="black")
                 )
 
-color_ord = c("black", "dodgerblue", "olivedrab4", "tomato1")
-color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
+color_ord <- c("black", "dodgerblue", "olivedrab4", "tomato1")
+color_ord <- c("grey47" , "dodgerblue", "olivedrab4", "red") #
 
 plot_path <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/ugly_lines/"
 plot_path <- paste0(plot_path, post_fix, "mean_Doy/")
@@ -86,18 +86,21 @@ for (ct in unique(data$city)){
                filter(city == ct & emission == em) %>% 
                data.table()
 
-    plot = ggplot(curr_dt, aes(x=variable, y=value), fill=factor(time_period)) + 
+    plot = ggplot(curr_dt, aes(x=value, y=variable), fill=factor(time_period)) + 
            geom_path(aes(colour = factor(time_period))) + 
            facet_grid( ~ emission ~ city, scales = "free") + 
-           labs(x = "Accum. CP", y = "Day of Year", fill = "Climate Group") +
+           # labs(x = "Accum. CP", y = "Day of Year", fill = "Climate Group") +
+           labs(y = "Accum. CP", x = "Day of Year", fill = "Climate Group") +
            scale_color_manual(labels = time_periods, values = color_ord) + 
-           scale_y_continuous(breaks = DoY_map$day_count_since_sept, labels= DoY_map$letter_day) + 
-           scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+           # scale_y_continuous(breaks = DoY_map$day_count_since_sept, labels= DoY_map$letter_day) + 
+           scale_x_continuous(breaks = DoY_map$day_count_since_sept, labels= DoY_map$letter_day) + 
+           # scale_x_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+           scale_y_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
            the_thm
 
     output_name = paste0(gsub(" ", "_", ct), "_mean_DoY_thresh", gsub(" ", "_", gsub("\\.", "", em)),".png")
     ggsave(filename=output_name, plot=plot, device="png", 
-           path=plot_path, width=5, height=5, unit="in",
-           dpi=600)
+           path=plot_path, width=5.3, height=5, unit="in",
+           dpi=450)
   }
 }

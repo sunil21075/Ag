@@ -49,7 +49,8 @@ double_cloud <- function(d1){
                                     margin=margin(t=0, r=10, b=0, l=0)),
 
         plot.title = element_text(lineheight=.8, face="bold")
-        )
+        ) + 
+  ylim(0, 260)
 }
 
 cloudy_frost <- function(d1, colname="chill_dayofyear", fil){

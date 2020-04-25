@@ -19,9 +19,9 @@ options(digit=9)
 ###
 ############################################################
 source_dir <- "/Users/hn/Documents/00_GitHub/Ag/Bloom/"
-in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
+in_dir <- "/Users/hn/Documents/01_research_data/bloom/"
 param_dir <- paste0(source_dir, "parameters/")
-plot_base_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/plots/"
+plot_base_dir <- "/Users/hn/Documents/01_research_data/bloom/plots/"
 ############################################################
 ###
 ###             Aeolus source
@@ -115,11 +115,12 @@ thresh <- data.table(thresh)
 
 #############################################################
 emissions <- c("RCP 4.5", "RCP 8.5")
-apple_types <- c("Cripps Pink", "Gala", "Red Deli")
+apple_types <- c("Cripps Pink") # , "Gala", "Red Deli"
 
 # apple, cherry, pear; cherry 14 days shift, pear 7 days shift
-fruit_type <- "apple"
-remove_NA <- "no" 
+fruit_types <- c("apple", "cherry", "pear") 
+fruit_type <- "cherry"
+remove_NA <- "no"
 
 # shift the bloom days
 if (fruit_type == "cherry"){
@@ -149,9 +150,9 @@ app_tp <- apple_types[1]
 thresh_cut <- 75
 loc <- unique(bloom$location)[1]
 
-
 start_time <- Sys.time()
 plot_threshols <- seq(20, 75, 5) # seq(25, 75, 5)
+plot_threshols <- c(45, 75)      # seq(25, 75, 5)
 
 
 for (thresh_cut in plot_threshols){
@@ -251,7 +252,7 @@ for (thresh_cut in plot_threshols){
         }
 
         bloom_thresh_plot_dir <- paste0(plot_base_dir, "limited_locations_", LP,
-                                        "/bloom_thresh_in_one/no_obs/", 
+                                        "/bloom_thresh_in_one/no_obs/y_May_15/", 
                                         fruit_type, "/", col_name, "/")
         if (dir.exists(bloom_thresh_plot_dir) == F) {
             dir.create(path = bloom_thresh_plot_dir, recursive = T)
@@ -263,8 +264,9 @@ for (thresh_cut in plot_threshols){
                                  gsub(" ", "_", gsub("\\.", "", em)), "_", 
                                  gsub(" ", "_", app_tp), "_", thresh_cut, "CP.png"), 
                width=10, height=6, units = "in", 
-               dpi=600, device = "png",
+               dpi=450, device = "png",
                path=bloom_thresh_plot_dir)
+        print (bloom_thresh_plot_dir)
       }
     }
   }
