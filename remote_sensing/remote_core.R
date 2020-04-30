@@ -11,6 +11,10 @@ library(sp)
 ###########
 ############################################
 ############################################
+toss_Nass <- function(sfe){
+  sfe <- sfe[sfe@data$DataSrc != "NASS", ]
+  return(sfe)
+}
 
 add_identifier <- function(dt_df, year){
   dt_df@data <- tibble::rowid_to_column(dt_df@data, "ID")
