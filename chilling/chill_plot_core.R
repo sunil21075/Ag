@@ -710,6 +710,7 @@ organize_time_period_two_hist_w_only_observed <- function(data){
   data$time_period[data$time_period == "1979-2015"] <- "Historical"
   time_periods = c("Historical","2026-2050", "2051-2075", "2076-2099")
   data$time_period = factor(data$time_period, levels = time_periods, order=T)
+  
   data_f <- data %>% filter(time_period != "Historical")
   
   data_h_rcp85 <- data %>% filter(time_period == "Historical")
@@ -815,7 +816,7 @@ safe_box_plot_per_city <- function(data, due, chill_start){
   
   the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                     panel.border = element_rect(fill=NA, size=.3),
-                    panel.grid.major = element_line(size = 0.05),
+                    panel.grid.major = element_line(size = 0.1),
                     panel.grid.minor = element_blank(),
                     panel.spacing = unit(.25, "cm"),
                     legend.position = "bottom", 
@@ -1137,4 +1138,167 @@ diff_SC_map <- function(data, color_col) {
                                  guide = "colourbar", space = "Lab",
                                  limit = c(low_lim, up_lim+10),
                                  breaks = c(-150, -100, -50, 0, 50)) 
+}
+
+
+acc_CP <- function(data, colname){
+  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
+
+  if (colname == "sum_J1"){
+      dd <- paste0("Dec. 31")
+     } else if (colname == "sum_F1"){
+      dd <- paste0("Jan. 31")
+     } else if (colname == "sum_M1"){
+      dd <- paste0("Feb. 28/29")
+     } else if (colname == "sum_A1"){
+      dd <- "Mar. 31"
+  }
+
+  data$time_period <- as.character(data$time_period)
+  if ("2025_2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025_2050"] <- "2026_2050"
+  }
+
+  if ("2025-2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025-2050"] <- "2026-2050"
+  }
+
+  categ_lab = c("Historical", "2026-2050", "2051-2075", "2076-2099")
+  box_width = 0.6
+  data$time_period <- gsub("_", "-", data$time_period)
+  data$time_period <- factor(data$time_period, levels = categ_lab, order=TRUE)
+
+  df <- data.frame(data)
+  df <- df %>% group_by(time_period, emission, city)
+  medians <- (df %>% summarise(med = median(get(colname))))
+  
+  the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                    panel.border = element_rect(fill=NA, size=.3),
+                    panel.grid.major = element_line(size = 0.1),
+                    panel.grid.minor = element_blank(),
+                    panel.spacing = unit(.25, "cm"),
+                    legend.position = "bottom", 
+                    legend.key.size = unit(2, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
+                    panel.spacing.y = unit(.5, 'cm'),
+                    legend.text = element_text(size=16),
+                    legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
+                    legend.title = element_blank(),
+                    plot.title = element_text(size=14, face = "bold"),
+                    plot.subtitle = element_text(face = "bold"),
+                    strip.text.x = element_text(size=14, face="bold"),
+                    strip.text.y = element_text(size=14, face="bold"),
+                    axis.ticks = element_line(size=.1, color="black"),
+                    axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.y = element_text(size=14, face="plain", color="black"),
+                    axis.text.x = element_blank(),
+                    axis.title.x = element_blank()
+                    )
+  
+  CP_b <- ggplot(data = data, aes(x=time_period, y=get(colname), fill=time_period)) +
+              geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
+              labs(x="", y="accumulated chill portions") +
+              facet_grid(~ emission ~ city ) + 
+              the_theme + 
+              scale_fill_manual(values = color_ord,
+                                name = "Time\nPeriod", 
+                                labels = categ_lab) + 
+              scale_color_manual(values = color_ord,
+                                 name = "Time\nPeriod", 
+                                 limits = color_ord,
+                                 labels = categ_lab) + 
+              scale_x_discrete(breaks = categ_lab,
+                               labels = categ_lab)  +
+              geom_text(data = medians, 
+                        aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                            size=6, 
+                            position =  position_dodge(.09),
+                            vjust = 0, hjust=.5) # +
+            # ggtitle(lab=paste0("Safe chill accumulation")) 
+            #, subtitle = paste0("chill season started on ", chill_start)
+  
+  return(CP_b)
+}
+
+
+
+
+
+acc_CP_2rows <- function(data, colname){
+  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
+
+  if (colname == "sum_J1"){
+      dd <- paste0("Dec. 31")
+     } else if (colname == "sum_F1"){
+      dd <- paste0("Jan. 31")
+     } else if (colname == "sum_M1"){
+      dd <- paste0("Feb. 28/29")
+     } else if (colname == "sum_A1"){
+      dd <- "Mar. 31"
+  }
+
+  data$time_period <- as.character(data$time_period)
+  if ("2025_2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025_2050"] <- "2026_2050"
+  }
+
+  if ("2025-2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025-2050"] <- "2026-2050"
+  }
+
+  categ_lab = c("Historical", "2026-2050", "2051-2075", "2076-2099")
+  box_width = 0.4
+  data$time_period <- gsub("_", "-", data$time_period)
+  data$time_period <- factor(data$time_period, levels = categ_lab, order=TRUE)
+
+  df <- data.frame(data)
+  df <- df %>% group_by(time_period, city)
+  medians <- (df %>% summarise(med = median(get(colname))))
+  
+  the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
+                    panel.border = element_rect(fill=NA, size=.3),
+                    panel.grid.major = element_line(size = 0.1),
+                    panel.grid.minor = element_blank(),
+                    panel.spacing = unit(.25, "cm"),
+                    legend.position = "bottom", 
+                    legend.key.size = unit(1.2, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
+                    panel.spacing.y = unit(.5, 'cm'),
+                    legend.text = element_text(size=12),
+                    legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
+                    legend.title = element_blank(),
+                    plot.title = element_text(size=12, face = "bold"),
+                    plot.subtitle = element_text(face = "bold"),
+                    strip.text.x = element_text(size=12, face="bold"),
+                    strip.text.y = element_text(size=12, face="bold"),
+                    axis.ticks = element_line(size=.1, color="black"),
+                    axis.title.y = element_text(size=12, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.y = element_text(size=12, face="plain", color="black"),
+                    axis.text.x = element_blank(),
+                    axis.title.x = element_blank()
+                    )
+  
+  CP_b <- ggplot(data = data, aes(x=time_period, y=get(colname), fill=time_period)) +
+              geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
+              labs(x="", y="accumulated chill portions") +
+              facet_wrap( . ~ city ) + 
+              the_theme + 
+              scale_fill_manual(values = color_ord,
+                                name = "Time\nPeriod", 
+                                labels = categ_lab) + 
+              scale_color_manual(values = color_ord,
+                                 name = "Time\nPeriod", 
+                                 limits = color_ord,
+                                 labels = categ_lab) + 
+              scale_x_discrete(breaks = categ_lab,
+                               labels = categ_lab)  +
+              geom_text(data = medians, 
+                        aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                            size=4, 
+                            position =  position_dodge(.09),
+                            vjust = 0, hjust=.5) # +
+            # ggtitle(lab=paste0("Safe chill accumulation")) 
+            #, subtitle = paste0("chill season started on ", chill_start)
+  
+  return(CP_b)
 }

@@ -24,7 +24,7 @@ source_2 = paste0(basee, "/bloom_plot_core.R")
 source(source_1)
 source(source_2)
 
-in_dir <- "/Users/hn/Documents/01_research_data/Ag_check_point/bloom/"
+in_dir <- "/Users/hn/Documents/01_research_data/bloom/"
 param_dir <- paste0(basee, "parameters/")
 frost_plot_dir <- "/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/first_frost/"
 if (dir.exists(frost_plot_dir) == F) {
@@ -55,6 +55,16 @@ frost <- frost %>%
          data.table()
 
 frost <- dplyr::left_join(x = frost, y = location_ls, by = "location")
+
+ict <- c("Omak", "Yakima", "Walla Walla", "Eugene")
+
+frost <- frost %>% 
+         filter(city %in% ict) %>% 
+         data.table()
+
+frost$city <- factor(frost$city, levels = ict, order=TRUE)
+
+
 #############################################################
 #
 # pick up 2026-2099 time period
@@ -71,7 +81,6 @@ frost <- frost %>%
 #############################################################
 frost <- within(frost, remove(tmin, location, lat, long))
 print(length(unique(frost$chill_season)))
-print(length(unique(frost$location)))
 print(length(unique(frost$model)))
 #############################################################
 emissions <- c("RCP 4.5", "RCP 8.5")
@@ -82,27 +91,26 @@ ct <- location_ls$city[1]
 setnames(frost, old=c("city"), new=c("location"))
 start_time <- Sys.time()
 
-for (loc in location_ls$city){
-  for (em in emissions){
-    curr_frost <- frost %>% 
-                  filter(location==loc & emission==em) %>% 
-                  data.table()
 
-    #############################################################
-    ##
-    ##             Frost plot here
-    ##
-    frost_plt <- cloudy_frost(d1 = curr_frost, 
-                              colname = "chill_dayofyear", 
-                              fil = "first frost") + 
-                 ggtitle(lab=paste0("First frost shift at ", loc))
+for (em in emissions){
+  curr_frost <- frost %>% 
+                filter(emission==em) %>% 
+                data.table()
 
-    ggsave(plot = frost_plt,
-           filename = paste0("first_frost_", loc, "_", gsub(" ", "", gsub("\\.", "", em)), ".png"), 
-           width=10, height=6, units = "in", 
-           dpi=600, device = "png",
-           path=frost_plot_dir)
-  }
+  #############################################################
+  ##
+  ##             Frost plot here
+  ##
+  source(source_2)
+  frost_plt <- cloudy_frost_2_rows(d1 = curr_frost, 
+                                   colname = "chill_dayofyear", 
+                                   fil = "first frost")
+
+  ggsave(plot = frost_plt,
+         filename = paste0("first_frost_", gsub(" ", "", gsub("\\.", "", em)), ".png"), 
+         width=15, height=10, units = "in", 
+         dpi=400, device = "png",
+         path=frost_plot_dir)
 }
 
 print(Sys.time() - start_time)

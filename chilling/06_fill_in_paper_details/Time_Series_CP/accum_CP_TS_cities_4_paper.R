@@ -138,9 +138,18 @@ summary_comp <- within(summary_comp, remove(location, lat, long, thresh_20,
                                             thresh_70, thresh_75, sum_J1, sum_F1, sum_M1,
                                             sum))
 
+ict <- c("Omak", "Yakima", "Walla Walla", "Eugene")
+
+summary_comp <- summary_comp %>% 
+                filter(city %in% ict) %>% 
+                data.table()
+
+summary_comp$city <- factor(summary_comp$city, levels = ict, order=TRUE)
+
+
 for (ct in unique(summary_comp$city)){
   
-  A <- summary_comp %>% filter(city == ct)
+  A <- summary_comp %>% filter(city == ct) %>% data.table()
     
   # summary_comp_loc_medians <- A %>%
   #                            filter(model != "observed") %>%
