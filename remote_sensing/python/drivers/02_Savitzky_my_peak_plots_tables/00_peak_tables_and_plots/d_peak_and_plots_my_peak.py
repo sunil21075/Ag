@@ -48,7 +48,7 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 ### Directories
 ###
 
-data_dir = "/Users/hn/Documents/01_research_data/Ag_check_point/" + \
+data_dir = "/Users/hn/Documents/01_research_data/" + \
            "remote_sensing/01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2016/"
 
 param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
@@ -65,9 +65,9 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###                   Aeolus Directories
 ###
 ####################################################################################
-            
+
 data_dir = "/data/hydro/users/Hossein/remote_sensing/" + \
-           "01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2017/"
+           "01_NDVI_TS/00_Grant/No_EVI/Grant_10_cloud/Grant_2017/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 ####################################################################################
 ###
@@ -100,6 +100,7 @@ file_N = file_names[0]
 a_df = pd.read_csv(data_dir + file_N)
 
 output_dir = data_dir + "/savitzky/delta_" + str(delt) + "/"
+os.makedirs(output_dir, exist_ok=True)
 plot_dir_base = output_dir
 ####################################################################################
 ###
@@ -344,6 +345,8 @@ for a_poly in polygon_list:
         ax.legend(loc="best");
 
         fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+        os.makedirs(plot_path, exist_ok=True)
+        
         plt.savefig(fname = fig_name, \
                      dpi=300,
                      bbox_inches='tight')
@@ -438,11 +441,11 @@ for a_poly in polygon_list:
 ###########
 
 all_poly_and_maxs_spline = all_poly_and_maxs_spline[0:(pointer_max_spline+1)]
-out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
+out_name = output_dir + "/df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
 all_poly_and_maxs_spline.to_csv(out_name, index = False)
 
 all_poly_and_maxs_savitzky = all_poly_and_maxs_savitzky[0:(pointer_max_savitzky+1)]
-out_name = output_dir + "all_poly_and_maxs_savitzky.csv"
+out_name = output_dir + "/all_poly_and_maxs_savitzky.csv"
 all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 
 ###########
@@ -450,11 +453,11 @@ all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 ###########
 
 all_poly_and_mins_spline = all_poly_and_mins_spline[0:(pointer_min_spline+1)]
-out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
+out_name = output_dir + "/df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
 all_poly_and_mins_spline.to_csv(out_name, index = False)
 
 all_poly_and_mins_savitzky = all_poly_and_mins_savitzky[0:(pointer_min_savitzky+1)]
-out_name = output_dir + "all_poly_and_mins_savitzky.csv"
+out_name = output_dir + "/all_poly_and_mins_savitzky.csv"
 all_poly_and_mins_savitzky.to_csv(out_name, index = False)
 
 

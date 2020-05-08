@@ -94,6 +94,10 @@ plot_core_path = "/Users/hn/Documents/00_GitHub/Ag/chilling/chill_plot_core.R"
 source(core_path)
 source(plot_core_path)
 
+diffs_median$emission <- factor(diffs_median$emission, 
+                                levels=c("RCP 8.5", "RCP 4.5"),
+                                order=TRUE)
+
 a_map <- diff_CP_map(data = diffs_median, color_col = "CP_diff_median")
 
 qual = 450

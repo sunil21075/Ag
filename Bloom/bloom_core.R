@@ -323,13 +323,6 @@ bloom_per_year_median_accross_models <- function(data_dt) {
   return(data_dt)
 }
 
-bloom_per_year <- function(data, bloom_cut_off){
-  # a note: if this is used in any driver
-  # the same as bloom function below. 
-  # and we did take the medians out of bloom(.)
-  # and created bloom_medians_across_models_time_periods(.)
-
-}
 
 bloom_medians_across_models_time_periods <- function(data){
   data <- data[, .(medDoY = as.integer(median(dayofyear))), 
@@ -414,3 +407,66 @@ generate_vertdd <- function(data_tb, lower_temp=4.5, upper_temp=24.28){
                            lower.tail = TRUE)
   return(data_tb)
 }
+
+
+generate_vertdd_for_sensitivity <- function(data_tb, lower_temp=4.5, upper_temp=24.28, distribution_mean, start_doy){
+  data_tb <- data.table(data_tb)
+  lower = lower_temp; upper = upper_temp
+  twopi = 2 * pi; pihlf = 0.5 * pi
+
+  data_tb$summ = data_tb$tmin + data_tb$tmax 
+  data_tb$diff = data_tb$tmax - data_tb$tmin
+  data_tb$diffsq = data_tb$diff * data_tb$diff
+
+  data_tb$b <- 2 * upper - data_tb$summ
+  data_tb$bsq <- data_tb$b * data_tb$b
+  data_tb$a <- 2 * lower - data_tb$summ
+  data_tb$asq <- data_tb$a * data_tb$a
+  data_tb$th1 <- atan(data_tb$a / sqrt(data_tb$diffsq - data_tb$asq))
+  data_tb$th2 <- atan(data_tb$b / sqrt(data_tb$diffsq - data_tb$bsq))
+
+  data_tb[tmin >= lower & tmax > upper, 
+          vertdd:=((-diff*cos(th2)-a*(th2+pihlf))/twopi)]
+  
+  data_tb[tmin >= lower & tmax <= upper, 
+          vertdd := summ/2 - lower]
+  
+  data_tb[tmin < lower & tmax <= upper, 
+          vertdd:=(diff*cos(th1)-(a*(pihlf-th1)))/twopi]
+  
+  data_tb[tmin < lower & tmax > upper, 
+          vertdd:=(-diff*(cos(th2)-cos(th1))-(a*(th2-th1)))/twopi]
+  
+  data_tb[tmin>tmax | tmax<=lower | tmin>=upper, vertdd:=0]
+  
+  data_tb <- within(data_tb, remove(summ, diff, diffsq, b,
+                                    bsq, a, asq, th1, th2))
+  #
+  #  Toss the first few days in Jan
+  #
+  print ("line 456")
+  print (colnames(data_tb))
+  
+  if (start_doy>1){
+    data_tb <- data_tb %>% 
+               group_by(lat, long, year, emission, model)%>% 
+               slice(-1:-(start_doy-1)) %>% 
+               data.table()
+  }
+  
+  data_tb = data_tb[, vert_Cum_dd := cumsum(vertdd),
+                    by=list(lat, long, model, year)]
+
+  data_tb$vert_Cum_dd_F = data_tb$vert_Cum_dd * 1.8
+
+  # the following is updated from new word document of Vince
+  # for the old ones see the codling moth core.
+  # cripps pink
+  data_tb$cripps_pink = pnorm(data_tb$vert_Cum_dd_F, 
+                              mean = distribution_mean, sd = 52.58, 
+                              lower.tail = TRUE)
+  return(data_tb)
+}
+
+
+

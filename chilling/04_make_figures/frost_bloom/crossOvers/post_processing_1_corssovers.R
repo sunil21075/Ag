@@ -19,7 +19,7 @@ six_models <- c("BNU-ESM", "CanESM2", "GFDL-ESM2G",
 
 emissions <- c("RCP 4.5", "RCP 8.5")
 cities <- c("Hood River", "Walla Walla", "Richland", 
-	        "Yakima", "Wenatchee", "Omak")
+	          "Yakima", "Wenatchee", "Omak")
 apple_types <- c("Cripps Pink", "Gala", "Red Deli") # 
 fruit_types <- c("apple", "Cherry", "Pear")
 thresholds <- c("threshold: 70", "threshold: 75")
@@ -43,7 +43,7 @@ for (fruit in fruit_types){
                        as.is=TRUE)
   
   cripps <- all_data %>% 
-            filter(fruit_type == paste0(fruit, ": Cripps Pink"))%>% 
+            filter(fruit_type == paste0(fruit, ": Cripps Pink")) %>% 
             data.table()
 
   gala <- all_data %>% 

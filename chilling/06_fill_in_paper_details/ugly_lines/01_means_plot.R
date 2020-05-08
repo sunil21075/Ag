@@ -63,7 +63,7 @@ the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                  panel.grid.minor = element_blank(),
                  panel.spacing = unit(.25, "cm"),
                  legend.position = "bottom", 
-                 legend.key.size = unit(2, "line"),
+                 legend.key.size = unit(1.5, "line"),
                  legend.spacing.x = unit(.05, 'cm'),
                  panel.spacing.y = unit(.5, 'cm'),
                  legend.text = element_text(size=axlabelSize),
@@ -76,7 +76,7 @@ the_thm <- theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                  axis.ticks = element_line(size=.1, color="black"),
                  axis.title.x = element_text(size = axlabelSize, face="bold", margin = margin(t=10, r=0, b=0, l=0)),
                  axis.title.y = element_text(size = axlabelSize, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
-                 axis.text.x = element_text(size = tickSize, face="plain", color="black", angle=30, hjust = 1),
+                 axis.text.x = element_text(size = tickSize, face="plain", color="black", angle=90, hjust = 1),
                  axis.text.y = element_text(size = tickSize, face="plain", color="black")
                 )
 
@@ -116,7 +116,7 @@ if (dir.exists(plot_path) == F) {
 #   }
 # }
 
-qual = 400
+qual = 600
 for (em in unique(data$emission)) {
   curr_dt <- data_melt %>% 
              filter(emission == em) %>% 
@@ -134,9 +134,37 @@ for (em in unique(data$emission)) {
 
   output_name = paste0("mean_DoY_thresh_", gsub(" ", "_", gsub("\\.", "", em)), "_", qual,"dpi.png")
   ggsave(filename=output_name, plot=plot, device="png", 
-         path=plot_path, width=18, height=5, unit="in",
+         path=plot_path, width=12, height=5, unit="in",
          dpi=qual)
 }
+
+
+data_melt$emission <- factor(data_melt$emission, 
+                                levels=c("RCP 8.5", "RCP 4.5"),
+                                order=TRUE)
+
+plot = ggplot(data_melt, aes(y=variable, x=value), fill=factor(time_period)) + 
+       geom_path(aes(colour = factor(time_period))) + 
+       facet_grid(~ emission ~ city, scales = "free") + 
+       labs(y = "accumulated chill portions", x = "day of year", fill = "Climate Group") +
+       scale_color_manual(labels = time_periods, values = color_ord) + 
+       scale_x_continuous(breaks = DoY_map$day_count_since_sept, labels= DoY_map$letter_day) + 
+       scale_y_continuous(limits = c(20, 75), breaks = seq(20, 80, by = 10)) +
+       the_thm + 
+       coord_cartesian(xlim = c(min(data_melt$value), max(data_melt$value))) 
+plot
+
+qual = 400
+output_name = paste0("mean_DoY_thresh_", qual,"dpi.png")
+ggsave(filename=output_name, plot=plot, device="png", 
+     path=plot_path, 
+     width=12, height=7, unit="in", dpi=qual)
+
+
+
+
+
+
 
 
 

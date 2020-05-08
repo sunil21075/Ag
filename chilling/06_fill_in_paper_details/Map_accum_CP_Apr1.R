@@ -11,7 +11,8 @@ library(purrr)
 library(scales)
 library(tidyverse)
 library(maps)
-#library(data.table)
+library(dplyr)
+library(data.table)
 options(digits=9)
 options(digit=9)
 
@@ -217,18 +218,18 @@ median_of_models <- ensemble_map(dt = stats_comp_ensemble_median,
                                  month_col = "median_A1", 
                                  legend_label = "Median")
 
-plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/cp_accum_map/")
+plot_base <- paste0("/Users/hn/Documents/00_GitHub/Ag_papers/Chill_Paper/figures/cp_accum_map/Sept1_Apr1/")
 if (dir.exists(plot_base) == F) {dir.create(path = plot_base, recursive = T)}
 
 plt_width <- 10
 plt_height <- 3.3
-ggsave(filename = paste0("accumutaled_CP_by_Apr_85_mean_of_models_median_of_years.png"), 
+ggsave(filename = paste0("accumutaled_CP_by_Apr1_85_mean_of_models_median_of_years.png"), 
        plot=mean_of_models, 
        width=plt_width, height=plt_height, units="in", 
        dpi=600, device="png", 
        path=plot_base)
 
-ggsave(filename = paste0("accumutaled_CP_by_Apr_85_median_of_models_median_of_years.png"), 
+ggsave(filename = paste0("accumutaled_CP_by_Apr1_85_median_of_models_median_of_years.png"), 
        plot=median_of_models, 
        width=plt_width, height=plt_height, units="in", 
        dpi=600, device="png", 
@@ -237,7 +238,7 @@ ggsave(filename = paste0("accumutaled_CP_by_Apr_85_median_of_models_median_of_ye
 
 mean_of_models <- ensemble_map(dt = stats_comp_ensemble_mean, 
                                scenario_name= "RCP 4.5", 
-                               month_col = "median_A1", 
+                               month_col = "median_A1",
                                legend_label = "Mean")
 
 median_of_models <- ensemble_map(dt = stats_comp_ensemble_median, 
@@ -245,18 +246,80 @@ median_of_models <- ensemble_map(dt = stats_comp_ensemble_median,
                                  month_col = "median_A1", 
                                  legend_label = "Median")
 
-ggsave(filename = paste0("accumutaled_CP_by_Apr_45_mean_of_models_median_of_years.png"), 
+ggsave(filename = paste0("accumutaled_CP_by_Apr1_45_mean_of_models_median_of_years.png"), 
        plot=mean_of_models, 
        width=plt_width, height=plt_height, units="in", 
        dpi=600, device="png", 
        path=plot_base)
 
-ggsave(filename = paste0("accumutaled_CP_by_Apr_45_median_of_models_median_of_years.png"), 
+ggsave(filename = paste0("accumutaled_CP_by_Apr1_45_median_of_models_median_of_years.png"), 
        plot=median_of_models, 
        width=plt_width, height=plt_height, units="in", 
        dpi=600, device="png", 
        path=plot_base)
 
+plot_base
+
+
+
+
+ensemble_map_2_rcps <- function(dt, month_col, legend_label) {
+  minn <- min(dt[, get(month_col)])
+  maxx <- max(dt[, get(month_col)])
+
+  dt_F <- dt %>%
+        filter(emission != "Historical") %>%
+        data.table()
+
+  d_hist <- dt %>%
+            filter(emission =="Historical") %>%
+            data.table()
+
+  d_hist_45 <- d_hist
+
+  d_hist_45$emission <- "RCP 4.5"
+  d_hist$emission <- "RCP 8.5"
+
+  dt <- rbind(d_hist_45, d_hist, dt_F)
+
+  dt$emission <- factor(dt$emission, 
+                        levels=c("RCP 8.5", "RCP 4.5"),
+                        order=TRUE)
+  
+  dt %>% ggplot() +
+         geom_polygon(data = states_cluster, aes(x = long, y = lat, group = group),
+                     fill = "grey", color = "black") +
+         # aes_string to allow naming of column in function 
+         geom_point(aes_string(x = "long", y = "lat",
+                               color = month_col), alpha = 0.4, size=0.1) +
+         scale_color_viridis_c(option = "plasma", name = legend_label, direction = -1,
+                               limits = c(minn, maxx),
+                               breaks = pretty_breaks(n = 4)) +
+         coord_fixed(xlim = c(-124.5, -111.4),  ylim = c(41, 50.5), ratio = 1.3) +
+         facet_grid(~ emission ~ time_period) + # facet_wrap came with nrow = 1
+         theme(axis.title.y = element_blank(),
+               axis.title.x = element_blank(),
+               axis.ticks.y = element_blank(), 
+               axis.ticks.x = element_blank(),
+                axis.text.x = element_blank(),
+               axis.text.y = element_blank(),
+               panel.grid.major = element_line(size = 0.1),
+               legend.position="bottom", 
+               strip.text = element_text(size=12, face="bold"),
+               plot.margin = margin(t=-0.5, r=0.2, b=-0.5, l=0.2, unit = 'cm'),
+               legend.title = element_blank()
+               )
+}
+
+both_RCPs_mean <- ensemble_map_2_rcps(dt = stats_comp_ensemble_mean, 
+                                      month_col = "median_A1", 
+                                      legend_label = "Mean")
+
+ggsave(filename = paste0("accumutaled_CP_by_Apr1_mean_of_models_median_of_years.png"), 
+       plot=both_RCPs_mean, 
+       width=plt_width, height=5.6, units="in", 
+       dpi=600, device="png", 
+       path=plot_base)
 
 
 

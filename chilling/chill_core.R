@@ -6,6 +6,8 @@ options(digits=9)
 # source(source_path)
 ##################################################################
 
+
+
 add_time_periods_model <- function(dt){
   time_periods <- c("1950-2005", 
                     "2006-2025", "2026-2050", 
@@ -816,3 +818,68 @@ projec_diff_from_hist <- function(dt_dt, diff_from="Observed"){
 }
 
 
+
+
+produce_relaxedSC_4_plots_w_noly_observed <- function(data){
+  needed_cols = c("chill_season", "sum_A1", "year", "model", 
+                  "emission", "lat", "long", "location", "time_period")
+
+  ################### CLEAN DATA
+  data = subset(data, select=needed_cols)
+  # pick up future data
+  # data = data %>% filter(emission != "historical")
+  data <- organize_time_period_two_hist_w_only_observed(data)
+
+  ################### GENERATE STATS
+  #######################################################################
+  ##                                                                   ##
+  ##   Find the 90th percentile of the chill units                     ##
+  ##   Grouped by location, model, time_period and rcp                 ##
+  ##   This could be used for box plots, later compute the mean.       ##
+  ##   for maps                                                        ##
+  ##                                                                   ##
+  #######################################################################
+
+  quan_per_loc_period_model_apr <- data %>% 
+                                   group_by(time_period, emission, model, location) %>%
+                                   summarise(quan_80 = quantile(sum_A1, probs = 0.05)) %>%
+                                   data.table()
+
+  # it seems there is a library, perhaps tidyverse, that messes up
+  # the above line, so the two variables above are 1-by-1. 
+  # just close and re-open R Studio
+  ########################################################################
+  #######                                                          #######
+  #######                     Means                                #######
+  #######                                                          #######
+  ########################################################################
+  
+  mean_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                        group_by(time_period, location, emission) %>%
+                                        summarise(mean_over_model = mean(quan_80)) %>%
+                                        data.table()
+  ########################################################################
+  #######                                                          #######
+  #######                     Medians                              #######
+  #######                                                          #######
+  ########################################################################
+  
+  median_quan_per_loc_period_model_apr <- quan_per_loc_period_model_apr %>%
+                                          group_by(time_period, location, emission) %>%
+                                          summarise(median_over_model = median(quan_80)) %>%
+                                          data.table()
+  
+  # quan_per_loc_period_model_jan$time_period = factor(quan_per_loc_period_model_jan$time_period, order=T)
+  # mean_quan_per_loc_period_model_jan$time_period = factor(mean_quan_per_loc_period_model_jan$time_period, order=T)
+  # median_quan_per_loc_period_model_jan$time_period = factor(median_quan_per_loc_period_model_jan$time_period, order=T)
+
+  # quan_per_loc_period_model_feb$time_period_feb = factor(quan_per_loc_period_model_feb$time_period, order=T)
+  # mean_quan_per_loc_period_model_feb$time_period = factor(mean_quan_per_loc_period_model_feb$time_period, order=T)
+  # median_quan_per_loc_period_model_feb$time_period= factor(median_quan_per_loc_period_model_feb$time_period, order=T)
+
+  return(list(quan_per_loc_period_model_apr,
+              mean_quan_per_loc_period_model_apr,
+              median_quan_per_loc_period_model_apr
+              )
+        )
+}

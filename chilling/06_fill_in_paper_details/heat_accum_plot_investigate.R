@@ -57,7 +57,8 @@ ict <- c("Omak", "Yakima", "Walla Walla", "Eugene")
 heat <- heat %>% filter(city %in% ict)
 heat$city <- factor(heat$city, levels = ict, order=TRUE)
 
-heat_jan <- heat %>% filter(month == 1 & day == 31) %>% data.table()
+dd = 15
+heat_jan <- heat %>% filter(month == 1 & day == dd ) %>% data.table()
 
 heat_jan_observed <- heat_jan %>% filter(model =="observed") %>% data.table()
 heat_jan_future <- heat_jan %>% filter(model !="observed") %>% data.table()
@@ -113,7 +114,7 @@ cloudy_heat_accum_2_rows <- function(d1, fil="Heat accumulation in Jan."){ # col
 jan_heat_plt <- cloudy_heat_accum_2_rows(heat_jan)
 
 ggsave(plot=jan_heat_plt,
-       filename ="jan_heat_accum_RCP85.png", 
+       filename =paste0("jan", dd, "_heat_accum_RCP85.png"), 
        width=15, height=10, units = "in", 
        dpi=600, device = "png",
        path=plot_base_dir)
@@ -123,7 +124,7 @@ heat_jan_hist <- heat_jan %>% filter(model == "observed")
 jan_heat_plt <- cloudy_heat_accum_2_rows(heat_jan_hist)
 
 ggsave(plot=jan_heat_plt,
-       filename ="historical_jan_heat_accum_RCP85.png", 
+       filename = paste0("historical_jan", dd, "_heat_accum_RCP85.png"), 
        width=15, height=10, units = "in", 
        dpi=600, device = "png",
        path=plot_base_dir)
@@ -198,7 +199,7 @@ heat_box_plt <- function(data, colname="vert_Cum_dd"){
   
   CP_b <- ggplot(data = data, aes(x=time_period, y=get(colname), fill=time_period)) +
               geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
-              labs(x="", y="accumulated chill portions") +
+              labs(x="", y="accumulated heat") +
               facet_wrap( . ~ city ) + 
               the_theme + 
               scale_fill_manual(values = color_ord,
@@ -225,7 +226,7 @@ heat_jan <-  add_time_periods(heat_jan)
 
 heat_jan_box_plot <- heat_box_plt(heat_jan)
 
-output_name = paste0("heat_jan_box_plot.png")
+output_name = paste0("heat_jan_", dd, "box_plot.png")
 box_width = 6
 box_height = 5
 ggsave(output_name, heat_jan_box_plot, path=plot_base_dir, width=box_width, height=box_height, unit="in", dpi=600)

@@ -126,8 +126,24 @@ for (em in unique(summary_comp$emission)){
 }
 
 
-######### 2 rows
+summary_comp$emission <- factor(summary_comp$emission, 
+                                levels=c("RCP 8.5", "RCP 4.5"),
+                                order=TRUE)
+ 
+sum_A1_plot <- accum_plot(data=summary_comp, y_name="sum_A1", due="Apr. 1")
 
+ggsave(plot = sum_A1_plot, paste0("CP_accum_sept_Apr1.png"),
+       dpi=600, path=write_dir,
+       height = 7, width = 10, units = "in")
+
+ggsave(plot = sum_A1_plot, paste0("CP_accum_sept_Apr1_lowQual.png"),
+     dpi=400, path=write_dir,
+     height = 7, width = 10, units = "in")
+
+
+#########
+######### 2 rows
+#########
 
 summary_comp_85 <- summary_comp %>% filter(emission == "RCP 8.5")
 summary_comp_45 <- summary_comp %>% filter(emission == "RCP 4.5")

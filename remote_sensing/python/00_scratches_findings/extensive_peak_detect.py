@@ -1,4 +1,3 @@
-# https://gist.github.com/sixtenbe/1178136
 #!/usr/bin/python2
 
 
@@ -721,8 +720,7 @@ def _smooth(x, window_len=11, window="hanning"):
     return y
     
     
-def zero_crossings(y_axis, window_len = 11, 
-    window_f="hanning", offset_corrected=False):
+def zero_crossings(y_axis, window_len = 11, window_f="hanning", offset_corrected=False):
     """
     Algorithm to find zero crossings. Smooths the curve and finds the
     zero-crossings by looking for a sign change.
@@ -892,10 +890,10 @@ def zero_crossings_sine_fit(y_axis, x_axis, fit_window = None, smooth_window = 1
     
     
     return true_crossings
-        
-        
-    
-    
+
+
+
+"""
 def _test_zero():
     _max, _min = peakdetect_zero_crossing(y,x)
 def _test():
@@ -929,7 +927,8 @@ def _test_graph():
     pylab.plot(xm, ym, "y*")
     pylab.plot(xn, yn, "k*")
     pylab.show()
-    
+
+
 def _test_graph_cross(window = 11):
     i = 10000
     x = np.linspace(0,8.7*pi,i)
@@ -948,9 +947,7 @@ def _test_graph_cross(window = 11):
     pylab.hold(True)
     pylab.plot(crossings, y_cross, "b+")
     pylab.show()
-    
-    
-    
+
 if __name__ == "__main__":
     from math import pi
     import pylab
@@ -974,3 +971,4 @@ if __name__ == "__main__":
     
     
     pylab.show()
+"""

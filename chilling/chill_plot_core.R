@@ -358,64 +358,74 @@ boxplot_frost_dayofyear <- function(dt, kth_day, sub_title){
   return(safe_b)
 }
 ####################################################################################
+safe_box_plot <- function(data, due, chill_start, col = "quan_90"){
+  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") #
+
+  data$time_period <- as.character(data$time_period)
+  if ("2025_2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025_2050"] <- "2026_2050"
+  }
+
+  if ("2025-2050" %in% unique(data$time_period)){
+    data$time_period[data$time_period=="2025-2050"] <- "2026-2050"
+  }
 
 
-safe_box_plot <- function(data, due, chill_start){
-  color_ord = c("grey47" , "dodgerblue", "olivedrab4", "red") # 
-  categ_lab = c("Historical", "2025-2050", "2051-2075", "2076-2099")
-  box_width = 0.25
-  
+  categ_lab = c("Historical", "2026-2050", "2051-2075", "2076-2099")
+  box_width = 0.4
+  data$time_period <- gsub("_", "-", data$time_period)
+  data$time_period <- factor(data$time_period, levels = categ_lab, order=TRUE)
+
   df <- data.frame(data)
-  df <- df %>% group_by(time_period, scenario, warm_cold)
-  medians <- (df %>% summarise(med = median(quan_90)))
-  medians_vec <- medians$med
+  df <- df %>% group_by(time_period, emission, city)
+  medians <- (df %>% summarise(med = median(get(col))))
   
   the_theme = theme(plot.margin = unit(c(t=.2, r=.2, b=.2, l=0.2), "cm"),
                     panel.border = element_rect(fill=NA, size=.3),
-                    panel.grid.major = element_line(size = 0.05),
+                    panel.grid.major = element_line(size = 0.1),
                     panel.grid.minor = element_blank(),
                     panel.spacing = unit(.25, "cm"),
                     legend.position = "bottom", 
-                    legend.key.size = unit(1.6, "line"),
-                    legend.spacing.x = unit(.2, 'cm'),
+                    legend.key.size = unit(1.5, "line"),
+                    legend.spacing.x = unit(.05, 'cm'),
                     panel.spacing.y = unit(.5, 'cm'),
-                    legend.text = element_text(size=16),
+                    legend.text = element_text(size=14),
                     legend.margin = margin(t=0, r=0, b=0, l=0, unit = 'cm'),
                     legend.title = element_blank(),
-                    plot.title = element_text(size = 20, face = "bold"),
+                    plot.title = element_text(size=14, face = "bold"),
                     plot.subtitle = element_text(face = "bold"),
-                    strip.text.x = element_text(size=18, face="bold"),
-                    strip.text.y = element_text(size=18, face="bold"),
+                    strip.text.x = element_text(size=14, face="bold"),
+                    strip.text.y = element_text(size=14, face="bold"),
                     axis.ticks = element_line(size=.1, color="black"),
-                    axis.text.y = element_text(size=14, face="bold", color="black"),
-                    axis.title.y = element_text(size=22, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.title.y = element_text(size=14, face="bold", margin = margin(t=0, r=10, b=0, l=0)),
+                    axis.text.y = element_text(size=10, face="plain", color="black"),
                     axis.text.x = element_blank(),
                     axis.title.x = element_blank()
                     )
   
-  safe_b <- ggplot(data = data, aes(x=time_period, y=quan_90, fill=time_period)) +
-            geom_boxplot(outlier.size=-.25, notch=F, width=box_width, lwd=.1) +
-            labs(x="", y="safe chill") +
-            facet_grid(~ scenario ~ warm_cold ) + 
-            the_theme + 
-            scale_fill_manual(values = color_ord,
-                              name = "Time\nPeriod", 
-                              labels = categ_lab) + 
-            scale_color_manual(values = color_ord,
-                               name = "Time\nPeriod", 
-                               limits = color_ord,
-                               labels = categ_lab) + 
-            scale_x_discrete(breaks = c("Historical", "2025_2050", "2051_2075", "2076_2099"),
-                             labels = categ_lab)  +
-            geom_text(data = medians, 
-                      aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
-                          size=4.2, 
-                          position =  position_dodge(.09),
-                          vjust = 0.1, hjust=1.45) +
-            ggtitle(lab=paste0("Safe chill accumulation by ", due, " 1st"),
-                    subtitle = paste0("chill season started on ", chill_start)) 
+  safe_apr <- ggplot(data = data, aes(x=time_period, y=get(col), fill=time_period)) +
+              geom_boxplot(outlier.size= -.15, notch=F, width=box_width, lwd=.1) +
+              labs(x="", y="safe chill") +
+              facet_grid(~ emission ~ city ) + 
+              the_theme + 
+              scale_fill_manual(values = color_ord,
+                                name = "Time\nPeriod", 
+                                labels = categ_lab) + 
+              scale_color_manual(values = color_ord,
+                                 name = "Time\nPeriod", 
+                                 limits = color_ord,
+                                 labels = categ_lab) + 
+              scale_x_discrete(breaks = categ_lab,
+                               labels = categ_lab)  +
+              geom_text(data = medians, 
+                        aes(label = sprintf("%1.0f", medians$med), y=medians$med), 
+                            size=4.5, 
+                            position =  position_dodge(.09),
+                            vjust = 0, hjust=.5) # +
+            # ggtitle(lab=paste0("Safe chill accumulation")) 
+            #, subtitle = paste0("chill season started on ", chill_start)
   
-  return(safe_b)
+  return(safe_apr)
 }
 
 ensemble_map <- function(data, color_col, due) {

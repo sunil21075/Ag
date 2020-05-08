@@ -120,7 +120,8 @@ find_y_position <- function(f_dt, col_name){
 }
 
 measure_1D_similarity <- function(a, b){
-  # define limits of a common grid, adding a buffer so that tails aren't cut off
+  # define limits of a common grid, adding a buffer so 
+  # that tails aren't cut off
   lower <- min(c(a, b)) - 1 
   upper <- max(c(a, b)) + 1
 
