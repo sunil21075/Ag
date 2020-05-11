@@ -2,6 +2,7 @@
 
 tile_vars <- c( "Sattelite", "Esri.WorldStreetMap", "OpenTopoMap")
 year_vars <- c(2015, 2016, 2017, 2018)
+field_vars <- c("All fields", "Double-cropped potentials")
 
 navbarPage("Explore WSDA surveys", id="nav",
 
@@ -35,6 +36,12 @@ navbarPage("Explore WSDA surveys", id="nav",
                                 "Survey_Year" , 
                                 choices = year_vars,
                                 selected = year_vars[3]
+                                ),
+
+                    selectInput(label = h4(tags$b("Field type")), 
+                                "Field_type" , 
+                                choices = field_vars,
+                                selected = field_vars[2]
                                 )
                   ),
 

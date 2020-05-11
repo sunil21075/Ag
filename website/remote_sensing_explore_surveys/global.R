@@ -48,6 +48,10 @@ Grant_2015_2018_correct_years_all_dir <- paste0(shape_dir_base,
 Grant_2015_2018_correct_years_all_Fs_irrig_dir <- paste0(shape_dir_base, 
                                                          "Grant_2015_2018_correct_years_all_fields_irrigated/")
 
+Grant_2015_2018_correct_years_2_Fs_irrig_dir <- paste0(shape_dir_base, 
+                                                       "Grant_2015_2018_correct_years_2_fields_irrigated/")
+
+
 ##############################
 ############################## before Microsoft
 ##############################
@@ -112,7 +116,17 @@ Grant_2015_2018_correct_years_all_SF <- rgdal::readOGR(
                                              GDAL1_integer64_policy = TRUE)
 
 Grant_2015_2018_correct_years_all_SF <- spTransform(Grant_2015_2018_correct_years_all_SF, CRS("+init=epsg:4326"))
-# Grant_2015_2018_correct_years_all_SF <- filter_non_irrigated(Grant_2015_2018_correct_years_all_SF)
+
+##############################
+
+Grant_2015_2018_correct_years_2_SF <- rgdal::readOGR(
+                                                    dsn=path.expand(paste0(Grant_2015_2018_correct_years_2_Fs_irrig_dir, 
+                                                                           "/Grant_2015_2018.shp")),
+                                             layer = "Grant_2015_2018", 
+                                             GDAL1_integer64_policy = TRUE)
+
+Grant_2015_2018_correct_years_2_SF <- spTransform(Grant_2015_2018_correct_years_2_SF, CRS("+init=epsg:4326"))
+
 
 
 
