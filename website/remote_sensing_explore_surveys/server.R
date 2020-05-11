@@ -13,8 +13,13 @@ shinyServer(function(input, output, session) {
   observe({
        if (input$map_tile_ == "Esri.WorldStreetMap"){
          output$mymap = renderLeaflet({
-                                   curr_SF <- Grant_2015_2018_correct_years_all_SF[grepl(input$Survey_Year, 
-                                                                                        Grant_2015_2018_correct_years_all_SF$LstSrvD), ]
+                                   if (input$Field_type == "Double-cropped potentials"){
+                                     curr_SF <- Grant_2015_2018_correct_years_2_SF
+                                   } else {
+                                    curr_SF <- Grant_2015_2018_correct_years_all_SF
+                                   }
+
+                                   curr_SF <- curr_SF[grepl(input$Survey_Year, curr_SF$LstSrvD), ]
                                    factpal <- colorFactor(topo.colors(5), curr_SF@data$Source)
 
                                    leaflet() %>%
@@ -33,30 +38,40 @@ shinyServer(function(input, output, session) {
                                     })
             } else if (input$map_tile_ == "OpenTopoMap"){
              output$mymap = renderLeaflet({
-                            curr_SF <- Grant_2015_2018_correct_years_all_SF[grepl(input$Survey_Year, 
-                                                                                  Grant_2015_2018_correct_years_all_SF$LstSrvD), ]
-                            factpal <- colorFactor(topo.colors(5), curr_SF@data$Source)
+                                     if (input$Field_type == "Double-cropped potentials"){
+                                        curr_SF <- Grant_2015_2018_correct_years_2_SF
+                                       } else {
+                                       curr_SF <- Grant_2015_2018_correct_years_all_SF
+                                     }
 
-                            leaflet() %>%
-                                             # Esri.WorldStreetMap or OpenTopoMap
-                            addProviderTiles(providers$OpenTopoMap,
-                                            options= providerTileOptions(opacity = 0.8))%>%
-                            setView(lat = map_center_lat, lng = map_center_long, zoom = zoom_level) %>%
-                            addPolygons(data = curr_SF,
-                                        stroke = TRUE, 
-                                        fillOpacity = 0.1, 
-                                        smoothFactor = 0.9,
-                                        color = ~factpal(Source)
-                                        )%>% 
-                                      addLegend(pal = factpal, values = curr_SF$Source, 
-                                                position = "bottomleft", opacity = 1) 
+                                   curr_SF <- curr_SF[grepl(input$Survey_Year, curr_SF$LstSrvD), ]
+                                   factpal <- colorFactor(topo.colors(5), curr_SF@data$Source)
+
+                                   leaflet() %>%
+                                   addProviderTiles(providers$OpenTopoMap, # Esri.WorldStreetMap or OpenTopoMap
+                                                    options= providerTileOptions(opacity = 0.8))%>%
+                                    setView(lat = map_center_lat, lng = map_center_long, zoom = zoom_level) %>%
+                                    addPolygons(data = curr_SF,
+                                                stroke = TRUE, 
+                                                fillOpacity = 0.1, 
+                                                smoothFactor = 0.9,
+                                                color = ~factpal(Source)
+                                                )%>% 
+                                              addLegend(pal = factpal, values = curr_SF$Source, 
+                                                        position = "bottomleft", opacity = 1) 
                                       
                             })
 
             } else if (input$map_tile_ == "Sattelite"){
                output$mymap = renderLeaflet({
-                                      curr_SF <- Grant_2015_2018_correct_years_all_SF[grepl(input$Survey_Year, 
-                                                                                        Grant_2015_2018_correct_years_all_SF$LstSrvD), ]
+                                      if (input$Field_type == "Double-cropped potentials"){
+                                         curr_SF <- Grant_2015_2018_correct_years_2_SF
+                                         } else {
+                                         curr_SF <- Grant_2015_2018_correct_years_all_SF
+                                      }
+
+                                      curr_SF <- curr_SF[grepl(input$Survey_Year, curr_SF$LstSrvD), ]
+
                                       factpal <- colorFactor(topo.colors(5), curr_SF@data$Source)
 
                                       leaflet() %>%
