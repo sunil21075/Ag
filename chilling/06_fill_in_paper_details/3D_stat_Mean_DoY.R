@@ -150,7 +150,7 @@ df_bloom <- df_bloom %>%
             data.table()
 
 df_bloom <- df_bloom %>% 
-            filter(dist_mean <= 545) %>% 
+            filter(dist_mean <= 543) %>% 
             data.table()
 
 dt = df_bloom 

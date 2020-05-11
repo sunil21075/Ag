@@ -1197,9 +1197,9 @@ shinyServer(function(input, output, session) {
     
     if(title == "Median Day of Year") {
       map = addLegend(map, "bottomleft", pal = pal, values = legendVals,
-                       title = title,
-                       labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
-                       opacity = 0.7) 
+                      title = title,
+                      labFormat = myLabelFormat(prefix = "  ", dates=TRUE),
+                      opacity = 0.7) 
       }
       else {
        map = addLegend(map, "bottomleft", pal = pal, values = legendVals,

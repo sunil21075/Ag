@@ -1,0 +1,26 @@
+rm(list=ls())
+library(data.table)
+library(rgdal)
+library(dplyr)
+library(sp)
+library(sf)
+library(foreign)
+
+dir <- "/Users/hn/Documents/01_research_data/remote_sensing/00_shapeFiles/02_correct_years/05_filtered_shapefiles/Grant/all_fields/"
+Grant_2015 <- readOGR(paste0(dir, "Grant_2015/Grant_2015.shp"),
+              layer = "Grant_2015", 
+              GDAL1_integer64_policy = TRUE)
+
+Grant_2016 <- readOGR(paste0(dir, "Grant_2016/Grant_2016.shp"),
+                      layer = "Grant_2016", 
+                      GDAL1_integer64_policy = TRUE)
+
+Grant_2017 <- readOGR(paste0(dir, "Grant_2017/Grant_2017.shp"),
+                      layer = "Grant_2017", 
+                      GDAL1_integer64_policy = TRUE)
+
+Grant_2018 <- readOGR(paste0(dir, "Grant_2018/Grant_2018.shp"),
+                      layer = "Grant_2018", 
+                      GDAL1_integer64_policy = TRUE)
+
+Grant_2015@data

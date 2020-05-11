@@ -15,6 +15,7 @@ options(digit=9)
 ##########
 ########## Directories
 ##########
+
 data_dir <- paste0("/Users/hn/Documents/01_research_data/", 
                    "/remote_sensing/00_shapeFiles/00_WSDA_original_weird_files/")
 
@@ -23,15 +24,21 @@ weird_2012_2018_dir <- paste0(data_dir, "/2012_2018_weird_shapefile.gdb")
 # list the layer names in their to read desired layer
 # ogrInfo(weird_2012_2018_dir, require_geomType="wkbPolygon")
 ogrListLayers(weird_2012_2018_dir);
+# ogrInfo(weird_2012_2018_dir)
+
 gdb <- path.expand(weird_2012_2018_dir)
 WSDACrop_2012 <- readOGR(gdb, "WSDACrop_2012")
 WSDACrop_2013 <- readOGR(gdb, "WSDACrop_2013")
 WSDACrop_2014 <- readOGR(gdb, "WSDACrop_2014")
 WSDACrop_2015 <- readOGR(gdb, "WSDACrop_2015")
-WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
-
 WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
 WSDACrop_2017@data$Notes <- "No Notes 2017"
+
+
+# multiple incompatible geometries
+WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016", require_geomType="wkbPolygon")
+WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
+
 
 ########################################################################################
 ######
