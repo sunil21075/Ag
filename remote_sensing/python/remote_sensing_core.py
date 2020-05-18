@@ -101,11 +101,24 @@ def initial_clean_EVI(df):
     if ("system:index" in list(dt.columns)):
         dt = dt.drop(columns=['system:index'])
     
-    # Drop rows whith NA in NDVI column.
+    # Drop rows whith NA in EVI column.
     dt = dt[dt['EVI'].notna()]
     
     # rename the column .geo to "geo"
     dt = dt.rename(columns={".geo": "geo"})
+    return (dt)
+
+def initial_clean(df, column_to_be_cleaned):
+    dt = df.copy()
+    # remove the useles system:index column
+    if ("system:index" in list(dt.columns)):
+        dt = dt.drop(columns=['system:index'])
+
+    # rename the column .geo to "geo"
+    dt = dt.rename(columns={".geo": "geo"})
+    
+    # Drop rows whith NA in EVI column.
+    dt = dt[dt[column_to_be_cleaned].notna()]    
     return (dt)
 
 
@@ -423,6 +436,23 @@ def save_matlab_matrix(filename, matDict):
         print("ERROR: could not write matrix file " + filename)
 
 
+
+def separate_x_and_y(m_list):
+    #
+    #  input is a list whose elements are arrays of size 2: (DoY, peak)
+    #  
+    #  output: two vectors DoY = [d1, d2, ..., dn] and peaks[p1, p2, ..., pn]
+    #
+    DoY_vec = np.zeros(len(m_list))
+    peaks_vec = np.zeros(len(m_list))
+    counter = 0
+    for entry in m_list:  
+        DoY_vec[counter] = int(entry[0])
+        peaks_vec[counter] = entry[1]
+        counter += 1
+    return (DoY_vec, peaks_vec)
+
+
 def generate_peak_df(an_EE_TS):
     
     """
@@ -573,21 +603,3 @@ def generate_peak_df(an_EE_TS):
     all_polygons_and_their_peaks = all_polygons_and_their_peaks[0:(pointer+1)]
     double_polygons = double_polygons[0:(double_pointer+1)]
     return(all_polygons_and_their_peaks, double_polygons)
-
-
-def separate_x_and_y(m_list):
-    #
-    #  input is a list whose elements are arrays of size 2: (DoY, peak)
-    #  
-    #  output: two vectors DoY = [d1, d2, ..., dn] and peaks[p1, p2, ..., pn]
-    #
-    DoY_vec = np.zeros(len(m_list))
-    peaks_vec = np.zeros(len(m_list))
-    counter = 0
-    for entry in m_list:  
-        DoY_vec[counter] = int(entry[0])
-        peaks_vec[counter] = entry[1]
-        counter += 1
-    return (DoY_vec, peaks_vec)
-
-

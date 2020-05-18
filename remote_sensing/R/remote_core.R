@@ -55,4 +55,20 @@ pick_proper_cols_w_notes <- function(a_shape_file){
 # }
 
 
+filter_out_non_irrigated_datatable <- function(dt){
+  dt <- data.table(dt)
+  
+  dt <- dt %>% 
+        filter(Irrigtn != "Unknown") %>% 
+        data.table()
+  
+}
+
+filter_out_non_irrigated_shapefile <- function (dt){
+  dt <- dt[!grepl('None', dt$Irrigtn), ] # toss out those with None in irrigation
+  dt <- dt[!grepl('Unknown', dt$Irrigtn), ] # toss out Unknown
+  return(dt)
+
+}
+
 

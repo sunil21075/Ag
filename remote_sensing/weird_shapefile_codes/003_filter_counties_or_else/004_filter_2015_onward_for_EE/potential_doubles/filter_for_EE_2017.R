@@ -112,15 +112,15 @@ batch_A_2017 <- rbind(Grant, Yakima, Chelan, Kittitas, Klickitat,
                       Okanogan, Franklin)
 
 batch_B1_2017 <- rbind(Lincoln)
-batch_B2_2017 <- rbind(Columbia, Ferry, Pend_Oreille, Stevens)
+batch_B2_2017 <- rbind(Columbia, Ferry)  # it seems Ferry and Pend_Oreille do not have problems.
+batch_B3_2017 <- rbind(Pend_Oreille, Stevens)
 
 batch_C_2017 <- rbind(Whitman, Garfield, Walla_Walla, Douglas, Asotin)
 
 nrow(batch_A_2017)
-nrow(batch_B_2017)
 nrow(batch_C_2017)
 
-nrow(batch_A_2017) + nrow(batch_B1_2017) + nrow(batch_B2_2017) + nrow(batch_C_2017) == nrow(WSDACrop)
+nrow(batch_A_2017) + nrow(batch_B1_2017) + nrow(batch_B2_2017) + nrow(batch_B3_2017) + nrow(batch_C_2017) == nrow(WSDACrop)
 
 ###########################################################################
 #######
@@ -161,6 +161,17 @@ if (dir.exists(file.path(batch_B2_2017_dir)) == F){
 writeOGR(obj = batch_B2_2017, 
          dsn = batch_B2_2017_dir, 
          layer="batch_B2_2017", 
+         driver="ESRI Shapefile")
+
+
+batch_B3_2017_dir <- paste0(base_write, "batch_B3_2017/")
+if (dir.exists(file.path(batch_B3_2017_dir)) == F){
+  dir.create(path=file.path(batch_B3_2017_dir), recursive=T)
+}
+
+writeOGR(obj = batch_B3_2017, 
+         dsn = batch_B3_2017_dir, 
+         layer="batch_B3_2017", 
          driver="ESRI Shapefile")
 
 #######

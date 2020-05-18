@@ -36,7 +36,7 @@ WSDACrop_2017@data$Notes <- "No Notes 2017"
 
 
 # multiple incompatible geometries
-WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016", require_geomType="wkbPolygon")
+WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
 WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
 
 

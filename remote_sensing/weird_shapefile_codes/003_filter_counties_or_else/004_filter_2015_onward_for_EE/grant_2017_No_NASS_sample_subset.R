@@ -6,7 +6,7 @@ library(sp)
 # library(sf)
 library(foreign)
 
-source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/remote_core.R"
+source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/R/remote_core.R"
 source(source_1)
 options(digits=9)
 options(digit=9)
