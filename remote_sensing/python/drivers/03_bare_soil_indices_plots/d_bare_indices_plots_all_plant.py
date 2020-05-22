@@ -78,7 +78,7 @@ import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
 output_dir = data_dir
-plot_dir_base = data_dir + "/all_plants_plots/"
+plot_dir_base = data_dir
 
 
 ####################################################################################
@@ -151,6 +151,7 @@ for a_poly in polygon_list:
     plant = plant.replace("/", "_")
     plant = plant.replace(",", "_")
     plant = plant.replace(" ", "_")
+    plant = plant.replace("__", "_")
 
     county = curr_field_NDVI['county'].unique()[0]
     TRS = curr_field_NDVI['TRS'].unique()[0]
@@ -162,39 +163,43 @@ for a_poly in polygon_list:
 
     x_EVI = curr_field_EVI['doy']
     y_EVI = curr_field_EVI['EVI']
-    
+
     x_BSI = curr_field_BSI['doy']
-    y_BSI = curr_field_BSI['EVI']
-    
+    y_BSI = curr_field_BSI['BSI']
+
     x_NDWI = curr_field_NDWI['doy']
-    y_NDWI = curr_field_NDWI['EVI']
-    
+    y_NDWI = curr_field_NDWI['NDWI']
+
     x_PSRI = curr_field_PSRI['doy']
-    y_PSRI = curr_field_PSRI['EVI']
-    
+    y_PSRI = curr_field_PSRI['PSRI']
+
     x_LSWI = curr_field_LSWI['doy']
-    y_LSWI = curr_field_LSWI['EVI']
+    y_LSWI = curr_field_LSWI['LSWI']
 
     #############################################
     ###
     ###             plot
     ###
     #############################################        
-    sub_out = "/plant_based_plots/bare_indices/" + plant + "/"
+    sub_out = "/plots/bare_indices/" + plant + "/"
     plot_path = plot_dir_base + sub_out
     os.makedirs(plot_path, exist_ok=True)
     if (len(os.listdir(plot_path))<100):
-        plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
+        plot_title = county + ", " + plant + ", " + str(year) + " (" + ID + ")"
         sb.set();
         fig, ax = plt.subplots(figsize=(8,6));
         ax.plot(x_NDVI, y_NDVI, label="NDVI");
-        ax.plot(x_EVI, y_EVI, 'r', label="EVI")
+        ax.plot(x_EVI, y_EVI, label="EVI")
 
-        ax.plot(x_BSI, y_BSI, 'r', label="BSI")
-        ax.plot(x_NDWI, y_NDWI, 'r', label="NWDI")
-        
-        ax.plot(x_PSRI, y_PSRI, 'r', label="PSRI")
-        ax.plot(x_LSWI, y_LSWI, 'r', label="LSWI")
+        ax.plot(x_BSI, y_BSI, label="BSI")
+        ax.plot(x_NDWI, y_NDWI, label="NWDI")
+
+        ax.plot(x_PSRI, y_PSRI, label="PSRI")
+        ax.plot(x_LSWI, y_LSWI, label="LSWI")
+
+        ax.set_title(plot_title);
+        ax.set(xlabel='DoY', ylabel='indices values')
+        ax.legend(loc="best");
         
         ax.set_title(plot_title);
         ax.set(xlabel='DoY', ylabel='indices values')
