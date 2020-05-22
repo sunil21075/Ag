@@ -10,7 +10,7 @@ library(dplyr)
 
 start_time <- Sys.time()
 
-# input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/4_cumdd/"
+# input_dir = "/Users/hn/Documents/01_research_data/my_aeolus_2015/all_local/4_cumdd/"
 # input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/cumdd_data/"
 version = c("rcp45", "rcp85")
 
@@ -44,11 +44,13 @@ for (vers in version){
 
   data = melt(data, id = c("ClimateGroup", "CountyGroup", "season"))
   data = within(data, remove(variable))
-  
+
+  up_limt <- max(data$value)
+
   bplot <- ggplot(data = data, aes(x=season, y=value), group = season) + 
            geom_boxplot(outlier.size=-.15, notch=FALSE, width=.4, lwd=.25, aes(fill=ClimateGroup), 
                  position=position_dodge(width=0.5)) + 
-           scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 1000)) + 
+           scale_y_continuous(breaks = seq(0, up_limt, by = 1000)) + # limits = c(0, 6000),
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
            labs(x="", y="Cumulative degree day", color = "Climate Group") + 
            theme_bw() +

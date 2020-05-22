@@ -9,7 +9,7 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/4_cumdd/"
+input_dir = "/Users/hn/Documents/01_research_data/my_aeolus_2015/all_local/4_cumdd/"
 version = c("rcp45", "rcp85")
 
 for (vers in version){
@@ -73,7 +73,7 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 
-input_dir = "/Users/hn/Desktop/Kirti/check_point/my_aeolus_2015/all_local/4_cumdd/"
+input_dir = "/Users/hn/Documents/01_research_data/my_aeolus_2015/all_local/4_cumdd/"
 version = c("rcp45", "rcp85")
 
 for (vers in version){
@@ -102,27 +102,27 @@ for (vers in version){
   data = within(data, remove(variable))
 
   bplot <- ggplot(data = data, aes(x=season, y=value), group = season) + 
-    geom_boxplot(outlier.size=-.3, notch=FALSE, width=.4, lwd=.15, aes(fill=ClimateGroup), 
-                 position=position_dodge(width=0.5)) + 
-    scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 1000)) + 
-    facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
-    labs(x="", y="Cumulative degree day", color = "Climate Group") + 
-    theme_bw() +
-    theme(legend.position="bottom", 
-          legend.margin = margin(t=-.7, r=0, b=5, l=0, unit = 'cm'),
-          legend.title = element_blank(),
-          legend.text = element_text(size=8, face="plain"),
-          legend.key.size = unit(.4, "cm"), 
-          legend.spacing.x = unit(0.2, 'cm'),
-          panel.grid.major = element_line(size = 0.1),
-          panel.grid.minor = element_line(size = 0.1),
-          strip.text = element_text(size = 7, face = "plain"),
-          axis.title.x = element_text(size = 10, face = "plain", margin = margin(t=10, r=0, b=0, l=0)),
-          axis.text.x = element_text(size = 7, color="black"), # tick text font size
-          axis.text.y = element_text(size = 7, color="black"),
-          axis.title.y= element_text(size = 9, face = "plain", margin = margin(t=0, r=7, b=0, l=0)),
-          plot.margin = unit(c(t=0.3, r=.7, b=-4.7, l=0.3), "cm")
-          )
+           geom_boxplot(outlier.size=-.3, notch=FALSE, width=.4, lwd=.15, aes(fill=ClimateGroup), 
+                        position=position_dodge(width=0.5)) + 
+           scale_y_continuous(limits = c(0, 6000), breaks = seq(0, 6000, by = 1000)) + 
+           facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
+           labs(x="", y="Cumulative degree day", color = "Climate Group") + 
+           theme_bw() +
+           theme(legend.position="bottom", 
+                 legend.margin = margin(t=-.7, r=0, b=5, l=0, unit = 'cm'),
+                 legend.title = element_blank(),
+                 legend.text = element_text(size=8, face="plain"),
+                 legend.key.size = unit(.4, "cm"), 
+                 legend.spacing.x = unit(0.2, 'cm'),
+                 panel.grid.major = element_line(size = 0.1),
+                 panel.grid.minor = element_line(size = 0.1),
+                 strip.text = element_text(size = 7, face = "plain"),
+                 axis.title.x = element_text(size = 10, face = "plain", margin = margin(t=10, r=0, b=0, l=0)),
+                 axis.text.x = element_text(size = 7, color="black"), # tick text font size
+                 axis.text.y = element_text(size = 7, color="black"),
+                 axis.title.y= element_text(size = 9, face = "plain", margin = margin(t=0, r=7, b=0, l=0)),
+                 plot.margin = unit(c(t=0.3, r=.7, b=-4.7, l=0.3), "cm")
+                 )
 
   out_name = paste0("cumdd_qrt_", vers, ".png")
   output_dir = input_dir

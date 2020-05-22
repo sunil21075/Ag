@@ -10,7 +10,7 @@ library(dplyr)
 
 start_time <- Sys.time()
 
-# input_dir = "/Users/hn/Desktop/Desktop/Kirti/check_point/my_aeolus_2015/all_local/4_cumdd/"
+# input_dir = "/Users/hn/Documents/01_research_data/my_aeolus_2015/all_local/4_cumdd/"
 # input_dir = "/data/hydro/users/Hossein/codling_moth_new/local/processed/cumdd_data/"
 
 version = c("rcp45", "rcp85")
@@ -43,6 +43,14 @@ make_non_overlapping <- function(overlap_dt){
 
 cleanex <- function(data){
   data = subset(data, select = c("ClimateGroup", "CountyGroup", "dayofyear", "CumDDinF"))
+  old_ClimateGroup <- c("Historical", "2040's", "2060's", "2080's")
+  new_ClimateGroup <- c("Historical", "2040s", "2060s", "2080s")
+  
+  data[data$ClimateGroup == old_ClimateGroup[2]]$ClimateGroup = new_ClimateGroup[2]
+  data[data$ClimateGroup == old_ClimateGroup[3]]$ClimateGroup = new_ClimateGroup[3]
+  data[data$ClimateGroup == old_ClimateGroup[4]]$ClimateGroup = new_ClimateGroup[4]
+  
+
   data$CountyGroup = as.character(data$CountyGroup)
   data[CountyGroup == 1]$CountyGroup = 'Cooler Areas'
   data[CountyGroup == 2]$CountyGroup = 'Warmer Areas'
@@ -57,8 +65,8 @@ cleanex <- function(data){
   return(data)
 }
 
-data_45 = readRDS("./cumdd_CMPOP_rcp45.rds")
-data_85 = readRDS("./cumdd_CMPOP_rcp85.rds")
+data_45 = readRDS(paste0(input_dir, "/cumdd_CMPOP_rcp45.rds"))
+data_85 = readRDS(paste0(input_dir, "/cumdd_CMPOP_rcp85.rds"))
 
 data_45_clean <- cleanex(data_45)
 data_85_clean <- cleanex(data_85)
@@ -75,7 +83,7 @@ all_data <- melt(all_data, id = c("ClimateGroup", "CountyGroup", "season", "emis
 # all_data[, variable := NULL] # perhaps this is more efficient than the line above.
 
 # perhaps this is more efficient than the line above
-all_data <- subset( all_data, select = -c(variable) ) 
+all_data <- subset( all_data, select = -c(variable))
 
 the_theme <- theme_bw() +
                theme(legend.position="bottom", 
