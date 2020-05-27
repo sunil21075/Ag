@@ -52,8 +52,22 @@ def divide_double_nonDouble_by_notes(dt_dt):
 
     return (double_cropped, not_double_cropped)
 
+def filter_out_NASS(dt_df_NASS):
+    dt_df_NASS = dt_df_NASS[~dt_df_NASS['DataSrc'].str.contains("NASS")]
+    return dt_df_NASS
 
-def filter_out_unwanted(dt_df):
+def filter_by_lastSurvey(dt_df_surv, year):
+    dt_df_surv = dt_df_surv[dt_df_surv['LstSrvD'].str.contains(str(year))]
+    return dt_df_surv
+
+
+def filter_out_nonIrrigated(dt_df_irrig):
+    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("None")]
+    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("Unknown")]
+    return dt_df_irrig
+    
+
+def filter_out_unwanted_plants(dt_df):
     unwanted_plants = ["Almond", "Apple", "Alfalfa/Grass Hay",
                        "Apricot", "Asparagus", "Berry, Unknown",  
                        "Blueberry", "Cherry", "Grape, Juice", 
@@ -77,9 +91,6 @@ def filter_out_unwanted(dt_df):
     
     dt_df = dt_df[~(dt_df['Irrigtn'].isin(non_irrigations))]
     """
-    dt_df = dt_df[~dt_df['Irrigtn'].str.contains("None")]
-    dt_df = dt_df[~dt_df['Irrigtn'].str.contains("Unknown")]
-    
     return dt_df
     
 def initial_clean_NDVI(df):

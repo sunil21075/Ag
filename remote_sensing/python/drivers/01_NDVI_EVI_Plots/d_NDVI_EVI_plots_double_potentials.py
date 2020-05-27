@@ -116,8 +116,11 @@ an_EE_TS.county.unique()
 #
 # The following columns do not exist in the old data
 #
-an_EE_TS['CovrCrp'] = "NA" 
-an_EE_TS['DataSrc'] = "NA" 
+if ~('DataSrc' in a_df.columns):
+    a_df['DataSrc'] = "NA"
+
+if ~('CovrCrp' in a_df.columns):
+    a_df['CovrCrp'] = "NA"
 
 an_EE_TS_NDVI = rc.initial_clean_NDVI(an_EE_TS)
 an_EE_TS_EVI = rc.initial_clean_EVI(an_EE_TS)

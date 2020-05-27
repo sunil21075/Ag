@@ -15,7 +15,7 @@ bad_CMPOP_dir <- "/data/hydro/users/Hossein/analog/usa/data_bases/before_biofix/
 write_path <- "/data/hydro/users/Hossein/analog/usa/data_bases/"
 
 cod_param_dir <- "/home/hnoorazar/cleaner_codes/parameters/"
-analog_param_dir <- "/home/hnoorazar/analog_codes/parameters"
+analog_param_dir <- "/home/hnoorazar/analog_codes/parameters/"
 
 all_models = c("bcc-csm1-1-m", "BNU-ESM", "CanESM2", "CNRM-CM5", "GFDL-ESM2G", "GFDL-ESM2M")
 

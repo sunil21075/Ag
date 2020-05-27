@@ -30,7 +30,7 @@ new_param_dir <- paste0(param_dir, "new_params_for_analog/")
 
 min_grids <- 5
 hist_grid_count <- read.csv(paste0(new_param_dir, "cod_moth_hist_grid_count_within_counties.csv"),
-                            header=T, as.is=T)  %>%                            
+                            header=T, as.is=T) %>%                            
                             filter(grid_count >= min_grids) %>%
                             data.table()
 

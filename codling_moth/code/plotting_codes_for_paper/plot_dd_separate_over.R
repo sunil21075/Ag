@@ -55,18 +55,12 @@ for (vers in version){
   data = within(data, remove(variable))
   
   y_max <- 6500
-
-  # df <- data.frame(data)
-  # df <- (df %>% group_by(ClimateGroup, CountyGroup, season))
-  # medians <- (df %>% summarise(med = median(value)))
-  # medians <- data.table(medians)
-  
-
+  y_max <- max(data$value)
 
   bplot <- ggplot(data = data, aes(x=season, y=value), group = season) + 
            geom_boxplot(outlier.size=-.15, notch=FALSE, width=.5, lwd=.25, aes(fill=ClimateGroup), 
                         position=position_dodge(width=0.7)) + 
-           scale_y_continuous(breaks = seq(0, y_max, by = 1000), limits = c(0, y_max)) + # limits = c(0, y_max)
+           scale_y_continuous(breaks = seq(0, y_max, by = 1000)) + # limits = c(0, y_max)
            facet_wrap(~CountyGroup, scales="free", ncol=6, dir="v") + 
            labs(x="", y="", color = "Climate Group") + 
            theme(plot.title = element_text(size = 35, face="bold"),
@@ -91,8 +85,8 @@ for (vers in version){
            scale_color_manual(values = color_ord, name="Time\nPeriod", limits = color_ord, 
                               labels = new_ClimateGroup) +
            #scale_x_discrete(breaks = NULL) + 
-           ggtitle(label = plot_title) + 
-           coord_cartesian(ylim = c(0, y_max))
+           ggtitle(label = plot_title) # + 
+           # coord_cartesian(ylim = c(0, y_max))
   
   assign(x = paste0("cumdd_plot_", vers), value ={bplot})
   rm(bplot)
@@ -109,7 +103,7 @@ cumdd_plot_qrt <- annotate_figure(cumdd_plot_qrt,
 
 ggsave("cumdd_qrt_sep_400.png", cumdd_plot_qrt, width=30, height=8, unit="in", path="./", dpi=400, device="png")
 ggsave("cumdd_qrt_sep_300.png", cumdd_plot_qrt, width=30, height=8, unit="in", path="./", dpi=300, device="png")
-ggsave("cumdd_qrt_sep_350.png", cumdd_plot_qrt, width=30, height=8, unit="in", path="./", dpi=350, device="png")
+# ggsave("cumdd_qrt_sep_350.png", cumdd_plot_qrt, width=30, height=8, unit="in", path="./", dpi=350, device="png")
 
 
 print( Sys.time() - start_time)

@@ -6,7 +6,7 @@ library(sp)
 # library(sf)
 library(foreign)
 
-source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/remote_core.R"
+source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/R/remote_core.R"
 source(source_1)
 options(digits=9)
 options(digit=9)
@@ -41,20 +41,12 @@ WSDACrop_2016 <- readOGR(paste0(data_dir,
                         layer = "WSDACrop_2016", 
                         GDAL1_integer64_policy = TRUE)
 
-WSDACrop_2017 <- readOGR(paste0(data_dir, 
-                                "WSDACrop_2017/WSDACrop_2017.shp"),
-                        layer = "WSDACrop_2017", 
-                        GDAL1_integer64_policy = TRUE)
-
 WSDACrop_2018 <- readOGR(paste0(data_dir, 
                                 "WSDACrop_2018/WSDACrop_2018.shp"),
                         layer = "WSDACrop_2018", 
                         GDAL1_integer64_policy = TRUE)
 
-WSDACrop_2017@data$Notes <- "No Notes 2017"
-
 dim(WSDACrop_2018@data)
-dim(WSDACrop_2017@data)
 dim(WSDACrop_2016@data)
 dim(WSDACrop_2015@data)
 dim(WSDACrop_2014@data)
@@ -71,8 +63,8 @@ WSDACrop_2013 <- add_identifier(dt_df=WSDACrop_2013, year="2013")
 WSDACrop_2014 <- add_identifier(dt_df=WSDACrop_2014, year="2014")
 WSDACrop_2015 <- add_identifier(dt_df=WSDACrop_2015, year="2015")
 WSDACrop_2016 <- add_identifier(dt_df=WSDACrop_2016, year="2016")
-WSDACrop_2017 <- add_identifier(dt_df=WSDACrop_2017, year="2017")
-WSDACrop_2018 <- add_identifier(dt_df=WSDACrop_2018, year="2018")
+# WSDACrop_2017 <- add_identifier(dt_df=WSDACrop_2017, year="2017")
+# WSDACrop_2018 <- add_identifier(dt_df=WSDACrop_2018, year="2018")
 
 ########################################################################################
 
@@ -102,15 +94,15 @@ writeOGR(obj = WSDACrop_2015,
          layer="WSDACrop_2015", 
          driver="ESRI Shapefile")
 
-writeOGR(obj = WSDACrop_2016, 
-         dsn = paste0(write_dir, "/WSDACrop_2016/"), 
-         layer="WSDACrop_2016", 
-         driver="ESRI Shapefile")
+# writeOGR(obj = WSDACrop_2016, 
+#          dsn = paste0(write_dir, "/WSDACrop_2016/"), 
+#          layer="WSDACrop_2016", 
+#          driver="ESRI Shapefile")
 
-writeOGR(obj = WSDACrop_2017, 
-         dsn = paste0(write_dir, "/WSDACrop_2017/"), 
-         layer="WSDACrop_2017", 
-         driver="ESRI Shapefile")
+# writeOGR(obj = WSDACrop_2017, 
+#          dsn = paste0(write_dir, "/WSDACrop_2017/"), 
+#          layer="WSDACrop_2017", 
+#          driver="ESRI Shapefile")
 
 writeOGR(obj = WSDACrop_2018, 
          dsn = paste0(write_dir, "/WSDACrop_2018/"), 

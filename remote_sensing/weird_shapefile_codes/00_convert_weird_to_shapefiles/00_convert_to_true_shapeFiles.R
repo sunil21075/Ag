@@ -6,7 +6,7 @@ library(sp)
 library(sf)
 library(foreign)
 
-source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/remote_core.R"
+source_1 = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/R/remote_core.R"
 source(source_1)
 options(digits=9)
 options(digit=9)
@@ -31,13 +31,11 @@ WSDACrop_2012 <- readOGR(gdb, "WSDACrop_2012")
 WSDACrop_2013 <- readOGR(gdb, "WSDACrop_2013")
 WSDACrop_2014 <- readOGR(gdb, "WSDACrop_2014")
 WSDACrop_2015 <- readOGR(gdb, "WSDACrop_2015")
-WSDACrop_2017 <- readOGR(gdb, "WSDACrop_2017")
-WSDACrop_2017@data$Notes <- "No Notes 2017"
 
 
 # multiple incompatible geometries
 WSDACrop_2016 <- readOGR(gdb, "WSDACrop_2016")
-WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
+# WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018")
 
 
 ########################################################################################
@@ -51,13 +49,13 @@ WSDACrop_2013 <- add_identifier(dt_df=WSDACrop_2013, year="2013")
 WSDACrop_2014 <- add_identifier(dt_df=WSDACrop_2014, year="2014")
 WSDACrop_2015 <- add_identifier(dt_df=WSDACrop_2015, year="2015")
 WSDACrop_2016 <- add_identifier(dt_df=WSDACrop_2016, year="2016")
-WSDACrop_2017 <- add_identifier(dt_df=WSDACrop_2017, year="2017")
-WSDACrop_2018 <- add_identifier(dt_df=WSDACrop_2018, year="2018")
+# WSDACrop_2017 <- add_identifier(dt_df=WSDACrop_2017, year="2017")
+# WSDACrop_2018 <- add_identifier(dt_df=WSDACrop_2018, year="2018")
 
 ########################################################################################
 
 # After updating R we receive some error about polygons. So, we need to add (require_geomType="wkbPolygon") at the end.
-WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018", require_geomType="wkbPolygon") 
+# WSDACrop_2018 <- readOGR(gdb, "WSDACrop_2018", require_geomType="wkbPolygon") 
 
 setnames(WSDACrop_2012@data, old=c("Rt1CrpT", "County", "SHAPE_Area", "SHAPE_Length"), 
                              new=c("RtCrpTy", "county", "Shap_Ar", "Shp_Lng"))
@@ -85,8 +83,8 @@ WSDACrop_2013@data$year <- paste0("2013_shapeFile")
 WSDACrop_2014@data$year <- paste0("2014_shapeFile")
 WSDACrop_2015@data$year <- paste0("2015_shapeFile")
 WSDACrop_2016@data$year <- paste0("2016_shapeFile")
-WSDACrop_2017@data$year <- paste0("2017_shapeFile")
-WSDACrop_2018@data$year <- paste0("2018_shapeFile")
+# WSDACrop_2017@data$year <- paste0("2017_shapeFile")
+# WSDACrop_2018@data$year <- paste0("2018_shapeFile")
 ##########
 ########## write TRUE shapefiles
 ##########

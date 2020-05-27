@@ -32,7 +32,7 @@ sigma_bd = args[3]   # sigma cut off for sigma dissimilarity 1 or 2 or 3 or what
 all_model_names <- args[4]
 time_periods <- args[5]
 
-n_nghs = 47841
+n_nghs = 47841 # 1293 locations * 37 historical years
 ######################################################################
 ##                                                                  ##
 ##                     set up directories                           ##
@@ -87,7 +87,7 @@ for (model_type in all_model_names){
     a_model_analog_output$model <- model_type
     a_model_novel_output$model <- model_type
 
-    saveRDS(a_model_analog_output,paste0(out_dir, "analog_",model_type, "_", carbon_type, time, ".rds"))
+    saveRDS(a_model_analog_output,paste0(out_dir, "analog_", model_type, "_", carbon_type, time, ".rds"))
     saveRDS(a_model_novel_output, paste0(out_dir, "novel_", model_type, "_", carbon_type, time, ".rds"))
     print (Sys.time() - st_time)
   }  

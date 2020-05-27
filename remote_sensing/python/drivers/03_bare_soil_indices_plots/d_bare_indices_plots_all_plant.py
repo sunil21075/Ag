@@ -115,7 +115,11 @@ print (an_EE_TS.county.unique())
 #
 # The following columns do not exist in the old data
 #
-an_EE_TS['CovrCrp'] = "NA"
+if ~('DataSrc' in a_df.columns):
+    a_df['DataSrc'] = "NA"
+
+if ~('CovrCrp' in a_df.columns):
+    a_df['CovrCrp'] = "NA"
 
 an_EE_TS_NDVI = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned='NDVI')
 an_EE_TS_EVI = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned='EVI')

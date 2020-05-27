@@ -16,8 +16,7 @@ options(digits=9)
 main_out = "/data/hydro/users/Hossein/analog/usa/percipitation/"
 param_dir = file.path("/home/hnoorazar/cleaner_codes/parameters/")
 
-locations_list = read.table(paste0(param_dir, "all_us_locations_list.txt"), 
-                            header=F, sep=",")
+locations_list = read.table(paste0(param_dir, "all_us_locations_list.txt"), header=F, sep=",")
 locations_list <- as.vector(locations_list$V1)
 local_files = paste0("data_", locations_list)
 print ("line 23")
@@ -38,8 +37,7 @@ print ("line 37")
 print (length(dir_con))
 
 # remove filenames that aren't data
-dir_con <- dir_con[grep(pattern = "data_",
-                        x = dir_con)]
+dir_con <- dir_con[grep(pattern = "data_", x = dir_con)]
 
 # choose only files that we're interested in
 dir_con <- dir_con[which(dir_con %in% local_files)]

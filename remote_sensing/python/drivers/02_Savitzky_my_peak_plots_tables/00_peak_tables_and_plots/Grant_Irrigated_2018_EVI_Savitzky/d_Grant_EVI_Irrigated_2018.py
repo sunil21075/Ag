@@ -1,5 +1,11 @@
+####
+#### May 26, 2019
+####
+
 """
-Peak and plot simultaneously
+Just generate peak tables for Grant 2018 Irrigated fields 
+for all cultivars; EVI and my peak finder
+
 """
 
 import csv
@@ -48,9 +54,6 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 ### Directories
 ###
 
-data_dir = "/Users/hn/Documents/01_research_data/" + \
-           "remote_sensing/01_NDVI_TS/Grant/No_EVI/Grant_10_cloud/Grant_2016/"
-
 param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
 ####################################################################################
 ###
@@ -65,18 +68,9 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###                   Aeolus Directories
 ###
 ####################################################################################
-
-data_dir = "/data/hydro/users/Hossein/remote_sensing/" + \
-           "01_NDVI_TS/00_Grant/No_EVI/Grant_10_cloud/Grant_2017/"
+            
+data_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/irrigated_eastern_cloud_70/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-####################################################################################
-###
-###                   Parameters
-###
-####################################################################################
-
-double_crop_potential_plants = pd.read_csv(param_dir + "double_crop_potential_plants.csv")
-double_crop_potential_plants.head(2)
 
 ####################################################################################
 ###
@@ -90,23 +84,54 @@ import remote_sensing_core as rcp
 
 ####################################################################################
 ###
-###                   Data Reading
+###      Parameters                   
 ###
 ####################################################################################
 freedom_df = 7
-delt = 0.2
-file_names = ["Grant_2017_TS.csv"]
-file_N = file_names[0]
-a_df = pd.read_csv(data_dir + file_N)
+delt = 0.1
+print ("delta = {fileShape}.".format(fileShape=delt))
 
-output_dir = data_dir + "/savitzky/delta_" + str(delt) + "/"
-os.makedirs(output_dir, exist_ok=True)
-plot_dir_base = output_dir
 ####################################################################################
 ###
 ###                   process data
 ###
 ####################################################################################
+f_name = "Grant_2018_allFs_notCorrectYrs_70cloud.csv"
+a_df = pd.read_csv(data_dir + f_name)
+a_df = rc.filter_out_nonIrrigated(a_df)
+print ("After filtering out non-irrigated, a_df is of dimension {fileShape}.".format(fileShape=a_df.shape))
+
+
+filter_NASS = False
+filter_lastSurDate = True
+
+if (filter_NASS == True):
+    a_df = rc.filter_by_lastSurvey(dt_df_surv = a_df, year=2018)
+    print ("After filtering by last survey date, a_df is of dimension {fileShape}.".format(fileShape=a_df.shape))
+
+if (filter_lastSurDate == True):
+    a_df = rc.filter_out_NASS(dt_df_NASS = a_df)
+    print ("After filtering out NASS, a_df is of dimension {fileShape}.".format(fileShape=a_df.shape))
+
+if filter_NASS == True & filter_lastSurDate == True :
+    last_part_name = "NassOut_CorrectYear"
+elif filter_NASS == True & filter_lastSurDate == False :
+    last_part_name = "NassOut_NotCorrectYears"
+elif filter_NASS == False & filter_lastSurDate == True :
+    last_part_name = "NassIn_CorrectYears"
+elif filter_NASS == False & filter_lastSurDate == False :
+    last_part_name = "NassIn_NotorrectYears"
+
+
+######################
+output_dir = data_dir + "/savitzky/Grant_Irrigated_EVI_2018_" + last_part_name + "/delta_" + str(delt) + "/"
+plot_dir_base = output_dir
+
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(plot_dir_base, exist_ok=True)
+
+######################
+a_df['year'] = 2018
 
 # The following columns do not exist in the old data
 #
@@ -116,19 +141,9 @@ if ~('DataSrc' in a_df.columns):
 if ~('CovrCrp' in a_df.columns):
     a_df['CovrCrp'] = "NA"
 
-a_df = rc.initial_clean_NDVI(a_df)
+a_df = rc.initial_clean_EVI(a_df)
 a_df.head(2)
 an_EE_TS = a_df.copy()
-# an_EE_TS = rc.initial_clean_NDVI(an_EE_TS)
-
-################
-###
-### Just keep the potential fields
-###
-################
-
-# a_df = a_df[a_df.CropTyp.isin(double_crop_potential_plants['Crop_Type'])]
-
 
 ### List of unique polygons
 polygon_list = an_EE_TS['geo'].unique()
@@ -154,12 +169,12 @@ min_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'min_Doy', 'min_value', 'min_count']
 
 all_poly_and_mins_spline = pd.DataFrame(data=None, 
-                                                 index=np.arange(3*len(an_EE_TS)), 
-                                                 columns=min_output_columns)
+                                        index=np.arange(3*len(an_EE_TS)), 
+                                        columns=min_output_columns)
 
 all_poly_and_mins_savitzky = pd.DataFrame(data=None, 
-                                                   index=np.arange(3*len(an_EE_TS)), 
-                                                   columns=min_output_columns)
+                                          index=np.arange(3*len(an_EE_TS)), 
+                                          columns=min_output_columns)
 
 # double_max_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
 #                       'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
@@ -225,7 +240,7 @@ for a_poly in polygon_list:
     ###
 
     X = curr_field['doy']
-    y = curr_field['NDVI']
+    y = curr_field['EVI']
 
     #############################################
     ###
@@ -323,38 +338,43 @@ for a_poly in polygon_list:
     ###
     ###             plot
     ###
-    #############################################        
-    sub_out = "/plant_based_plots/" + plant + "/"
-    plot_path = plot_dir_base + sub_out
-    plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
-    os.makedirs(plot_path, exist_ok=True)
-    if (len(os.listdir(plot_path))<100):
+    #############################################
+
+    # sub_out = "/plant_based_plots/" + plant + "/"
+    # plot_path = plot_dir_base + sub_out
+    # plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
+    # os.makedirs(plot_path, exist_ok=True)
+    # if (len(os.listdir(plot_path))<100):
         
-        plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
-        sb.set();
+    #     plot_title = county + ", " + plant + ", " + str(year) + " (" + TRS + ")"
+    #     sb.set();
 
-        fig, ax = plt.subplots(figsize=(8,6));
-        ax.scatter(X, y, label="Data", s=30);
+    #     fig, ax = plt.subplots(figsize=(8,6));
+    #     ax.scatter(X, y, label="Data", s=30);
 
-        ax.plot(X, savitzky_pred, 'k--', label="savitzky")
-        ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
+    #     ax.plot(X, savitzky_pred, 'k--', label="savitzky")
+    #     ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
 
-        ax.plot(X, spline_pred, 'r--', label="Spline")
-        ax.scatter(spline_max_DoYs_series, spline_max_series, s=100, c='r', marker='*');
-        ax.legend(loc="best");
+    #     ax.plot(X, spline_pred, 'r--', label="Spline")
+    #     ax.scatter(spline_max_DoYs_series, spline_max_series, s=100, c='r', marker='*');
+    #     ax.legend(loc="best");
 
-        ax.set_title(plot_title);
-        ax.set(xlabel='DoY', ylabel='NDVI')
-        ax.legend(loc="best");
+    #     ax.set_title(plot_title);
+    #     ax.set(xlabel='DoY', ylabel='EVI')
+    #     ax.legend(loc="best");
 
-        fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
-        os.makedirs(plot_path, exist_ok=True)
-        
-        plt.savefig(fname = fig_name, \
-                     dpi=300,
-                     bbox_inches='tight')
-        plt.close()
-        del(plot_path, sub_out) #  county, plant, year
+    #     fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+    #     plt.savefig(fname = fig_name, \
+    #                  dpi=300,
+    #                  bbox_inches='tight')
+    #     plt.close()
+    #     del(plot_path, sub_out) #  county, plant, year
+    #############################################
+    ###
+    ###             plot END
+    ###
+    #############################################
+
 
     WSDA_df = rc.keep_WSDA_columns(curr_field)
     WSDA_df = WSDA_df.drop_duplicates()
@@ -444,11 +464,11 @@ for a_poly in polygon_list:
 ###########
 
 all_poly_and_maxs_spline = all_poly_and_maxs_spline[0:(pointer_max_spline+1)]
-out_name = output_dir + "/df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
+out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
 all_poly_and_maxs_spline.to_csv(out_name, index = False)
 
 all_poly_and_maxs_savitzky = all_poly_and_maxs_savitzky[0:(pointer_max_savitzky+1)]
-out_name = output_dir + "/all_poly_and_maxs_savitzky.csv"
+out_name = output_dir + "all_poly_and_maxs_savitzky.csv"
 all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 
 ###########
@@ -456,11 +476,11 @@ all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 ###########
 
 all_poly_and_mins_spline = all_poly_and_mins_spline[0:(pointer_min_spline+1)]
-out_name = output_dir + "/df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
+out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
 all_poly_and_mins_spline.to_csv(out_name, index = False)
 
 all_poly_and_mins_savitzky = all_poly_and_mins_savitzky[0:(pointer_min_savitzky+1)]
-out_name = output_dir + "/all_poly_and_mins_savitzky.csv"
+out_name = output_dir + "all_poly_and_mins_savitzky.csv"
 all_poly_and_mins_savitzky.to_csv(out_name, index = False)
 
 

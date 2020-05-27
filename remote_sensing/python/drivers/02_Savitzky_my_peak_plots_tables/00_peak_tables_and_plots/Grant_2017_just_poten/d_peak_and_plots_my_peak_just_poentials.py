@@ -109,8 +109,11 @@ plot_dir_base = output_dir
 
 # The following columns do not exist in the old data
 #
-a_df['CovrCrp'] = "NA" 
-a_df['DataSrc'] = "NA" 
+if ~('DataSrc' in a_df.columns):
+    a_df['DataSrc'] = "NA"
+
+if ~('CovrCrp' in a_df.columns):
+    a_df['CovrCrp'] = "NA"
 
 a_df = rc.initial_clean_NDVI(a_df)
 a_df.head(2)

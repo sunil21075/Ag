@@ -54,10 +54,23 @@ pick_proper_cols_w_notes <- function(a_shape_file){
 #   return(a_shape_file)
 # }
 
+filter_lastSrvyDate <- function(dt, year){
+  dt_LstSrvD <- dt[grepl(as.character(year), dt$LstSrvD), ]
+  return(dt_LstSrvD)
+}
+
+
+
+filter_double_by_Notes <- function(dt){
+  dt$Notes <- tolower(dt$Notes)
+  dt_doube_by_notes <- dt[grepl('double', dt$Notes), ]
+  dt_dbl_by_notes <- dt[grepl('dbl', dt$Notes), ]
+
+  return(rbind(dt_doube_by_notes, dt_dbl_by_notes))
+}
 
 filter_out_non_irrigated_datatable <- function(dt){
   dt <- data.table(dt)
-  
   dt <- dt %>% 
         filter(Irrigtn != "Unknown") %>% 
         data.table()
@@ -70,5 +83,84 @@ filter_out_non_irrigated_shapefile <- function (dt){
   return(dt)
 
 }
+
+
+pick_eastern_counties <- function(sff){
+  Okanogan <- sff[grepl('Okanogan', sff$county), ]
+  Chelan <- sff[grepl('Chelan', sff$county), ]
+
+  Kittitas <- sff[grepl('Kittitas', sff$county), ]
+  Yakima <- sff[grepl('Yakima', sff$county), ]
+
+  Klickitat <- sff[grepl('Klickitat', sff$county), ]
+  Douglas <- sff[grepl('Douglas', sff$county), ]
+
+  Grant <- sff[grepl('Grant', sff$county), ]
+  Benton <- sff[grepl('Benton', sff$county), ]
+
+  Ferry <- sff[grepl('Ferry', sff$county), ]
+  Lincoln <- sff[grepl('Lincoln', sff$county), ]
+
+  Adams <- sff[grepl('Adams', sff$county), ]
+  Franklin <- sff[grepl('Franklin', sff$county), ]
+
+  Walla_Walla <- sff[grepl('Walla Walla', sff$county), ]
+  Pend_Oreille <- sff[grepl('Pend Oreille', sff$county), ]
+
+  Stevens <- sff[grepl('Stevens', sff$county), ]
+  Spokane <- sff[grepl('Spokane', sff$county), ]
+
+  Whitman <- sff[grepl('Whitman', sff$county), ]
+  Garfield <- sff[grepl('Garfield', sff$county), ]
+
+  Columbia <- sff[grepl('Columbia', sff$county), ]
+  Asotin <- sff[grepl('Asotin', sff$county), ]
+
+  sff <- raster::bind(Okanogan, Chelan, Kittitas, Yakima, Klickitat, 
+                      Douglas, Benton, Ferry, Lincoln, Adams, Franklin,
+                      Walla_Walla, Pend_Oreille, Stevens, Spokane, Whitman, Garfield, 
+                      Columbia, Asotin, Grant)
+  return(sff)
+
+}
+
+pick_eastern_counties_noGrant <- function(sff){
+  Okanogan <- sff[grepl('Okanogan', sff$county), ]
+  Chelan <- sff[grepl('Chelan', sff$county), ]
+
+  Kittitas <- sff[grepl('Kittitas', sff$county), ]
+  Yakima <- sff[grepl('Yakima', sff$county), ]
+
+  Klickitat <- sff[grepl('Klickitat', sff$county), ]
+  Douglas <- sff[grepl('Douglas', sff$county), ]
+
+  Benton <- sff[grepl('Benton', sff$county), ]
+
+  Ferry <- sff[grepl('Ferry', sff$county), ]
+  Lincoln <- sff[grepl('Lincoln', sff$county), ]
+
+  Adams <- sff[grepl('Adams', sff$county), ]
+  Franklin <- sff[grepl('Franklin', sff$county), ]
+
+  Walla_Walla <- sff[grepl('Walla Walla', sff$county), ]
+  Pend_Oreille <- sff[grepl('Pend Oreille', sff$county), ]
+
+  Stevens <- sff[grepl('Stevens', sff$county), ]
+  Spokane <- sff[grepl('Spokane', sff$county), ]
+
+  Whitman <- sff[grepl('Whitman', sff$county), ]
+  Garfield <- sff[grepl('Garfield', sff$county), ]
+
+  Columbia <- sff[grepl('Columbia', sff$county), ]
+  Asotin <- sff[grepl('Asotin', sff$county), ]
+
+  sff <- raster::bind(Okanogan, Chelan, Kittitas, Yakima, Klickitat, 
+                      Douglas, Benton, Ferry, Lincoln, Adams, Franklin,
+                      Walla_Walla, Pend_Oreille, Stevens, Spokane, Whitman, Garfield, 
+                      Columbia, Asotin)
+  return(sff)
+
+}
+
 
 
