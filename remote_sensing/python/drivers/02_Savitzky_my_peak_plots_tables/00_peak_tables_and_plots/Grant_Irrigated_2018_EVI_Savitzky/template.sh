@@ -4,19 +4,19 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N Grant_Irrigated_2018_Sav91_Del1_plot
+#PBS -N outer
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
-#PBS -l mem=100gb
+#PBS -l mem=30gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
 
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/Grant_Irrigated_2018_EVI_Savitzky/error/Grant_Irr_2018_Sav91_Del1_plot_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/Grant_Irrigated_2018_EVI_Savitzky/error/Grant_Irr_2018_Sav91_Del1_plot_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/Grant_Irrigated_2018_EVI_Savitzky/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/Grant_Irrigated_2018_EVI_Savitzky/error/outer_O
 
 ## Define path for reporting
 #PBS -M h.noorazar@yahoo.com
@@ -50,6 +50,11 @@ echo "--------- continue on ---------"
 # ----------------------------------------------------------------
 # Run python code for matrix
 # ----------------------------------------------------------------
-python3 ./d_Grant_EVI_Irrigated_2018.py
+
+python3 ./d_Grant_EVI_Irrigated_2018.py Sav_win_size sav_order delt do_plot
+
+
+
+
 
 

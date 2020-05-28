@@ -106,8 +106,13 @@ a_df = pd.read_csv(data_dir + file_N)
 #
 # The following columns do not exist in the old data
 #
-a_df['CovrCrp'] = "NA" 
-a_df['DataSrc'] = "NA" 
+if not('DataSrc' in a_df.columns):
+    print ("Data source is being set to NA")
+    a_df['DataSrc'] = "NA"
+
+if not('CovrCrp' in a_df.columns):
+    print ("Data source is being set to NA")
+    a_df['CovrCrp'] = "NA"
 
 a_df = rc.initial_clean_NDVI(a_df)
 a_df.head(2)

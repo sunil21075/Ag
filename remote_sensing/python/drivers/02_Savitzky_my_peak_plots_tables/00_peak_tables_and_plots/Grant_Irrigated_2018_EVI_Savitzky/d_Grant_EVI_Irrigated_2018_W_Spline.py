@@ -97,11 +97,6 @@ sav_order = 1
 delt = 0.1
 do_plot  = 0
 
-Sav_win_size = int(sys.argv[1])
-sav_order = int(sys.argv[2])
-delt = float(sys.argv[3])
-do_plot = int(sys.argv[4])
-
 if do_plot == 0:
     do_plot = False
 else:
@@ -187,6 +182,10 @@ max_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
                       'max_Doy', 'max_value', 'max_count']
 
+all_poly_and_maxs_spline = pd.DataFrame(data=None, 
+                                        index=np.arange(3*len(an_EE_TS)), 
+                                        columns=max_output_columns)
+
 all_poly_and_maxs_savitzky = pd.DataFrame(data=None, 
                                           index=np.arange(3*len(an_EE_TS)), 
                                           columns=max_output_columns)
@@ -197,6 +196,10 @@ min_output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
                       'min_Doy', 'min_value', 'min_count']
 
+all_poly_and_mins_spline = pd.DataFrame(data=None, 
+                                        index=np.arange(3*len(an_EE_TS)), 
+                                        columns=min_output_columns)
+
 all_poly_and_mins_savitzky = pd.DataFrame(data=None, 
                                           index=np.arange(3*len(an_EE_TS)), 
                                           columns=min_output_columns)
@@ -206,6 +209,9 @@ all_poly_and_mins_savitzky = pd.DataFrame(data=None,
 #                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
 #                       'max_count']
 
+# double_poly_max_spline = pd.DataFrame(data=None, 
+#                                       index=np.arange(2*len(an_EE_TS)), 
+#                                       columns=double_max_columns)
 
 # double_poly_max_savitzky = pd.DataFrame(data=None, 
 #                                         index=np.arange(2*len(an_EE_TS)), 
@@ -217,15 +223,23 @@ all_poly_and_mins_savitzky = pd.DataFrame(data=None,
 #                       'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
 #                       'min_count']
 
+# double_poly_min_spline = pd.DataFrame(data=None, 
+#                                       index=np.arange(2*len(an_EE_TS)), 
+#                                       columns=double_min_columns)
+
 # double_poly_min_savitzky = pd.DataFrame(data=None, 
 #                                         index=np.arange(2*len(an_EE_TS)), 
 #                                         columns=double_min_columns)
 
+pointer_max_spline = 0
+pointer_min_spline = 0
 
 pointer_max_savitzky = 0
 pointer_min_savitzky = 0
 
 counter = 0
+# double_max_spline_pointer = 0
+# double_min_spline_pointer = 0
 
 # double_max_savitzky_pointer = 0
 # double_min_savitzky_pointer = 0
@@ -266,6 +280,17 @@ for a_poly in polygon_list:
     ###             Smoothen
     ###
     #############################################
+    #
+    #   Spline
+    #
+    x_basis = cr(X, df=freedom_df, constraints='center') # Generate spline basis with "freedom_df" degrees of freedom
+    model = LinearRegression().fit(x_basis, y) # Fit model to the data
+    spline_pred = model.predict(x_basis) # Get estimates
+
+    #
+    # savitzky
+    #
+    
     # differences are minor, but lets keep using Pythons function
     # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
 
@@ -276,6 +301,38 @@ for a_poly in polygon_list:
     ###             find peaks
     ###
     #############################################
+    # 
+    # Spline peaks
+    # 
+    spline_max_min = rc.my_peakdetect(y_axis=spline_pred, x_axis=X, delta=delt);
+
+    spline_max =  spline_max_min[0];
+    spline_min =  spline_max_min[1];
+
+    spline_max = rc.separate_x_and_y(m_list = spline_max);
+    spline_min = rc.separate_x_and_y(m_list = spline_min);
+
+    spline_max_DoYs_series = pd.Series(spline_max[0]);
+    spline_max_series = pd.Series(spline_max[1]);
+
+    spline_min_DoYs_series = pd.Series(spline_min[0]);
+    spline_min_series = pd.Series(spline_min[1]);
+
+
+    spline_max_df = pd.DataFrame({ 
+                           'max_Doy': spline_max_DoYs_series,
+                           'max_value': spline_max_series
+                          })
+    # add number of max to the data frame.
+    spline_max_df['max_count'] = spline_max_df.shape[0]
+
+    spline_min_df = pd.DataFrame({ 
+                           'min_Doy': spline_min_DoYs_series,
+                           'min_value': spline_min_series
+                          })
+    # add number of max to the data frame.
+    spline_min_df['max_count'] = spline_min_df.shape[0]
+
     #################################################################################
     #
     #    savitzky
@@ -334,6 +391,10 @@ for a_poly in polygon_list:
             ax.plot(X, savitzky_pred, 'k--', label="savitzky")
             ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
 
+            ax.plot(X, spline_pred, 'r--', label="Spline")
+            ax.scatter(spline_max_DoYs_series, spline_max_series, s=100, c='r', marker='*');
+            ax.legend(loc="best");
+
             ax.set_title(plot_title);
             ax.set(xlabel='DoY', ylabel='EVI')
             ax.legend(loc="best");
@@ -354,6 +415,42 @@ for a_poly in polygon_list:
     WSDA_df = rc.keep_WSDA_columns(curr_field)
     WSDA_df = WSDA_df.drop_duplicates()
     
+    if (len(spline_max_df)>0):
+        WSDA_max_df_spline = pd.concat([WSDA_df]*spline_max_df.shape[0]).reset_index()
+        # WSDA_max_df_spline = pd.concat([WSDA_max_df_spline, spline_max_df], axis=1, ignore_index=True)
+        WSDA_max_df_spline = WSDA_max_df_spline.join(spline_max_df)
+        if ("index" in WSDA_max_df_spline.columns):
+            WSDA_max_df_spline = WSDA_max_df_spline.drop(columns=['index'])
+        """
+        copy the .values. Otherwise the index inconsistency between
+        WSDA_max_df_spline and all_poly... will prevent the copying.
+        """
+        if (pointer_max_spline > all_poly_and_maxs_spline.shape[0]):
+            empty = pd.DataFrame(data=None, index=np.arange(500), columns=max_output_columns)
+            all_poly_and_maxs_spline = pd.concat([all_poly_and_maxs_spline, empty]).reset_index()
+
+        all_poly_and_maxs_spline.iloc[pointer_max_spline:(pointer_max_spline + \
+                                                len(WSDA_max_df_spline))] = WSDA_max_df_spline.values
+        pointer_max_spline += len(WSDA_max_df_spline)
+
+    if (len(spline_min_df)>0):
+        WSDA_min_df_spline = pd.concat([WSDA_df]*spline_min_df.shape[0]).reset_index()
+        # WSDA_min_df_spline = pd.concat([WSDA_min_df_spline, spline_min_df], axis=1, ignore_index=True)
+        WSDA_min_df_spline = WSDA_min_df_spline.join(spline_min_df)
+        if ("index" in WSDA_min_df_spline.columns):
+            WSDA_min_df_spline = WSDA_min_df_spline.drop(columns=['index'])
+        """
+        copy the .values. Otherwise the index inconsistency between
+        WSDA_min_df_spline and all_poly... will prevent the copying.
+        """
+        if (pointer_min_spline > all_poly_and_mins_spline.shape[0]):
+            empty = pd.DataFrame(data=None, index=np.arange(500), columns=min_output_columns)
+            all_poly_and_mins_spline = pd.concat([all_poly_and_mins_spline, empty]).reset_index()
+
+        all_poly_and_mins_spline.iloc[pointer_min_spline:(pointer_min_spline + \
+                                                            len(WSDA_min_df_spline))] = WSDA_min_df_spline.values
+        pointer_min_spline += len(WSDA_min_df_spline)
+
     if (len(savitzky_max_df)>0):
         WSDA_max_df_savitzky = pd.concat([WSDA_df]*savitzky_max_df.shape[0]).reset_index()
         # WSDA_max_df_savitzky = pd.concat([WSDA_max_df_savitzky, savitzky_max_df], axis=1, ignore_index=True)
@@ -402,6 +499,10 @@ for a_poly in polygon_list:
 ########### max
 ###########
 
+all_poly_and_maxs_spline = all_poly_and_maxs_spline[0:(pointer_max_spline+1)]
+out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_maxs_spline.csv"
+all_poly_and_maxs_spline.to_csv(out_name, index = False)
+
 all_poly_and_maxs_savitzky = all_poly_and_maxs_savitzky[0:(pointer_max_savitzky+1)]
 out_name = output_dir + "all_poly_and_maxs_savitzky.csv"
 all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
@@ -410,14 +511,20 @@ all_poly_and_maxs_savitzky.to_csv(out_name, index = False)
 ########### min
 ###########
 
+all_poly_and_mins_spline = all_poly_and_mins_spline[0:(pointer_min_spline+1)]
+out_name = output_dir + "df_"+ str(freedom_df) + "_all_poly_and_mins_spline.csv"
+all_poly_and_mins_spline.to_csv(out_name, index = False)
+
 all_poly_and_mins_savitzky = all_poly_and_mins_savitzky[0:(pointer_min_savitzky+1)]
 out_name = output_dir + "all_poly_and_mins_savitzky.csv"
 all_poly_and_mins_savitzky.to_csv(out_name, index = False)
 
+
+# out_name = output_dir + "_df_"+ str(freedom_df) + "_double_polygons_spline.csv"
+# double_poly_max_spline = double_poly_max_spline[0:(double_max_pointer+1)]
+# double_poly_max_spline.to_csv(out_name, index = False)
+
 end_time = time.time()
 print(end_time - start_time)
-
-
-
 
 

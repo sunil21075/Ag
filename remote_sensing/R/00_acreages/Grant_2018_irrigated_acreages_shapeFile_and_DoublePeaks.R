@@ -32,12 +32,14 @@ sum(Grant2018_Irrigated_lastSrvyDate$ExctAcr)
 Grant2018_Irrigated_double_by_notes <- filter_double_by_Notes(Grant2018_Irrigated)
 sum(Grant2018_Irrigated_double_by_notes$ExctAcr)
 
+Grant2018_Irrigated_lastSrvyDate_double_by_notes <- filter_double_by_Notes(Grant2018_Irrigated_lastSrvyDate)
+sum(Grant2018_Irrigated_lastSrvyDate_double_by_notes$ExctAcr)
+
+
 Grant2018_Irrigated_double_by_notes_NASS_out <- Grant2018_Irrigated_double_by_notes %>%
                                                 filter(DataSrc != "NASS") %>%
                                                 data.table()
-
-Grant2018_Irrigated_lastSrvyDate_double_by_notes <- filter_double_by_Notes(Grant2018_Irrigated_lastSrvyDate)
-sum(Grant2018_Irrigated_lastSrvyDate_double_by_notes$ExctAcr)
+sum(Grant2018_Irrigated_double_by_notes_NASS_out$ExctAcr)
 
 
 
@@ -47,18 +49,48 @@ sum(Grant2018_Irrigated_lastSrvyDate_double_by_notes$ExctAcr)
 #####        Double peak section
 ##### 
 ##############################################################################
+                    Grant_Irrigated_EVI_2018_NassIn_CorrectYears
 peak_dir <- paste0("/Users/hn/Documents/01_research_data/remote_sensing/", 
                    "01_NDVI_TS/04_Irrigated_eastern_Cloud70/Grant_2018_irrigated/", 
                    "savitzky/")
 
-peak_dir_NassIn_NotorrectYears_delta_2 <- paste0(peak_dir, "Grant_Irrigated_EVI_2018_1_NassIn_NotorrectYears/delta_0.2/")
-peak_dir_NassIn_NotorrectYears_delta_2 <- paste0(peak_dir, "Grant_Irrigated_EVI_2018_2_NassIn_CorrectYears/delta_0.2/")
-peak_dir_NassIn_NotorrectYears_delta_2 <- paste0(peak_dir, "Grant_Irrigated_EVI_2018_3_NassOut_NotCorrectYears/delta_0.2/")
-peak_dir_NassIn_NotorrectYears_delta_2 <- paste0(peak_dir, "Grant_Irrigated_EVI_2018_4_NassOut_CorrectYear/delta_0.2/")
 
-Grant_Irrigated_EVI_2018_1_NassIn_NotorrectYears <- read.csv(paste0(peak_dir_NassIn_NotorrectYears_delta_2, 
-                                                                    "all_poly_and_maxs_savitzky.csv"),
+peak_dir_NassIn_CorrectYears_delta_2 <- paste0(peak_dir, "Grant_Irrigated_EVI_2018_NassIn_CorrectYears/delta_0.2/")
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears <- read.csv(paste0(peak_dir_NassIn_CorrectYears_delta_2, 
+                                                                "all_poly_and_maxs_savitzky.csv"),
                                                              as.is=TRUE)
+
+# drop the last empty row!!!! dammit
+L <- nrow(Grant_Irrigated_EVI_2018_NassIn_CorrectYears)
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears <- Grant_Irrigated_EVI_2018_NassIn_CorrectYears[-c(L), ]
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears <- within(Grant_Irrigated_EVI_2018_NassIn_CorrectYears, 
+                                                         remove(geo, max_Doy,  max_value))
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears <- unique(Grant_Irrigated_EVI_2018_NassIn_CorrectYears)
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2peaks <- Grant_Irrigated_EVI_2018_NassIn_CorrectYears %>%
+                                                       filter(max_count == 2) %>%
+                                                       data.table()
+sum(Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2peaks$ExctAcr)
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2morepeaks <- Grant_Irrigated_EVI_2018_NassIn_CorrectYears %>%
+                                                           filter(max_count >= 2) %>%
+                                                           data.table()
+sum(Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2morepeaks$ExctAcr)
+
+#######
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears_doubleNotes <- filter_double_by_Notes(Grant_Irrigated_EVI_2018_NassIn_CorrectYears)
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2peaks <- Grant_Irrigated_EVI_2018_NassIn_CorrectYears_doubleNotes %>%
+                                                       filter(max_count == 2) %>%
+                                                       data.table()
+sum(Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2peaks$ExctAcr)
+
+Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2morepeaks <- Grant_Irrigated_EVI_2018_NassIn_CorrectYears_doubleNotes %>%
+                                                           filter(max_count >= 2) %>%
+                                                           data.table()
+sum(Grant_Irrigated_EVI_2018_NassIn_CorrectYears_2morepeaks$ExctAcr)
 
 
 
