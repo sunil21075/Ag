@@ -22,7 +22,6 @@ data_dir <- paste0("/Users/hn/Documents/01_research_data/remote_sensing/01_Data_
 #                          GDAL1_integer64_policy = TRUE)
 
 WSDA_2017 <- read.csv(paste0(data_dir, "WSDA_DataTable_2017.csv"))
-
 WSDA_2017$CropType <- tolower(WSDA_2017$CropType)
 
 # Eastern_2017 <- pick_eastern_counties(WSDA_2017)

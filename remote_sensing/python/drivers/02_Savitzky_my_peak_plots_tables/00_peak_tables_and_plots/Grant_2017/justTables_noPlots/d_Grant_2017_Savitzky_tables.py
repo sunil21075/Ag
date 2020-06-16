@@ -128,6 +128,7 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 ##################################################################
 
 a_df = a_df[a_df['county']== "Grant"] # Filter Grant
+a_df = a_df[a_df['image_year']== 2017]
 
 # a_df = filter_out_NASS(a_df) # Toss NASS
 # a_df = filter_by_lastSurvey(a_df, year = 2017) # filter by last survey date

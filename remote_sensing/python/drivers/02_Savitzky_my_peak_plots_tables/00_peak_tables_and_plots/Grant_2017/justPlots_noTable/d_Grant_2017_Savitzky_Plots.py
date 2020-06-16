@@ -54,8 +54,8 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 ###
 ### Directories
 ###
-data_dir = "/Users/hn/Documents/01_research_data/remote_sensing/" + \
-           "01_NDVI_TS/04_Irrigated_eastern_Cloud70/Grant_2018_irrigated/"
+data_dir = "/Users/hn/Documents/01_research_data" + \
+           "/remote_sensing/01_NDVI_TS/00_Eastern_WA_withYear/"
 
 param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
 ####################################################################################
@@ -100,8 +100,10 @@ Sav_win_size = int(sys.argv[1])
 sav_order = int(sys.argv[2])
 delt = float(sys.argv[3])
 indeks = sys.argv[4]
+irrigated_only = sys.argv[5]
+irrigated_only = 0
 
-print ("delta = {fileShape}.".format(fileShape=delt))
+print ("delta = {fileShape}".format(fileShape=delt))
 
 ####################################################################################
 ###
@@ -121,14 +123,21 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 ##################################################################
 
 a_df = a_df[a_df['county']== "Grant"] # Filter Grant
-a_df = filter_out_NASS(a_df) # Toss NASS
-a_df = filter_by_lastSurvey(a_df, year = 2017) # filter by last survey date
+a_df = rc.filter_out_NASS(a_df) # Toss NASS
+a_df = rc.filter_by_lastSurvey(a_df, year = 2017) # filter by last survey date
+a_df['year'] = 2017
+
+if irrigated_only == True:
+    filter_out_nonIrrigated = filter_out_nonIrrigated(filter_out_nonIrrigated)
+    output_Irr = "irrigated"
+else:
+    output_Irr = "non_irrigated"
 
 
 ##################################################################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/plots/Grant_2017/" +\
-             "/savitzky_" + indeks + "/" + \
+output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/plots/Grant_2017/" + \
+             output_Irr + "/savitzky_" + indeks + "/" + \
              "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
 
 plot_dir_base = output_dir
@@ -138,7 +147,6 @@ os.makedirs(output_dir, exist_ok=True)
 os.makedirs(plot_dir_base, exist_ok=True)
 
 ######################
-a_df['year'] = 2017
 
 # The following columns do not exist in the old data
 #
