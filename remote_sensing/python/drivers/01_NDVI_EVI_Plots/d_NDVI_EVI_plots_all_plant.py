@@ -1,5 +1,5 @@
 """
-Peak and plot simultaneously
+plot simultaneously
 """
 
 import csv

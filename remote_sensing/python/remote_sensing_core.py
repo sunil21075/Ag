@@ -26,15 +26,17 @@ import seaborn as sb
 def divide_double_nonDouble_peaks(dt_dt):
     
     # subset the double-peaked
-    double_peaked = dt_dt[dt_dt["peak_count"] == 2.0]
+    double_peaked = dt_dt[dt_dt["peak_count"] == 2.0].copy()
 
     # subset the not double-peaked
-    not_double_peaked = dt_dt[dt_dt["peak_count"] != 2.0 ]
+    not_double_peaked = dt_dt[dt_dt["peak_count"] != 2.0 ].copy()
 
     return (double_peaked, not_double_peaked)
 
 
-def divide_double_nonDouble_by_notes(dt_dt):
+def divide_double_nonDouble_by_notes(dt_d):
+    dt_dt = dt_d.copy()
+
     # convert NaN and NAs to string so we can subset/index 
     dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
 
@@ -52,46 +54,98 @@ def divide_double_nonDouble_by_notes(dt_dt):
 
     return (double_cropped, not_double_cropped)
 
-def filter_out_NASS(dt_df_NASS):
-    dt_df_NASS = dt_df_NASS[~dt_df_NASS['DataSrc'].str.contains("NASS")]
+def filter_double_by_Notes(dt_d):
+    dt_dt = dt_d.copy()
+    # convert NaN and NAs to string so we can subset/index 
+    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+
+    # convert to lower case
+    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+
+    # replace dbl with double
+    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    
+    # subset the notes with double in it.
+    double_cropped = dt_dt[dt_dt["Notes"].str.contains("double")]
+
+    return (double_cropped)
+
+def filter_Notdouble_by_Notes(dt_d):
+    dt_dt = dt_d.copy()
+    # convert NaN and NAs to string so we can subset/index 
+    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+
+    # convert to lower case
+    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+
+    # replace dbl with double
+    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    
+    # subset the notes with double in it.
+    Notdouble_cropped = dt_dt[~dt_dt["Notes"].str.contains("double")]
+
+    return (Notdouble_cropped)
+
+def filter_out_NASS(dt_df):
+    dt_df_NASS = dt_df.copy()
+    dt_df_NASS['DataSrc'] = dt_df_NASS['DataSrc'].astype(str)
+    dt_df_NASS["DataSrc"] = dt_df_NASS["DataSrc"].str.lower()
+
+    dt_df_NASS = dt_df_NASS[~dt_df_NASS['DataSrc'].str.contains("nass")]
     return dt_df_NASS
 
-def filter_by_lastSurvey(dt_df_surv, year):
+def filter_by_lastSurvey(dt_df_su, year):
+    dt_df_surv = dt_df_su.copy()
     dt_df_surv = dt_df_surv[dt_df_surv['LstSrvD'].str.contains(str(year))]
     return dt_df_surv
 
 
-def filter_out_nonIrrigated(dt_df_irrig):
-    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("None")]
-    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("Unknown")]
+def filter_out_nonIrrigated(dt_df_irr):
+    dt_df_irrig = dt_df_irr.copy()
+    #
+    # drop NA rows in irrigation column
+    #
+    dt_df_irrig.dropna(subset=['Irrigtn'], inplace=True)
+
+    dt_df_irrig['Irrigtn'] = dt_df_irrig['Irrigtn'].astype(str)
+
+    dt_df_irrig["Irrigtn"] = dt_df_irrig["Irrigtn"].str.lower()
+    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("none")]
+    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("unknown")]
+    
     return dt_df_irrig
     
-
-def filter_out_unwanted_plants(dt_df):
-    unwanted_plants = ["Almond", "Apple", "Alfalfa/Grass Hay",
-                       "Apricot", "Asparagus", "Berry, Unknown",  
-                       "Blueberry", "Cherry", "Grape, Juice", 
-                       "Grape, Table", "Grape, Unknown", 
-                       "Grape, Wine", "Hops", "Mint", 
-                       "Nectarine/Peach", "Orchard, Unknown", 
-                       "Pear", "Plum", "Strawberry", "Walnut",
-                       "Alfalfa Hay", "Alfalfa Seed", "Alfalfa Seed",
-                       "Grass Hay", "Hay/Silage , Unknown", "Hay/Silage, Unknown",
-                       "Pasture", "Timothy"]
-    
-    # filter unwanted plants
-    dt_df = dt_df[~(dt_df['CropTyp'].isin(unwanted_plants))]
-    
-    # filter non-irrigated
-    """
-    # These two lines can replace the following two lines
-    non_irrigations = ["Unknown", "None", "None/Rill", "None/Sprinkler", 
-                       "None/Sprinkler/Wheel Line", 
-                       "None/Wheel Line", "Drip/None", "Center Pivot/None"]
-    
-    dt_df = dt_df[~(dt_df['Irrigtn'].isin(non_irrigations))]
-    """
+def filter_double_potens(dt_d, double_poten_dt):
+    dt_df = dt_d.copy()
+    dt_df = dt_df[dt_df.CropTyp.isin(double_poten_dt['Crop_Type'])]
     return dt_df
+
+# def filter_out_unwanted_plants(dt_d):
+#     unwanted_plants = ["Almond", "Apple", "Alfalfa/Grass Hay", "CRP/Conservation",
+#                        "Apricot", "Asparagus", "Berry, Unknown", "Developed",
+#                        "Blueberry", "Cherry", "Grape, Juice", 
+#                        "Grape, Table", "Grape, Unknown", 
+#                        "Grape, Wine", "Hops", "Mint", 
+#                        "Nectarine/Peach", "Orchard, Unknown", 
+#                        "Pear", "Plum", "Strawberry", "Walnut",
+#                        "Alfalfa Hay", "Alfalfa Seed", "Alfalfa Seed",
+#                        "Grass Hay", "Hay/Silage , Unknown", "Hay/Silage, Unknown",
+#                        "Pasture", "Timothy"]
+    
+#     # filter unwanted plants
+#     dt_df = dt_d.copy()
+#     dt_df = dt_df[~(dt_df['CropTyp'].isin(unwanted_plants))]
+    
+#     # filter non-irrigated
+#     """
+#     # These two lines can replace the following two lines
+#     non_irrigations = ["Unknown", "None", "None/Rill", "None/Sprinkler", 
+#                        "None/Sprinkler/Wheel Line", 
+#                        "None/Wheel Line", "Drip/None", "Center Pivot/None"]
+    
+#     dt_df = dt_df[~(dt_df['Irrigtn'].isin(non_irrigations))]
+#     """
+#     return dt_df
     
 def initial_clean_NDVI(df):
     dt = df.copy()
@@ -103,7 +157,7 @@ def initial_clean_NDVI(df):
     dt = dt[dt['NDVI'].notna()]
     
     # rename the column .geo to "geo"
-    dt = dt.rename(columns={".geo": "geo"})
+    # dt = dt.rename(columns={".geo": "geo"})
     return (dt)
 
 def initial_clean_EVI(df):
@@ -116,7 +170,7 @@ def initial_clean_EVI(df):
     dt = dt[dt['EVI'].notna()]
     
     # rename the column .geo to "geo"
-    dt = dt.rename(columns={".geo": "geo"})
+    # dt = dt.rename(columns={".geo": "geo"})
     return (dt)
 
 def initial_clean(df, column_to_be_cleaned):
@@ -126,7 +180,7 @@ def initial_clean(df, column_to_be_cleaned):
         dt = dt.drop(columns=['system:index'])
 
     # rename the column .geo to "geo"
-    dt = dt.rename(columns={".geo": "geo"})
+    # dt = dt.rename(columns={".geo": "geo"})
     
     # Drop rows whith NA in EVI column.
     dt = dt[dt[column_to_be_cleaned].notna()]    
@@ -362,7 +416,6 @@ def my_peakdetect(y_axis, x_axis=None, delta=0):
     # store data length for later use
     length = len(y_axis)
     
-    
     # perform some checks
     if not (np.isscalar(delta) and delta >= 0):
         raise ValueError ( "delta must be a positive number" )
@@ -408,6 +461,34 @@ def my_peakdetect(y_axis, x_axis=None, delta=0):
         
     return [maxtab, mintab]
 
+def Kirti_maxMin(y, x, half_window = 3, delta=0.2):
+    # check input data
+    x, y = _datacheck_peakdetect(x, y)
+    
+    # store data length for later use
+    length = len(y)
+    
+    # perform some checks
+    if not (np.isscalar(delta) and delta >= 0):
+        raise ValueError ( "delta must be a positive number" )
+        
+    maxtab = []
+    mintab = []
+    length = len(y)
+
+    for pos in np.arange(half_window, length-half_window):
+        curr_y = y[pos]
+        y_window = y[pos - half_window : pos + half_window + 1]
+        if curr_y == max(y_window):
+            if np.abs(curr_y - min(y_window)) >= delta:
+                maxtab.append([x[pos], curr_y])
+
+        if curr_y == min(y_window):
+            if np.abs((curr_y - max(y_window))) >= delta:
+                mintab.append([x[pos], curr_y])
+    return [maxtab, mintab]
+
+
 
 def form_xs_ys_from_peakdetect(max_peak_list, doy_vect):
     dd = np.array(doy_vect)
@@ -419,9 +500,9 @@ def form_xs_ys_from_peakdetect(max_peak_list, doy_vect):
     return (xs, ys)
 
 def keep_WSDA_columns(dt_dt):
-    needed_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+    needed_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
-                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo']
+                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year']
     """
     # Using DataFrame.drop
     df.drop(df.columns[[1, 2]], axis=1, inplace=True)
@@ -478,11 +559,11 @@ def generate_peak_df(an_EE_TS):
     an_EE_TS = initial_clean(an_EE_TS)
 
     ### List of unique polygons
-    polygon_list = an_EE_TS['geo'].unique()
+    polygon_list = an_EE_TS['ID'].unique()
 
-    output_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+    output_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
-                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo',
+                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year',
                       'peak_Doy', 'peak_value']
     # all_polygons_and_their_peaks = pd.DataFrame(data=None, 
     #                                             columns=output_columns)
@@ -495,9 +576,9 @@ def generate_peak_df(an_EE_TS):
                                                 index=np.arange(3*len(an_EE_TS)), 
                                                 columns=output_columns)
 
-    double_columns = ['Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
+    double_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
                       'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
-                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year', 'geo']
+                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year']
 
     double_polygons = pd.DataFrame(data=None, 
                                    index=np.arange(2*len(an_EE_TS)), 
@@ -507,7 +588,7 @@ def generate_peak_df(an_EE_TS):
     pointer = 0
     double_pointer = 0
     for a_poly in polygon_list:
-        curr_field = an_EE_TS[an_EE_TS['geo']==a_poly]
+        curr_field = an_EE_TS[an_EE_TS['ID']==a_poly]
 
         year = int(curr_field['year'].unique())
         plant = curr_field['CropTyp'].unique()[0]

@@ -41,7 +41,7 @@ pick_correct_year <- function(a_shape_file, year){
 }
 
 pick_proper_cols_w_notes <- function(a_shape_file){
-  cols_to_keep <- c("LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
+  cols_to_keep <- c("ID", "LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
                     "Irrigtn", "TRS", "RtCrpTy", "Notes", "year")
   a_shape_file <- a_shape_file[, (names(a_shape_file) %in% cols_to_keep)]
   return(a_shape_file)
@@ -59,9 +59,8 @@ filter_lastSrvyDate <- function(dt, year){
   return(dt_LstSrvD)
 }
 
-
-
 filter_double_by_Notes <- function(dt){
+  
   dt$Notes <- tolower(dt$Notes)
   dt_doube_by_notes <- dt[grepl('double', dt$Notes), ]
   dt_dbl_by_notes <- dt[grepl('dbl', dt$Notes), ]
@@ -71,15 +70,31 @@ filter_double_by_Notes <- function(dt){
 
 filter_out_non_irrigated_datatable <- function(dt){
   dt <- data.table(dt)
+  dt$Irrigtn <- tolower(dt$Irrigtn)
+  dt$Irrigtn[is.na(dt$Irrigtn)] <- "na"
+
+
   dt <- dt %>% 
-        filter(Irrigtn != "Unknown") %>% 
+        filter(Irrigtn != "unknown") %>% 
         data.table()
+
+  dt <- dt %>% 
+        filter(Irrigtn != "na") %>% 
+        data.table()
+
+  dt <- dt[!grepl('none', dt$Irrigtn), ]
   
+  return(dt)
 }
 
 filter_out_non_irrigated_shapefile <- function (dt){
-  dt <- dt[!grepl('None', dt$Irrigtn), ] # toss out those with None in irrigation
-  dt <- dt[!grepl('Unknown', dt$Irrigtn), ] # toss out Unknown
+  dt@data$Irrigtn <- tolower(dt@data$Irrigtn)
+  dt@data$Irrigtn[is.na(dt@data$Irrigtn$Irrigtn)] <- "na"
+
+
+  dt <- dt[!grepl('none', dt$Irrigtn), ] # toss out those with None in irrigation
+  dt <- dt[!grepl('unknown', dt$Irrigtn), ] # toss out Unknown
+  dt <- dt[!grepl('na', dt$Irrigtn), ] # toss out NAs
   return(dt)
 
 }
