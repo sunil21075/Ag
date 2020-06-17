@@ -88,6 +88,9 @@ import remote_sensing_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
+eleven_colors = ["gray", "lightcoral", "red", "peru",
+                 "darkorange", "gold", "olive", "green",
+                 "blue", "violet", "deepskyblue"]
 
 Sav_win_size = 9
 sav_order = 1
@@ -400,11 +403,11 @@ for a_poly in polygon_list:
         sb.set();
 
         fig, ax = plt.subplots(figsize=(8,6));
-        ax.scatter(X, y, label="Raw data", s=30, marker='+');
+        ax.scatter(X, y, label="Raw data", s=30);
 
         for co, ite in enumerate(plotting_dic):
-            ax.plot(X, plotting_dic[ite][0], label = ite)
-            ax.scatter(plotting_dic[ite][1], plotting_dic[ite][2], s=100, marker='*');
+            ax.plot(X, plotting_dic[ite][0], label = ite, c = eleven_colors[co])
+            ax.scatter(plotting_dic[ite][1], plotting_dic[ite][2], s=100, marker='*', c = eleven_colors[co]);
 
         ax.set_title(plot_title);
         ax.set(xlabel='DoY', ylabel=indeks)
