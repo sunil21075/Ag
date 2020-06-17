@@ -114,6 +114,20 @@ def filter_out_nonIrrigated(dt_df_irr):
     dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("unknown")]
     
     return dt_df_irrig
+
+def filter_out_Irrigated(dt_df_irr):
+    dt_df_Nonirrig = dt_df_irr.copy()
+    #
+    # drop NA rows in irrigation column
+    #
+    dt_df_Nonirrig.dropna(subset=['Irrigtn'], inplace=True)
+
+    dt_df_Nonirrig['Irrigtn'] = dt_df_Nonirrig['Irrigtn'].astype(str)
+    dt_df_Nonirrig["Irrigtn"] = dt_df_Nonirrig["Irrigtn"].fillna("na")
+
+    dt_df_Nonirrig["Irrigtn"] = dt_df_Nonirrig["Irrigtn"].str.lower()
+    dt_df_Nonirrig = dt_df_Nonirrig[dt_df_Nonirrig.Irrigtn.isin(['none', 'unknown', 'na'])]
+    return dt_df_Nonirrig
     
 def filter_double_potens(dt_d, double_poten_dt):
     dt_df = dt_d.copy()

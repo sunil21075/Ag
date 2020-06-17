@@ -36,7 +36,6 @@ start_time = time.time()
 # search path for modules
 # look @ https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
 
-
 ####################################################################################
 ###
 ###                      Local
@@ -84,24 +83,30 @@ param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
-
 ####################################################################################
 ###
 ###      Parameters                   
 ###
 ####################################################################################
-freedom_df = 7
 
 Sav_win_size = 9
 sav_order = 1
 delt = 0.1
+irrigated_only = 1
+SF_year = 2017
+indeks = "EVI"
 
-Sav_win_size = int(sys.argv[1])
-sav_order = int(sys.argv[2])
-delt = float(sys.argv[3])
-indeks = sys.argv[4]
-irrigated_only = sys.argv[5]
-irrigated_only = 0
+# we are creating panels where each panel
+# consist of different parameters of Savitzky, 
+# So, we do not need the following two
+
+# Sav_win_size = int(sys.argv[1]) 
+# sav_order = int(sys.argv[2])
+
+# delt = float(sys.argv[1])
+# indeks = sys.argv[1]
+# irrigated_only = int(sys.argv[2])
+# SF_year = int(sys.argv[3])
 
 print ("delta = {fileShape}".format(fileShape=delt))
 
@@ -110,7 +115,8 @@ print ("delta = {fileShape}".format(fileShape=delt))
 ###                   process data
 ###
 ####################################################################################
-f_name = "Eastern_WA_2017_70cloud_selectors.csv"
+
+f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
 a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 
 ##################################################################
@@ -124,21 +130,34 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 
 a_df = a_df[a_df['county']== "Grant"] # Filter Grant
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
-a_df = rc.filter_by_lastSurvey(a_df, year = 2017) # filter by last survey date
-a_df['year'] = 2017
+a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
+
+a_df['SF_year'] = SF_year
+
+########################
+######################## Do this for now, till you learn
+######################## how to plot 2 years where x is DoY 
+######################## 
+
+a_df = a_df[a_df['image_year'] == SF_year]
+
+########################
+########################
 
 if irrigated_only == True:
-    filter_out_nonIrrigated = filter_out_nonIrrigated(filter_out_nonIrrigated)
-    output_Irr = "irrigated"
+    a_df = rc.filter_out_nonIrrigated(a_df)
+    output_Irr = "irrigated_only"
 else:
-    output_Irr = "non_irrigated"
+    output_Irr = "non_irrigated_only"
+    a_df = rc.filter_out_Irrigated(a_df)
 
 
 ##################################################################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/plots/Grant_2017/" + \
-             output_Irr + "/savitzky_" + indeks + "/" + \
-             "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
+output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/" + \
+             "plots/Grant_" + str(SF_year) + "/" + \
+              output_Irr + "/savitzky_" + indeks + "/" + \
+             "/delta" + str(delt) + "/"
 
 plot_dir_base = output_dir
 print ("plot_dir_base is " + plot_dir_base)
@@ -170,28 +189,6 @@ an_EE_TS = a_df.copy()
 polygon_list = an_EE_TS['ID'].unique()
 print(len(polygon_list))
 
-max_output_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
-                      'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
-                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year',
-                      'max_Doy', 'max_value', 'max_count']
-
-all_poly_and_maxs_savitzky = pd.DataFrame(data=None, 
-                                          index=np.arange(3*len(an_EE_TS)), 
-                                          columns=max_output_columns)
-
-
-min_output_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
-                      'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
-                      'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'county', 'year',
-                      'min_Doy', 'min_value', 'min_count']
-
-all_poly_and_mins_savitzky = pd.DataFrame(data=None, 
-                                          index=np.arange(3*len(an_EE_TS)), 
-                                          columns=min_output_columns)
-
-pointer_max_savitzky = 0
-pointer_min_savitzky = 0
-
 counter = 0
 
 for a_poly in polygon_list:
@@ -205,7 +202,6 @@ for a_poly in polygon_list:
 
     ################################################################
 
-    year = int(curr_field['year'].unique())
     plant = curr_field['CropTyp'].unique()[0]
 
     # Take care of names, replace "/" and "," and " " by "_"
@@ -216,10 +212,6 @@ for a_poly in polygon_list:
 
     county = curr_field['county'].unique()[0]
     ID = curr_field['ID'].unique()[0]
-
-    ### 
-    ###  There is a chance that a polygon is repeated twice?
-    ###
 
     X = curr_field['doy']
     y = curr_field[indeks]
@@ -232,95 +224,212 @@ for a_poly in polygon_list:
     # differences are minor, but lets keep using Pythons function
     # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
 
-    savitzky_pred = scipy.signal.savgol_filter(y, window_length= Sav_win_size, polyorder=sav_order)
+    SG_pred_31 = scipy.signal.savgol_filter(y, window_length= 3, polyorder=1)
+    SG_pred_32 = scipy.signal.savgol_filter(y, window_length= 3, polyorder=2)
+    
+    SG_pred_51 = scipy.signal.savgol_filter(y, window_length= 5, polyorder=1)
+    SG_pred_52 = scipy.signal.savgol_filter(y, window_length= 5, polyorder=2)
+    SG_pred_53 = scipy.signal.savgol_filter(y, window_length= 5, polyorder=3)
+    
+    SG_pred_71 = scipy.signal.savgol_filter(y, window_length= 7, polyorder=1)
+    SG_pred_72 = scipy.signal.savgol_filter(y, window_length= 7, polyorder=2)
+    SG_pred_73 = scipy.signal.savgol_filter(y, window_length= 7, polyorder=3)
 
+    SG_pred_91 = scipy.signal.savgol_filter(y, window_length= 9, polyorder=1)
+    SG_pred_92 = scipy.signal.savgol_filter(y, window_length= 9, polyorder=2)
+    SG_pred_93 = scipy.signal.savgol_filter(y, window_length= 9, polyorder=3)
+
+   
+    # preds_df = pd.DataFrame(data = {'SG 31':SG_pred_31, 'SG 32':SG_pred_32, 
+    #                                 'SG 51':SG_pred_51, 'SG 52':SG_pred_52, 'SG 53':SG_pred_53, 
+    #                                 'SG 71':SG_pred_71, 'SG 72':SG_pred_72, 'SG 73':SG_pred_73, 
+    #                                 'SG 91':SG_pred_91, 'SG 92':SG_pred_92, 'SG 93':SG_pred_93}, 
+    #                         index = X)
+    # df2.set_index(keys = ['a'], drop=True,  inplace=True)
     #############################################
     ###
     ###             find peaks
     ###
     #############################################
-    #################################################################################
-    #
-    #    savitzky
-    #
 
-    savitzky_max_min = rc.my_peakdetect(y_axis=savitzky_pred, x_axis=X, delta=delt);
-
-    savitzky_max =  savitzky_max_min[0];
-    savitzky_min =  savitzky_max_min[1];
-
-    savitzky_max = rc.separate_x_and_y(m_list = savitzky_max);
-    savitzky_min = rc.separate_x_and_y(m_list = savitzky_min);
-
-    savitzky_max_DoYs_series = pd.Series(savitzky_max[0]);
-    savitzky_max_series = pd.Series(savitzky_max[1]);
-
-    savitzky_min_DoYs_series = pd.Series(savitzky_min[0]);
-    savitzky_min_series = pd.Series(savitzky_min[1]);
+    SG_max_min_31 = rc.my_peakdetect(y_axis=SG_pred_31, x_axis=X, delta=delt);
+    SG_max_31 =  SG_max_min_31[0]; SG_min_31 =  SG_max_min_31[1];
+    SG_max_31 = rc.separate_x_and_y(m_list = SG_max_31);
+    SG_min_31 = rc.separate_x_and_y(m_list = SG_min_31);
+    SG_max_DoYs_series_31 = pd.Series(SG_max_31[0]);
+    SG_max_series_31 = pd.Series(SG_max_31[1]);
+    SG_min_DoYs_series_31 = pd.Series(SG_min_31[0]);
+    SG_min_series_31 = pd.Series(SG_min_31[1]);
 
 
-    savitzky_max_df = pd.DataFrame({ 
-                           'max_Doy': savitzky_max_DoYs_series,
-                           'max_value': savitzky_max_series
-                          })
-    # add number of max to the data frame.
-    savitzky_max_df['max_count'] = savitzky_max_df.shape[0]
+    SG_max_min_32 = rc.my_peakdetect(y_axis=SG_pred_32, x_axis=X, delta=delt);
+    SG_max_32 =  SG_max_min_32[0]; SG_min_32 =  SG_max_min_32[1];
+    SG_max_32 = rc.separate_x_and_y(m_list = SG_max_32);
+    SG_min_32 = rc.separate_x_and_y(m_list = SG_min_32);
+    SG_max_DoYs_series_32 = pd.Series(SG_max_32[0]);
+    SG_max_series_32 = pd.Series(SG_max_32[1]);
+    SG_min_DoYs_series_32 = pd.Series(SG_min_32[0]);
+    SG_min_series_32 = pd.Series(SG_min_32[1]);
 
-    savitzky_min_df = pd.DataFrame({ 
-                           'min_Doy': savitzky_min_DoYs_series,
-                           'min_value': savitzky_min_series
-                          })
-    # add number of max to the data frame.
-    savitzky_min_df['max_count'] = savitzky_min_df.shape[0]
+    ############
+    ############ window 5
+    ############
+
+    SG_max_min_51 = rc.my_peakdetect(y_axis=SG_pred_51, x_axis=X, delta=delt);
+    SG_max_51 =  SG_max_min_51[0]; SG_min_51 =  SG_max_min_51[1];
+    SG_max_51 = rc.separate_x_and_y(m_list = SG_max_51);
+    SG_min_51 = rc.separate_x_and_y(m_list = SG_min_51);
+    SG_max_DoYs_series_51 = pd.Series(SG_max_51[0]);
+    SG_max_series_51 = pd.Series(SG_max_51[1]);
+    SG_min_DoYs_series_51 = pd.Series(SG_min_51[0]);
+    SG_min_series_51 = pd.Series(SG_min_51[1]);
+
+    SG_max_min_52 = rc.my_peakdetect(y_axis=SG_pred_52, x_axis=X, delta=delt);
+    SG_max_52 =  SG_max_min_52[0]; SG_min_52 =  SG_max_min_52[1];
+    SG_max_52 = rc.separate_x_and_y(m_list = SG_max_52);
+    SG_min_52 = rc.separate_x_and_y(m_list = SG_min_52);
+    SG_max_DoYs_series_52 = pd.Series(SG_max_52[0]);
+    SG_max_series_52 = pd.Series(SG_max_52[1]);
+    SG_min_DoYs_series_52 = pd.Series(SG_min_52[0]);
+    SG_min_series_52 = pd.Series(SG_min_52[1]);
+
+    SG_max_min_53 = rc.my_peakdetect(y_axis=SG_pred_53, x_axis=X, delta=delt);
+    SG_max_53 =  SG_max_min_53[0]; SG_min_53 =  SG_max_min_53[1];
+    SG_max_53 = rc.separate_x_and_y(m_list = SG_max_53);
+    SG_min_53 = rc.separate_x_and_y(m_list = SG_min_53);
+    SG_max_DoYs_series_53 = pd.Series(SG_max_53[0]);
+    SG_max_series_53 = pd.Series(SG_max_53[1]);
+    SG_min_DoYs_series_53 = pd.Series(SG_min_53[0]);
+    SG_min_series_53 = pd.Series(SG_min_53[1]);
+
+    ############
+    ############ window 7
+    ############
+
+    SG_max_min_71 = rc.my_peakdetect(y_axis=SG_pred_71, x_axis=X, delta=delt);
+    SG_max_71 =  SG_max_min_71[0]; SG_min_71 =  SG_max_min_71[1];
+    SG_max_71 = rc.separate_x_and_y(m_list = SG_max_71);
+    SG_min_71 = rc.separate_x_and_y(m_list = SG_min_71);
+    SG_max_DoYs_series_71 = pd.Series(SG_max_71[0]);
+    SG_max_series_71 = pd.Series(SG_max_71[1]);
+    SG_min_DoYs_series_71 = pd.Series(SG_min_71[0]);
+    SG_min_series_71 = pd.Series(SG_min_71[1]);
+
+    SG_max_min_72 = rc.my_peakdetect(y_axis=SG_pred_72, x_axis=X, delta=delt);
+    SG_max_72 =  SG_max_min_72[0]; SG_min_72 =  SG_max_min_72[1];
+    SG_max_72 = rc.separate_x_and_y(m_list = SG_max_72);
+    SG_min_72 = rc.separate_x_and_y(m_list = SG_min_72);
+    SG_max_DoYs_series_72 = pd.Series(SG_max_72[0]);
+    SG_max_series_72 = pd.Series(SG_max_72[1]);
+    SG_min_DoYs_series_72 = pd.Series(SG_min_72[0]);
+    SG_min_series_72 = pd.Series(SG_min_72[1]);
+
+    SG_max_min_73 = rc.my_peakdetect(y_axis=SG_pred_73, x_axis=X, delta=delt);
+    SG_max_73 =  SG_max_min_73[0]; SG_min_73 =  SG_max_min_73[1];
+    SG_max_73 = rc.separate_x_and_y(m_list = SG_max_73);
+    SG_min_73 = rc.separate_x_and_y(m_list = SG_min_73);
+    SG_max_DoYs_series_73 = pd.Series(SG_max_73[0]);
+    SG_max_series_73 = pd.Series(SG_max_73[1]);
+    SG_min_DoYs_series_73 = pd.Series(SG_min_73[0]);
+    SG_min_series_73 = pd.Series(SG_min_73[1]);
+
+    ############
+    ############ window 9
+    ############
+
+    SG_max_min_91 = rc.my_peakdetect(y_axis=SG_pred_91, x_axis=X, delta=delt);
+    SG_max_91 =  SG_max_min_91[0]; SG_min_91 =  SG_max_min_91[1];
+    SG_max_91 = rc.separate_x_and_y(m_list = SG_max_91);
+    SG_min_91 = rc.separate_x_and_y(m_list = SG_min_91);
+    SG_max_DoYs_series_91 = pd.Series(SG_max_91[0]);
+    SG_max_series_91 = pd.Series(SG_max_91[1]);
+    SG_min_DoYs_series_91 = pd.Series(SG_min_91[0]);
+    SG_min_series_91 = pd.Series(SG_min_91[1]);
+
+    SG_max_min_92 = rc.my_peakdetect(y_axis=SG_pred_92, x_axis=X, delta=delt);
+    SG_max_92 =  SG_max_min_92[0]; SG_min_92 =  SG_max_min_92[1];
+    SG_max_92 = rc.separate_x_and_y(m_list = SG_max_92);
+    SG_min_92 = rc.separate_x_and_y(m_list = SG_min_92);
+    SG_max_DoYs_series_92 = pd.Series(SG_max_92[0]);
+    SG_max_series_92 = pd.Series(SG_max_92[1]);
+    SG_min_DoYs_series_92 = pd.Series(SG_min_92[0]);
+    SG_min_series_92 = pd.Series(SG_min_92[1]);
+
+    SG_max_min_93 = rc.my_peakdetect(y_axis=SG_pred_93, x_axis=X, delta=delt);
+    SG_max_93 =  SG_max_min_93[0]; SG_min_93 =  SG_max_min_93[1];
+    SG_max_93 = rc.separate_x_and_y(m_list = SG_max_93);
+    SG_min_93 = rc.separate_x_and_y(m_list = SG_min_93);
+    SG_max_DoYs_series_93 = pd.Series(SG_max_93[0]);
+    SG_max_series_93 = pd.Series(SG_max_93[1]);
+    SG_min_DoYs_series_93 = pd.Series(SG_min_93[0]);
+    SG_min_series_93 = pd.Series(SG_min_93[1]);
+
     ########################################################################################################
     ########################################################################################################
+
+    plotting_dic = { "SG_pred_31" : [SG_pred_31, SG_max_DoYs_series_31, SG_max_series_31],
+                     "SG_pred_32" : [SG_pred_32, SG_max_DoYs_series_32, SG_max_series_32],
+
+                     "SG_pred_51" : [SG_pred_51, SG_max_DoYs_series_51, SG_max_series_51],
+                     "SG_pred_52" : [SG_pred_52, SG_max_DoYs_series_52, SG_max_series_52],
+                     "SG_pred_53" : [SG_pred_53, SG_max_DoYs_series_53, SG_max_series_53],
+
+                     "SG_pred_71" : [SG_pred_71, SG_max_DoYs_series_71, SG_max_series_71],
+                     "SG_pred_72" : [SG_pred_72, SG_max_DoYs_series_72, SG_max_series_72],
+                     "SG_pred_73" : [SG_pred_73, SG_max_DoYs_series_73, SG_max_series_73],
+
+                     "SG_pred_91" : [SG_pred_91, SG_max_DoYs_series_91, SG_max_series_91],
+                     "SG_pred_92" : [SG_pred_92, SG_max_DoYs_series_92, SG_max_series_92],
+                     "SG_pred_93" : [SG_pred_93, SG_max_DoYs_series_93, SG_max_series_93]
+    }
 
     #############################################
     ###
     ###             plot
     ###
     #############################################
-    if do_plot == True:
-        sub_out = plant + "/" # "/plant_based_plots/" + plant + "/"
-        plot_path = plot_dir_base + sub_out
-        plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
-        os.makedirs(plot_path, exist_ok=True)
-        # print ("plot_path is " + plot_path)
-        if (len(os.listdir(plot_path))<50):
-            
-            plot_title = county + ", " + plant + ", " + str(year) + " (" + ID + ")"
-            sb.set();
 
-            fig, ax = plt.subplots(figsize=(8,6));
-            ax.scatter(X, y, label="Data", s=30);
+    sub_out = plant + "/" # "/plant_based_plots/" + plant + "/"
+    plot_path = plot_dir_base + sub_out
+    plot_path = plot_path   # +  str(len(SG_max_DoYs_series)) + "_peaks/"
+    os.makedirs(plot_path, exist_ok=True)
+    # print ("plot_path is " + plot_path)
+    if (len(os.listdir(plot_path))<50):
+        
+        plot_title = county + ", " + plant + ", " + str(SF_year) + " (" + ID + ")"
+        sb.set();
 
-            ax.plot(X, savitzky_pred, 'k--', label="savitzky")
-            ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
+        fig, ax = plt.subplots(figsize=(8,6));
+        ax.scatter(X, y, label="Raw data", s=30, marker='+');
 
-            ax.set_title(plot_title);
-            ax.set(xlabel='DoY', ylabel=indeks)
+        for co, ite in enumerate(plotting_dic):
+            ax.plot(X, plotting_dic[ite][0], label = ite)
+            ax.scatter(plotting_dic[ite][1], plotting_dic[ite][2], s=100, marker='*');
 
-            ################################################
-            #
-            #    bare soil indices plots
-            #
+        ax.set_title(plot_title);
+        ax.set(xlabel='DoY', ylabel=indeks)
 
-            an_EE_TS_BSI = rc.initial_clean(df = curr_field, column_to_be_cleaned='BSI')
-            # an_EE_TS_NDWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='NDWI')
-            an_EE_TS_PSRI = rc.initial_clean(df = curr_field, column_to_be_cleaned='PSRI')
-            an_EE_TS_LSWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='LSWI')
+        ################################################
+        #
+        #    bare soil indices plots
+        #
 
-            ax.plot(an_EE_TS_BSI['doy'], an_EE_TS_BSI['BSI'], label="BSI")
-            # ax.plot(x_NDWI, y_NDWI, label="NWDI")
+        # an_EE_TS_BSI = rc.initial_clean(df = curr_field, column_to_be_cleaned='BSI')
+        # # an_EE_TS_NDWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='NDWI')
+        # an_EE_TS_PSRI = rc.initial_clean(df = curr_field, column_to_be_cleaned='PSRI')
+        # an_EE_TS_LSWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='LSWI')
 
-            ax.plot(an_EE_TS_PSRI['doy'], an_EE_TS_PSRI['PSRI'], label="PSRI")
-            ax.plot(an_EE_TS_LSWI['doy'], an_EE_TS_LSWI['LSWI'], label="LSWI")
+        # ax.plot(an_EE_TS_BSI['doy'], an_EE_TS_BSI['BSI'], label="BSI")
+        # # ax.plot(x_NDWI, y_NDWI, label="NWDI")
 
-            ax.legend(loc="best");
-            fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
-            plt.savefig(fname = fig_name, \
-                         dpi=300,
-                         bbox_inches='tight')
-            plt.close()
-            del(plot_path, sub_out) #  county, plant, year
+        # ax.plot(an_EE_TS_PSRI['doy'], an_EE_TS_PSRI['PSRI'], label="PSRI")
+        # ax.plot(an_EE_TS_LSWI['doy'], an_EE_TS_LSWI['LSWI'], label="LSWI")
+
+        ax.legend(loc="best");
+        fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + str(counter) + '.png'
+        plt.savefig(fname = fig_name, \
+                    dpi=300,
+                    bbox_inches='tight')
+        plt.close()
+        del(plot_path, sub_out) #  county, plant, year
  
