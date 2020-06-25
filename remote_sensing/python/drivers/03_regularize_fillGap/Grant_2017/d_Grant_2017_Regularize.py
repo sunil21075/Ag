@@ -88,10 +88,6 @@ import remote_sensing_core as rcp
 indeks = sys.argv[1]
 county = "Grant"
 SF_year = 2017
-do_plot = False
-
-irrigated_only = 0
-
 regular_window_size = 10
 ########################################################################################
 ###
@@ -148,9 +144,8 @@ output_df = pd.DataFrame(data = None,
 counter = 0
 
 for a_poly in polygon_list:
-    if (counter%1000 == 0):
+    if (counter % 300 == 0):
         print (counter)
-    counter += 1
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
     ################################################################
     # Sort by DoY (sanitary check)
@@ -158,9 +153,10 @@ for a_poly in polygon_list:
     
     curr_field = rc.correct_timeColumns_dataTypes(curr_field)
     curr_field.reset_index(drop=True, inplace=True)
-
+    
+    print ("print(curr_field.shape")
     print(curr_field.shape)
-
+    print ("__________________________________________")
     ################################################################
     regularized_TS = rc.regularize_movingWindow_windowSteps_18Months(curr_field, \
                                                                      SF_yr = SF_year, \
@@ -171,6 +167,7 @@ for a_poly in polygon_list:
     ################################################################
     row_pointer = 54 * counter
     output_df[row_pointer: row_pointer+54] = regularized_TS.values
+    counter += 1
 
 
 
