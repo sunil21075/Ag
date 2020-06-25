@@ -7,22 +7,318 @@ import sys
 from IPython.display import Image
 # from shapely.geometry import Point, Polygon
 from math import factorial
-import datetime
-import time
 import scipy
 from statsmodels.sandbox.regression.predstd import wls_prediction_std
 from sklearn.linear_model import LinearRegression
 from patsy import cr
 
+from datetime import date
+import datetime
+import time
+
 from pprint import pprint
 import matplotlib.pyplot as plt
 import seaborn as sb
+
+from datetime import date
 
 ################################################################
 #####
 #####                   Function definitions
 #####
 ################################################################
+#
+#   These will not give what we want. It is a 10-days window
+#   The days are actual days. i.e. between each 2 entry of our
+#   time series there is already some gap.
+#
+
+def extract_XValues_of_RegularizedTS_3Yrs(regularized_TS, SF_yr):
+
+    X_values_prev_year = regularized_TS[regularized_TS.image_year == (SF_yr - 1)]['doy'].copy().values
+    X_values_full_year = regularized_TS[regularized_TS.image_year == (SF_yr)]['doy'].copy().values
+    X_values_next_year = regularized_TS[regularized_TS.image_year == (SF_yr + 1)]['doy'].copy().values
+
+    if check_leap_year(SF_yr-1):
+        X_values_full_year = X_values_full_year + 366
+        X_values_next_year = X_values_next_year + 366
+    else:
+        X_values_full_yea = X_values_full_year + 365
+        X_values_next_year = X_values_next_year + 365
+
+    if check_leap_year(SF_yr):
+        X_values_next_year = X_values_next_year + 366
+    else:
+        X_values_next_year = X_values_next_year + 365
+    
+    return (np.concatenate([X_values_prev_year, X_values_full_year, X_values_next_year]))
+
+
+def check_leap_year(year):
+    if (year % 4) == 0:
+        if (year % 100) == 0:
+            if (year % 400) == 0:
+                return (True)
+            else:
+                return (False)
+        else:
+            return (True)
+    else:
+        return (False)
+
+
+def regularize_movingWindow_windowSteps_18Months(a_field_df, SF_yr, idks, window_size=10):
+    #
+    #  This function almost returns a data frame with data
+    #  that are window_size away from each other. i.e. regular space in time.
+    #  **** For **** 3 months + 12 months + 3 months data.
+    #
+    
+    # initialize output dataframe
+    regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
+                    'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                    'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
+                    'SF_year', 'doy', idks]
+    #
+    # for a good measure we start at 273 (274 does not matter either)
+    # and the first 
+    #
+    first_year_steps = list(range(274, 365, 10))
+    first_year_steps[-1] = 366
+
+    full_year_steps = list(range(1, 365, 10))
+    full_year_steps[-1] = 366
+
+    last_year_steps = list(range(1, 91, 10))
+    last_year_steps = last_year_steps + [91]
+
+    DoYs = first_year_steps + full_year_steps + last_year_steps
+
+    #
+    # There are 3 months before, a full year, and 3 months after
+    # (30+30+31) + 365 + (31+28+31) = 546 days. If we do every 10 days 
+    # then we have 54 data points
+    #
+    no_days = 546
+    no_steps = int(no_days/window_size)
+
+    regular_df = pd.DataFrame(data = None, 
+                              index = np.arange(no_steps), 
+                              columns = regular_cols)
+
+    regular_df['ID'] = a_field_df.ID.unique()[0]
+    regular_df['Acres'] = a_field_df.Acres.unique()[0]
+    regular_df['county'] = a_field_df.county.unique()[0]
+    regular_df['CropGrp'] = a_field_df.CropGrp.unique()[0]
+
+    regular_df['CropTyp'] = a_field_df.CropTyp.unique()[0]
+    regular_df['DataSrc'] = a_field_df.DataSrc.unique()[0]
+    regular_df['ExctAcr'] = a_field_df.ExctAcr.unique()[0]
+    regular_df['IntlSrD'] = a_field_df.IntlSrD.unique()[0]
+    regular_df['Irrigtn'] = a_field_df.Irrigtn.unique()[0]
+
+    regular_df['LstSrvD'] = a_field_df.LstSrvD.unique()[0]
+    regular_df['Notes'] = str(a_field_df.Notes.unique()[0])
+    regular_df['RtCrpTy'] = str(a_field_df.RtCrpTy.unique()[0])
+    regular_df['Shap_Ar'] = a_field_df.Shap_Ar.unique()[0]
+    regular_df['Shp_Lng'] = a_field_df.Shp_Lng.unique()[0]
+    regular_df['TRS'] = a_field_df.TRS.unique()[0]
+
+    regular_df['SF_year'] = a_field_df.SF_year.unique()[0]
+    
+    # I will write this in 3 for-loops.
+    # perhaps we can do it in a cleaner way like using zip or sth.
+    #
+    #############################################
+    #
+    #  First year (last 3 months of previous year)
+    #
+    #############################################
+    for row_or_count in np.arange(len(first_year_steps)-1):
+        curr_year = SF_yr - 1
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= first_year_steps[row_or_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = first_year_steps[row_or_count]
+
+    #############################################
+    #
+    #  Full year (main year, 12 months)
+    #
+    #############################################
+    row_count_start = len(first_year_steps) - 1
+    row_count_end = row_count_start + len(full_year_steps) - 1
+
+    for row_or_count in np.arange(row_count_start, row_count_end):
+        curr_year = SF_yr
+        curr_count = row_or_count - row_count_start
+
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= full_year_steps[curr_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = full_year_steps[curr_count]
+
+    #############################################
+    #
+    #  Last year (First 3 months of Next year)
+    #
+    #############################################
+    row_count_start = len(first_year_steps) - 1 + len(full_year_steps) - 1
+    row_count_end = row_count_start + len(last_year_steps) - 1
+
+    for row_or_count in np.arange(row_count_start, row_count_end):
+        curr_year = SF_yr + 1
+        curr_count = row_or_count - row_count_start
+
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= last_year_steps[curr_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < last_year_steps[curr_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = last_year_steps[curr_count]
+        
+    return (regular_df)
+
+def regularize_movingWindow_windowSteps_12Months(a_field_df, SF_yr, idks, window_size=10):
+    #
+    #  This function almost returns a data frame with data
+    #  that are window_size away from each other. i.e. regular space in time.
+    
+    # initialize output dataframe
+    regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
+                    'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                    'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
+                    'SF_year', 'doy', idks]
+
+    full_year_steps = list(range(1, 365, 10))
+    full_year_steps[-1] = 366
+    DoYs = full_year_steps 
+
+    #
+    # There are 3 months before, a full year, and 3 months after
+    # (30+30+31) + 365 + (31+28+31) = 546 days. If we do every 10 days 
+    # then we have 54 data points
+    #
+    no_days = 366
+    no_steps = int(no_days/window_size)
+
+    regular_df = pd.DataFrame(data = None, 
+                              index = np.arange(no_steps), 
+                              columns = regular_cols)
+
+    regular_df['ID'] = a_field_df.ID.unique()[0]
+    regular_df['Acres'] = a_field_df.Acres.unique()[0]
+    regular_df['county'] = a_field_df.county.unique()[0]
+    regular_df['CropGrp'] = a_field_df.CropGrp.unique()[0]
+
+    regular_df['CropTyp'] = a_field_df.CropTyp.unique()[0]
+    regular_df['DataSrc'] = a_field_df.DataSrc.unique()[0]
+    regular_df['ExctAcr'] = a_field_df.ExctAcr.unique()[0]
+    regular_df['IntlSrD'] = a_field_df.IntlSrD.unique()[0]
+    regular_df['Irrigtn'] = a_field_df.Irrigtn.unique()[0]
+
+    regular_df['LstSrvD'] = a_field_df.LstSrvD.unique()[0]
+    regular_df['Notes'] = str(a_field_df.Notes.unique()[0])
+    regular_df['RtCrpTy'] = str(a_field_df.RtCrpTy.unique()[0])
+    regular_df['Shap_Ar'] = a_field_df.Shap_Ar.unique()[0]
+    regular_df['Shp_Lng'] = a_field_df.Shp_Lng.unique()[0]
+    regular_df['TRS'] = a_field_df.TRS.unique()[0]
+
+    regular_df['SF_year'] = a_field_df.SF_year.unique()[0]
+    
+    # I will write this in 3 for-loops.
+    # perhaps we can do it in a cleaner way like using zip or sth.
+    #    
+
+    for row_or_count in np.arange(len(full_year_steps)-1):
+        curr_year = SF_yr
+
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= full_year_steps[row_or_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[row_or_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = full_year_steps[row_or_count]
+        
+    return (regular_df)
+
+
+def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
+
+    # replace NAs with -2
+    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -2, VI_TS_npArray)
+
+    # form the output vector
+    output_len = int(np.floor(len(VI_TS_npArray) / window_size))
+    output = np.ones(output_len) * (-666)
+
+
+    for count in range(output_len):
+        window_start = count * window_size
+        window_end = window_start + window_size
+
+        if (count == output_len-1):
+            window_end = len(VI_TS_npArray)
+
+        curr_window = VI_TS_npArray[window_start : window_end]
+        output[count] = max(curr_window)
+    return(output)
+
+def max_movingWindow_1Steps(VI_TS_npArray, window_size):
+    # replace NAs with -2
+    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -2, VI_TS_npArray)
+
+    # form the output vector
+    output_len = int(len(VI_TS_npArray) - window_size)
+    output = np.ones(output_len) * (-666)
+
+    for count in range(output_len):
+        window_start = count
+        window_end = window_start + window_size
+        output[count] = max(VI_TS_npArray[window_start : window_end])
+    return(output)
+
+
+def find_difference_date_by_systemStartTime(earlier_day_epoch, later_day_epoch):
+    #
+    #  Given two epoch time, find the difference between them in number of days
+    #
+
+    early = datetime.datetime.fromtimestamp(earlier_day_epoch)
+    late =  datetime.datetime.fromtimestamp(later_day_epoch)
+    diff = ( late - early).days
+    return (diff)
+
+def correct_timeColumns_dataTypes(dtf):
+    dtf.system_start_time = dtf.system_start_time/1000
+    dtf = dtf.astype({'doy': 'int', 'image_year': 'int'})
+    return(dtf)
+
+
 def divide_double_nonDouble_peaks(dt_dt):
     
     # subset the double-peaked

@@ -84,7 +84,6 @@ param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
-
 ####################################################################################
 ###
 ###      Parameters                   

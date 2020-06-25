@@ -20,7 +20,7 @@ data_dir <- paste0("/Users/hn/Documents/01_research_data/",
                    "01_true_shapefiles_separate_years/")
 
 out_dir <- paste0("/Users/hn/Documents/01_research_data/", 
-                  "remote_sensing/Data_part_not_filtered/")
+                  "remote_sensing/01_Data_part_not_filtered/")
 
 if (dir.exists(file.path(out_dir)) == F){
   dir.create(path=file.path(out_dir), recursive=T)
