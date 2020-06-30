@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N outer
+#PBS -N EVI Gap filling
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/00_Eastern/Grant_2017/plots/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/00_Eastern/Grant_2017/plots/error/outer_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/02_fillGaps/error/EVI_GapFill_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/02_fillGaps/error/EVI_GapFill_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,8 +29,7 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/00_Eastern/Grant_2017/plots/
-   
+cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/02_fillGaps
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -52,7 +51,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_Grant_2017_Savitzky_Plots.py indeks irrigated_only SF_year
+python3 ./d_Grant_2017_fillGaps.py EVI
 
 
 

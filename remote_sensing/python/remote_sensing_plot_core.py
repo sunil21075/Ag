@@ -255,7 +255,8 @@ def subplots_savitzky(current_field, idx, deltA):
     ax.scatter(X, y, label="Raw data", s=30);
 
     for co, ite in enumerate(plotting_dic):
-        ax.plot(X, plotting_dic[ite][0], label = ite, c = eleven_colors[co])
+        lbl = "SG 31" + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        ax.plot(X, plotting_dic[ite][0], label = lbl, c = eleven_colors[co])
         ax.scatter(plotting_dic[ite][1], plotting_dic[ite][2], s=100, marker='*', c = eleven_colors[co]);
 
     ax.set_title(plot_title);

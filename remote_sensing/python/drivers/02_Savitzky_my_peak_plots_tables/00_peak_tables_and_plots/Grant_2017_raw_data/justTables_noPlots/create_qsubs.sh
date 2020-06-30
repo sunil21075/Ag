@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots/00_Eastern/Grant_2017/tables/
+cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_raw_Grant_2017/tables/
 
 outer=1
 for indeks in EVI NDVI

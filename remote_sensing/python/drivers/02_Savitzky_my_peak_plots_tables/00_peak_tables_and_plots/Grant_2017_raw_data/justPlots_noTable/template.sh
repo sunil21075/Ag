@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize/error/outer_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_raw_Grant_2017/plots/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_raw_Grant_2017/plots/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,7 +29,8 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize
+cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_raw_Grant_2017/plots/
+   
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -51,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_Grant_2017_Regularize.py indeks
+python3 ./d_Grant_2017_Savitzky_Plots.py indeks irrigated_only SF_year
 
 
 

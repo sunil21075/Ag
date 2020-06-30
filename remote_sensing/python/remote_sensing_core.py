@@ -32,6 +32,76 @@ from datetime import date
 #   The days are actual days. i.e. between each 2 entry of our
 #   time series there is already some gap.
 #
+def fill_theGap_linearLine(regular_TS, indeks, SF_year):
+
+    a_regularized_TS = regular_TS.copy()
+    x_axis = extract_XValues_of_RegularizedTS_3Yrs(regularized_TS = a_regularized_TS, \
+                                                   SF_yr = SF_year)
+    TS_array = a_regularized_TS[indeks].copy().values
+
+    """
+    TS_array[0] = -2
+    TS_array[51] = -2
+    TS_array[52] = -2
+    TS_array[53] = -2
+    TS_array.shape
+    """
+
+    missing_indicies = np.where(TS_array == -2)[0]
+    Notmissing_indicies = np.where(TS_array != -2)[0]
+
+    #
+    #    Check if the first or last k values are missing
+    #    if so, replace them with proper number and shorten the task
+    #
+    left_pointer = Notmissing_indicies[0]
+    right_pointer = Notmissing_indicies[-1]
+
+    if left_pointer > 0:
+        TS_array[:left_pointer] = TS_array[left_pointer]
+
+    if right_pointer < (len(TS_array) - 1):
+        TS_array[right_pointer:] = TS_array[right_pointer]
+    #    
+    # update indexes.
+    #
+    missing_indicies = np.where(TS_array == -2)[0]
+    Notmissing_indicies = np.where(TS_array != -2)[0]
+
+    # left_pointer = Notmissing_indicies[0]
+    stop = right_pointer
+    right_pointer = left_pointer + 1
+
+    missing_indicies = np.where(TS_array == -2)[0]
+
+    while len(missing_indicies) > 0:
+        left_pointer = missing_indicies[0] - 1
+        left_value = TS_array[left_pointer]
+        
+        right_pointer = missing_indicies[0]
+        
+        while TS_array[right_pointer] == -2:
+            right_pointer += 1
+        
+        right_value = TS_array[right_pointer]
+        
+        if (right_pointer - left_pointer) == 2:
+            # if there is a single gap, then we have just average of the
+            # values
+            # Avoid extra computation!
+            #
+            TS_array[left_pointer + 1] = 0.5 * (TS_array[left_pointer] + TS_array[right_pointer])
+        else:
+            # form y= ax + b
+            slope = (right_value - left_value) / (x_axis[right_pointer] - x_axis[left_pointer]) # a
+            b = right_value - (slope * x_axis[right_pointer])
+            TS_array[left_pointer+1 : right_pointer] = slope * x_axis[left_pointer+1 : right_pointer] + b
+            missing_indicies = np.where(TS_array == -2)[0]
+            
+        
+    a_regularized_TS[indeks] = TS_array
+    return (a_regularized_TS)
+
 
 def extract_XValues_of_RegularizedTS_3Yrs(regularized_TS, SF_yr):
 
@@ -67,13 +137,14 @@ def check_leap_year(year):
         return (False)
 
 
-def regularize_movingWindow_windowSteps_18Months(a_field_df, SF_yr, idks, window_size=10):
+def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, window_size=10):
     #
     #  This function almost returns a data frame with data
     #  that are window_size away from each other. i.e. regular space in time.
     #  **** For **** 3 months + 12 months + 3 months data.
     #
     
+    a_field_df = one_field_df.copy()
     # initialize output dataframe
     regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
                     'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
@@ -198,11 +269,12 @@ def regularize_movingWindow_windowSteps_18Months(a_field_df, SF_yr, idks, window
         
     return (regular_df)
 
-def regularize_movingWindow_windowSteps_12Months(a_field_df, SF_yr, idks, window_size=10):
+def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, window_size=10):
     #
     #  This function almost returns a data frame with data
     #  that are window_size away from each other. i.e. regular space in time.
     
+    a_field_df = one_field_df.copy()
     # initialize output dataframe
     regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
                     'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',

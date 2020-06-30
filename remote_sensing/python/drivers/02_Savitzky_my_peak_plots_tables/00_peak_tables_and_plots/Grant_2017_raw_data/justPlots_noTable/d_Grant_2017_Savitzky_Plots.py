@@ -53,10 +53,7 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 ###
 ### Directories
 ###
-data_dir = "/Users/hn/Documents/01_research_data" + \
-           "/remote_sensing/01_NDVI_TS/00_Eastern_WA_withYear/"
 
-param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
 ####################################################################################
 ###
 ###                      Aeolus Core path
@@ -71,7 +68,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/00_Eastern_WA_EE/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -158,7 +155,7 @@ else:
 
 ##################################################################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/" + \
+output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls/" + \
              "plots/Grant_" + str(SF_year) + "/" + \
               output_Irr + "/savitzky_" + indeks + "/" 
 
@@ -177,7 +174,7 @@ if not('DataSrc' in a_df.columns):
     a_df['DataSrc'] = "NA"
 
 if not('CovrCrp' in a_df.columns):
-    print ("Data source is being set to NA")
+    print ("CovrCrp is being set to NA")
     a_df['CovrCrp'] = "NA"
 
 if (indeks == "EVI"):
@@ -197,7 +194,7 @@ counter = 0
 for a_poly in polygon_list:
     if (counter%1000 == 0):
         print (counter)
-    counter += 1
+
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
     ################################################################
     # Sort by DoY (sanitary check)
@@ -231,6 +228,7 @@ for a_poly in polygon_list:
         pdf.savefig( S2 )
         pdf.savefig( S3 )
         pdf.savefig( S4 )
-        pdf.close()        
+        pdf.close()
+        counter += 1      
 
 

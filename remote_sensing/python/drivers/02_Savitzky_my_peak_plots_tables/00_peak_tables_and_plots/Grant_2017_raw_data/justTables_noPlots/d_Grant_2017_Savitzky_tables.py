@@ -72,7 +72,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/00_Eastern_WA_EE/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -170,8 +170,8 @@ if do_plot == False:
 #     print ("After filtering out NASS, a_df is of dimension {fileShape}.".format(fileShape=a_df.shape))
 ######################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/01_NDVI_TS/01_Eastern_WA_plots_tbls/tables/Grant_2017/" +\
-             "/savitzky_" + indeks + "/" + \
+output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls" + \
+             "/tables/Grant_2017/" + "/savitzky_" + indeks + "/" + \
              "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
 
 plot_dir_base = output_dir
@@ -190,7 +190,7 @@ if not('DataSrc' in a_df.columns):
     a_df['DataSrc'] = "NA"
 
 if not('CovrCrp' in a_df.columns):
-    print ("Data source is being set to NA")
+    print ("CovrCrp is being set to NA")
     a_df['CovrCrp'] = "NA"
 
 if (indeks == "EVI"):
@@ -232,7 +232,6 @@ counter = 0
 for a_poly in polygon_list:
     if (counter%1000 == 0):
         print (counter)
-    counter += 1
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
     ################################################################
     # Sort by DoY (sanitary check)
@@ -310,60 +309,59 @@ for a_poly in polygon_list:
     ########################################################################################################
     ########################################################################################################
 
-    #############################################
-    ###
-    ###             plot
-    ###
-    #############################################
-    if do_plot == True:
-        sub_out = plant + "/" # "/plant_based_plots/" + plant + "/"
-        plot_path = plot_dir_base + sub_out
-        plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
-        os.makedirs(plot_path, exist_ok=True)
-        # print ("plot_path is " + plot_path)
-        if (len(os.listdir(plot_path))<50):
+    # #############################################
+    # ###
+    # ###             plot
+    # ###
+    # #############################################
+    # if do_plot == True:
+    #     sub_out = plant + "/" # "/plant_based_plots/" + plant + "/"
+    #     plot_path = plot_dir_base + sub_out
+    #     plot_path = plot_path + str(savitzky_max_df.shape[0]) + "_peaks/"
+    #     os.makedirs(plot_path, exist_ok=True)
+    #     # print ("plot_path is " + plot_path)
+    #     if (len(os.listdir(plot_path))<50):
             
-            plot_title = county + ", " + plant + ", " + str(year) + " (" + ID + ")"
-            sb.set();
+    #         plot_title = county + ", " + plant + ", " + str(year) + " (" + ID + ")"
+    #         sb.set();
 
-            fig, ax = plt.subplots(figsize=(8,6));
-            ax.scatter(X, y, label="Data", s=30);
+    #         fig, ax = plt.subplots(figsize=(8,6));
+    #         ax.scatter(X, y, label="Data", s=30);
 
-            ax.plot(X, savitzky_pred, 'k--', label="savitzky")
-            ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
+    #         ax.plot(X, savitzky_pred, 'k--', label="savitzky")
+    #         ax.scatter(savitzky_max_DoYs_series, savitzky_max_series, s=200, c='k', marker='*');
 
-            ax.set_title(plot_title);
-            ax.set(xlabel='DoY', ylabel=indeks)
+    #         ax.set_title(plot_title);
+    #         ax.set(xlabel='DoY', ylabel=indeks)
 
-            ################################################
-            #
-            #    bare soil indices plots
-            #
+    #         ################################################
+    #         #
+    #         #    bare soil indices plots
+    #         #
 
-            an_EE_TS_BSI = rc.initial_clean(df = curr_field, column_to_be_cleaned='BSI')
-            # an_EE_TS_NDWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='NDWI')
-            an_EE_TS_PSRI = rc.initial_clean(df = curr_field, column_to_be_cleaned='PSRI')
-            an_EE_TS_LSWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='LSWI')
+    #         an_EE_TS_BSI = rc.initial_clean(df = curr_field, column_to_be_cleaned='BSI')
+    #         # an_EE_TS_NDWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='NDWI')
+    #         an_EE_TS_PSRI = rc.initial_clean(df = curr_field, column_to_be_cleaned='PSRI')
+    #         an_EE_TS_LSWI = rc.initial_clean(df = curr_field, column_to_be_cleaned='LSWI')
 
-            ax.plot(an_EE_TS_BSI['doy'], an_EE_TS_BSI['BSI'], label="BSI")
-            # ax.plot(x_NDWI, y_NDWI, label="NWDI")
+    #         ax.plot(an_EE_TS_BSI['doy'], an_EE_TS_BSI['BSI'], label="BSI")
+    #         # ax.plot(x_NDWI, y_NDWI, label="NWDI")
 
-            ax.plot(an_EE_TS_PSRI['doy'], an_EE_TS_PSRI['PSRI'], label="PSRI")
-            ax.plot(an_EE_TS_LSWI['doy'], an_EE_TS_LSWI['LSWI'], label="LSWI")
+    #         ax.plot(an_EE_TS_PSRI['doy'], an_EE_TS_PSRI['PSRI'], label="PSRI")
+    #         ax.plot(an_EE_TS_LSWI['doy'], an_EE_TS_LSWI['LSWI'], label="LSWI")
 
-            ax.legend(loc="best");
-            fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
-            plt.savefig(fname = fig_name, \
-                         dpi=300,
-                         bbox_inches='tight')
-            plt.close()
-            del(plot_path, sub_out) #  county, plant, year
+    #         ax.legend(loc="best");
+    #         fig_name = plot_path + county + "_" + plant + "_" + str(year) + "_" + str(counter) + '.png'
+    #         plt.savefig(fname = fig_name, \
+    #                      dpi=300,
+    #                      bbox_inches='tight')
+    #         plt.close()
+    #         del(plot_path, sub_out) #  county, plant, year
     #############################################
     ###
     ###             plot END
     ###
     #############################################
-
 
     WSDA_df = rc.keep_WSDA_columns(curr_field)
     WSDA_df = WSDA_df.drop_duplicates()
@@ -405,6 +403,8 @@ for a_poly in polygon_list:
         pointer_min_savitzky += len(WSDA_min_df_savitzky)
     
     del(WSDA_df)
+
+    counter += 1
 
 
 ####################################################################################

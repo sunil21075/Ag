@@ -141,7 +141,7 @@ counter = 0
 for a_poly in polygon_list:
     if (counter%1000 == 0):
         print (counter)
-    counter += 1
+
     curr_field_NDVI = an_EE_TS_NDVI[an_EE_TS_NDVI['geo']==a_poly]
     curr_field_EVI = an_EE_TS_EVI[an_EE_TS_EVI['geo']==a_poly]
     
@@ -217,6 +217,7 @@ for a_poly in polygon_list:
                     bbox_inches='tight')
         plt.close()
         del(plot_path, sub_out, county, plant, year)
+    counter += 1
 
 ####################################################################################
 ###
