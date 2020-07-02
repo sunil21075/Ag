@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_Grant_2017_Savitzky_Plots.py indeks irrigated_only SF_year
+python3 ./d_raw_Grant_2017_Savitzky_Plots.py indeks irrigated_only SF_year
 
 
 
