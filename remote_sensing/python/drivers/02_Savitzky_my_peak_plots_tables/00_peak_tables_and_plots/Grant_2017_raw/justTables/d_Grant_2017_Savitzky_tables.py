@@ -171,7 +171,7 @@ if do_plot == False:
 ######################
 
 output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls" + \
-             "/tables/Grant_2017/" + "/savitzky_" + indeks + "/" + \
+             "/tables/Grant_2017_raw/" + "/savitzky_" + indeks + "/" + \
              "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
 
 plot_dir_base = output_dir

@@ -29,6 +29,8 @@ from patsy import cr
 import matplotlib.pyplot as plt
 import seaborn as sb
 
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
 
 import sys
 start_time = time.time()
@@ -199,6 +201,7 @@ for a_poly in polygon_list:
     ################################################################
     # Sort by DoY (sanitary check)
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
+    ID = curr_field['ID'].unique()[0]
 
     ################################################################
 
@@ -216,13 +219,13 @@ for a_poly in polygon_list:
     plot_path = plot_path   # +  str(len(SG_max_DoYs_series)) + "_peaks/"
     os.makedirs(plot_path, exist_ok=True)
     # print ("plot_path is " + plot_path)
-    if (len(os.listdir(plot_path)) < 50):
+    if (len(os.listdir(plot_path)) < 100):
         S1 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.1)
         S2 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.2)
         S3 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.3)
         S4 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.4)
 
-        fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + str(counter) + '.pdf'
+        fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.pdf'
         pdf = matplotlib.backends.backend_pdf.PdfPages(fig_name)
         pdf.savefig( S1 )
         pdf.savefig( S2 )

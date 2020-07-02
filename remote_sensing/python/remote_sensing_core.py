@@ -32,6 +32,15 @@ from datetime import date
 #   The days are actual days. i.e. between each 2 entry of our
 #   time series there is already some gap.
 #
+
+def add_human_start_time(HDF):
+    HDF.system_start_time = HDF.system_start_time / 1000
+    time_array = HDF["system_start_time"].values.copy()
+    human_time_array = [time.strftime('%Y-%m-%d', time.localtime(x)) for x in time_array]
+    HDF["human_system_start_time"] = human_time_array
+    return(HDF)
+
+
 def fill_theGap_linearLine(regular_TS, indeks, SF_year):
 
     a_regularized_TS = regular_TS.copy()
@@ -103,7 +112,34 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     return (a_regularized_TS)
 
 
+def extract_XValues_of_RegularizedTS_2Yrs(regularized_TS, SF_yr):
+    """
+    Jul 1.
+    This function is being written since Kirti said
+    we do not need to have parts of the next year. i.e. 
+    if we are looking at what is going on in a field in 2017,
+    we only need data since Aug. 2016 till the end of 2017.
+    We do not need anything in 2018.
+    """
+
+    X_values_prev_year = regularized_TS[regularized_TS.image_year == (SF_yr - 1)]['doy'].copy().values
+    X_values_full_year = regularized_TS[regularized_TS.image_year == (SF_yr)]['doy'].copy().values
+
+    if check_leap_year(SF_yr-1):
+        X_values_full_year = X_values_full_year + 366
+    else:
+        X_values_full_year = X_values_full_year + 365
+    return (np.concatenate([X_values_prev_year, X_values_full_year]))
+
+
 def extract_XValues_of_RegularizedTS_3Yrs(regularized_TS, SF_yr):
+    """
+    Jul 1.
+    This function is written for inluding data from 3 years.
+    e.g.:
+    3 months in 2016, full year 2017, and 3 months in 2018
+
+    """
 
     X_values_prev_year = regularized_TS[regularized_TS.image_year == (SF_yr - 1)]['doy'].copy().values
     X_values_full_year = regularized_TS[regularized_TS.image_year == (SF_yr)]['doy'].copy().values
@@ -113,7 +149,7 @@ def extract_XValues_of_RegularizedTS_3Yrs(regularized_TS, SF_yr):
         X_values_full_year = X_values_full_year + 366
         X_values_next_year = X_values_next_year + 366
     else:
-        X_values_full_yea = X_values_full_year + 365
+        X_values_full_year = X_values_full_year + 365
         X_values_next_year = X_values_next_year + 365
 
     if check_leap_year(SF_yr):
@@ -537,7 +573,14 @@ def initial_clean_NDVI(df):
     
     # Drop rows whith NA in NDVI column.
     dt = dt[dt['NDVI'].notna()]
-    
+
+    # replace values beyond 1 and -1 with 2 and -2
+    df.loc[df['NDVI'] > 1, "EVI"] = 1.5
+    df.loc[df['NDVI'] < -1, "EVI"] = -1.5
+
+    if ("image_year" in list(dt.columns)):
+        dt.image_year = dt.image_year.astype(int)
+
     # rename the column .geo to "geo"
     # dt = dt.rename(columns={".geo": "geo"})
     return (dt)
@@ -550,6 +593,13 @@ def initial_clean_EVI(df):
     
     # Drop rows whith NA in EVI column.
     dt = dt[dt['EVI'].notna()]
+
+    # replace values beyond 1 and -1 with 2 and -2
+    df.loc[df['EVI'] > 1, "EVI"] = 1.5
+    df.loc[df['EVI'] < -1, "EVI"] = -1.5
+
+    if ("image_year" in list(dt.columns)):
+        dt.image_year = dt.image_year.astype(int)
     
     # rename the column .geo to "geo"
     # dt = dt.rename(columns={".geo": "geo"})

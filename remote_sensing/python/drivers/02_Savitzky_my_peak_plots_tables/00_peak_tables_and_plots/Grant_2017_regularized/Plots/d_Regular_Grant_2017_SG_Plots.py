@@ -103,11 +103,11 @@ else:
 
 regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps/"
 regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/plots/" + \
-                     "/Grant_" + str(SF_year) + "/" + output_Irr + "/savitzky_" + indeks + "/" 
+                     "/Grant_" + str(SF_year) + "_regular/" + output_Irr + "/savitzky_" + indeks + "/" 
 
 raw_data_dir   = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE/"
 raw_output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls/plots/" + \
-                 "/Grant_" + str(SF_year) + "/" + output_Irr + "/savitzky_" + indeks + "/" 
+                 "/Grant_" + str(SF_year) + "_raw/" + output_Irr + "/savitzky_" + indeks + "/" 
 
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
