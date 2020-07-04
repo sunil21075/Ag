@@ -190,7 +190,7 @@ for a_poly in polygon_list:
     sub_out = "/plots/bare_indices/" + plant + "/"
     plot_path = plot_dir_base + sub_out
     os.makedirs(plot_path, exist_ok=True)
-    if (len(os.listdir(plot_path))<100):
+    if (len(os.listdir(plot_path)) < 70):
         plot_title = county + ", " + plant + ", " + str(year) + " (" + ID + ")"
         sb.set();
         fig, ax = plt.subplots(figsize=(8,6));

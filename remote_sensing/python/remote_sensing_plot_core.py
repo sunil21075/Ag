@@ -232,7 +232,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
     #   We have to change this part to make a perfect plot
     #        
     plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
-    ax.set_ylim([-1, 1])
+    ax.set_ylim([-1, 1.6])
     # sb.set();
     
     # fucking Aeolus throws error. TypeError: invalid type promotion
@@ -732,7 +732,7 @@ def subplots_savitzky(current_field, idx, deltA):
 
     ##################################################################
     fig, ax = plt.subplots(figsize=(8,6));
-
+    ax.grid(True)
 
     ax.scatter(X, y, label="Raw data", s=30);
 

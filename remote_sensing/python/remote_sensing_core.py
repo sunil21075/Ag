@@ -27,6 +27,112 @@ from datetime import date
 #####                   Function definitions
 #####
 ################################################################
+def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_size=10):
+    #
+    #  This function almost returns a data frame with data
+    #  that are window_size away from each other. i.e. regular space in time.
+    #  **** For **** 5 months + 12 months.
+    #
+
+    a_field_df = one_field_df.copy()
+    # initialize output dataframe
+    regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
+                    'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
+                    'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
+                    'SF_year', 'doy', idks]
+    #
+    # for a good measure we start at 213 (214 does not matter either)
+    # and the first 
+    #
+    first_year_steps = list(range(213, 365, 10))
+    first_year_steps[-1] = 366
+
+    full_year_steps = list(range(1, 365, 10))
+    full_year_steps[-1] = 366
+
+    DoYs = first_year_steps + full_year_steps
+
+    #
+    # There are 5 months first and then a full year
+    # (31+30+30+30+31) + 365 = 517 days. If we do every 10 days 
+    # then we have 51 data points
+    #
+    no_days = 517
+    no_steps = int(no_days/window_size)
+
+    regular_df = pd.DataFrame(data = None, 
+                              index = np.arange(no_steps), 
+                              columns = regular_cols)
+
+    regular_df['ID'] = a_field_df.ID.unique()[0]
+    regular_df['Acres'] = a_field_df.Acres.unique()[0]
+    regular_df['county'] = a_field_df.county.unique()[0]
+    regular_df['CropGrp'] = a_field_df.CropGrp.unique()[0]
+
+    regular_df['CropTyp'] = a_field_df.CropTyp.unique()[0]
+    regular_df['DataSrc'] = a_field_df.DataSrc.unique()[0]
+    regular_df['ExctAcr'] = a_field_df.ExctAcr.unique()[0]
+    regular_df['IntlSrD'] = a_field_df.IntlSrD.unique()[0]
+    regular_df['Irrigtn'] = a_field_df.Irrigtn.unique()[0]
+
+    regular_df['LstSrvD'] = a_field_df.LstSrvD.unique()[0]
+    regular_df['Notes'] = str(a_field_df.Notes.unique()[0])
+    regular_df['RtCrpTy'] = str(a_field_df.RtCrpTy.unique()[0])
+    regular_df['Shap_Ar'] = a_field_df.Shap_Ar.unique()[0]
+    regular_df['Shp_Lng'] = a_field_df.Shp_Lng.unique()[0]
+    regular_df['TRS'] = a_field_df.TRS.unique()[0]
+
+    regular_df['SF_year'] = a_field_df.SF_year.unique()[0]
+
+    # I will write this in 3 for-loops.
+    # perhaps we can do it in a cleaner way like using zip or sth.
+    #
+    #####################################################
+    #
+    #  First year (last 5 months of previous year)
+    #
+    #
+    #####################################################
+    for row_or_count in np.arange(len(first_year_steps)-1):
+        curr_year = SF_yr - 1
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= first_year_steps[row_or_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = first_year_steps[row_or_count]
+
+    #############################################
+    #
+    #  Full year (main year, 12 months)
+    #
+    #############################################
+    row_count_start = len(first_year_steps) - 1
+    row_count_end = row_count_start + len(full_year_steps) - 1
+
+    for row_or_count in np.arange(row_count_start, row_count_end):
+        curr_year = SF_yr
+        curr_count = row_or_count - row_count_start
+
+        curr_time_window = a_field_df[a_field_df.image_year == curr_year].copy()
+        curr_time_window = curr_time_window[curr_time_window.doy >= full_year_steps[curr_count]]
+        curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
+
+        if len(curr_time_window)==0: 
+            regular_df.loc[row_or_count, idks] = -2
+        else:
+            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+
+        regular_df.loc[row_or_count, 'image_year'] = curr_year
+        regular_df.loc[row_or_count, 'doy'] = full_year_steps[curr_count]
+    return(regular_df)
+
+
 #
 #   These will not give what we want. It is a 10-days window
 #   The days are actual days. i.e. between each 2 entry of our
@@ -44,8 +150,12 @@ def add_human_start_time(HDF):
 def fill_theGap_linearLine(regular_TS, indeks, SF_year):
 
     a_regularized_TS = regular_TS.copy()
-    x_axis = extract_XValues_of_RegularizedTS_3Yrs(regularized_TS = a_regularized_TS, \
-                                                   SF_yr = SF_year)
+
+    if (len(a_regularized_TS.image_year.unique()) == 2):
+        x_axis = extract_XValues_of_RegularizedTS_2Yrs(regularized_TS = a_regularized_TS, SF_yr = SF_year)
+    elif (len(a_regularized_TS.image_year.unique()) == 3):
+        x_axis = extract_XValues_of_RegularizedTS_3Yrs(regularized_TS = a_regularized_TS, SF_yr = SF_year)
+
     TS_array = a_regularized_TS[indeks].copy().values
 
     """
@@ -323,8 +433,8 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
 
     #
     # There are 3 months before, a full year, and 3 months after
-    # (30+30+31) + 365 + (31+28+31) = 546 days. If we do every 10 days 
-    # then we have 54 data points
+    #  365 days. If we do every 10 days 
+    # then we have 36 data points
     #
     no_days = 366
     no_steps = int(no_days/window_size)
@@ -396,6 +506,8 @@ def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
         output[count] = max(curr_window)
     return(output)
 
+
+
 def max_movingWindow_1Steps(VI_TS_npArray, window_size):
     # replace NAs with -2
     VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -2, VI_TS_npArray)
@@ -439,99 +551,102 @@ def divide_double_nonDouble_peaks(dt_dt):
 
 
 def divide_double_nonDouble_by_notes(dt_d):
-    dt_dt = dt_d.copy()
+    dt_copy = dt_d.copy()
 
     # convert NaN and NAs to string so we can subset/index 
-    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+    dt_copy[["Notes"]] = dt_copy[["Notes"]].astype(str)
 
     # convert to lower case
-    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+    dt_copy["Notes"] = dt_copy["Notes"].str.lower()
 
     # replace dbl with double
-    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    dt_copy.replace(to_replace="dbl", value="double", inplace=True)
     
     # subset the notes with double in it.
-    double_cropped = dt_dt[dt_dt["Notes"].str.contains("double")]
+    double_cropped = dt_copy[dt_copy["Notes"].str.contains("double")]
 
     # subset the notes without double in it.
-    not_double_cropped = dt_dt[~dt_dt["Notes"].str.contains("double")]
+    not_double_cropped = dt_copy[~dt_copy["Notes"].str.contains("double")]
 
     return (double_cropped, not_double_cropped)
 
+
+
 def filter_double_by_Notes(dt_d):
-    dt_dt = dt_d.copy()
+    dt_copu = dt_d.copy()
     # convert NaN and NAs to string so we can subset/index 
-    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+    dt_copu[["Notes"]] = dt_copu[["Notes"]].astype(str)
 
     # convert to lower case
-    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+    dt_copu["Notes"] = dt_copu["Notes"].str.lower()
 
     # replace dbl with double
-    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    dt_copu.replace(to_replace="dbl", value="double", inplace=True)
     
     # subset the notes with double in it.
-    double_cropped = dt_dt[dt_dt["Notes"].str.contains("double")]
+    double_cropped = dt_copu[dt_copu["Notes"].str.contains("double")]
 
     return (double_cropped)
 
+
 def filter_Notdouble_by_Notes(dt_d):
-    dt_dt = dt_d.copy()
+    dt_CD = dt_d.copy()
     # convert NaN and NAs to string so we can subset/index 
-    dt_dt[["Notes"]] = dt_dt[["Notes"]].astype(str)
+    dt_CD[["Notes"]] = dt_CD[["Notes"]].astype(str)
 
     # convert to lower case
-    dt_dt["Notes"] = dt_dt["Notes"].str.lower()
+    dt_CD["Notes"] = dt_CD["Notes"].str.lower()
 
     # replace dbl with double
-    dt_dt.replace(to_replace="dbl", value="double", inplace=True)
+    dt_CD.replace(to_replace="dbl", value="double", inplace=True)
     
     # subset the notes with double in it.
-    Notdouble_cropped = dt_dt[~dt_dt["Notes"].str.contains("double")]
+    Notdouble_cropped = dt_CD[~dt_CD["Notes"].str.contains("double")]
 
     return (Notdouble_cropped)
 
 def filter_out_NASS(dt_df):
-    dt_df_NASS = dt_df.copy()
-    dt_df_NASS['DataSrc'] = dt_df_NASS['DataSrc'].astype(str)
-    dt_df_NASS["DataSrc"] = dt_df_NASS["DataSrc"].str.lower()
+    dt_cf_NASS = dt_df.copy()
+    dt_cf_NASS['DataSrc'] = dt_cf_NASS['DataSrc'].astype(str)
+    dt_cf_NASS["DataSrc"] = dt_cf_NASS["DataSrc"].str.lower()
 
-    dt_df_NASS = dt_df_NASS[~dt_df_NASS['DataSrc'].str.contains("nass")]
-    return dt_df_NASS
+    dt_cf_NASS = dt_cf_NASS[~dt_cf_NASS['DataSrc'].str.contains("nass")]
+    return dt_cf_NASS
 
 def filter_by_lastSurvey(dt_df_su, year):
-    dt_df_surv = dt_df_su.copy()
-    dt_df_surv = dt_df_surv[dt_df_surv['LstSrvD'].str.contains(str(year))]
-    return dt_df_surv
+    dt_surv = dt_df_su.copy()
+    dt_surv = dt_surv[dt_surv['LstSrvD'].str.contains(str(year))]
+    return dt_surv
 
 
 def filter_out_nonIrrigated(dt_df_irr):
-    dt_df_irrig = dt_df_irr.copy()
+    dt_irrig = dt_df_irr.copy()
     #
     # drop NA rows in irrigation column
     #
-    dt_df_irrig.dropna(subset=['Irrigtn'], inplace=True)
+    dt_irrig.dropna(subset=['Irrigtn'], inplace=True)
 
-    dt_df_irrig['Irrigtn'] = dt_df_irrig['Irrigtn'].astype(str)
+    dt_irrig['Irrigtn'] = dt_irrig['Irrigtn'].astype(str)
 
-    dt_df_irrig["Irrigtn"] = dt_df_irrig["Irrigtn"].str.lower()
-    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("none")]
-    dt_df_irrig = dt_df_irrig[~dt_df_irrig['Irrigtn'].str.contains("unknown")]
+    dt_irrig["Irrigtn"] = dt_irrig["Irrigtn"].str.lower()
+    dt_irrig = dt_irrig[~dt_irrig['Irrigtn'].str.contains("none")]
+    dt_irrig = dt_irrig[~dt_irrig['Irrigtn'].str.contains("unknown")]
     
-    return dt_df_irrig
+    return dt_irrig
 
 def filter_out_Irrigated(dt_df_irr):
-    dt_df_Nonirrig = dt_df_irr.copy()
+    dt_Nonirrig = dt_df_irr.copy()
     #
     # drop NA rows in irrigation column
     #
-    dt_df_Nonirrig.dropna(subset=['Irrigtn'], inplace=True)
+    dt_Nonirrig.dropna(subset=['Irrigtn'], inplace=True)
 
-    dt_df_Nonirrig['Irrigtn'] = dt_df_Nonirrig['Irrigtn'].astype(str)
-    dt_df_Nonirrig["Irrigtn"] = dt_df_Nonirrig["Irrigtn"].fillna("na")
+    dt_Nonirrig['Irrigtn'] = dt_Nonirrig['Irrigtn'].astype(str)
+    dt_Nonirrig["Irrigtn"] = dt_Nonirrig["Irrigtn"].fillna("na")
 
-    dt_df_Nonirrig["Irrigtn"] = dt_df_Nonirrig["Irrigtn"].str.lower()
-    dt_df_Nonirrig = dt_df_Nonirrig[dt_df_Nonirrig.Irrigtn.isin(['none', 'unknown', 'na'])]
-    return dt_df_Nonirrig
+    dt_Nonirrig["Irrigtn"] = dt_Nonirrig["Irrigtn"].str.lower()
+    dt_Nonirrig = dt_Nonirrig[dt_Nonirrig.Irrigtn.isin(['none', 'unknown', 'na'])]
+    return dt_Nonirrig
     
 def filter_double_potens(dt_d, double_poten_dt):
     dt_df = dt_d.copy()
@@ -566,57 +681,49 @@ def filter_double_potens(dt_d, double_poten_dt):
 #     return dt_df
     
 def initial_clean_NDVI(df):
-    dt = df.copy()
+    dt_copy = df.copy()
     # remove the useles system:index column
-    if ("system:index" in list(dt.columns)):
-        dt = dt.drop(columns=['system:index'])
+    if ("system:index" in list(dt_copy.columns)):
+        dt_copy = dt_copy.drop(columns=['system:index'])
     
     # Drop rows whith NA in NDVI column.
-    dt = dt[dt['NDVI'].notna()]
+    dt_copy = dt_copy[dt_copy['NDVI'].notna()]
 
     # replace values beyond 1 and -1 with 2 and -2
-    df.loc[df['NDVI'] > 1, "EVI"] = 1.5
-    df.loc[df['NDVI'] < -1, "EVI"] = -1.5
+    dt_copy.loc[dt_copy['NDVI'] > 1, "NDVI"] = 1.5
+    dt_copy.loc[dt_copy['NDVI'] < -1, "NDVI"] = -1.5
 
-    if ("image_year" in list(dt.columns)):
-        dt.image_year = dt.image_year.astype(int)
-
-    # rename the column .geo to "geo"
-    # dt = dt.rename(columns={".geo": "geo"})
-    return (dt)
+    if ("image_year" in list(dt_copy.columns)):
+        dt_copy.image_year = dt_copy.image_year.astype(int)
+    return (dt_copy)
 
 def initial_clean_EVI(df):
-    dt = df.copy()
+    dt_copy = df.copy()
     # remove the useles system:index column
-    if ("system:index" in list(dt.columns)):
-        dt = dt.drop(columns=['system:index'])
+    if ("system:index" in list(dt_copy.columns)):
+        dt_copy = dt_copy.drop(columns=['system:index'])
     
     # Drop rows whith NA in EVI column.
-    dt = dt[dt['EVI'].notna()]
+    dt_copy = dt_copy[dt_copy['EVI'].notna()]
 
     # replace values beyond 1 and -1 with 2 and -2
-    df.loc[df['EVI'] > 1, "EVI"] = 1.5
-    df.loc[df['EVI'] < -1, "EVI"] = -1.5
+    dt_copy.loc[dt_copy['EVI'] > 1, "EVI"] = 1.5
+    dt_copy.loc[dt_copy['EVI'] < -1, "EVI"] = -1.5
 
-    if ("image_year" in list(dt.columns)):
-        dt.image_year = dt.image_year.astype(int)
+    if ("image_year" in list(dt_copy.columns)):
+        dt_copy.image_year = dt_copy.image_year.astype(int)
     
-    # rename the column .geo to "geo"
-    # dt = dt.rename(columns={".geo": "geo"})
-    return (dt)
+    return (dt_copy)
 
 def initial_clean(df, column_to_be_cleaned):
-    dt = df.copy()
+    dt_copy = df.copy()
     # remove the useles system:index column
     if ("system:index" in list(dt.columns)):
-        dt = dt.drop(columns=['system:index'])
-
-    # rename the column .geo to "geo"
-    # dt = dt.rename(columns={".geo": "geo"})
+        dt_copy = dt_copy.drop(columns=['system:index'])
     
     # Drop rows whith NA in EVI column.
-    dt = dt[dt[column_to_be_cleaned].notna()]    
-    return (dt)
+    dt_copy = dt_copy[dt_copy[column_to_be_cleaned].notna()]    
+    return (dt_copy)
 
 
 def order_by_doy(dt):

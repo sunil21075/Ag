@@ -1,12 +1,11 @@
 ####
-#### July 2. This is a copy of the version we had from before. plotting one year.
-#### Here we are extending it to 2 years. Since August of a given year to the end
-#### of the next year.
+#### May 26, 2019
 ####
 
 """
-Just generate peak plots for Grant 2017 fields 
+Just generate peak tables for Grant 2018 Irrigated fields 
 for all cultivars; EVI and my peak finder
+
 """
 import matplotlib.backends.backend_pdf
 import csv
@@ -21,7 +20,6 @@ import time
 import scipy
 import scipy.signal
 import os, os.path
-import matplotlib
 
 from statsmodels.sandbox.regression.predstd import wls_prediction_std
 from sklearn.linear_model import LinearRegression
@@ -45,13 +43,6 @@ start_time = time.time()
 ###                      Local
 ###
 ####################################################################################
-print ("****************************************************")
-
-print('matplotlib: {}'.format(matplotlib.__version__))
-print('numpy: {}'.format(np.__version__))
-print('pandas: {}'.format(pd.__version__))
-
-print ("****************************************************")
 
 ################
 ###
@@ -79,7 +70,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/3Years/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -100,13 +91,27 @@ eleven_colors = ["gray", "lightcoral", "red", "peru",
                  "darkorange", "gold", "olive", "green",
                  "blue", "violet", "deepskyblue"]
 
-# indeks = "EVI"
-# irrigated_only = 1
-# SF_year = 2017
+# Sav_win_size = 9
+# sav_order = 1
+# delt = 0.1
+irrigated_only = 1
+SF_year = 2017
+indeks = "EVI"
+
+# we are creating panels where each panel
+# consist of different parameters of Savitzky, 
+# So, we do not need the following two
+
+# Sav_win_size = int(sys.argv[1]) 
+# sav_order = int(sys.argv[2])
+
+# delt = float(sys.argv[1])
 
 indeks = sys.argv[1]
 irrigated_only = int(sys.argv[2])
 SF_year = int(sys.argv[3])
+
+# print ("delta = {fileShape}".format(fileShape=delt))
 
 ####################################################################################
 ###
@@ -121,7 +126,7 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 ##################################################################
 ####
 ####  plots has to be exact. So, we need 
-####  to filter out NASS, and filter by last survey date
+#### to filter out NASS, and filter by last survey date
 ####
 ##################################################################
 ##################################################################
@@ -129,8 +134,18 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 a_df = a_df[a_df['county']== "Grant"] # Filter Grant
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
 a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
+
 a_df['SF_year'] = SF_year
 
+########################
+######################## Do this for now, till you learn
+######################## how to plot 2 years where x is DoY 
+######################## 
+
+a_df = a_df[a_df['image_year'] == SF_year]
+
+########################
+########################
 
 if irrigated_only == True:
     a_df = rc.filter_out_nonIrrigated(a_df)
@@ -139,9 +154,11 @@ else:
     output_Irr = "non_irrigated_only"
     a_df = rc.filter_out_Irrigated(a_df)
 
+
 ##################################################################
+
 output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls/" + \
-             "2Yrs_plots/Grant_" + str(SF_year) + "_raw_" + output_Irr + "_" + indeks + "/" 
+             "1Yr_plots/Grant_" + str(SF_year) + "_raw_" + output_Irr + "_" + indeks + "/" 
 
 plot_dir_base = output_dir
 print ("plot_dir_base is " + plot_dir_base)
@@ -163,14 +180,11 @@ if not('CovrCrp' in a_df.columns):
 
 if (indeks == "EVI"):
     a_df = rc.initial_clean_EVI(a_df)
-    print ("initial_clean_EVI")
 else:
     a_df = rc.initial_clean_NDVI(a_df)
-    print ("initial_clean_NDVI")
 
 a_df.head(2)
 an_EE_TS = a_df.copy()
-del(a_df)
 
 ### List of unique polygons
 polygon_list = np.sort(an_EE_TS['ID'].unique())
@@ -183,16 +197,15 @@ for a_poly in polygon_list:
         print (counter)
 
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
-    
     ################################################################
-    #
     # Sort by DoY (sanitary check)
-    # 
-
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
-
     ID = curr_field['ID'].unique()[0]
+
+    ################################################################
+
     plant = curr_field['CropTyp'].unique()[0]
+    # Take care of names, replace "/" and "," and " " by "_"
     plant = plant.replace("/", "_")
     plant = plant.replace(",", "_")
     plant = plant.replace(" ", "_")
@@ -206,33 +219,22 @@ for a_poly in polygon_list:
     os.makedirs(plot_path, exist_ok=True)
     # print ("plot_path is " + plot_path)
     if (len(os.listdir(plot_path)) < 70):
+        S1 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.1)
+        S2 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.2)
+        S3 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.3)
+        S4 = rcp.subplots_savitzky(current_field = curr_field, idx = indeks, deltA = 0.4)
 
-        # 
-        #  Set up Canvas
-        #
-        fig, axs = plt.subplots(2, 2, figsize=(20,12),
-                                sharex='col', sharey='row',
-                                gridspec_kw={'hspace': 0.1, 'wspace': .1})
-
-        (ax1, ax2), (ax3, ax4) = axs
-        ax1.grid(True)
-        ax2.grid(True)
-        ax3.grid(True)
-        ax4.grid(True)
-
-        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.1, SFYr = SF_year, ax = ax1)
-        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.2, SFYr = SF_year, ax = ax2)
-        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.3, SFYr = SF_year, ax = ax3)
-        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.4, SFYr = SF_year, ax = ax4)
-
-        fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
-
-        plt.savefig(fname = fig_name, dpi=250, bbox_inches='tight')
-        counter += 1
-
+        fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.pdf'
+        pdf = matplotlib.backends.backend_pdf.PdfPages(fig_name)
+        pdf.savefig( S1 )
+        pdf.savefig( S2 )
+        pdf.savefig( S3 )
+        pdf.savefig( S4 )
+        pdf.close()
+        counter += 1      
 
 print ("done")
-end_time = time.time()
-print(end_time - start_time)
+print (time.time() - start_time)
+
 
 
