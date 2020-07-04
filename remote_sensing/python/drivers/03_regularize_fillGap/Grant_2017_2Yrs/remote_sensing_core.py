@@ -44,20 +44,21 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
 
     datetime.datetime(2016, 1, 1) + datetime.timedelta(213 - 1)
     """
-    DF_C = a_Reg_DF.copy()
-    DF_C['human_system_start_time'] = pd.to_datetime(DF_C['image_year'] * 1000 + DF_C['doy'], format='%Y%j')
+    DF_Copy = a_Reg_DF.copy()
 
-    # DF_C.reset_index(drop=True, inplace=True)
-    # DF_C['human_system_start_time'] = "1"
+    DF_Copy.reset_index(drop=True, inplace=True)
+    DF_Copy['human_system_start_time'] = "1"
 
-    # for row_no in np.arange(0, len(DF_C)):
-    #     year = DF_C.loc[row_no, 'image_year']
-    #     DoY = DF_C.loc[row_no, 'doy']
-    #     x = str(date.fromordinal(date(year, 1, 1).toordinal() + DoY - 1))
-    #     DF_C.loc[row_no, 'human_system_start_time'] = x
+    for row_no in np.arange(0, len(DF_Copy)):
+        year = DF_Copy.loc[row_no, 'image_year']
+        DoY = DF_Copy.loc[row_no, 'doy']
+        x = str(date.fromordinal(date(year, 1, 1).toordinal() + DoY - 1))
+        DF_Copy.loc[row_no, 'human_system_start_time'] = x
 
-    return(DF_C)
+    return(DF_Copy)
 
+
+    
 
 def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_size=10):
     #

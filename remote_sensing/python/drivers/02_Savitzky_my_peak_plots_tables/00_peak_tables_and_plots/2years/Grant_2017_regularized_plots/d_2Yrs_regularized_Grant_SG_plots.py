@@ -45,13 +45,6 @@ start_time = time.time()
 ###                      Local
 ###
 ####################################################################################
-print ("****************************************************")
-
-print('matplotlib: {}'.format(matplotlib.__version__))
-print('numpy: {}'.format(np.__version__))
-print('pandas: {}'.format(pd.__version__))
-
-print ("****************************************************")
 
 ################
 ###
@@ -73,21 +66,9 @@ sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
-####################################################################################
 ###
-###                   Aeolus Directories
+### Import remote cores
 ###
-####################################################################################
-
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
-param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-
-####################################################################################
-###
-###                   Import remote cores
-###
-####################################################################################
-
 import remote_sensing_core as rc
 import remote_sensing_plot_core as rcp
 
@@ -104,17 +85,61 @@ eleven_colors = ["gray", "lightcoral", "red", "peru",
 # irrigated_only = 1
 # SF_year = 2017
 
+given_county = "Grant"
 indeks = sys.argv[1]
 irrigated_only = int(sys.argv[2])
 SF_year = int(sys.argv[3])
+regularized = True
+####################################################################################
+###
+###                   Aeolus Directories
+###
+####################################################################################
+if irrigated_only == True:
+    output_Irr = "irrigated_only"
+else:
+    output_Irr = "non_irrigated_only"
+
+regular_data_dir = data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
+regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/2Yrs_plots/" + \
+                     given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/" 
+
+plot_dir_base = regular_output_dir
+print ("plot_dir_base is " + plot_dir_base)
+param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
+
+#####################################################################################
+
+if regularized == True:
+    data_dir = regular_data_dir
+    f_name = "Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+    output_dir = regular_output_dir
+
+else:
+    data_dir = raw_data_dir
+    f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
+    output_dir = raw_output_dir
+
+plot_dir_base = output_dir
+print ("plot_dir_base is " + plot_dir_base)
+
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(plot_dir_base, exist_ok=True)
+
+print ("_________________________________________________________")
+print ("data dir is:")
+print (data_dir)
+print ("_________________________________________________________")
+print ("output_dir is:")
+print (output_dir)
+print ("_________________________________________________________")
 
 ####################################################################################
 ###
-###                   process data
+###                   Read data
 ###
 ####################################################################################
 
-f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
 a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 
 ##################################################################
@@ -126,11 +151,12 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 ##################################################################
 ##################################################################
 
-a_df = a_df[a_df['county']== "Grant"] # Filter Grant
+a_df = a_df[a_df['county']== given_county] # Filter Grant
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
 a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
 a_df['SF_year'] = SF_year
 
+# a_df = a_df[a_df['image_year'] == SF_year]
 
 if irrigated_only == True:
     a_df = rc.filter_out_nonIrrigated(a_df)
@@ -139,15 +165,6 @@ else:
     output_Irr = "non_irrigated_only"
     a_df = rc.filter_out_Irrigated(a_df)
 
-##################################################################
-output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls/" + \
-             "2Yrs_plots/Grant_" + str(SF_year) + "_raw_" + output_Irr + "_" + indeks + "/" 
-
-plot_dir_base = output_dir
-print ("plot_dir_base is " + plot_dir_base)
-
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plot_dir_base, exist_ok=True)
 
 ######################
 
@@ -168,29 +185,30 @@ else:
     a_df = rc.initial_clean_NDVI(a_df)
     print ("initial_clean_NDVI")
 
-a_df.head(2)
 an_EE_TS = a_df.copy()
 del(a_df)
 
 ### List of unique polygons
 polygon_list = np.sort(an_EE_TS['ID'].unique())
-print(len(polygon_list))
+print ("_____________________________________")
+print("len(polygon_list)")
+print (len(polygon_list))
+print ("_____________________________________")
 
 counter = 0
 
 for a_poly in polygon_list:
     if (counter%1000 == 0):
-        print (counter)
+        print ("_____________________________________")
+        print ("counter: " + str(counter))
 
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
     
     ################################################################
-    #
     # Sort by DoY (sanitary check)
-    # 
-
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
 
+    ################################################################
     ID = curr_field['ID'].unique()[0]
     plant = curr_field['CropTyp'].unique()[0]
     plant = plant.replace("/", "_")
@@ -226,6 +244,9 @@ for a_poly in polygon_list:
         rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.4, SFYr = SF_year, ax = ax4)
 
         fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
+
+        os.makedirs(output_dir, exist_ok=True)
+        os.makedirs(plot_dir_base, exist_ok=True)
 
         plt.savefig(fname = fig_name, dpi=250, bbox_inches='tight')
         counter += 1
