@@ -27,6 +27,7 @@ from datetime import date
 #####                   Function definitions
 #####
 ################################################################
+<<<<<<< HEAD
 def add_human_start_time_by_YearDoY(a_Reg_DF):
     """
     This function is written for regularized data 
@@ -59,6 +60,8 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
     return(DF_C)
 
 
+=======
+>>>>>>> 86825e55a353b137541d6f22b7ef1b6e1e47e0d2
 def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_size=10):
     #
     #  This function almost returns a data frame with data

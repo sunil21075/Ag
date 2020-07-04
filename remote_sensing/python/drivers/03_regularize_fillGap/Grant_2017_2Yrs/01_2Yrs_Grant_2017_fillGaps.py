@@ -162,7 +162,10 @@ for a_poly in polygon_list:
     counter += 1
 
 
+<<<<<<< HEAD
 output_df = rc.add_human_start_time_by_YearDoY(output_df)
+=======
+>>>>>>> 86825e55a353b137541d6f22b7ef1b6e1e47e0d2
 ####################################################################################
 ###
 ###                   Write the outputs
