@@ -151,7 +151,7 @@ a_df = a_df[a_df['image_year']== 2017]
 ######################
 
 output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls" + \
-             "/2Yrs_tables/Grant_2017_raw_1Yr_savitzky_"  + indeks + "/" + \
+             "/2Yrs_tables_raw/Grant_2017_raw_1Yr_savitzky_"  + indeks + "/" + \
              "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
 
 plot_dir_base = output_dir

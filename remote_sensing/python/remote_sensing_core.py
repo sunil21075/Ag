@@ -132,7 +132,7 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_s
         curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -156,7 +156,7 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_s
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -191,15 +191,15 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     TS_array = a_regularized_TS[indeks].copy().values
 
     """
-    TS_array[0] = -2
-    TS_array[51] = -2
-    TS_array[52] = -2
-    TS_array[53] = -2
+    TS_array[0] = -1.5
+    TS_array[51] = -1.5
+    TS_array[52] = -1.5
+    TS_array[53] = -1.5
     TS_array.shape
     """
 
-    missing_indicies = np.where(TS_array == -2)[0]
-    Notmissing_indicies = np.where(TS_array != -2)[0]
+    missing_indicies = np.where(TS_array == -1.5)[0]
+    Notmissing_indicies = np.where(TS_array != -1.5)[0]
 
     #
     #    Check if the first or last k values are missing
@@ -216,14 +216,14 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     #    
     # update indexes.
     #
-    missing_indicies = np.where(TS_array == -2)[0]
-    Notmissing_indicies = np.where(TS_array != -2)[0]
+    missing_indicies = np.where(TS_array == -1.5)[0]
+    Notmissing_indicies = np.where(TS_array != -1.5)[0]
 
     # left_pointer = Notmissing_indicies[0]
     stop = right_pointer
     right_pointer = left_pointer + 1
 
-    missing_indicies = np.where(TS_array == -2)[0]
+    missing_indicies = np.where(TS_array == -1.5)[0]
 
     while len(missing_indicies) > 0:
         left_pointer = missing_indicies[0] - 1
@@ -231,7 +231,7 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
         
         right_pointer = missing_indicies[0]
         
-        while TS_array[right_pointer] == -2:
+        while TS_array[right_pointer] == -1.5:
             right_pointer += 1
         
         right_value = TS_array[right_pointer]
@@ -247,7 +247,7 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
             slope = (right_value - left_value) / (x_axis[right_pointer] - x_axis[left_pointer]) # a
             b = right_value - (slope * x_axis[right_pointer])
             TS_array[left_pointer+1 : right_pointer] = slope * x_axis[left_pointer+1 : right_pointer] + b
-            missing_indicies = np.where(TS_array == -2)[0]
+            missing_indicies = np.where(TS_array == -1.5)[0]
             
         
     a_regularized_TS[indeks] = TS_array
@@ -390,7 +390,7 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -414,7 +414,7 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -438,7 +438,7 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < last_year_steps[curr_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -507,7 +507,7 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[row_or_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -2
+            regular_df.loc[row_or_count, idks] = -1.5
         else:
             regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
 
@@ -519,8 +519,8 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
 
 def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
 
-    # replace NAs with -2
-    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -2, VI_TS_npArray)
+    # replace NAs with -1.5
+    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -1.5, VI_TS_npArray)
 
     # form the output vector
     output_len = int(np.floor(len(VI_TS_npArray) / window_size))
@@ -541,8 +541,8 @@ def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
 
 
 def max_movingWindow_1Steps(VI_TS_npArray, window_size):
-    # replace NAs with -2
-    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -2, VI_TS_npArray)
+    # replace NAs with -1.5
+    VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -1.5, VI_TS_npArray)
 
     # form the output vector
     output_len = int(len(VI_TS_npArray) - window_size)
@@ -721,7 +721,7 @@ def initial_clean_NDVI(df):
     # Drop rows whith NA in NDVI column.
     dt_copy = dt_copy[dt_copy['NDVI'].notna()]
 
-    # replace values beyond 1 and -1 with 2 and -2
+    # replace values beyond 1 and -1 with 1.5 and -1.5
     dt_copy.loc[dt_copy['NDVI'] > 1, "NDVI"] = 1.5
     dt_copy.loc[dt_copy['NDVI'] < -1, "NDVI"] = -1.5
 
@@ -738,7 +738,7 @@ def initial_clean_EVI(df):
     # Drop rows whith NA in EVI column.
     dt_copy = dt_copy[dt_copy['EVI'].notna()]
 
-    # replace values beyond 1 and -1 with 2 and -2
+    # replace values beyond 1 and -1 with 1.5 and -1.5
     dt_copy.loc[dt_copy['EVI'] > 1, "EVI"] = 1.5
     dt_copy.loc[dt_copy['EVI'] < -1, "EVI"] = -1.5
 

@@ -1,5 +1,5 @@
 ####
-#### May 26, 2019
+#### July 4, 2020
 ####
 
 """
@@ -66,21 +66,6 @@ param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
 
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
-####################################################################################
-###
-###                   Aeolus Directories
-###
-####################################################################################
-
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
-param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-
-####################################################################################
-###
-###                   Import remote cores
-###
-####################################################################################
-
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
@@ -89,32 +74,94 @@ import remote_sensing_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
+Sav_win_size = 9
+sav_order = 1
+delt = 0.1
+do_plot  = 0
+SF_year = 2017
+
 Sav_win_size = int(sys.argv[1])
 sav_order = int(sys.argv[2])
 delt = float(sys.argv[3])
 indeks = sys.argv[4]
+regularized = True
+
+# if do_plot == 0:
+#     do_plot = False
+#     plot_sub_dir = "no_plot"
+# else:
+#     do_plot = True
+#     plot_sub_dir = "w_plot"
+
+print ("delta = {fileShape}.".format(fileShape = delt))
+
+####################################################################################
+###
+###                   Aeolus Directories
+###
+####################################################################################
+
+regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
+regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/2Yrs_tables_regular/" + \
+                     "/Grant_" + str(SF_year) + "_regular_" + "savitzky_" + indeks + "/" + \
+                     "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
+
+raw_data_dir   = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE/"
+raw_output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls" + \
+             "/2Yrs_raw_tables/Grant_2017_raw_1Yr_savitzky_"  + indeks + "/" + \
+             "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
+
+param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
+
+if regularized == True:
+    data_dir = regular_data_dir
+               
+    f_name = "00_Regularized_Grant_SF_" + str(SF_year) + "_" + indeks + ".csv"
+    output_dir = regular_output_dir
+
+else:
+    data_dir = raw_data_dir
+    f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
+    output_dir = raw_output_dir
+
+os.makedirs(output_dir, exist_ok=True)
+
+print ("_________________________________________________________")
+print ("data dir is:")
+print (data_dir)
+print ("_________________________________________________________")
+print ("output_dir is:")
+print (output_dir)
+print ("_________________________________________________________")
+
+####################################################################################
+###
+###                   Read data
+###
+####################################################################################
+
+a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 
 ####################################################################################
 ###
 ###                   process data
 ###
 ####################################################################################
-f_name = "Eastern_WA_2017_70cloud_selectors.csv"
-a_df = pd.read_csv(data_dir + f_name, low_memory=False)
-##################################################################
-##################################################################
-####
-#### Tables does not have to be exact. So, we need 
-#### to filter out NASS, and filter by last survey date
-####
-##################################################################
-##################################################################
+
+"""
+ Tables does not have to be exact. So, we need 
+ to filter out NASS, and filter by last survey date
+"""
 
 a_df = a_df[a_df['county']== "Grant"] # Filter Grant
 a_df = a_df[a_df['image_year']== 2017]
 
 # a_df = filter_out_NASS(a_df) # Toss NASS
 # a_df = filter_by_lastSurvey(a_df, year = 2017) # filter by last survey date
+
+if do_plot == False:
+    a_df = rc.filter_out_nonIrrigated(a_df)
+    print ("After filtering out non-irrigated, a_df is of dimension {fileShape}.".format(fileShape = a_df.shape))
 
 
 # filter_NASS = False
@@ -150,26 +197,18 @@ a_df = a_df[a_df['image_year']== 2017]
 #     print ("After filtering out NASS, a_df is of dimension {fileShape}.".format(fileShape=a_df.shape))
 ######################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls" + \
-             "/2Yrs_tables/Grant_2017_raw_1Yr_savitzky_"  + indeks + "/" + \
-             "/delta" + str(delt) + "_Sav_win" + str(Sav_win_size) + "_Order"  + str(sav_order) + "/"
 
-plot_dir_base = output_dir
-print ("plot_dir_base is " + plot_dir_base)
-
-os.makedirs(output_dir, exist_ok=True)
-os.makedirs(plot_dir_base, exist_ok=True)
-
-######################
 a_df['year'] = 2017
 #
 # The following columns do not exist in the old data
 #
 if not('DataSrc' in a_df.columns):
+    print ("_________________________________________________________")
     print ("Data source is being set to NA")
     a_df['DataSrc'] = "NA"
 
 if not('CovrCrp' in a_df.columns):
+    print ("_________________________________________________________")
     print ("CovrCrp is being set to NA")
     a_df['CovrCrp'] = "NA"
 
@@ -183,6 +222,9 @@ an_EE_TS = a_df.copy()
 
 ### List of unique polygons
 polygon_list = an_EE_TS['ID'].unique()
+
+print ("_________________________________________________________")
+print("len(polygon_list) is :")
 print(len(polygon_list))
 
 max_output_columns = ['ID', 'Acres', 'CovrCrp', 'CropGrp', 'CropTyp',
@@ -211,7 +253,8 @@ counter = 0
 
 for a_poly in polygon_list:
     if (counter%1000 == 0):
-        print (counter)
+        print ("_________________________________________________________")
+        print ("counter: " + str(counter))
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
     ################################################################
     # Sort by DoY (sanitary check)

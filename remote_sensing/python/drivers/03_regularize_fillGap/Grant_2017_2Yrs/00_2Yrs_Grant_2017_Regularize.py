@@ -182,7 +182,7 @@ for a_poly in polygon_list:
 ###
 ####################################################################################
 
-out_name = output_dir + "Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+out_name = output_dir + "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

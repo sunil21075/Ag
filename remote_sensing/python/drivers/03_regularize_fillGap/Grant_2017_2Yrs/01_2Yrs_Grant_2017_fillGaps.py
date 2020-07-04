@@ -95,7 +95,7 @@ regular_window_size = 10
 ###
 ########################################################################################
 
-f_name = "Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+f_name = "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
 
 ########################################################################################
@@ -169,7 +169,7 @@ output_df = rc.add_human_start_time_by_YearDoY(output_df)
 ###
 ####################################################################################
 
-out_name = output_dir + "Regular_filledGap_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+out_name = output_dir + "01_Regular_filledGap_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

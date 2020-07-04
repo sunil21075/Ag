@@ -1,5 +1,5 @@
 ####
-#### May 26, 2019
+#### May 26, 2020
 ####
 
 """
@@ -210,7 +210,7 @@ if not('DataSrc' in a_df.columns):
 
 if not('CovrCrp' in a_df.columns):
     print ("_________________________________________________________")
-    print ("Data source is being set to NA")
+    print ("CovrCrp is being set to NA")
     a_df['CovrCrp'] = "NA"
 
 if (indeks == "EVI"):

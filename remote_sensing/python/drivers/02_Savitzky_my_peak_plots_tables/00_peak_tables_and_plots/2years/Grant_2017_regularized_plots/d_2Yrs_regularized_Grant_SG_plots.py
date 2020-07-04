@@ -102,7 +102,7 @@ else:
 
 regular_data_dir = data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
 regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/2Yrs_plots/" + \
-                     given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/" 
+                      given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/" 
 
 plot_dir_base = regular_output_dir
 print ("plot_dir_base is " + plot_dir_base)
@@ -112,7 +112,7 @@ param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 if regularized == True:
     data_dir = regular_data_dir
-    f_name = "Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+    f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
     output_dir = regular_output_dir
 
 else:
