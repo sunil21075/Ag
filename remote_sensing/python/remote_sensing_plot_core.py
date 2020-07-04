@@ -232,11 +232,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
     #   We have to change this part to make a perfect plot
     #        
     plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
-<<<<<<< HEAD
     ax.set_ylim([-1.7, 1.7])
-=======
-    ax.set_ylim([-1, 1.6])
->>>>>>> 86825e55a353b137541d6f22b7ef1b6e1e47e0d2
     # sb.set();
     
     # fucking Aeolus throws error. TypeError: invalid type promotion
