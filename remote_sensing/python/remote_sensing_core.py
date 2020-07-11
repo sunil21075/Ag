@@ -184,9 +184,9 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     a_regularized_TS = regular_TS.copy()
 
     if (len(a_regularized_TS.image_year.unique()) == 2):
-        x_axis = extract_XValues_of_RegularizedTS_2Yrs(regularized_TS = a_regularized_TS, SF_yr = SF_year)
+        x_axis = extract_XValues_of_2Yrs_TS(regularized_TS = a_regularized_TS, SF_yr = SF_year)
     elif (len(a_regularized_TS.image_year.unique()) == 3):
-        x_axis = extract_XValues_of_RegularizedTS_3Yrs(regularized_TS = a_regularized_TS, SF_yr = SF_year)
+        x_axis = extract_XValues_of_3Yrs_TS(regularized_TS = a_regularized_TS, SF_yr = SF_year)
 
     TS_array = a_regularized_TS[indeks].copy().values
 
@@ -254,7 +254,10 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     return (a_regularized_TS)
 
 
-def extract_XValues_of_RegularizedTS_2Yrs(regularized_TS, SF_yr):
+def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
+    # old name extract_XValues_of_RegularizedTS_2Yrs().
+    # I do not know why I had Regularized in it.
+    # new name extract_XValues_of_2Yrs_TS
     """
     Jul 1.
     This function is being written since Kirti said
@@ -274,7 +277,10 @@ def extract_XValues_of_RegularizedTS_2Yrs(regularized_TS, SF_yr):
     return (np.concatenate([X_values_prev_year, X_values_full_year]))
 
 
-def extract_XValues_of_RegularizedTS_3Yrs(regularized_TS, SF_yr):
+def extract_XValues_of_3Yrs_TS(regularized_TS, SF_yr):
+    # old name extract_XValues_of_RegularizedTS_3Yrs().
+    # I do not know why I had Regularized in it.
+    # new name extract_XValues_of_3Yrs_TS
     """
     Jul 1.
     This function is written for inluding data from 3 years.
@@ -750,11 +756,16 @@ def initial_clean_EVI(df):
 def initial_clean(df, column_to_be_cleaned):
     dt_copy = df.copy()
     # remove the useles system:index column
-    if ("system:index" in list(dt.columns)):
+    if ("system:index" in list(dt_copy.columns)):
         dt_copy = dt_copy.drop(columns=['system:index'])
     
-    # Drop rows whith NA in EVI column.
-    dt_copy = dt_copy[dt_copy[column_to_be_cleaned].notna()]    
+    # Drop rows whith NA in column_to_be_cleaned column.
+    dt_copy = dt_copy[dt_copy[column_to_be_cleaned].notna()]
+
+    if (column_to_be_cleaned in ["NDVI", "EVI"]):
+        dt_copy.loc[dt_copy[column_to_be_cleaned] > 1, column_to_be_cleaned] = 1.5
+        dt_copy.loc[dt_copy[column_to_be_cleaned] < -1, column_to_be_cleaned] = -1.5
+
     return (dt_copy)
 
 

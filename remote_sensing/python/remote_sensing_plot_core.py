@@ -79,7 +79,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
     ###
     #############################################
     # X = crr_fld['doy']
-    X = rc.extract_XValues_of_RegularizedTS_2Yrs(crr_fld, SF_yr = SFYr)
+    X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
 
     d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
     date_df = pd.DataFrame(data=d)
@@ -319,7 +319,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
 #     ###
 #     #############################################
 #     # X = crr_fld['doy']
-#     X = rc.extract_XValues_of_RegularizedTS_2Yrs(crr_fld, SF_yr = SFYr)
+#     X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
 
 #     d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
 #     date_df = pd.DataFrame(data=d)

@@ -8,7 +8,6 @@
 Just generate peak plots for Grant 2017 fields 
 for all cultivars; EVI and my peak finder
 """
-import matplotlib.backends.backend_pdf
 import csv
 import numpy as np
 import pandas as pd
@@ -32,10 +31,16 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 
 from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
 
 import sys
-start_time = time.time()
+
+# search path for modules
+# look @ https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
+sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
+import remote_sensing_core as rc
+import remote_sensing_core as rcp
+
+start = time.time()
 
 # search path for modules
 # look @ https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
@@ -108,9 +113,10 @@ indeks = sys.argv[1]
 irrigated_only = int(sys.argv[2])
 SF_year = int(sys.argv[3])
 
+given_county = "Grant"
 ####################################################################################
 ###
-###                   process data
+###                   Read the  data
 ###
 ####################################################################################
 
@@ -126,11 +132,10 @@ a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 ##################################################################
 ##################################################################
 
-a_df = a_df[a_df['county']== "Grant"] # Filter Grant
+a_df = a_df[a_df['county']== given_county] # Filter given_county
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
 a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
 a_df['SF_year'] = SF_year
-
 
 if irrigated_only == True:
     a_df = rc.filter_out_nonIrrigated(a_df)
@@ -141,7 +146,7 @@ else:
 
 ##################################################################
 output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_plots_tbls/" + \
-             "2Yrs_plots/Grant_" + str(SF_year) + "_raw_" + output_Irr + "_" + indeks + "/" 
+             "2Yrs_plots/" + given_county + "_" + str(SF_year) + "_raw_" + output_Irr + "_" + indeks + "/" 
 
 plot_dir_base = output_dir
 print ("plot_dir_base is " + plot_dir_base)
