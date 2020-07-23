@@ -67,6 +67,13 @@ def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_betwee
     return(dataTS)
 
 def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
+    """
+    outliers are those that are beyond boundaries. For example and EVI value of 2.
+    Big jump in the other function means we have a big jump but we are still
+    within the region of EVI values. If in 20 days we have a jump of 0.3 then that is noise.
+
+    in 2017 data I did not see outlier in NDVI. It only happened in EVI.
+    """
     outlier_df = outlier_input.copy()
     outlier_df = initial_clean(df = outlier_df, column_to_be_cleaned = given_col)
 
