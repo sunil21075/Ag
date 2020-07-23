@@ -27,6 +27,183 @@ from datetime import date
 #####                   Function definitions
 #####
 ################################################################
+
+def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_between_points=20):
+    dataTS = dataTS_jumpy.copy()
+    
+    dataTS = initial_clean(df = dataTS, column_to_be_cleaned = given_col)
+
+    dataTS.sort_values(by=['image_year', 'doy'], inplace=True)
+    dataTS.reset_index(drop=True, inplace=True)
+    dataTS['system_start_time'] = dataTS['system_start_time'] / 1000
+
+    thyme_vec = dataTS['system_start_time'].values.copy()
+    Veg_indks = dataTS[given_col].values.copy()
+
+    time_diff = thyme_vec[1:] - thyme_vec[0:len(thyme_vec)-1]
+    time_diff_in_days = time_diff / 86400
+    time_diff_in_days = time_diff_in_days.astype(int)
+
+    Veg_indks_diff = Veg_indks[1:] - Veg_indks[0:len(thyme_vec)-1]
+    jump_indexes = np.where(Veg_indks_diff > 0.3)
+    jump_indexes = jump_indexes[0]
+
+    if len(jump_indexes) > 0:    
+        for jp_idx in jump_indexes:
+            if time_diff_in_days[jp_idx] >= 20:
+                #
+                # form a line using the adjacent points of the big jump:
+                #
+                x1, y1 = thyme_vec[jp_idx], Veg_indks[jp_idx]
+                x2, y2 = thyme_vec[jp_idx+2], Veg_indks[jp_idx+2]
+                m = (y2 - y1) / (x2 - x1) # slope
+                b = y2 - (m*x2)           # intercept
+
+                # replace the big jump with linear interpolation
+                Veg_indks[jp_idx+1] = m * thyme_vec[jp_idx+1] + b
+
+    dataTS[given_col] = Veg_indks
+
+    return(dataTS)
+
+def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
+    outlier_df = outlier_input.copy()
+    outlier_df = initial_clean(df = outlier_df, column_to_be_cleaned = given_col)
+
+    outlier_df.sort_values(by=['image_year', 'doy'], inplace=True)
+    outlier_df.reset_index(drop=True, inplace=True)
+    
+    # First block
+    time_vec = outlier_df['system_start_time'].values.copy()
+    vec = outlier_df[given_col].values.copy()
+    
+    # find out where are outliers
+    high_outlier_inds = np.where(vec > 1)[0]
+    low_outlier_inds = np.where(vec < -1)[0]
+    
+    all_outliers_idx = np.concatenate((high_outlier_inds, low_outlier_inds))
+    all_outliers_idx = np.sort(all_outliers_idx)
+    non_outiers = np.arange(len(vec))[~ np.in1d(np.arange(len(vec)) , all_outliers_idx)]
+    
+    # 2nd block
+    if len(all_outliers_idx) == 0:
+        return outlier_df
+    
+    # 3rd block
+    
+    # Get rid of outliers that are at the beginning of the time series
+    if non_outiers[0] > 0 :
+        vec[0:non_outiers[0]] = vec[non_outiers[0]]
+        
+        # find out where are outliers
+        high_outlier_inds = np.where(vec > 1)[0]
+        low_outlier_inds = np.where(vec < -1)[0]
+
+        all_outliers_idx = np.concatenate((high_outlier_inds, low_outlier_inds))
+        all_outliers_idx = np.sort(all_outliers_idx)
+        non_outiers = np.arange(len(vec))[~ np.in1d(np.arange(len(vec)) , all_outliers_idx)]
+        if len(all_outliers_idx) == 0:
+            outlier_df[given_col] = vec
+            return outlier_df
+    
+    # 4th block
+    # Get rid of outliers that are at the end of the time series
+    if non_outiers[-1] < (len(vec)-1) :
+        vec[non_outiers[-1]:] = vec[non_outiers[-1]]
+        
+        # find out where are outliers
+        high_outlier_inds = np.where(vec > 1)[0]
+        low_outlier_inds = np.where(vec < -1)[0]
+
+        all_outliers_idx = np.concatenate((high_outlier_inds, low_outlier_inds))
+        all_outliers_idx = np.sort(all_outliers_idx)
+        non_outiers = np.arange(len(vec))[~ np.in1d(np.arange(len(vec)) , all_outliers_idx)]
+        if len(all_outliers_idx) == 0:
+            outlier_df[given_col] = vec
+            return outlier_df
+    """
+    At this point outliers are in the middle of the vector
+    and beginning and the end of the vector are clear.
+    """
+    for out_idx in all_outliers_idx:
+        """
+         Right here at the beginning we should check
+         if vec[out_idx] is outlier or not. The reason is that
+         there might be consecutive outliers at position m and m+1
+         and we fix the one at m+1 when we are fixing m ...
+        """
+        # if ~(vec[out_idx] <= 1 and vec[out_idx] >= -1):
+        if (vec[out_idx] >= 1 or vec[out_idx] <= -1):
+            left_pointer = out_idx - 1
+            right_pointer = out_idx + 1
+            while ~(vec[right_pointer] <= 1 and vec[right_pointer] >= -1):
+                right_pointer += 1
+
+            # form the line and fill in the outlier valies
+            x1, y1 = time_vec[left_pointer], vec[left_pointer]
+            x2, y2 = time_vec[right_pointer], vec[right_pointer]
+
+            time_diff = x2 - x1
+            y_diff = y2 - y1
+            slope = y_diff / time_diff
+            intercept = y2 - (slope * x2)
+            vec[left_pointer+1:right_pointer] = slope * time_vec[left_pointer+1:right_pointer] + intercept
+    
+    
+    outlier_df[given_col] = vec
+    return (outlier_df)
+
+def initial_clean_NDVI(df):
+    dt_copy = df.copy()
+    # remove the useles system:index column
+    if ("system:index" in list(dt_copy.columns)):
+        dt_copy = dt_copy.drop(columns=['system:index'])
+    
+    # Drop rows whith NA in NDVI column.
+    dt_copy = dt_copy[dt_copy['NDVI'].notna()]
+
+    # replace values beyond 1 and -1 with 1.5 and -1.5
+    dt_copy.loc[dt_copy['NDVI'] > 1, "NDVI"] = 1.5
+    dt_copy.loc[dt_copy['NDVI'] < -1, "NDVI"] = -1.5
+
+    if ("image_year" in list(dt_copy.columns)):
+        dt_copy.image_year = dt_copy.image_year.astype(int)
+    return (dt_copy)
+
+def initial_clean_EVI(df):
+    dt_copy = df.copy()
+    # remove the useles system:index column
+    if ("system:index" in list(dt_copy.columns)):
+        dt_copy = dt_copy.drop(columns=['system:index'])
+    
+    # Drop rows whith NA in EVI column.
+    dt_copy = dt_copy[dt_copy['EVI'].notna()]
+
+    # replace values beyond 1 and -1 with 1.5 and -1.5
+    dt_copy.loc[dt_copy['EVI'] > 1, "EVI"] = 1.5
+    dt_copy.loc[dt_copy['EVI'] < -1, "EVI"] = -1.5
+
+    if ("image_year" in list(dt_copy.columns)):
+        dt_copy.image_year = dt_copy.image_year.astype(int)
+    
+    return (dt_copy)
+
+def initial_clean(df, column_to_be_cleaned):
+    dt_copy = df.copy()
+    # remove the useles system:index column
+    if ("system:index" in list(dt_copy.columns)):
+        dt_copy = dt_copy.drop(columns=['system:index'])
+    
+    # Drop rows whith NA in column_to_be_cleaned column.
+    dt_copy = dt_copy[dt_copy[column_to_be_cleaned].notna()]
+
+    if (column_to_be_cleaned in ["NDVI", "EVI"]):
+        dt_copy.loc[dt_copy[column_to_be_cleaned] > 1, column_to_be_cleaned] = 1.5
+        dt_copy.loc[dt_copy[column_to_be_cleaned] < -1, column_to_be_cleaned] = -1.5
+
+    return (dt_copy)
+
+
 def add_human_start_time_by_YearDoY(a_Reg_DF):
     """
     This function is written for regularized data 
@@ -59,7 +236,7 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
     return(DF_C)
 
 
-def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_size=10):
+def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, veg_idxs, window_size=10):
     #
     #  This function almost returns a data frame with data
     #  that are window_size away from each other. i.e. regular space in time.
@@ -71,7 +248,7 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_s
     regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
                     'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
                     'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
-                    'SF_year', 'doy', idks]
+                    'SF_year', 'doy', veg_idxs]
     #
     # for a good measure we start at 213 (214 does not matter either)
     # and the first 
@@ -131,10 +308,16 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_s
         curr_time_window = curr_time_window[curr_time_window.doy >= first_year_steps[row_or_count]]
         curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
 
+        """
+        In each time window peak the maximum of present values
+
+        If in a window (e.g. 10 days) we have no value observed by Sentinel, 
+        then use -1.5 as an indicator. That will be a gap to be filled. (function fill_theGap_linearLine).
+        """
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, veg_idxs] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, veg_idxs] = max(curr_time_window[veg_idxs])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = first_year_steps[row_or_count]
@@ -155,10 +338,16 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, idks, window_s
         curr_time_window = curr_time_window[curr_time_window.doy >= full_year_steps[curr_count]]
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
 
+        """
+          In each time window peak the maximum of present values
+
+          If in a window (e.g. 10 days) we have no value observed by Sentinel, 
+          then use -1.5 as an indicator. That will be a gap to be filled (function fill_theGap_linearLine).
+        """
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, veg_idxs] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, veg_idxs] = max(curr_time_window[veg_idxs])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = full_year_steps[curr_count]
@@ -179,7 +368,7 @@ def add_human_start_time(HDF):
     return(HDF)
 
 
-def fill_theGap_linearLine(regular_TS, indeks, SF_year):
+def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
 
     a_regularized_TS = regular_TS.copy()
 
@@ -188,7 +377,7 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     elif (len(a_regularized_TS.image_year.unique()) == 3):
         x_axis = extract_XValues_of_3Yrs_TS(regularized_TS = a_regularized_TS, SF_yr = SF_year)
 
-    TS_array = a_regularized_TS[indeks].copy().values
+    TS_array = a_regularized_TS[V_idx].copy().values
 
     """
     TS_array[0] = -1.5
@@ -198,6 +387,10 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
     TS_array.shape
     """
 
+    """
+    -1.5 is an indicator of missing values by Sentinel, i.e. a gap.
+    The -1.5 was used as indicator in the function regularize_movingWindow_windowSteps_2Yrs()
+    """
     missing_indicies = np.where(TS_array == -1.5)[0]
     Notmissing_indicies = np.where(TS_array != -1.5)[0]
 
@@ -250,7 +443,7 @@ def fill_theGap_linearLine(regular_TS, indeks, SF_year):
             missing_indicies = np.where(TS_array == -1.5)[0]
             
         
-    a_regularized_TS[indeks] = TS_array
+    a_regularized_TS[V_idx] = TS_array
     return (a_regularized_TS)
 
 
@@ -321,7 +514,7 @@ def check_leap_year(year):
         return (False)
 
 
-def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, window_size=10):
+def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, V_idks, window_size=10):
     #
     #  This function almost returns a data frame with data
     #  that are window_size away from each other. i.e. regular space in time.
@@ -333,7 +526,7 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
     regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
                     'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
                     'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
-                    'SF_year', 'doy', idks]
+                    'SF_year', 'doy', V_idks]
     #
     # for a good measure we start at 273 (274 does not matter either)
     # and the first 
@@ -396,9 +589,9 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < first_year_steps[row_or_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, V_idks] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, V_idks] = max(curr_time_window[V_idks])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = first_year_steps[row_or_count]
@@ -420,9 +613,9 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[curr_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, V_idks] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, V_idks] = max(curr_time_window[V_idks])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = full_year_steps[curr_count]
@@ -444,16 +637,16 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < last_year_steps[curr_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, V_idks] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, V_idks] = max(curr_time_window[V_idks])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = last_year_steps[curr_count]
         
     return (regular_df)
 
-def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, window_size=10):
+def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, V_idxs, window_size=10):
     #
     #  This function almost returns a data frame with data
     #  that are window_size away from each other. i.e. regular space in time.
@@ -463,7 +656,7 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
     regular_cols = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp',
                     'DataSrc', 'ExctAcr', 'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes',
                     'RtCrpTy', 'Shap_Ar', 'Shp_Lng', 'TRS', 'image_year', 
-                    'SF_year', 'doy', idks]
+                    'SF_year', 'doy', V_idxs]
 
     full_year_steps = list(range(1, 365, 10))
     full_year_steps[-1] = 366
@@ -513,9 +706,9 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
         curr_time_window = curr_time_window[curr_time_window.doy < full_year_steps[row_or_count+1]]
 
         if len(curr_time_window)==0: 
-            regular_df.loc[row_or_count, idks] = -1.5
+            regular_df.loc[row_or_count, V_idxs] = -1.5
         else:
-            regular_df.loc[row_or_count, idks] = max(curr_time_window[idks])
+            regular_df.loc[row_or_count, V_idxs] = max(curr_time_window[V_idxs])
 
         regular_df.loc[row_or_count, 'image_year'] = curr_year
         regular_df.loc[row_or_count, 'doy'] = full_year_steps[row_or_count]
@@ -523,15 +716,18 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, idks, wind
     return (regular_df)
 
 
-def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
 
+def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
+    """
+    This function moves the window by a step size of window_size.
+    i.e. window 1 is from 1-10, window 2 is from 11-20...
+    """
     # replace NAs with -1.5
     VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -1.5, VI_TS_npArray)
 
     # form the output vector
     output_len = int(np.floor(len(VI_TS_npArray) / window_size))
     output = np.ones(output_len) * (-666)
-
 
     for count in range(output_len):
         window_start = count * window_size
@@ -547,6 +743,10 @@ def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
 
 
 def max_movingWindow_1Steps(VI_TS_npArray, window_size):
+    """
+    This function moves the window by a step size of 1.
+    i.e. window 1 is from 1-10, window 2 is from 2-11, window 3 is 3-12 ...
+    """
     # replace NAs with -1.5
     VI_TS_npArray = np.where(np.isnan(VI_TS_npArray), -1.5, VI_TS_npArray)
 
@@ -717,56 +917,6 @@ def filter_double_potens(dt_d, double_poten_dt):
 #     dt_df = dt_df[~(dt_df['Irrigtn'].isin(non_irrigations))]
 #     """
 #     return dt_df
-    
-def initial_clean_NDVI(df):
-    dt_copy = df.copy()
-    # remove the useles system:index column
-    if ("system:index" in list(dt_copy.columns)):
-        dt_copy = dt_copy.drop(columns=['system:index'])
-    
-    # Drop rows whith NA in NDVI column.
-    dt_copy = dt_copy[dt_copy['NDVI'].notna()]
-
-    # replace values beyond 1 and -1 with 1.5 and -1.5
-    dt_copy.loc[dt_copy['NDVI'] > 1, "NDVI"] = 1.5
-    dt_copy.loc[dt_copy['NDVI'] < -1, "NDVI"] = -1.5
-
-    if ("image_year" in list(dt_copy.columns)):
-        dt_copy.image_year = dt_copy.image_year.astype(int)
-    return (dt_copy)
-
-def initial_clean_EVI(df):
-    dt_copy = df.copy()
-    # remove the useles system:index column
-    if ("system:index" in list(dt_copy.columns)):
-        dt_copy = dt_copy.drop(columns=['system:index'])
-    
-    # Drop rows whith NA in EVI column.
-    dt_copy = dt_copy[dt_copy['EVI'].notna()]
-
-    # replace values beyond 1 and -1 with 1.5 and -1.5
-    dt_copy.loc[dt_copy['EVI'] > 1, "EVI"] = 1.5
-    dt_copy.loc[dt_copy['EVI'] < -1, "EVI"] = -1.5
-
-    if ("image_year" in list(dt_copy.columns)):
-        dt_copy.image_year = dt_copy.image_year.astype(int)
-    
-    return (dt_copy)
-
-def initial_clean(df, column_to_be_cleaned):
-    dt_copy = df.copy()
-    # remove the useles system:index column
-    if ("system:index" in list(dt_copy.columns)):
-        dt_copy = dt_copy.drop(columns=['system:index'])
-    
-    # Drop rows whith NA in column_to_be_cleaned column.
-    dt_copy = dt_copy[dt_copy[column_to_be_cleaned].notna()]
-
-    if (column_to_be_cleaned in ["NDVI", "EVI"]):
-        dt_copy.loc[dt_copy[column_to_be_cleaned] > 1, column_to_be_cleaned] = 1.5
-        dt_copy.loc[dt_copy[column_to_be_cleaned] < -1, column_to_be_cleaned] = -1.5
-
-    return (dt_copy)
 
 
 def order_by_doy(dt):
