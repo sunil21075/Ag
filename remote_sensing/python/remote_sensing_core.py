@@ -30,7 +30,6 @@ from datetime import date
 
 def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_between_points=20):
     dataTS = dataTS_jumpy.copy()
-    
     dataTS = initial_clean(df = dataTS, column_to_be_cleaned = given_col)
 
     dataTS.sort_values(by=['image_year', 'doy'], inplace=True)
@@ -54,13 +53,13 @@ def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_betwee
                 #
                 # form a line using the adjacent points of the big jump:
                 #
-                x1, y1 = thyme_vec[jp_idx], Veg_indks[jp_idx]
-                x2, y2 = thyme_vec[jp_idx+2], Veg_indks[jp_idx+2]
+                x1, y1 = thyme_vec[jp_idx-1], Veg_indks[jp_idx-1]
+                x2, y2 = thyme_vec[jp_idx+1], Veg_indks[jp_idx+1]
                 m = (y2 - y1) / (x2 - x1) # slope
                 b = y2 - (m*x2)           # intercept
 
                 # replace the big jump with linear interpolation
-                Veg_indks[jp_idx+1] = m * thyme_vec[jp_idx+1] + b
+                Veg_indks[jp_idx] = m * thyme_vec[jp_idx] + b
 
     dataTS[given_col] = Veg_indks
 
