@@ -69,7 +69,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -88,7 +88,7 @@ import remote_sensing_core as rcp
 ####################################################################################
 
 indeks = sys.argv[1]
-# county = "Grant"
+county = "Grant"
 SF_year = 2017
 
 ########################################################################################
@@ -97,9 +97,19 @@ SF_year = 2017
 ###
 ########################################################################################
 
-f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
-
+f_name = "01_Regular_filledGap_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
+
+"""
+   The following three lines are written because we needed system_start_time
+   for linear interpolation. But we had missed that in the process of regularization.
+   So, we added them here, and we added this piece back into the regularization code as well.
+   So, we do not need them here anymore.
+"""
+# rc.convert_human_system_start_time_to_systemStart_time(an_EE_TS)
+# nn = data_dir + f_name
+# an_EE_TS.to_csv(nn, index = False)
+
 
 ########################################################################################
 
@@ -159,8 +169,8 @@ for a_poly in polygon_list:
 ###                   Write the outputs
 ###
 ####################################################################################
-                                       # county 
-out_name = output_dir + "00_noOutlier_" + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+                                         
+out_name = output_dir + "00_noOutlier_regular_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)

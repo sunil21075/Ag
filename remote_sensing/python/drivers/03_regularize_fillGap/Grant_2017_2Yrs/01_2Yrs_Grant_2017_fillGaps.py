@@ -163,6 +163,7 @@ for a_poly in polygon_list:
 
 
 output_df = rc.add_human_start_time_by_YearDoY(output_df)
+rc.convert_human_system_start_time_to_systemStart_time()
 ####################################################################################
 ###
 ###                   Write the outputs

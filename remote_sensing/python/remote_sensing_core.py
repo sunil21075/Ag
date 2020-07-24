@@ -211,6 +211,25 @@ def initial_clean(df, column_to_be_cleaned):
     return (dt_copy)
 
 
+def convert_human_system_start_time_to_systemStart_time(humantimeDF):
+    epoch_vec = pd.to_datetime(humantimeDF['human_system_start_time']).values.astype(np.int64) // 10 ** 6
+
+    # add 83000000 mili sec. since system_start_time is 1 day ahead of image_taken_time
+    # that is recorded in human_system_start_time column.
+    epoch_vec = epoch_vec + 83000000
+    humantimeDF['system_start_time'] = epoch_vec
+    """
+    not returning anything does the operation in place.
+    so, you have to use this function like
+    convert_human_system_start_time_to_systemStart_time(humantimeDF)
+
+    If you do:
+    humantimeDF = convert_human_system_start_time_to_systemStart_time(humantimeDF)
+    Then humantimeDF will be nothing, since we are not returning anything.
+    """
+
+
+
 def add_human_start_time_by_YearDoY(a_Reg_DF):
     """
     This function is written for regularized data 
