@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N NDVI_remove_outliers
+#PBS -N NDVI_Regular_2Yrs_w_jump
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs/error/NDVI_GapFill_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs/error/NDVI_GapFill_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_w_jump_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_w_jump_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,7 +29,7 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs
+cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -51,7 +51,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./00_2Yrs_Grant_2017_remove_outliers.py NDVI
+python3 ./00_2Yrs_Grant_2017_Regularize.py NDVI w_jump
 
 
 

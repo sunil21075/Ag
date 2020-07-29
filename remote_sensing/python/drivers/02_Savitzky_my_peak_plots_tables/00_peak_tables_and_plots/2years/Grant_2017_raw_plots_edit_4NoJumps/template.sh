@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N EVI_remove_outliers
+#PBS -N outer
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs/error/EVI_GapFill_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs/error/EVI_GapFill_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_2Yrs_raw_or_NoJump_Grant_2017/plots/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_2Yrs_raw_or_NoJump_Grant_2017/plots/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,7 +29,8 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/Grant_2017_2Yrs
+cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/00_2Yrs_raw_or_NoJump_Grant_2017/plots
+   
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -51,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./00_2Yrs_Grant_2017_remove_outliers.py EVI
+python3 ./d_2Yrs_raw_or_NoJump_Grant_SG_plots.py jumps indeks irrigated_only SF_year
 
 
 

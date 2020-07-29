@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N EVI_Gap_filling_2Yrs
+#PBS -N outer_merge_SF_year_indeks
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/EVI_GapFill_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/EVI_GapFill_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,7 +29,8 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs
+cd /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01
+   
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -51,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./01_2Yrs_Grant_2017_fillGaps.py EVI
+python3 ./02_2Yrs_merged_noJumps.py indeks SF_year
 
 
 

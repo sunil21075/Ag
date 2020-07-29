@@ -1,11 +1,9 @@
 ####
-#### July 23, 2020
+#### July 27, 2020
 ####
 
 """
-  remove outliers that are beyond -1 and 1 in NDVI and EVI.
-  Looking at 2017 data I did not see any NDVI beyond those boundaries. 
-  EVI had outliers only.
+  Regularize the EVI and NDVI of fields in Grant, 2017.
 """
 
 import csv
@@ -68,8 +66,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###                   Aeolus Directories
 ###
 ####################################################################################
-
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/00_outliers_removed/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -87,9 +84,13 @@ import remote_sensing_core as rcp
 ###
 ####################################################################################
 
-indeks = sys.argv[1]
+# indeks = sys.argv[1]
 # county = "Grant"
-SF_year = 2017
+# SF_year = 2017
+
+indeks = sys.argv[1]
+SF_year = sys.argv[2]
+county = sys.argv[3]
 
 ########################################################################################
 ###
@@ -97,19 +98,14 @@ SF_year = 2017
 ###
 ########################################################################################
 
-f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
-
+f_name = "00_noOutlier_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
 
 ########################################################################################
 
-# an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter Grant
-an_EE_TS['SF_year'] = SF_year
-
-########################################################################################
-
-output_dir = data_dir + "/outliers_removed/"
+output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/01_jumps_removed/"
 os.makedirs(output_dir, exist_ok=True)
+
 ########################################################################################
 
 if (indeks == "EVI"):
@@ -126,6 +122,9 @@ polygon_list = an_EE_TS['ID'].unique()
 print(len(polygon_list))
 
 ########################################################################################
+###
+###  initialize output data.
+###
 
 output_df = pd.DataFrame(data = None,
                          index = np.arange(an_EE_TS.shape[0]), 
@@ -147,21 +146,24 @@ for a_poly in polygon_list:
     # print(curr_field.shape)
     # print ("__________________________________________")
     ################################################################
-    no_Outlier_TS = rc.interpolate_outliers_EVI_NDVI(outlier_input = curr_field, given_col = indeks)
+
+    no_Outlier_TS = rc.correct_big_jumps_1DaySeries(dataTMS_jumpie = curr_field, 
+                                                    give_col = indeks, 
+                                                    maxjump_perDay = 0.015)
 
     output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
     counter += 1
     row_pointer += curr_field.shape[0]
 
 
+output_df = rc.add_human_start_time_by_YearDoY(output_df)
 ####################################################################################
 ###
 ###                   Write the outputs
 ###
 ####################################################################################
-                                       # county 
-out_name = output_dir + "00_noOutlier_" + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
+out_name = output_dir + "01_outlier_n_jump_removed_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

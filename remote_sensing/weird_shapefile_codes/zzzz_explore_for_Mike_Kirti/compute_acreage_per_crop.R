@@ -18,11 +18,11 @@ wsda_not_corrected_years <- readOGR(paste0(data_dir, "WSDACrop_all_crop_irrigati
 wsda_not_corrected_years <- wsda_not_corrected_years@data
 View(sort(unique(wsda_not_corrected_years$CropTyp)))
 
-counties_of_interes <- c("Whitman", "Asotin", "Garfield", 
-                         "Ferry", "Franklin", "Grant" ,  "Island",
-                         "Columbia", "Adams", "Walla Walla", "Benton", "Chelan", "Douglas",
-                         "Kittitas", "Klickitat", "Lincoln", "Okanogan", 
-                         "Pacific", "Pend Oreille", "Spokane" , "Stevens", "Whatcom", "Yakima")
+counties_of_interes <- c("Whitman", "Asotin", "Garfield", "Ferry",
+                         "Franklin", "Grant", "Island", "Columbia",
+                         "Adams", "Walla Walla", "Benton", "Chelan", "Douglas",
+                         "Kittitas", "Klickitat", "Lincoln", "Okanogan",
+                         "Pacific", "Pend Oreille", "Spokane", "Stevens", "Whatcom", "Yakima")
 
 wsda_not_corrected_years <- wsda_not_corrected_years %>% 
                             filter(county %in% counties_of_interes) %>% 

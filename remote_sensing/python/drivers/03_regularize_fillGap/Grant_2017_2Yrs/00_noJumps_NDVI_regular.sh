@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N EVI_Regular_2Yrs
+#PBS -N NDVI_Regular_2Yrs_noJumps
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/EVI_Regular_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/EVI_Regular_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_noJumps_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_noJumps_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -51,7 +51,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./00_2Yrs_Grant_2017_Regularize.py EVI
+python3 ./00_2Yrs_Grant_2017_Regularize.py NDVI noJumps
 
 
 

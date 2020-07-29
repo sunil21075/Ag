@@ -1,8 +1,10 @@
 ####
-#### July 3, 2020
+#### July 29, 2020
 ####
 
 """
+  This script was writte on Jul. 3 originally,
+  On July 29 I am modifying it so in inclues also jump-removed data.
   Regularize the EVI and NDVI of fields in Grant, 2017.
 """
 
@@ -66,8 +68,11 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###                   Aeolus Directories
 ###
 ####################################################################################
+            
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/70_cloud/"
+output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
+os.makedirs(output_dir, exist_ok=True)
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -86,27 +91,34 @@ import remote_sensing_core as rcp
 ####################################################################################
 
 indeks = sys.argv[1]
+jumps = sys.argv[2]
 county = "Grant"
 SF_year = 2017
 regular_window_size = 10
+########################################################################################
+###
+###                   updates based on wJumps or noJumps
+###
+########################################################################################
+if jumps == "noJumps":
+  data_dir = data_dir + "02_noOutlierNoJumpMerged/"
+  f_name = "Eastern_WA_SF_" + str(SF_year) + "_70cloud_" + indeks + ".csv"
+  output_dir = output_dir + "noJump_Regularized/"
+  os.makedirs(output_dir, exist_ok=True)
+else:
+  f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
+
 ########################################################################################
 ###
 ###                   process data
 ###
 ########################################################################################
 
-f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
-
-########################################################################################
 
 an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter Grant
 an_EE_TS['SF_year'] = SF_year
 
-########################################################################################
-
-output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
-os.makedirs(output_dir, exist_ok=True)
 ########################################################################################
 
 if (indeks == "EVI"):
@@ -166,7 +178,7 @@ for a_poly in polygon_list:
     ################################################################
     regularized_TS = rc.regularize_movingWindow_windowSteps_2Yrs(one_field_df = curr_field, \
                                                                  SF_yr = SF_year, \
-                                                                 idks = indeks, \
+                                                                 veg_idxs = indeks, \
                                                                  window_size = regular_window_size)
     # print(regularized_TS.shape)
 
@@ -182,7 +194,7 @@ for a_poly in polygon_list:
 ###
 ####################################################################################
 
-out_name = output_dir + "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+out_name = output_dir + "00_noJumpsRegularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

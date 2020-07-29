@@ -3,6 +3,8 @@
 ####
 
 """
+  This script was writte on Jul. 3 originally,
+  On July 29 I am modifying it so in inclues also jump-removed data.
   Regularize the EVI and NDVI of fields in Grant, 2017.
 """
 
@@ -154,7 +156,7 @@ for a_poly in polygon_list:
     # print(curr_field.shape)
     # print ("__________________________________________")
     ################################################################
-    curr_field = rc.fill_theGap_linearLine(curr_field, indeks = indeks, SF_year = 2017)
+    curr_field = rc.fill_theGap_linearLine(curr_field, V_idx = indeks, SF_year = 2017)
 
     ################################################################
     row_pointer = no_steps * counter

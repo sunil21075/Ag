@@ -1,9 +1,11 @@
 ####
-#### July 3, 2020
+#### July 23, 2020
 ####
 
 """
-  Regularize the EVI and NDVI of fields in Grant, 2017.
+  remove outliers that are beyond -1 and 1 in NDVI and EVI.
+  Looking at 2017 data I did not see any NDVI beyond those boundaries. 
+  EVI had outliers only.
 """
 
 import csv
@@ -67,7 +69,7 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -85,24 +87,48 @@ import remote_sensing_core as rcp
 ###
 ####################################################################################
 
+# county = "Grant"
+# SF_year = 2017
+
 indeks = sys.argv[1]
-county = "Grant"
-SF_year = 2017
-regular_window_size = 10
+SF_year = sys.argv[2]
+county = sys.argv[3]
+
+# do the following since walla walla has two parts and we have to use walla_walla in terminal
+county = county.replace("_", " ")
+print ("Terminal Arguments are: ")
+print (indeks)
+print (SF_year)
+print (county)
+
+print ("__________________________________________")
+
 ########################################################################################
 ###
 ###                   process data
 ###
 ########################################################################################
 
-f_name = "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
+
+print ("List of unique Counties are: ")
+print (an_EE_TS.county.unique())
 
 ########################################################################################
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
-os.makedirs(output_dir, exist_ok=True)
+an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter county
+an_EE_TS['SF_year'] = SF_year
 
+print ("Dimension of the data is: ")
+print (an_EE_TS.shape)
+print ("__________________________________________")
+
+
+########################################################################################
+
+output_dir = data_dir + "/00_outliers_removed/"
+os.makedirs(output_dir, exist_ok=True)
 ########################################################################################
 
 if (indeks == "EVI"):
@@ -116,29 +142,20 @@ an_EE_TS.head(2)
 ### List of unique polygons
 ###
 polygon_list = an_EE_TS['ID'].unique()
+
+print ("Number of unique fields is: ")
 print(len(polygon_list))
+print ("__________________________________________")
+
 
 ########################################################################################
-###
-###  initialize output data. all polygons in this case
-###  will have the same length. 
-###  9 steps in the first three months, followed by 36 points in the full year,
-###  9 months in the last year
-###
 
-reg_cols = an_EE_TS.columns
-
-no_days = 515
-regular_window_size = 10
-no_steps = int(no_days/regular_window_size)
-
-nrows = no_steps * len(polygon_list)
 output_df = pd.DataFrame(data = None,
-                         index = np.arange(nrows), 
-                         columns = reg_cols)
-########################################################################################
+                         index = np.arange(an_EE_TS.shape[0]), 
+                         columns = an_EE_TS.columns)
 
 counter = 0
+row_pointer = 0
 
 for a_poly in polygon_list:
     if (counter % 300 == 0):
@@ -147,29 +164,27 @@ for a_poly in polygon_list:
     ################################################################
     # Sort by DoY (sanitary check)
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
-    
     curr_field.reset_index(drop=True, inplace=True)
     
-    # print ("print(curr_field.shape)")
+    # print ("print(curr_field.shape")
     # print(curr_field.shape)
     # print ("__________________________________________")
     ################################################################
-    curr_field = rc.fill_theGap_linearLine(curr_field, indeks = indeks, SF_year = 2017)
+    no_Outlier_TS = rc.interpolate_outliers_EVI_NDVI(outlier_input = curr_field, given_col = indeks)
 
-    ################################################################
-    row_pointer = no_steps * counter
-    output_df[row_pointer: row_pointer + no_steps] = curr_field.values
+    output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
     counter += 1
+    row_pointer += curr_field.shape[0]
 
 
-output_df = rc.add_human_start_time_by_YearDoY(output_df)
 ####################################################################################
 ###
 ###                   Write the outputs
 ###
 ####################################################################################
+county = county.replace(" ", "_")
+out_name = output_dir + "00_noOutlier_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
-out_name = output_dir + "01_Regular_filledGap_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

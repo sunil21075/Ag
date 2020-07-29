@@ -28,7 +28,57 @@ from datetime import date
 #####
 ################################################################
 
-def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_between_points=20):
+def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.015):
+    """
+    in the function correct_big_jumps_preDefinedJumpDays(.) we have
+    to define the jump_amount and the no_days_between_points.
+    For example if we have a jump more than 0.4 in less than 20 dats, then
+    that is an outlier detected.
+    
+    Here we modify the approach to be flexible in the following sense:
+    if the amount of increase in NDVI is more than #_of_Days * 0.02 then 
+    an outlier is detected and we need interpolation.
+    
+    0.015 came from the SG based paper that used 0.4 jump in NDVI for 20 days.
+    That translates into 0.02 = 0.4 / 20 per day.
+    But we did choose 0.015 as default
+    """
+    dataTMS = dataTMS_jumpie.copy()
+    dataTMS = initial_clean(df = dataTMS, column_to_be_cleaned = give_col)
+
+    dataTMS.sort_values(by=['image_year', 'doy'], inplace=True)
+    dataTMS.reset_index(drop=True, inplace=True)
+    dataTMS['system_start_time'] = dataTMS['system_start_time'] / 1000
+
+    thyme_vec = dataTMS['system_start_time'].values.copy()
+    Veg_indks = dataTMS[give_col].values.copy()
+
+    time_diff = thyme_vec[1:] - thyme_vec[0:len(thyme_vec)-1]
+    time_diff_in_days = time_diff / 86400
+    time_diff_in_days = time_diff_in_days.astype(int)
+
+    Veg_indks_diff = Veg_indks[1:] - Veg_indks[0:len(thyme_vec)-1]
+    jump_indexes = np.where(Veg_indks_diff > maxjump_perDay)
+    jump_indexes = jump_indexes[0]
+
+    if len(jump_indexes) > 0:    
+        for jp_idx in jump_indexes:
+            if  Veg_indks_diff[jp_idx] >= (time_diff_in_days[jp_idx] * maxjump_perDay):
+                #
+                # form a line using the adjacent points of the big jump:
+                #
+                x1, y1 = thyme_vec[jp_idx-1], Veg_indks[jp_idx-1]
+                x2, y2 = thyme_vec[jp_idx+1], Veg_indks[jp_idx+1]
+                m = (y2 - y1) / (x2 - x1) # slope
+                b = y2 - (m*x2)           # intercept
+
+                # replace the big jump with linear interpolation
+                Veg_indks[jp_idx] = m * thyme_vec[jp_idx] + b
+
+    dataTMS[give_col] = Veg_indks
+    return(dataTMS)
+
+def correct_big_jumps_preDefinedJumpDays(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_between_points=20):
     dataTS = dataTS_jumpy.copy()
     dataTS = initial_clean(df = dataTS, column_to_be_cleaned = given_col)
 
@@ -44,7 +94,7 @@ def correct_big_jumps(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_betwee
     time_diff_in_days = time_diff_in_days.astype(int)
 
     Veg_indks_diff = Veg_indks[1:] - Veg_indks[0:len(thyme_vec)-1]
-    jump_indexes = np.where(Veg_indks_diff > 0.3)
+    jump_indexes = np.where(Veg_indks_diff > 0.4)
     jump_indexes = jump_indexes[0]
 
     if len(jump_indexes) > 0:    
@@ -247,6 +297,9 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
     datetime.datetime(2016, 1, 1) + datetime.timedelta(213 - 1)
     """
     DF_C = a_Reg_DF.copy()
+
+    # DF_C.image_year = DF_C.image_year.astype(float)
+    DF_C.doy = DF_C.doy.astype(int)
     DF_C['human_system_start_time'] = pd.to_datetime(DF_C['image_year'] * 1000 + DF_C['doy'], format='%Y%j')
 
     # DF_C.reset_index(drop=True, inplace=True)
