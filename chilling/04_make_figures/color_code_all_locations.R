@@ -158,8 +158,10 @@ for (begin in begins){
   ######****************************
   ################################## FEB
   ######****************************
-  quan_per_feb <- feb_result %>% group_by(warm_cold, time_period, scenario, thresh_range) %>% 
-                                 summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% data.table()
+  quan_per_feb <- feb_result %>% 
+                  group_by(warm_cold, time_period, scenario, thresh_range) %>% 
+                  summarise(quan_25 = quantile(frac_passed, probs = 0.25)) %>% 
+                  data.table()
 
   ######## COOLER
 

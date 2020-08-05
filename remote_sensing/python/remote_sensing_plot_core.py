@@ -30,6 +30,505 @@ import remote_sensing_core as rc
 #####                   Function definitions
 #####
 ################################################################
+
+def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4):
+    """
+    This function has additional part to plot SOS and EOS.
+    and it is updated version of the function savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(.)
+    """
+    crr_fld = dataAB.copy()
+    if (not("human_system_start_time" in list(crr_fld.columns))):
+        crr_fld = rc.add_human_start_time(crr_fld)
+
+    eleven_colors = ["gray", "lightcoral", "red", "peru",
+                     "darkorange", "gold", "olive", "green",
+                     "blue", "violet", "deepskyblue"]
+
+    plant = crr_fld['CropTyp'].unique()[0]
+    # Take care of names, replace "/" and "," and " " by "_"
+    plant = plant.replace("/", "_")
+    plant = plant.replace(",", "_")
+    plant = plant.replace(" ", "_")
+    plant = plant.replace("__", "_")
+
+    county = crr_fld['county'].unique()[0]
+    ID = crr_fld['ID'].unique()[0]
+
+    y = crr_fld[idx].copy()
+
+    #############################################
+    ###
+    ###             Smoothen
+    ###
+    #############################################
+    # differences are minor, but lets keep using Pythons function
+    # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
+    window_len = SG_params[0]
+    poly_order = SG_params[1]
+
+    SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
+
+
+    #############################################
+    ###
+    ###   Form a data table of X and Y values
+    ###
+    #############################################
+
+
+    if len(crr_fld['image_year'].unique()) == 2:
+        X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
+    elif len(crr_fld['image_year'].unique()) == 1:
+        X = crr_fld['doy']
+
+    d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
+    date_df = pd.DataFrame(data=d)
+
+    min_val_for_being_peak = 0.5
+
+    #############################################
+    ###
+    ###             find peaks scipy
+    ###
+    #############################################
+    """
+    distance : Required minimal horizontal distance (>= 1) in samples 
+               between neighbouring peaks. Smaller peaks are removed first 
+               until the condition is fulfilled for all remaining peaks.
+
+    This is gonna prevent detecting false peaks.
+    """
+
+    # scipy.signal.argrelextrema(SG_pred, np.greater)
+    peaks_indxs, all_properties = scipy.signal.find_peaks(x = SG_pred, 
+                                                          height = min_val_for_being_peak, 
+                                                          threshold = None, 
+                                                          distance = None, #  
+                                                          prominence = None, 
+                                                          width = None, 
+                                                          wlen = None, 
+                                                          rel_height = 0.5, 
+                                                          plateau_size=None)
+
+    scipy_SG_max_DoYs_series = X.iloc[peaks_indxs]
+    scipy_SG_max_series = pd.Series(all_properties['peak_heights'])
+
+    # keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    # plotting_dic = { keyy : [SG_pred, SG_max_DoYs_series, SG_max_series]}
+
+    #############################################
+    ###
+    ###             find troughs scipy
+    ###
+    #############################################
+
+    scipy_miminum_indexes = scipy.signal.argrelextrema(SG_pred, np.less)[0]
+    scipy_SG_min_DoYs_series = X.iloc[scipy_miminum_indexes]
+    scipy_SG_min_series = pd.Series(SG_pred[scipy_miminum_indexes])
+
+    #############################################
+    ###
+    ###  find peaks and troughs of MATLAB
+    ###
+    #############################################
+    my_SG_max_min = rc.my_peakdetect(y_axis = SG_pred, x_axis = X, delta=deltA);
+    my_SG_max =  my_SG_max_min[0]; my_SG_min =  my_SG_max_min[1];
+    my_SG_max = rc.separate_x_and_y(m_list = my_SG_max);
+    my_SG_min = rc.separate_x_and_y(m_list = my_SG_min);
+    my_SG_max_DoYs_series = pd.Series(my_SG_max[0]);
+    my_SG_max_series = pd.Series(my_SG_max[1]);
+    my_SG_min_DoYs_series = pd.Series(my_SG_min[0]);
+    my_SG_min_series = pd.Series(my_SG_min[1]);
+
+    #############################################
+    ###
+    ###      Form a dictionary for plotting
+    ###
+    #############################################
+
+    keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    plotting_dic = { keyy : [SG_pred, 
+
+                             scipy_SG_max_DoYs_series, scipy_SG_max_series, # Scipy peak and troughs
+                             scipy_SG_min_DoYs_series, scipy_SG_min_series,
+
+                             my_SG_max_DoYs_series, my_SG_max_series, # my peak and troughs
+                             my_SG_min_DoYs_series, my_SG_min_series,
+
+                            ]}
+
+    #############################################
+    ###
+    ###             plot
+    ###
+    #############################################
+
+    plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
+    ax.set_ylim([-1.15, 1.15])
+    # sb.set();
+
+    ax.scatter(date_df.Date.values, y.values, label="data", s=20, c='#E4D00A');
+
+    for co, ite in enumerate(plotting_dic):
+        lbl = ite + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
+
+        ############################################
+        #
+        # plot the SciPy outputs
+        #
+        ############################################
+        # plot the SciPy peaks
+        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = 'r');
+
+        # plot the SciPy troughs
+        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = 'r');
+
+        # anotate SciPy troughs
+        for min_count in np.arange(0, len(Scipy_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -1, 
+                    s = 'DoY=' + str(Scipy_date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+        # plot My peaks
+        my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
+        ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "#00CC99");
+
+        # plot My Troughs
+        My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
+        ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = '#00CC99');
+
+        # anotate My troughs
+        for min_count in np.arange(0, len(My_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = My_date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -1, 
+                    s = 'DoY=' + str(My_date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+
+    ###
+    ###   plot SOS and EOS
+    ###
+    # Update the EVI/NDVI values to the smoothed version.
+    crr_fld [idx] = SG_pred
+    crr_fld = rc.addToDF_SOS_EOS_White(pd_TS = crr_fld, 
+                                    VegIdx = idx, 
+                                    onset_thresh=0.5, offset_thresh=0.5)
+
+    SOS_EOS = crr_fld[crr_fld['SOS_EOS'] != 0]
+    ax.scatter(SOS_EOS['Date'], SOS_EOS['SOS_EOS'], marker='+', s=155, c='k')
+
+    # Plot ratios:
+    # ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='r', label="EVI Ratio")
+
+    ax.set_title(plot_title);
+    ax.set(ylabel=idx)
+    ax.legend(loc="best");
+
+
+def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SFYr, ax, deltA = 0.4, min_val_for_being_peak = 0.5):
+    
+    crr_fld = A_Data.copy()
+    if (not("human_system_start_time" in list(crr_fld.columns))):
+        crr_fld = rc.add_human_start_time(crr_fld)
+
+    eleven_colors = ["gray", "lightcoral", "red", "peru",
+                     "darkorange", "gold", "olive", "green",
+                     "blue", "violet", "deepskyblue"]
+
+    plant = crr_fld['CropTyp'].unique()[0]
+    # Take care of names, replace "/" and "," and " " by "_"
+    plant = plant.replace("/", "_")
+    plant = plant.replace(",", "_")
+    plant = plant.replace(" ", "_")
+    plant = plant.replace("__", "_")
+
+    county = crr_fld['county'].unique()[0]
+    ID = crr_fld['ID'].unique()[0]
+
+    y = crr_fld[idx]
+
+    #############################################
+    ###
+    ###             Smoothen
+    ###
+    #############################################
+    # differences are minor, but lets keep using Pythons function
+    # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
+    window_len = SG_params[0]
+    poly_order = SG_params[1]
+
+    SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
+
+    smooth_col_name = "smooth_" + idx
+    crr_fld[smooth_col_name] = SG_pred
+
+    #############################################
+    ###
+    ###   Form a data table of X and Y values
+    ###
+    #############################################
+
+    if len(crr_fld['image_year'].unique()) == 2:
+        X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
+    elif len(crr_fld['image_year'].unique()) == 1:
+        X = crr_fld['doy']
+
+    d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
+    date_df = pd.DataFrame(data=d)
+
+
+    #############################################
+    ###
+    ###             find peaks scipy
+    ###
+    #############################################
+    """
+    distance : Required minimal horizontal distance (>= 1) in samples 
+               between neighbouring peaks. Smaller peaks are removed first 
+               until the condition is fulfilled for all remaining peaks.
+
+    This is gonna prevent detecting false peaks.
+    """
+
+    # scipy.signal.argrelextrema(SG_pred, np.greater)
+    peaks_indxs, all_properties = scipy.signal.find_peaks(x = SG_pred, 
+                                                          height = min_val_for_being_peak, 
+                                                          threshold = None, 
+                                                          distance = None, #  
+                                                          prominence = None, 
+                                                          width = None, 
+                                                          wlen = None, 
+                                                          rel_height = 0.5, 
+                                                          plateau_size=None)
+
+    scipy_SG_max_DoYs_series = X.iloc[peaks_indxs]
+    scipy_SG_max_series = pd.Series(all_properties['peak_heights'])
+
+    # keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    # plotting_dic = { keyy : [SG_pred, SG_max_DoYs_series, SG_max_series]}
+
+    #############################################
+    ###
+    ###             find troughs scipy
+    ###
+    #############################################
+
+    scipy_miminum_indexes = scipy.signal.argrelextrema(SG_pred, np.less)[0]
+    scipy_SG_min_DoYs_series = X.iloc[scipy_miminum_indexes]
+    scipy_SG_min_series = pd.Series(SG_pred[scipy_miminum_indexes])
+
+    #############################################
+    ###
+    ###  find peaks and troughs of MATLAB
+    ###
+    #############################################
+    my_SG_max_min = rc.my_peakdetect(y_axis = SG_pred, x_axis = X, delta=deltA);
+    my_SG_max =  my_SG_max_min[0]; my_SG_min =  my_SG_max_min[1];
+    my_SG_max = rc.separate_x_and_y(m_list = my_SG_max);
+    my_SG_min = rc.separate_x_and_y(m_list = my_SG_min);
+    my_SG_max_DoYs_series = pd.Series(my_SG_max[0]);
+    my_SG_max_series = pd.Series(my_SG_max[1]);
+    my_SG_min_DoYs_series = pd.Series(my_SG_min[0]);
+    my_SG_min_series = pd.Series(my_SG_min[1]);
+
+    #############################################
+    ###
+    ###      Form a dictionary for plotting
+    ###
+    #############################################
+
+    keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    plotting_dic = { keyy : [SG_pred, 
+
+                             scipy_SG_max_DoYs_series, scipy_SG_max_series, # Scipy peak and troughs
+                             scipy_SG_min_DoYs_series, scipy_SG_min_series,
+
+                             my_SG_max_DoYs_series, my_SG_max_series, # my peak and troughs
+                             my_SG_min_DoYs_series, my_SG_min_series,
+
+                            ]}
+
+    #############################################
+    ###
+    ###             plot
+    ###
+    #############################################
+    
+    plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
+    ax.set_ylim([-1.15, 1.15])
+    # sb.set();
+
+    ax.scatter(date_df.Date.values, y.values, label="data", s=20, c='#E4D00A');
+
+    for co, ite in enumerate(plotting_dic):
+        lbl = ite + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
+
+        ############################################
+        #
+        # plot the SciPy outputs
+        #
+        ############################################
+        # plot the SciPy peaks
+        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
+
+        # plot the SciPy troughs
+        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
+
+        # anotate SciPy troughs
+        for min_count in np.arange(0, len(Scipy_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -1, 
+                    s = 'DoY=' + str(Scipy_date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+        # plot My peaks
+        my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
+        ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "r");
+
+        # plot My Troughs
+        My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
+        ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
+
+        # anotate My troughs
+        for min_count in np.arange(0, len(My_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = My_date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -1, 
+                    s = 'DoY=' + str(My_date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+    ax.set_title(plot_title);
+    ax.set(ylabel=idx)
+    ax.legend(loc="best");
+
+
+def savitzky_1yr_panels_clean_myPeak(crr_fld, idx, SG_params, SFYr, ax, deltA = 0.4):
+    """
+    Aug. 3
+    _clean_ means one smoothing method per subplot
+    In this plots we want to have figures that have 4 subplots in them,
+    each subplot corresponds to 1 set of parameters of SG. Delta will be set
+    to a given constant.
+    """
+
+    if (not("human_system_start_time" in list(crr_fld.columns))):
+        crr_fld = rc.add_human_start_time(crr_fld)
+
+    eleven_colors = ["gray", "lightcoral", "red", "peru",
+                     "darkorange", "gold", "olive", "green",
+                     "blue", "violet", "deepskyblue"]
+
+    plant = crr_fld['CropTyp'].unique()[0]
+    # Take care of names, replace "/" and "," and " " by "_"
+    plant = plant.replace("/", "_")
+    plant = plant.replace(",", "_")
+    plant = plant.replace(" ", "_")
+    plant = plant.replace("__", "_")
+    
+    county = crr_fld['county'].unique()[0]
+    ID = crr_fld['ID'].unique()[0]
+
+    y = crr_fld[idx]
+
+    #############################################
+    ###
+    ###             Smoothen
+    ###
+    #############################################
+    # differences are minor, but lets keep using Pythons function
+    # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
+    window_len = SG_params[0]
+    poly_order = SG_params[1]
+
+    SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
+    
+    #############################################
+    ###
+    ###             find peaks
+    ###
+    #############################################
+    if len(crr_fld['image_year'].unique()) == 2:
+        X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
+    elif len(crr_fld['image_year'].unique()) == 1:
+        X = crr_fld['doy']
+    
+
+    d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
+    date_df = pd.DataFrame(data=d)
+    
+    SG_max_min = rc.my_peakdetect(y_axis = SG_pred, x_axis = X, delta=deltA);
+    SG_max =  SG_max_min[0]; SG_min =  SG_max_min[1];
+    SG_max = rc.separate_x_and_y(m_list = SG_max);
+    SG_min = rc.separate_x_and_y(m_list = SG_min);
+    SG_max_DoYs_series = pd.Series(SG_max[0]);
+    SG_max_series = pd.Series(SG_max[1]);
+    SG_min_DoYs_series = pd.Series(SG_min[0]);
+    SG_min_series = pd.Series(SG_min[1]);
+
+    ########################################################################################################
+
+    keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    plotting_dic = { keyy : [SG_pred, SG_max_DoYs_series, SG_max_series, SG_min_DoYs_series, SG_min_series]}
+
+    #############################################
+    ###
+    ###             plot
+    ###
+    #############################################       
+    plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
+    ax.set_ylim([-1.15, 1.15])
+    # sb.set();
+    
+    ax.scatter(date_df.Date.values, y.values, label="data", s = 30);
+
+    for co, ite in enumerate(plotting_dic):
+        lbl = ite + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        # ax.plot(X, plotting_dic[ite][0], label = lbl, c = eleven_colors[co])
+        
+        ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
+
+        # plot the peaks
+        date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
+        ax.scatter(date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker=4, c = 'r');
+        #
+        # plot the troughs
+        #
+        date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
+        ax.scatter(date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker=4, c = 'r');
+
+        ################################################
+        #
+        # anotate troughs
+        #
+        ################################################
+
+        # Setting up the parameters 
+        for min_count in np.arange(0, len(date_df_specific)):
+        # for currIDX in date_df_specific.index:
+            # xdata = date_df_specific.loc[currIDX, 'DoY']
+            # ydata = date_df_specific.loc[currIDX, 'Date']
+            
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -1, 
+                    s = 'DoY=' + str(date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+    ax.set_title(plot_title);
+    ax.set(ylabel=idx)
+    ax.legend(loc="best");
+
+
 def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
 
     if (not("human_system_start_time" in list(crr_fld.columns))):
@@ -232,7 +731,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
     #   We have to change this part to make a perfect plot
     #        
     plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
-    ax.set_ylim([-1.7, 1.7])
+    ax.set_ylim([-1.2, 1.2])
     # sb.set();
     
     # fucking Aeolus throws error. TypeError: invalid type promotion

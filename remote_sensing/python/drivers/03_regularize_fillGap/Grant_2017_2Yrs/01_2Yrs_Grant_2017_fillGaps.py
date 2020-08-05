@@ -69,7 +69,10 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###
 ####################################################################################
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
+data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
+output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
+os.makedirs(output_dir, exist_ok=True)
+
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -86,26 +89,31 @@ import remote_sensing_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
-
 indeks = sys.argv[1]
+jumps = sys.argv[2]
 county = "Grant"
 SF_year = 2017
 regular_window_size = 10
+########################################################################################
+###
+###                   updates based on wJumps or noJumps
+###
+########################################################################################
+if jumps == "noJumps":
+  data_dir = data_dir + "noJump_Regularized/"
+  f_name = "00_noJumpsRegularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+  output_dir = output_dir + "noJump_Regularized/"
+  os.makedirs(output_dir, exist_ok=True)
+else:
+  f_name = "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+
 ########################################################################################
 ###
 ###                   process data
 ###
 ########################################################################################
 
-f_name = "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
-
-########################################################################################
-
-output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/2Yrs/"
-os.makedirs(output_dir, exist_ok=True)
-
-########################################################################################
 
 if (indeks == "EVI"):
     an_EE_TS = rc.initial_clean_EVI(an_EE_TS)

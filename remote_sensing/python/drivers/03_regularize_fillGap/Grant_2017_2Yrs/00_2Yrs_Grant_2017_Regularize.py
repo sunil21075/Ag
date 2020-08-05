@@ -194,6 +194,11 @@ for a_poly in polygon_list:
 ###
 ####################################################################################
 
+output_df['human_system_start_time'] = pd.to_datetime(output_df['image_year'] * 1000 + \
+                                                      output_df['doy'], format='%Y%j')
+
+output_df['Date'] = pd.to_datetime(output_df.human_system_start_time.values).values
+
 out_name = output_dir + "00_noJumpsRegularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)

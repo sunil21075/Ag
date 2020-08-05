@@ -27,6 +27,47 @@ from datetime import date
 #####                   Function definitions
 #####
 ################################################################
+def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.5, offset_thresh=0.5):
+    """
+    In this methods the NDVI_Ratio = (NDVI - NDVI_min) / (NDVI_Max - NDVI_min)
+    is computed.
+    
+    SOS or onset is when NDVI_ratio exceeds onset-threshold
+    and EOS is when NDVI_ratio drops below off-set-threshold.
+    """
+    pandaFrame = pd_TS.copy()
+    
+    VegIdx_min = pandaFrame[VegIdx].min()
+    VegIdx_max = pandaFrame[VegIdx].max()
+    VegRange = VegIdx_max - VegIdx_min + sys.float_info.epsilon
+    
+    colName = VegIdx + "_ratio"
+    pandaFrame[colName] = (pandaFrame[VegIdx] - VegIdx_min) / VegRange
+    
+    SOS_EOS_candidates = pandaFrame[colName] - onset_thresh
+
+    asign = np.sign(SOS_EOS_candidates.values) # we can drop .values here.
+    sign_change = ((np.roll(asign, 1) - asign) != 0).astype(int)
+
+    """
+    np.sign considers 0 to have it's own sign, 
+    different from either positive or negative values.
+    So: 
+    """
+    sz = asign == 0
+    while sz.any():
+        asign[sz] = np.roll(asign, 1)[sz]
+        sz = asign == 0
+
+    """
+    numpy.roll does a circular shift, so if the last 
+    element has different sign than the first, 
+    the first element in the sign_change array will be 1.
+    """
+    sign_change[0] = 0
+    pandaFrame['SOS_EOS'] = sign_change * pandaFrame[VegIdx]
+    return(pandaFrame)
+
 
 def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.015):
     """
@@ -541,7 +582,7 @@ def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
     X_values_prev_year = regularized_TS[regularized_TS.image_year == (SF_yr - 1)]['doy'].copy().values
     X_values_full_year = regularized_TS[regularized_TS.image_year == (SF_yr)]['doy'].copy().values
 
-    if check_leap_year(SF_yr-1):
+    if check_leap_year(SF_yr - 1):
         X_values_full_year = X_values_full_year + 366
     else:
         X_values_full_year = X_values_full_year + 365

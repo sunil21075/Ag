@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N regularized_2Yrs_plot_outer
+#PBS -N regular_jumps_jump_plt_outer
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regularized_Grant_SG_plots.py indeks irrigated_only SF_year
+python3 ./d_2Yrs_regularized_Grant_SG_plots.py jumps indeks irrigated_only SF_year
 
 
 
