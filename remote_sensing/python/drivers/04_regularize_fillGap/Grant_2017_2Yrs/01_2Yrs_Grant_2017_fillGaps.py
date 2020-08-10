@@ -1,8 +1,10 @@
 ####
-#### July 27, 2020
+#### July 3, 2020
 ####
 
 """
+  This script was writte on Jul. 3 originally,
+  On July 29 I am modifying it so in inclues also jump-removed data.
   Regularize the EVI and NDVI of fields in Grant, 2017.
 """
 
@@ -66,7 +68,11 @@ sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 ###                   Aeolus Directories
 ###
 ####################################################################################
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/00_outliers_removed/"
+
+data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
+output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
+os.makedirs(output_dir, exist_ok=True)
+
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ####################################################################################
@@ -83,14 +89,23 @@ import remote_sensing_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
-
-# indeks = sys.argv[1]
-# county = "Grant"
-# SF_year = 2017
-
 indeks = sys.argv[1]
-SF_year = sys.argv[2]
-county = sys.argv[3]
+jumps = sys.argv[2]
+county = "Grant"
+SF_year = 2017
+regular_window_size = 10
+########################################################################################
+###
+###                   updates based on wJumps or noJumps
+###
+########################################################################################
+if jumps == "noJumps":
+  data_dir = data_dir + "noJump_Regularized/"
+  f_name = "00_noJumpsRegularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+  output_dir = output_dir + "noJump_Regularized/"
+  os.makedirs(output_dir, exist_ok=True)
+else:
+  f_name = "00_Regularized_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 ########################################################################################
 ###
@@ -98,15 +113,7 @@ county = sys.argv[3]
 ###
 ########################################################################################
 
-f_name = "00_noOutlier_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
-
-########################################################################################
-
-output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/01_jumps_removed/"
-os.makedirs(output_dir, exist_ok=True)
-
-########################################################################################
 
 if (indeks == "EVI"):
     an_EE_TS = rc.initial_clean_EVI(an_EE_TS)
@@ -123,15 +130,25 @@ print(len(polygon_list))
 
 ########################################################################################
 ###
-###  initialize output data.
+###  initialize output data. all polygons in this case
+###  will have the same length. 
+###  9 steps in the first three months, followed by 36 points in the full year,
+###  9 months in the last year
 ###
 
+reg_cols = an_EE_TS.columns
+
+no_days = 515
+regular_window_size = 10
+no_steps = int(no_days/regular_window_size)
+
+nrows = no_steps * len(polygon_list)
 output_df = pd.DataFrame(data = None,
-                         index = np.arange(an_EE_TS.shape[0]), 
-                         columns = an_EE_TS.columns)
+                         index = np.arange(nrows), 
+                         columns = reg_cols)
+########################################################################################
 
 counter = 0
-row_pointer = 0
 
 for a_poly in polygon_list:
     if (counter % 300 == 0):
@@ -140,30 +157,30 @@ for a_poly in polygon_list:
     ################################################################
     # Sort by DoY (sanitary check)
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
+    
     curr_field.reset_index(drop=True, inplace=True)
     
-    # print ("print(curr_field.shape")
+    # print ("print(curr_field.shape)")
     # print(curr_field.shape)
     # print ("__________________________________________")
     ################################################################
+    curr_field = rc.fill_theGap_linearLine(curr_field, V_idx = indeks, SF_year = 2017)
 
-    no_Outlier_TS = rc.correct_big_jumps_1DaySeries(dataTMS_jumpie = curr_field, 
-                                                    give_col = indeks, 
-                                                    maxjump_perDay = 0.015)
-
-    output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
+    ################################################################
+    row_pointer = no_steps * counter
+    output_df[row_pointer: row_pointer + no_steps] = curr_field.values
     counter += 1
-    row_pointer += curr_field.shape[0]
 
 
 output_df = rc.add_human_start_time_by_YearDoY(output_df)
+rc.convert_human_system_start_time_to_systemStart_time(output_df)
 ####################################################################################
 ###
 ###                   Write the outputs
 ###
 ####################################################################################
 
-out_name = output_dir + "01_outlier_n_jump_removed_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+out_name = output_dir + "01_Regular_filledGap_" + county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 os.makedirs(output_dir, exist_ok=True)
 output_df.to_csv(out_name, index = False)
 

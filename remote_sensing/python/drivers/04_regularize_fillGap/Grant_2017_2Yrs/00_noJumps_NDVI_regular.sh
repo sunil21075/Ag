@@ -4,19 +4,19 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N outer_jumps_county_SF_year
+#PBS -N NDVI_Regular_2Yrs_noJumps
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
-#PBS -l mem=10gb
+#PBS -l mem=60gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
 
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/01_remove_jumps/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/01_remove_jumps/error/outer_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_noJumps_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_Regular_noJumps_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,8 +29,7 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/01_remove_jumps
-   
+cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -52,7 +51,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./01_2Yrs_remove_jumps.py indeks SF_year county
+python3 ./00_2Yrs_Grant_2017_Regularize.py NDVI noJumps
 
 
 

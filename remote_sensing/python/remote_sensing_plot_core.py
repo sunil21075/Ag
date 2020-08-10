@@ -31,7 +31,7 @@ import remote_sensing_core as rc
 #####
 ################################################################
 
-def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4):
+def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4, onset_cut=0.5, offset_cut=0.5):
     """
     This function has additional part to plot SOS and EOS.
     and it is updated version of the function savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(.)
@@ -68,13 +68,11 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
 
     SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
 
-
     #############################################
     ###
     ###   Form a data table of X and Y values
     ###
     #############################################
-
 
     if len(crr_fld['image_year'].unique()) == 2:
         X = rc.extract_XValues_of_2Yrs_TS(crr_fld, SF_yr = SFYr)
@@ -180,11 +178,11 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
         ############################################
         # plot the SciPy peaks
         Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
-        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = 'r');
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
 
         # plot the SciPy troughs
         Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
-        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = 'r');
+        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
 
         # anotate SciPy troughs
         for min_count in np.arange(0, len(Scipy_date_df_specific)):
@@ -196,11 +194,11 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
 
         # plot My peaks
         my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
-        ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "#00CC99");
+        ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "r");
 
         # plot My Troughs
         My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
-        ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = '#00CC99');
+        ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
 
         # anotate My troughs
         for min_count in np.arange(0, len(My_date_df_specific)):
@@ -217,14 +215,51 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     # Update the EVI/NDVI values to the smoothed version.
     crr_fld [idx] = SG_pred
     crr_fld = rc.addToDF_SOS_EOS_White(pd_TS = crr_fld, 
-                                    VegIdx = idx, 
-                                    onset_thresh=0.5, offset_thresh=0.5)
+                                       VegIdx = idx, 
+                                       onset_thresh = onset_cut, 
+                                       offset_thresh = offset_cut)
 
-    SOS_EOS = crr_fld[crr_fld['SOS_EOS'] != 0]
-    ax.scatter(SOS_EOS['Date'], SOS_EOS['SOS_EOS'], marker='+', s=155, c='k')
+    ##
+    ##  Kill bad detected seasons 
+    ##
+    crr_fld = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = crr_fld, min_season_length=60)
+
+    #
+    #  Start of the season
+    #
+    SOS = crr_fld[crr_fld['SOS'] != 0]
+    ax.scatter(SOS['Date'], SOS['SOS'], marker='+', s=155, c='k')
+
+    # anotate  EOS
+    for ii in np.arange(0, len(SOS)):
+        style = dict(size=10, color='grey', rotation='vertical')
+        ax.text(x = SOS.iloc[ii]['Date'].date(), 
+                y = -1, 
+                s = 'DoY=' + str(SOS.iloc[ii]['doy']), 
+                **style)
+
+    #
+    #  End of the season
+    #
+
+    EOS = crr_fld[crr_fld['EOS'] != 0]
+    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='k')
+
+    # anotate EOS
+    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='k')
+    for ii in np.arange(0, len(EOS)):
+        style = dict(size=10, color='grey', rotation='vertical')
+        ax.text(x = EOS.iloc[ii]['Date'].date(), 
+                y = -1, 
+                s = 'DoY=' + str(EOS.iloc[ii]['doy']), 
+                **style)
 
     # Plot ratios:
     # ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='r', label="EVI Ratio")
+
+    ax.axhline(0 , color = 'r')
+    ax.axhline(1 , color = 'r')
+    ax.axhline(-1, color = 'r')
 
     ax.set_title(plot_title);
     ax.set(ylabel=idx)

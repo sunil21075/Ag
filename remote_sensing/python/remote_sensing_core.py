@@ -27,7 +27,89 @@ from datetime import date
 #####                   Function definitions
 #####
 ################################################################
-def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.5, offset_thresh=0.5):
+
+def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=60):
+    """
+    input: pd_TS is a pandas dataframe
+           it includes a column SOS and a column EOS
+
+    output: create a vector that measures distance between DoY 
+    of an SOS and corresponding EOS.
+
+    It is possible that the number of one of the SOS and EOS is
+    different from the other. (perhaps just by 1)
+
+    So, we need to keep that in mind.
+    """
+    pd_TS_DoYDiff = pd_TS.copy()
+
+    # find indexes of SOS and EOS
+    SOS_indexes = pd_TS_DoYDiff.index[pd_TS_DoYDiff['SOS'] != 0].tolist()
+    EOS_indexes = pd_TS_DoYDiff.index[pd_TS_DoYDiff['EOS'] != 0].tolist()
+
+    """
+    First we need to fix the prolems such as having 2 SOS and only 1 EOS, or,
+                                                    2 EOS and only 1 SOS, or,
+    it is possible that number of SOSs and number of EOSs are identical,
+    but the plot starts with EOS and ends with SOS.
+
+    It is also possible that first EOS is ealier than first SOS.
+
+    """
+    #
+    # Check if first EOS is less than first SOS
+    #
+    SOS_pointer = SOS_indexes[0]
+    EOS_pointer = EOS_indexes[0]
+    if (pd_TS_DoYDiff.loc[EOS_pointer, 'Date'] < pd_TS_DoYDiff.loc[SOS_pointer, 'Date']):
+        
+        # Remove the false EOS from dataFrame
+        pd_TS_DoYDiff.loc[EOS_pointer, 'EOS'] = 0
+        
+        # remove the first element of EOS indexes
+        EOS_indexes.pop(0)
+
+    #
+    # Check if last SOS is greater than last EOS
+    #
+    SOS_pointer = SOS_indexes[-1]
+    EOS_pointer = EOS_indexes[-1]
+    if (pd_TS_DoYDiff.loc[EOS_pointer, 'Date'] < pd_TS_DoYDiff.loc[SOS_pointer, 'Date']):
+        
+        # Remove the false EOS from dataFrame
+        pd_TS_DoYDiff.loc[SOS_pointer, 'EOS'] = 0
+        
+        # remove the first element of EOS indexes
+        EOS_indexes.pop()
+    
+    if len(SOS_indexes) != len(EOS_indexes):
+        #
+        # in this case we have an extra SOS (at the end) or EOS (at the beginning)
+        #
+        raise ValueError("SOS and EOS are not of the same length.")
+
+    """
+    Go through seasons and invalidate them in their length is too short
+    """
+    for ii in np.arange(len(SOS_indexes)):
+        SOS_pointer = SOS_indexes[ii]
+        EOS_pointer = EOS_indexes[ii]
+        
+        current_growing_season_Length = (pd_TS_DoYDiff.loc[EOS_pointer, 'Date'] - \
+                                         pd_TS_DoYDiff.loc[SOS_pointer, 'Date']).days
+
+
+        #
+        #  Kill/invalidate the SOS and EOS if growing season length is too short
+        #
+        if current_growing_season_Length < min_season_length:
+            pd_TS_DoYDiff.loc[SOS_pointer, 'SOS'] = 0
+            pd_TS_DoYDiff.loc[EOS_pointer, 'EOS'] = 0
+        
+    return(pd_TS_DoYDiff)
+
+
+def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.15, offset_thresh=0.15):
     """
     In this methods the NDVI_Ratio = (NDVI - NDVI_min) / (NDVI_Max - NDVI_min)
     is computed.
@@ -43,10 +125,50 @@ def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.5, offset_thresh
     
     colName = VegIdx + "_ratio"
     pandaFrame[colName] = (pandaFrame[VegIdx] - VegIdx_min) / VegRange
-    
-    SOS_EOS_candidates = pandaFrame[colName] - onset_thresh
 
-    asign = np.sign(SOS_EOS_candidates.values) # we can drop .values here.
+    # if (onset_thresh == offset_thresh):
+    #     SOS_EOS_candidates = pandaFrame[colName] - onset_thresh
+    #     sign_change = find_signChange_locs_EqualOnOffset(SOS_EOS_candidates.values)
+    # else:
+    #     SOS_candidates = pandaFrame[colName] - onset_thresh
+    #     EOS_candidates = offset_thresh - pandaFrame[colName]
+    #     sign_change = find_signChange_locs_DifferentOnOffset(SOS_candidates.values, EOS_candidates.values)
+    # pandaFrame['SOS_EOS'] = sign_change * pandaFrame[VegIdx]
+    
+    SOS_candidates = pandaFrame[colName] - onset_thresh
+    EOS_candidates = offset_thresh - pandaFrame[colName]
+
+    BOS, EOS = find_signChange_locs_DifferentOnOffset(SOS_candidates, EOS_candidates)
+    pandaFrame['SOS'] = BOS * pandaFrame[VegIdx]
+    pandaFrame['EOS'] = EOS * pandaFrame[VegIdx]
+
+    return(pandaFrame)
+
+def find_signChange_locs_DifferentOnOffset(SOS_candids, EOS_candids):
+    if type(SOS_candids) != np.ndarray:
+        SOS_candids = SOS_candids.values
+
+    if type(EOS_candids) != np.ndarray:
+        EOS_candids = EOS_candids.values
+
+    SOS_sign_change = np.zeros(len(SOS_candids))
+    EOS_sign_change = np.zeros(len(EOS_candids))
+
+    pointer = 0
+    for pointer in np.arange(0, len(SOS_candids)-1):
+        if SOS_candids[pointer] < 0:
+            if SOS_candids[pointer+1] > 0:
+                SOS_sign_change[pointer+1] = 1
+
+        if EOS_candids[pointer] < 0:
+            if EOS_candids[pointer+1] > 0:
+                EOS_sign_change[pointer+1] = 1
+
+    # sign_change = SOS_sign_change + EOS_sign_change
+    return (SOS_sign_change, EOS_sign_change) # sign_change
+
+def find_signChange_locs_EqualOnOffset(a_vec):
+    asign = np.sign(a_vec) # we can drop .values here.
     sign_change = ((np.roll(asign, 1) - asign) != 0).astype(int)
 
     """
@@ -65,9 +187,14 @@ def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.5, offset_thresh
     the first element in the sign_change array will be 1.
     """
     sign_change[0] = 0
-    pandaFrame['SOS_EOS'] = sign_change * pandaFrame[VegIdx]
-    return(pandaFrame)
 
+    """
+    # Another solution for sign change:
+    np.where(np.diff(np.sign(Vector)))[0]
+    np.where(np.diff(np.sign(Vector)))[0]
+    """
+
+    return(sign_change)
 
 def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.015):
     """
@@ -170,7 +297,7 @@ def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
     outlier_df.sort_values(by=['image_year', 'doy'], inplace=True)
     outlier_df.reset_index(drop=True, inplace=True)
     
-    # First block
+    # 1st block
     time_vec = outlier_df['system_start_time'].values.copy()
     vec = outlier_df[given_col].values.copy()
     
@@ -246,7 +373,6 @@ def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
             intercept = y2 - (slope * x2)
             vec[left_pointer+1:right_pointer] = slope * time_vec[left_pointer+1:right_pointer] + intercept
     
-    
     outlier_df[given_col] = vec
     return (outlier_df)
 
@@ -300,7 +426,6 @@ def initial_clean(df, column_to_be_cleaned):
 
     return (dt_copy)
 
-
 def convert_human_system_start_time_to_systemStart_time(humantimeDF):
     epoch_vec = pd.to_datetime(humantimeDF['human_system_start_time']).values.astype(np.int64) // 10 ** 6
 
@@ -317,8 +442,6 @@ def convert_human_system_start_time_to_systemStart_time(humantimeDF):
     humantimeDF = convert_human_system_start_time_to_systemStart_time(humantimeDF)
     Then humantimeDF will be nothing, since we are not returning anything.
     """
-
-
 
 def add_human_start_time_by_YearDoY(a_Reg_DF):
     """
@@ -353,7 +476,6 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
     #     DF_C.loc[row_no, 'human_system_start_time'] = x
 
     return(DF_C)
-
 
 def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, veg_idxs, window_size=10):
     #
@@ -486,7 +608,6 @@ def add_human_start_time(HDF):
     HDF["human_system_start_time"] = human_time_array
     return(HDF)
 
-
 def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
 
     a_regularized_TS = regular_TS.copy()
@@ -565,7 +686,6 @@ def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
     a_regularized_TS[V_idx] = TS_array
     return (a_regularized_TS)
 
-
 def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
     # old name extract_XValues_of_RegularizedTS_2Yrs().
     # I do not know why I had Regularized in it.
@@ -587,7 +707,6 @@ def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
     else:
         X_values_full_year = X_values_full_year + 365
     return (np.concatenate([X_values_prev_year, X_values_full_year]))
-
 
 def extract_XValues_of_3Yrs_TS(regularized_TS, SF_yr):
     # old name extract_XValues_of_RegularizedTS_3Yrs().
@@ -619,7 +738,6 @@ def extract_XValues_of_3Yrs_TS(regularized_TS, SF_yr):
     
     return (np.concatenate([X_values_prev_year, X_values_full_year, X_values_next_year]))
 
-
 def check_leap_year(year):
     if (year % 4) == 0:
         if (year % 100) == 0:
@@ -631,7 +749,6 @@ def check_leap_year(year):
             return (True)
     else:
         return (False)
-
 
 def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, V_idks, window_size=10):
     #
@@ -834,8 +951,6 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, V_idxs, wi
         
     return (regular_df)
 
-
-
 def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
     """
     This function moves the window by a step size of window_size.
@@ -859,8 +974,6 @@ def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
         output[count] = max(curr_window)
     return(output)
 
-
-
 def max_movingWindow_1Steps(VI_TS_npArray, window_size):
     """
     This function moves the window by a step size of 1.
@@ -879,7 +992,6 @@ def max_movingWindow_1Steps(VI_TS_npArray, window_size):
         output[count] = max(VI_TS_npArray[window_start : window_end])
     return(output)
 
-
 def find_difference_date_by_systemStartTime(earlier_day_epoch, later_day_epoch):
     #
     #  Given two epoch time, find the difference between them in number of days
@@ -895,7 +1007,6 @@ def correct_timeColumns_dataTypes(dtf):
     dtf = dtf.astype({'doy': 'int', 'image_year': 'int'})
     return(dtf)
 
-
 def divide_double_nonDouble_peaks(dt_dt):
     
     # subset the double-peaked
@@ -905,7 +1016,6 @@ def divide_double_nonDouble_peaks(dt_dt):
     not_double_peaked = dt_dt[dt_dt["peak_count"] != 2.0 ].copy()
 
     return (double_peaked, not_double_peaked)
-
 
 def divide_double_nonDouble_by_notes(dt_d):
     dt_copy = dt_d.copy()
@@ -927,8 +1037,6 @@ def divide_double_nonDouble_by_notes(dt_d):
 
     return (double_cropped, not_double_cropped)
 
-
-
 def filter_double_by_Notes(dt_d):
     dt_copu = dt_d.copy()
     # convert NaN and NAs to string so we can subset/index 
@@ -944,7 +1052,6 @@ def filter_double_by_Notes(dt_d):
     double_cropped = dt_copu[dt_copu["Notes"].str.contains("double")]
 
     return (double_cropped)
-
 
 def filter_Notdouble_by_Notes(dt_d):
     dt_CD = dt_d.copy()
@@ -974,7 +1081,6 @@ def filter_by_lastSurvey(dt_df_su, year):
     dt_surv = dt_df_su.copy()
     dt_surv = dt_surv[dt_surv['LstSrvD'].str.contains(str(year))]
     return dt_surv
-
 
 def filter_out_nonIrrigated(dt_df_irr):
     dt_irrig = dt_df_irr.copy()
@@ -1251,7 +1357,6 @@ def peakdetect(y_axis, x_axis = None, lookahead=10, delta=0):
         
     return [max_peaks, min_peaks]
 
-
 def my_peakdetect(y_axis, x_axis=None, delta=0):
     # 
     # This actually is the conversion of the MATLAB code whose link
@@ -1339,8 +1444,6 @@ def Kirti_maxMin(y, x, half_window = 3, delta=0.2):
                 mintab.append([x[pos], curr_y])
     return [maxtab, mintab]
 
-
-
 def form_xs_ys_from_peakdetect(max_peak_list, doy_vect):
     dd = np.array(doy_vect)
     xs = np.zeros(len(max_peak_list))
@@ -1364,7 +1467,6 @@ def keep_WSDA_columns(dt_dt):
     dt_dt = dt_dt[needed_columns]
     return dt_dt
 
-
 def convert_TS_to_a_row(a_dt):
     a_dt = keep_WSDA_columns(a_dt)
     a_dt = a_dt.drop_duplicates()
@@ -1380,8 +1482,6 @@ def save_matlab_matrix(filename, matDict):
     except:
         print("ERROR: could not write matrix file " + filename)
 
-
-
 def separate_x_and_y(m_list):
     #
     #  input is a list whose elements are arrays of size 2: (DoY, peak)
@@ -1396,7 +1496,6 @@ def separate_x_and_y(m_list):
         peaks_vec[counter] = entry[1]
         counter += 1
     return (DoY_vec, peaks_vec)
-
 
 def generate_peak_df(an_EE_TS):
     
