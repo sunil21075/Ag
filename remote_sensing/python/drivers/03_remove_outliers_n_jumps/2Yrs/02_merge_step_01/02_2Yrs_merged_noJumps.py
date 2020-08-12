@@ -61,20 +61,6 @@ start_time = time.time()
 
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
-####################################################################################
-###
-###                   Aeolus Directories
-###
-####################################################################################
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/01_jumps_removed/"
-param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-
-####################################################################################
-###
-###                   Import remote cores
-###
-####################################################################################
-
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
@@ -86,10 +72,18 @@ import remote_sensing_core as rcp
 
 indeks = sys.argv[1]
 SF_year = sys.argv[2]
+cloud_type = sys.argv[3]
 
-########################################################################################
+####################################################################################
+###
+###                   Aeolus Directories
+###
+####################################################################################
+param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
-output_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/02_noOutlierNoJumpMerged/"
+data_base = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/" + cloud_type + "/"
+data_dir = data_base + "/01_jumps_removed/"
+output_dir = data_base + "/02_noOutlierNoJumpMerged/"
 os.makedirs(output_dir, exist_ok=True)
 
 ########################################################################################

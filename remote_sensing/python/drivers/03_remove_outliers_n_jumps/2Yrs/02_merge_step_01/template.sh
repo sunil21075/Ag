@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N outer_merge_SF_year_indeks
+#PBS -N outer_merge_SF_year_indeks_cloud_type
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/03_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/03_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,7 +29,7 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/04_remove_outliers_n_jumps/2Yrs/02_merge_step_01
+cd /home/hnoorazar/remote_sensing_codes/03_remove_outliers_n_jumps/2Yrs/02_merge_step_01
    
 
 # ----------------------------------------------------------------
@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./02_2Yrs_merged_noJumps.py indeks SF_year
+python3 ./02_2Yrs_merged_noJumps.py indeks SF_year cloud_type
 
 
 

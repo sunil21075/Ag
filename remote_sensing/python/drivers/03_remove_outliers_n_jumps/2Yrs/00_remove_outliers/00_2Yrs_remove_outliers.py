@@ -115,7 +115,10 @@ else:
 
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
 
-print ("List of unique Counties are: ")
+print ("data_dir is ")
+print (data_dir)
+
+print ("List of unique counties is: ")
 print (an_EE_TS.county.unique())
 
 ########################################################################################
@@ -127,7 +130,7 @@ print ("Dimension of the data is: ")
 print (an_EE_TS.shape)
 print ("__________________________________________")
 
-print ("List of unique Counties are: ")
+print ("List of unique counties is: ")
 print (an_EE_TS.county.unique())
 
 ########################################################################################
@@ -136,12 +139,10 @@ output_dir = data_dir + "/00_outliers_removed/"
 os.makedirs(output_dir, exist_ok=True)
 ########################################################################################
 
-if (indeks == "EVI"):
-    an_EE_TS = rc.initial_clean_EVI(an_EE_TS)
-else:
-    an_EE_TS = rc.initial_clean_NDVI(an_EE_TS)
+an_EE_TS = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned = indeks)
+print ("After initial cleaning we have: ")
+print (an_EE_TS.shape)
 
-an_EE_TS.head(2)
 
 ###
 ### List of unique polygons
@@ -177,9 +178,15 @@ for a_poly in polygon_list:
     ################################################################
     no_Outlier_TS = rc.interpolate_outliers_EVI_NDVI(outlier_input = curr_field, given_col = indeks)
 
-    output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
-    counter += 1
-    row_pointer += curr_field.shape[0]
+    """
+    it is possible that for a field we only have x=2 data points
+    where all the EVI/NDVI is outlier. Then, there is nothing to 
+    use for interpolation. So, hopefully interpolate_outliers_EVI_NDVI is returning an empty data table.
+    """
+    if len(no_Outlier_TS) > 0:
+      output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
+      counter += 1
+      row_pointer += curr_field.shape[0]
 
 ####################################################################################
 ###

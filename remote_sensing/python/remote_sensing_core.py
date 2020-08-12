@@ -229,6 +229,14 @@ def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.01
     jump_indexes = np.where(Veg_indks_diff > maxjump_perDay)
     jump_indexes = jump_indexes[0]
 
+    jump_indexes = jump_indexes.tolist()
+
+    # It is possible that the very first one has a big jump in it.
+    # we cannot interpolate this. so, lets just skip it.
+    if len(jump_indexes) > 0: 
+        if jump_indexes[0] == 0:
+            jump_indexes.pop(0)
+    
     if len(jump_indexes) > 0:    
         for jp_idx in jump_indexes:
             if  Veg_indks_diff[jp_idx] >= (time_diff_in_days[jp_idx] * maxjump_perDay):
@@ -237,7 +245,9 @@ def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.01
                 #
                 x1, y1 = thyme_vec[jp_idx-1], Veg_indks[jp_idx-1]
                 x2, y2 = thyme_vec[jp_idx+1], Veg_indks[jp_idx+1]
-                m = (y2 - y1) / (x2 - x1) # slope
+                print (x1)
+                print (x2)
+                m = np.float(y2 - y1) / np.float(x2 - x1) # slope
                 b = y2 - (m*x2)           # intercept
 
                 # replace the big jump with linear interpolation
@@ -265,6 +275,11 @@ def correct_big_jumps_preDefinedJumpDays(dataTS_jumpy, given_col, jump_amount = 
     jump_indexes = np.where(Veg_indks_diff > 0.4)
     jump_indexes = jump_indexes[0]
 
+    # It is possible that the very first one has a big jump in it.
+    # we cannot interpolate this. so, lets just skip it.
+    if jump_indexes[0] == 0:
+        jump_indexes.pop(0)
+
     if len(jump_indexes) > 0:    
         for jp_idx in jump_indexes:
             if time_diff_in_days[jp_idx] >= 20:
@@ -273,7 +288,7 @@ def correct_big_jumps_preDefinedJumpDays(dataTS_jumpy, given_col, jump_amount = 
                 #
                 x1, y1 = thyme_vec[jp_idx-1], Veg_indks[jp_idx-1]
                 x2, y2 = thyme_vec[jp_idx+1], Veg_indks[jp_idx+1]
-                m = (y2 - y1) / (x2 - x1) # slope
+                m = np.float(y2 - y1) / np.float(x2 - x1) # slope
                 b = y2 - (m*x2)           # intercept
 
                 # replace the big jump with linear interpolation
@@ -313,9 +328,21 @@ def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
     if len(all_outliers_idx) == 0:
         return outlier_df
     
+    """
+    it is possible that for a field we only have x=2 data points
+    where all the EVI/NDVI is outlier. Then, there is nothing to 
+    use for interpolation. So, we return an empty datatable
+    """
+    if len(all_outliers_idx) == len(outlier_df):
+        outlier_df = initial_clean(df=outlier_df, column_to_be_cleaned=given_col)
+        outlier_df = outlier_df[outlier_df[given_col] < 1.5]
+        outlier_df = outlier_df[outlier_df[given_col] > - 1.5]
+        return outlier_df
+
     # 3rd block
-    
+
     # Get rid of outliers that are at the beginning of the time series
+    # if len(non_outiers) > 0 :
     if non_outiers[0] > 0 :
         vec[0:non_outiers[0]] = vec[non_outiers[0]]
         
@@ -329,7 +356,7 @@ def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
         if len(all_outliers_idx) == 0:
             outlier_df[given_col] = vec
             return outlier_df
-    
+
     # 4th block
     # Get rid of outliers that are at the end of the time series
     if non_outiers[-1] < (len(vec)-1) :

@@ -4,7 +4,7 @@ cd /home/hnoorazar/remote_sensing_codes/03_remove_outliers_n_jumps/2Yrs/00_remov
 outer=1
 for cloud_type in 30_cloud 30_cloud_max 10_cloud 70_cloud
 do
-  for SF_year in 2015 2016 2017 2018
+  for SF_year in 2016 2017 2018
   do
     for indeks in EVI NDVI
     do

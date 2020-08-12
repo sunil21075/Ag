@@ -104,11 +104,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 ########################################################################################
 
-if (indeks == "EVI"):
-    an_EE_TS = rc.initial_clean_EVI(an_EE_TS)
-else:
-    an_EE_TS = rc.initial_clean_NDVI(an_EE_TS)
-
+an_EE_TS = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned = indeks)
 an_EE_TS.head(2)
 
 ###

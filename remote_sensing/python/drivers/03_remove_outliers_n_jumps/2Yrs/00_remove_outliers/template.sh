@@ -4,11 +4,11 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N outer_rmOut_County_SF_year_cloud_type
+#PBS -N outer_indeks_county_SF_year_cloud_type
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
-#PBS -l mem=10gb
+#PBS -l mem=30gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
 
