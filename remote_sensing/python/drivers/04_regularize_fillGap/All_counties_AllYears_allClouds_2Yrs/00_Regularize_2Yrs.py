@@ -63,24 +63,6 @@ start_time = time.time()
 
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
-####################################################################################
-###
-###                   Aeolus Directories
-###
-####################################################################################
-            
-data_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/70_cloud/"
-output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
-os.makedirs(output_dir, exist_ok=True)
-
-param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-
-####################################################################################
-###
-###                   Import remote cores
-###
-####################################################################################
-
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
 
@@ -91,17 +73,43 @@ import remote_sensing_core as rcp
 ####################################################################################
 
 indeks = sys.argv[1]
-jumps = sys.argv[2]
-county = "Grant"
-SF_year = 2017
+SF_year = int(sys.argv[2])
+county = sys.argv[3]
+cloud_type = sys.argv[4]
+jumps = sys.argv[5]
 regular_window_size = 10
+
+# do the following since walla walla has two parts and we have to use walla_walla in terminal
+county = county.replace("_", " ")
+print ("Terminal Arguments are: ")
+print (indeks)
+print (SF_year)
+print (county)
+print (cloud_type)
+print (jumps)
+print ("__________________________________________")
+
+####################################################################################
+###
+###                   Aeolus Directories
+###
+####################################################################################
+            
+param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
+
+data_base = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
+data_dir = data_base + cloud_type
+
+output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/" + cloud_type + "/2Yrs/"
+os.makedirs(output_dir, exist_ok=True)
+
 ########################################################################################
 ###
 ###                   updates based on wJumps or noJumps
 ###
 ########################################################################################
 if jumps == "noJumps":
-  data_dir = data_dir + "02_noOutlierNoJumpMerged/"
+  data_dir = data_dir + "/02_noOutlierNoJumpMerged/"
   f_name = "Eastern_WA_SF_" + str(SF_year) + "_70cloud_" + indeks + ".csv"
   output_dir = output_dir + "noJump_Regularized/"
   os.makedirs(output_dir, exist_ok=True)
@@ -117,15 +125,14 @@ else:
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
 
 an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter Grant
-an_EE_TS['SF_year'] = SF_year
 
+if not('SF_year' in an_EE_TS.columns):
+  an_EE_TS['SF_year'] = SF_year
+
+print (an_EE_TS.county.unique())
 ########################################################################################
 
-if (indeks == "EVI"):
-    an_EE_TS = rc.initial_clean_EVI(an_EE_TS)
-else:
-    an_EE_TS = rc.initial_clean_NDVI(an_EE_TS)
-
+an_EE_TS = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned = indeks)
 an_EE_TS.head(2)
 
 ###
@@ -193,6 +200,7 @@ for a_poly in polygon_list:
 ###                   Write the outputs
 ###
 ####################################################################################
+county = county.replace(" ", "_")
 
 output_df['human_system_start_time'] = pd.to_datetime(output_df['image_year'] * 1000 + \
                                                       output_df['doy'], format='%Y%j')

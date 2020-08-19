@@ -245,8 +245,8 @@ def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.01
                 #
                 x1, y1 = thyme_vec[jp_idx-1], Veg_indks[jp_idx-1]
                 x2, y2 = thyme_vec[jp_idx+1], Veg_indks[jp_idx+1]
-                print (x1)
-                print (x2)
+                # print (x1)
+                # print (x2)
                 m = np.float(y2 - y1) / np.float(x2 - x1) # slope
                 b = y2 - (m*x2)           # intercept
 

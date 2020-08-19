@@ -53,8 +53,8 @@ clusters_medians = data.table(location = dt_medians$location,
                               cluster_label = clusters_obj_medians$cluster)
 
 clusters_means = data.table(location = dt_means$location,
-                              median_gdd = dt_means$mean_gdd,
-                              cluster_label = clusters_obj_means$cluster)
+                            median_gdd = dt_means$mean_gdd,
+                            cluster_label = clusters_obj_means$cluster)
 
 
 dt_old_clusters <- subset(dt, select = c("CountyGroup", "location"))

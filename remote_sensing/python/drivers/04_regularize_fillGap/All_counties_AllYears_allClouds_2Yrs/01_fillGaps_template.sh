@@ -4,22 +4,22 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N NDVI_Gap_filling_2Yrs_noJumps
+#PBS -N outer_fill_indeks_county_SF_year_cloud_type
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
-#PBS -l mem=60gb
+#PBS -l mem=40gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
 
 ## Define path for output & error logs
 #PBS -k o
 
-#PBS -e /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_GapFill_noJumps_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs/error/NDVI_GapFill_noJumps_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/04_regularize_fillGap/01_regularize_2Yrs/fillGap_error/outer_indeks_county_SF_year_cloud_type_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/04_regularize_fillGap/01_regularize_2Yrs/fillGap_error/outer_indeks_county_SF_year_cloud_type_O
 
 ## Define path for reporting
-##PBS -M h.noorazar@yahoo.com
+#PBS -M h.noorazar.math@gmail.com
 #PBS -m abe
 
 # ----------------------------------------------------------------
@@ -29,8 +29,8 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/03_regularize_fillGap/01_regularize_2Yrs
-
+cd /home/hnoorazar/remote_sensing_codes/04_regularize_fillGap/01_regularize_2Yrs/
+   
 # ----------------------------------------------------------------
 # Gathering useful information
 # ----------------------------------------------------------------
@@ -51,10 +51,6 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./01_2Yrs_Grant_2017_fillGaps.py NDVI noJumps
-
-
-
-
+python3 ./01_fillGaps_2Yrs.py indeks SF_year "county" cloud_type jumps
 
 

@@ -19,7 +19,7 @@
 #PBS -o /home/hnoorazar/remote_sensing_codes/03_remove_outliers_n_jumps/2Yrs/02_merge_step_01/error/outer_O
 
 ## Define path for reporting
-##PBS -M h.noorazar@yahoo.com
+#PBS -M h.noorazar.math@gmail.com
 #PBS -m abe
 
 # ----------------------------------------------------------------

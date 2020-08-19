@@ -76,7 +76,7 @@ import remote_sensing_core as rcp
 # SF_year = 2017
 
 indeks = sys.argv[1]
-SF_year = sys.argv[2]
+SF_year = int(sys.argv[2])
 county = sys.argv[3]
 cloud_type = sys.argv[4]
 
@@ -87,7 +87,6 @@ print (indeks)
 print (SF_year)
 print (county)
 print (cloud_type)
-
 print ("__________________________________________")
 
 ####################################################################################
@@ -95,12 +94,10 @@ print ("__________________________________________")
 ###                   Aeolus Directories
 ###
 ####################################################################################
+param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 data_base = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/"
-
 data_dir = data_base + cloud_type + "/"
-
-param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
 ########################################################################################
 ###
@@ -124,7 +121,9 @@ print (an_EE_TS.county.unique())
 ########################################################################################
 
 an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter county
-an_EE_TS['SF_year'] = SF_year
+
+if not('SF_year' in an_EE_TS.columns):
+  an_EE_TS['SF_year'] = SF_year
 
 print ("Dimension of the data is: ")
 print (an_EE_TS.shape)
