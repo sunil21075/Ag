@@ -86,6 +86,9 @@ def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=60):
         #
         # in this case we have an extra SOS (at the end) or EOS (at the beginning)
         #
+        print ("Error occured at: ")
+        print (pd_TS.ID.unique()[0])
+        print (pd_TS.image_year.unique()[0])
         raise ValueError("SOS and EOS are not of the same length.")
 
     """

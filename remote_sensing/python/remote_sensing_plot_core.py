@@ -181,16 +181,16 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
         ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
 
         # plot the SciPy troughs
-        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
-        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
+        # Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
+        # ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
 
         # anotate SciPy troughs
-        for min_count in np.arange(0, len(Scipy_date_df_specific)):
-            style = dict(size=10, color='grey', rotation='vertical')
-            ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
-                    y = -1, 
-                    s = 'DoY=' + str(Scipy_date_df_specific.iloc[min_count]['DoY']), 
-                    **style)
+        # for min_count in np.arange(0, len(Scipy_date_df_specific)):
+        #     style = dict(size=10, color='grey', rotation='vertical')
+        #     ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
+        #             y = -1, 
+        #             s = 'DoY=' + str(Scipy_date_df_specific.iloc[min_count]['DoY']), 
+        #             **style)
 
         # plot My peaks
         my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
@@ -257,9 +257,9 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     # Plot ratios:
     # ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='r', label="EVI Ratio")
 
-    ax.axhline(0 , color = 'r')
-    ax.axhline(1 , color = 'r')
-    ax.axhline(-1, color = 'r')
+    ax.axhline(0 , color = 'r', linewidth=.5)
+    ax.axhline(1 , color = 'r', linewidth=.5)
+    ax.axhline(-1, color = 'r', linewidth=.5)
 
     ax.set_title(plot_title);
     ax.set(ylabel=idx)

@@ -1143,7 +1143,7 @@ diapause_abs_rel <- function(input_dir, file_name,
     sub$AbsPopTotal <- sub$AbsPopLarvaGen1 + sub$AbsPopLarvaGen2 + sub$AbsPopLarvaGen3 + sub$AbsPopLarvaGen4
     sub$AbsPopDiap <- sub$AbsPopLarvaGen1Diap + sub$AbsPopLarvaGen2Diap + sub$AbsPopLarvaGen3Diap + sub$AbsPopLarvaGen4Diap
     sub$AbsPopNonDiap <- sub$AbsPopLarvaGen1NonDiap + sub$AbsPopLarvaGen2NonDiap + 
-                        sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
+                         sub$AbsPopLarvaGen3NonDiap + sub$AbsPopLarvaGen4NonDiap
 
     sub1 = subset(sub, 
                   select = c("latitude", "longitude", 
