@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N regular_jumps_jump_plt_outer
+#PBS -N 2Yr_regular_Grant_2017_indeks_tbl_outer
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1
@@ -14,9 +14,9 @@
 
 ## Define path for output & error logs
 #PBS -k o
-
-#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/01_2Yrs_regular_Grant_2017/plots/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/01_2Yrs_regular_Grant_2017/plots/error/outer_O
+        
+#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -29,8 +29,8 @@ module purge
 module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
-cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/01_2Yrs_regular_Grant_2017/plots
    
+cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables
 
 # ----------------------------------------------------------------
 # Gathering useful information
@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regularized_Grant_SG_plots.py jumps indeks irrigated_only SF_year
+python3 ./d_2Yrs_regular_AllCY_tables.py county SF_year indeks SG_params delt
 
 
 

@@ -101,9 +101,9 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     peaks_indxs, all_properties = scipy.signal.find_peaks(x = SG_pred, 
                                                           height = min_val_for_being_peak, 
                                                           threshold = None, 
-                                                          distance = None, #  
-                                                          prominence = None, 
-                                                          width = None, 
+                                                          distance = 3, #  
+                                                          prominence = 0.3, 
+                                                          width = 3, 
                                                           wlen = None, 
                                                           rel_height = 0.5, 
                                                           plateau_size=None)
@@ -146,7 +146,6 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
 
     keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
     plotting_dic = { keyy : [SG_pred, 
-
                              scipy_SG_max_DoYs_series, scipy_SG_max_series, # Scipy peak and troughs
                              scipy_SG_min_DoYs_series, scipy_SG_min_series,
 
@@ -165,10 +164,10 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     ax.set_ylim([-1.15, 1.15])
     # sb.set();
 
-    ax.scatter(date_df.Date.values, y.values, label="data", s=20, c='#E4D00A');
+    ax.scatter(date_df.Date.values, y.values, label="processed data", s=20, c='#E4D00A');
 
     for co, ite in enumerate(plotting_dic):
-        lbl = ite + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        lbl = ite # + ", Peaks: " + str(len(plotting_dic[ite][2]))
         ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
 
         ############################################
@@ -178,13 +177,14 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
         ############################################
         # plot the SciPy peaks
         Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
-        ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
+        ax.scatter(Scipy_date_df_specific.Date.values, 
+                   plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
 
         # plot the SciPy troughs
         # Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
         # ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
 
-        # anotate SciPy troughs
+        # annotate SciPy troughs
         # for min_count in np.arange(0, len(Scipy_date_df_specific)):
         #     style = dict(size=10, color='grey', rotation='vertical')
         #     ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
@@ -200,14 +200,13 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
         My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
         ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
 
-        # anotate My troughs
+        # annotate My troughs
         for min_count in np.arange(0, len(My_date_df_specific)):
             style = dict(size=10, color='grey', rotation='vertical')
             ax.text(x = My_date_df_specific.iloc[min_count]['Date'].date(), 
-                    y = -1, 
+                    y = -0.7, 
                     s = 'DoY=' + str(My_date_df_specific.iloc[min_count]['DoY']), 
                     **style)
-
 
     ###
     ###   plot SOS and EOS
@@ -222,19 +221,19 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     ##
     ##  Kill bad detected seasons 
     ##
-    crr_fld = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = crr_fld, min_season_length=60)
+    crr_fld = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = crr_fld, min_season_length=40)
 
     #
     #  Start of the season
     #
     SOS = crr_fld[crr_fld['SOS'] != 0]
-    ax.scatter(SOS['Date'], SOS['SOS'], marker='+', s=155, c='k')
+    ax.scatter(SOS['Date'], SOS['SOS'], marker='+', s=155, c='g')
 
-    # anotate  EOS
+    # annotate  EOS
     for ii in np.arange(0, len(SOS)):
         style = dict(size=10, color='grey', rotation='vertical')
         ax.text(x = SOS.iloc[ii]['Date'].date(), 
-                y = -1, 
+                y = -0.7, 
                 s = 'DoY=' + str(SOS.iloc[ii]['doy']), 
                 **style)
 
@@ -243,14 +242,13 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     #
 
     EOS = crr_fld[crr_fld['EOS'] != 0]
-    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='k')
+    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='r')
 
-    # anotate EOS
-    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='k')
+    # annotate EOS
     for ii in np.arange(0, len(EOS)):
         style = dict(size=10, color='grey', rotation='vertical')
         ax.text(x = EOS.iloc[ii]['Date'].date(), 
-                y = -1, 
+                y = -0.7, 
                 s = 'DoY=' + str(EOS.iloc[ii]['doy']), 
                 **style)
 
@@ -300,8 +298,9 @@ def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SF
 
     SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
 
-    smooth_col_name = "smooth_" + idx
-    crr_fld[smooth_col_name] = SG_pred
+    # we do not need the following since we update EVI by replacing it with smoothed version.
+    # smooth_col_name = "smooth_" + idx
+    # crr_fld[smooth_col_name] = SG_pred
 
     #############################################
     ###
@@ -316,7 +315,6 @@ def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SF
 
     d = {'DoY': X, 'Date': pd.to_datetime(crr_fld.human_system_start_time.values).values}
     date_df = pd.DataFrame(data=d)
-
 
     #############################################
     ###
@@ -414,11 +412,20 @@ def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SF
         Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
         ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
 
+        # annotate SciPy peaks
+        # for max_count in np.arange(0, len(Scipy_date_df_specific)):
+        #     style = dict(size=10, color='grey', rotation='vertical')
+        #     ax.text(x = Scipy_date_df_specific.iloc[max_count]['Date'].date(), 
+        #             y = -1, 
+        #             s = 'DoY=' + str(Scipy_date_df_specific.iloc[max_count]['DoY']), 
+        #             **style)
+
+
         # plot the SciPy troughs
         Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][3])]
         ax.scatter(Scipy_date_df_specific.Date.values, plotting_dic[ite][4], s=150, marker='*', c = '#00CC99');
 
-        # anotate SciPy troughs
+        # annotate SciPy troughs
         for min_count in np.arange(0, len(Scipy_date_df_specific)):
             style = dict(size=10, color='grey', rotation='vertical')
             ax.text(x = Scipy_date_df_specific.iloc[min_count]['Date'].date(), 
@@ -430,11 +437,12 @@ def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SF
         my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
         ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "r");
 
+
         # plot My Troughs
         My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
         ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
 
-        # anotate My troughs
+        # annotate My troughs
         for min_count in np.arange(0, len(My_date_df_specific)):
             style = dict(size=10, color='grey', rotation='vertical')
             ax.text(x = My_date_df_specific.iloc[min_count]['Date'].date(), 
@@ -543,7 +551,7 @@ def savitzky_1yr_panels_clean_myPeak(crr_fld, idx, SG_params, SFYr, ax, deltA = 
 
         ################################################
         #
-        # anotate troughs
+        # annotate troughs
         #
         ################################################
 

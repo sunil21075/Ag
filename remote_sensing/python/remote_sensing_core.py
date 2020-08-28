@@ -28,7 +28,7 @@ from datetime import date
 #####
 ################################################################
 
-def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=60):
+def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=40):
     """
     input: pd_TS is a pandas dataframe
            it includes a column SOS and a column EOS
@@ -46,6 +46,13 @@ def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=60):
     # find indexes of SOS and EOS
     SOS_indexes = pd_TS_DoYDiff.index[pd_TS_DoYDiff['SOS'] != 0].tolist()
     EOS_indexes = pd_TS_DoYDiff.index[pd_TS_DoYDiff['EOS'] != 0].tolist()
+
+    """
+    It seems it is possible to only have 1 SOS with no EOS. (or perhaps vice versa).
+    In this case we can consider we only have 1 season!
+    """
+    if len(SOS_indexes)==0 or len(EOS_indexes)==0:
+        return pd_TS_DoYDiff
 
     """
     First we need to fix the prolems such as having 2 SOS and only 1 EOS, or,
@@ -72,15 +79,18 @@ def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=60):
     #
     # Check if last SOS is greater than last EOS
     #
+    if len(EOS_indexes)==0 or len(EOS_indexes)==0:
+        return pd_TS_DoYDiff
+
     SOS_pointer = SOS_indexes[-1]
     EOS_pointer = EOS_indexes[-1]
     if (pd_TS_DoYDiff.loc[EOS_pointer, 'Date'] < pd_TS_DoYDiff.loc[SOS_pointer, 'Date']):
         
         # Remove the false EOS from dataFrame
-        pd_TS_DoYDiff.loc[SOS_pointer, 'EOS'] = 0
+        pd_TS_DoYDiff.loc[SOS_pointer, 'SOS'] = 0
         
         # remove the first element of EOS indexes
-        EOS_indexes.pop()
+        SOS_indexes.pop()
     
     if len(SOS_indexes) != len(EOS_indexes):
         #

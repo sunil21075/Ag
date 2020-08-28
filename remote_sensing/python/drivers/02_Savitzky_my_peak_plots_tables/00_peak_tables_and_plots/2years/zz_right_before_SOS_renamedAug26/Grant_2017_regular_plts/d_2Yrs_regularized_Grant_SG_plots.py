@@ -4,7 +4,10 @@
 #### of the next year.
 ####
 
-
+"""
+Just generate peak plots for Grant 2017 fields 
+for all cultivars; EVI and my peak finder
+"""
 import matplotlib.backends.backend_pdf
 import csv
 import numpy as np
@@ -14,7 +17,6 @@ from IPython.display import Image
 # from shapely.geometry import Point, Polygon
 from math import factorial
 import datetime
-from datetime import date
 import time
 import scipy
 import scipy.signal
@@ -90,17 +92,11 @@ indeks = sys.argv[2]
 irrigated_only = int(sys.argv[3])
 SF_year = int(sys.argv[4])
 regularized = True
-
-sos_thresh = 0.4
-eos_thresh = 0.4
-minFinderDetla = 0.4
 ####################################################################################
 ###
 ###                   Aeolus Directories
 ###
 ####################################################################################
-output_base = "/data/hydro/users/Hossein/remote_sensing/04_Regular_plt_tbl_SOSEOS/"
-
 if irrigated_only == True:
     output_Irr = "irrigated_only"
 else:
@@ -110,15 +106,14 @@ regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/7
 
 if jumps == "yes":
 
-    regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_wJumps/" + \
-                         given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
+    regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/2Yrs_plots_70Cloud_Regular_wJumps/" + \
+                          given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
     f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 else:
     regular_data_dir = regular_data_dir + "/noJump_Regularized/"
-    regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_noJumps/" + \
+    regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_RegularFilledGaps_plots_tbls/2Yrs_plots_70Cloud_Regular_noJumps/" + \
                          given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
-
     f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 plot_dir_base = regular_output_dir
@@ -150,10 +145,6 @@ print ("_________________________________________________________")
 
 a_df = pd.read_csv(data_dir + f_name, low_memory=False)
 
-if 'Date' in a_df.columns:
-    if type(a_df.Date.iloc[0]) == str:
-        a_df['Date'] = pd.to_datetime(a_df.Date.values).values
-
 ##################################################################
 ##################################################################
 ####
@@ -177,6 +168,7 @@ else:
     output_Irr = "non_irrigated_only"
     a_df = rc.filter_out_Irrigated(a_df)
 
+
 ######################
 
 # The following columns do not exist in the old data
@@ -189,8 +181,12 @@ if not('CovrCrp' in a_df.columns):
     print ("CovrCrp is being set to NA")
     a_df['CovrCrp'] = "NA"
 
-
-a_df = rc.initial_clean(df = a_df, column_to_be_cleaned = indeks)
+if (indeks == "EVI"):
+    a_df = rc.initial_clean_EVI(a_df)
+    print ("initial_clean_EVI")
+else:
+    a_df = rc.initial_clean_NDVI(a_df)
+    print ("initial_clean_NDVI")
 
 an_EE_TS = a_df.copy()
 del(a_df)
@@ -205,17 +201,11 @@ print ("_____________________________________")
 counter = 0
 
 for a_poly in polygon_list:
-    if (counter%10 == 0):
+    if (counter%1000 == 0):
         print ("_____________________________________")
         print ("counter: " + str(counter))
-        print (a_poly)
 
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
-
-    #
-    #  filter just one year to have a clean SOS EOS stuff
-    #
-    curr_field = curr_field[curr_field.image_year == SF_year]
     
     ################################################################
     # Sort by DoY (sanitary check)
@@ -229,7 +219,7 @@ for a_poly in polygon_list:
     plant = plant.replace(" ", "_")
     plant = plant.replace("__", "_")
 
-    county = given_county # curr_field['county'].unique()[0]
+    county = curr_field['county'].unique()[0]
 
     sub_out = plant + "/" # "/plant_based_plots/" + plant + "/"
     plot_path = plot_dir_base + sub_out
@@ -241,36 +231,19 @@ for a_poly in polygon_list:
         #  Set up Canvas
         #
         fig, axs = plt.subplots(2, 2, figsize=(20,12),
-                        sharex='col', sharey='row',
-                        gridspec_kw={'hspace': 0.1, 'wspace': .1});
+                                sharex='col', sharey='row',
+                                gridspec_kw={'hspace': 0.1, 'wspace': .1})
 
-        (ax1, ax2), (ax3, ax4) = axs;
-        ax1.grid(True); ax2.grid(True); ax3.grid(True); ax4.grid(True);
+        (ax1, ax2), (ax3, ax4) = axs
+        ax1.grid(True)
+        ax2.grid(True)
+        ax3.grid(True)
+        ax4.grid(True)
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, 
-                                                   SG_params=[5, 1], 
-                                                   SFYr = SF_year, ax=ax1, deltA= minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh);
-
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, SG_params=[5, 3], 
-                                                   SFYr=SF_year, ax=ax2, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh); 
-
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx = indeks, SG_params=[7, 3],
-                                                   SFYr = SF_year, ax=ax3, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh);
-
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, SG_params=[9, 3],
-                                                   SFYr=SF_year, ax=ax4, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh)
+        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.1, SFYr = SF_year, ax = ax1)
+        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.2, SFYr = SF_year, ax = ax2)
+        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.3, SFYr = SF_year, ax = ax3)
+        rcp.savitzky_2yrs_panel(crr_fld = curr_field, idx = indeks, deltA = 0.4, SFYr = SF_year, ax = ax4)
 
         fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
 

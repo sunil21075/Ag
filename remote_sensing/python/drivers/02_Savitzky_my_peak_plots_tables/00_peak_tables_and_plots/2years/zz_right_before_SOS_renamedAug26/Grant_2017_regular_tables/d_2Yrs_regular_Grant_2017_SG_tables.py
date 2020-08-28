@@ -422,7 +422,7 @@ for a_poly in polygon_list:
             all_poly_and_mins_savitzky = pd.concat([all_poly_and_mins_savitzky, empty]).reset_index()
 
         all_poly_and_mins_savitzky.iloc[pointer_min_savitzky:(pointer_min_savitzky + \
-                                                                  len(WSDA_min_df_savitzky))] = WSDA_min_df_savitzky.values
+                                                                len(WSDA_min_df_savitzky))] = WSDA_min_df_savitzky.values
         pointer_min_savitzky += len(WSDA_min_df_savitzky)
     
     del(WSDA_df)
