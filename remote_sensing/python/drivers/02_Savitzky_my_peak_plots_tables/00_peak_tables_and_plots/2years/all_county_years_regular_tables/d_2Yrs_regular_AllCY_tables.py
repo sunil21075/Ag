@@ -226,7 +226,7 @@ SEOS_output_columns = ['ID', 'Acres', 'county', 'CropGrp', 'CropTyp', 'DataSrc',
                        'IntlSrD', 'Irrigtn', 'LstSrvD', 'Notes', 'RtCrpTy', 'Shap_Ar',
                        'Shp_Lng', 'TRS', 'image_year', 'SF_year', 'doy', 'EVI',
                        'human_system_start_time', 'Date', 'system_start_time', 
-                       'EVI_ratio', 'SOS', 'EOS']
+                       'EVI_ratio', 'SOS', 'EOS', 'season_count']
 
 #
 # The reason I am multiplying len(a_df) by 4 is that we can have at least two
@@ -312,20 +312,25 @@ for a_poly in polygon_list:
         # extract the SOS and EOS rows 
         #
         SEOS = curr_field[(curr_field['SOS'] != 0) | curr_field['EOS'] != 0]
+        SEOS = SEOS.copy()
         # SEOS = SEOS.reset_index() # not needed really
         SOS_tb = curr_field[curr_field['SOS'] != 0]
         if len(SOS_tb) >= 2:
+            SEOS["season_count"] = len(SOS_tb)
             all_poly_and_SEOS[pointer_SEOS_tab:(pointer_SEOS_tab+len(SEOS))] = SEOS.values
             pointer_SEOS_tab += len(SEOS)
         else:
             aaa = curr_field.iloc[0].values.reshape(1, len(curr_field.iloc[0]))
+            aaa = np.append(aaa, [1])
+            aaa = aaa.reshape(1, len(aaa))
+
             all_poly_and_SEOS.iloc[pointer_SEOS_tab:(pointer_SEOS_tab+1)] = aaa
             pointer_SEOS_tab += 1
     else: # here are potentially apples, cherries, etc.
         # we did not add EVI_ratio, SOS, and EOS. So, we are missing these
         # columns in the data frame. So, use 666 as proxy
-        aaa = np.append(curr_field.iloc[0], [666, 666, 666])
-        aaa = aaa.reshape(1, 25)
+        aaa = np.append(curr_field.iloc[0], [666, 666, 666, 1])
+        aaa = aaa.reshape(1, len(aaa))
         all_poly_and_SEOS.iloc[pointer_SEOS_tab:(pointer_SEOS_tab+1)] = aaa
         pointer_SEOS_tab += 1
 
