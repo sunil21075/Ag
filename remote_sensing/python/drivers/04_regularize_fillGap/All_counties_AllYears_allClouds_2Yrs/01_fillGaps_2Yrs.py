@@ -84,8 +84,8 @@ jumps = sys.argv[5]
 ####################################################################################
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 
-data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/" + cloud_type + "/2Yrs/"
-output_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/" + cloud_type + "/2Yrs/"
+data_dir  = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/" + cloud_type + "/2Yrs/"
+output_dir="/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/" + cloud_type + "/2Yrs/"
 os.makedirs(output_dir, exist_ok=True)
 
 ########################################################################################
@@ -141,20 +141,14 @@ output_df = pd.DataFrame(data = None,
 counter = 0
 
 for a_poly in polygon_list:
-    if (counter % 300 == 0):
+    if (counter % 10 == 0):
         print (counter)
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
-    ################################################################
-    # Sort by DoY (sanitary check)
     curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
-    
     curr_field.reset_index(drop=True, inplace=True)
     
-    # print ("print(curr_field.shape)")
-    # print(curr_field.shape)
-    # print ("__________________________________________")
     ################################################################
-    curr_field = rc.fill_theGap_linearLine(curr_field, V_idx = indeks, SF_year = 2017)
+    curr_field = rc.fill_theGap_linearLine(curr_field, V_idx = indeks, SF_year = SF_year)
 
     ################################################################
     row_pointer = no_steps * counter

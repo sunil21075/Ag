@@ -4,10 +4,10 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N 2Yr_regular_Grant_2017_indeks_tbl_outer
+#PBS -N outer_2Yr_regular_Grant_2017_indeks_tbl
 
 ## Define compute options
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=5
 #PBS -l mem=60gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
@@ -15,8 +15,8 @@
 ## Define path for output & error logs
 #PBS -k o
         
-#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables/error/outer_E
-#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables/error/outer_O
+#PBS -e /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/02_2Yrs_regular_table_AllCY/error/outer_E
+#PBS -o /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/02_2Yrs_regular_table_AllCY/error/outer_O
 
 ## Define path for reporting
 ##PBS -M h.noorazar@yahoo.com
@@ -30,7 +30,7 @@ module load gcc/7.3.0
 module load python/3.7.1/gcc/7.3.0
 
    
-cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_Eastern_tables_and_plots/01_2Yrs_regular_Grant_2017/tables
+cd /home/hnoorazar/remote_sensing_codes/02_Savitzky_my_peak/00_peak_tables_and_plots_Aug26/02_2Yrs_regular_table_AllCY
 
 # ----------------------------------------------------------------
 # Gathering useful information

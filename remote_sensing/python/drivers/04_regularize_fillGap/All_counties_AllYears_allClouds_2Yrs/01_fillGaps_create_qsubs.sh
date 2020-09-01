@@ -5,11 +5,11 @@ outer=1
 
 for jumps in noJumps
 do
-  for cloud_type in 70_cloud # 30_cloud 30_cloud_max 10_cloud 
+  for indeks in EVI NDVI
   do
-    for SF_year in 2016 2017 2018
+    for cloud_type in 70_cloud # 30_cloud 30_cloud_max 10_cloud 
     do
-      for indeks in EVI NDVI
+      for SF_year in 2016 2017 2018
       do
         for county in Grant Whitman Asotin Garfield Ferry Franklin Columbia Adams Benton Chelan Douglas Kittitas Klickitat Lincoln Okanogan Spokane Stevens Yakima 'Pend_Oreille' 'Walla_Walla'
         do

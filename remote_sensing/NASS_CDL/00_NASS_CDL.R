@@ -8,7 +8,7 @@ library(rrd)
 
 ###### strada part
 
-strada_dir <- "/Users/hn/Documents/01_research_data/remote_sensing/NASS_CDL/WA_strata/"
+strada_dir <- "/Users/hn/Documents/01_research_data/remote_sensing/NASS_CDL/useless/WA_strata/"
 
 strada_shp <- readOGR(paste0(strada_dir, "WA_strata_dd.shp"),
                       layer = paste0("WA_strata_dd"), 

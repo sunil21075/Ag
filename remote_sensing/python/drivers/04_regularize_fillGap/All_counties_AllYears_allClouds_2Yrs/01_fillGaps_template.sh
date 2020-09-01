@@ -19,7 +19,7 @@
 #PBS -o /home/hnoorazar/remote_sensing_codes/04_regularize_fillGap/01_regularize_2Yrs/fillGap_error/outer_indeks_county_SF_year_cloud_type_O
 
 ## Define path for reporting
-#PBS -M h.noorazar.math@gmail.com
+##PBS -M h.noorazar.math@gmail.com
 #PBS -m abe
 
 # ----------------------------------------------------------------

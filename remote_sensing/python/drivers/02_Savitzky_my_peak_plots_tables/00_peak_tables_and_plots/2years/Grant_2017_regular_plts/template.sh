@@ -4,7 +4,7 @@
 # Configure PBS options
 # ----------------------------------------------------------------
 ## Define a job name
-#PBS -N regular_jumps_jump_plt_outer
+#PBS -N outer_regular_jumps_jump_plt
 
 ## Define compute options
 #PBS -l nodes=1:ppn=1

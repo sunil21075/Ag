@@ -112,7 +112,7 @@ if jumps == "yes":
 
     regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_wJumps/" + \
                          given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
-    f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+    # f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 else:
     regular_data_dir = regular_data_dir + "/noJump_Regularized/"

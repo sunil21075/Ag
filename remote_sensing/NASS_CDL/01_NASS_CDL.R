@@ -19,15 +19,15 @@ WA_2018_table <- table(raster::getValues(WA_2018[[1]]))
 WA_2017_table <- table(raster::getValues(WA_2017[[1]]))
 
 
-crop_count_2019 <- data.frame( crop = updateNamesCDL(names(WA_2019_table)), 
+crop_count_2019 <- data.frame( crop = cdlTools::updateNamesCDL(names(WA_2019_table)), 
                                WA_2019_table , 
                                stringsAsFactors=FALSE)
 
-crop_count_2018 <- data.frame( crop = updateNamesCDL(names(WA_2018_table)), 
+crop_count_2018 <- data.frame( crop = cdlTools::updateNamesCDL(names(WA_2018_table)), 
                                WA_2018_table , 
                                stringsAsFactors=FALSE)
 
-crop_count_2017 <- data.frame( crop = updateNamesCDL(names(WA_2017_table)), 
+crop_count_2017 <- data.frame( crop = cdlTools::updateNamesCDL(names(WA_2017_table)), 
                                WA_2017_table , 
                                stringsAsFactors=FALSE)
 
