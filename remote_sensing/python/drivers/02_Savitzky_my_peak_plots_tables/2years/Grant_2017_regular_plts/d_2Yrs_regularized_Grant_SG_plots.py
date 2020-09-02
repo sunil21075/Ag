@@ -99,7 +99,7 @@ minFinderDetla = 0.4
 ###                   Aeolus Directories
 ###
 ####################################################################################
-output_base = "/data/hydro/users/Hossein/remote_sensing/04_Regular_plt_tbl_SOSEOS/"
+output_base = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/"
 
 if irrigated_only == True:
     output_Irr = "irrigated_only"
