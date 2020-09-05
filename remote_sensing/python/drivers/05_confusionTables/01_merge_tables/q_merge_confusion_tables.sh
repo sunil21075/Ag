@@ -51,6 +51,6 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./merge_confusion_tables.py county SF_year indeks
+python3 ./merge_confusion_tables.py
 
 

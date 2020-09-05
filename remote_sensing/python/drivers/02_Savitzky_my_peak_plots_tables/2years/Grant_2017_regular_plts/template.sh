@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regularized_Grant_SG_plots.py jumps indeks irrigated_only SF_year
+python3 ./d_2Yrs_regularized_Grant_SG_plots.py jumps indeks irrigated_only SF_year county
 
 
 

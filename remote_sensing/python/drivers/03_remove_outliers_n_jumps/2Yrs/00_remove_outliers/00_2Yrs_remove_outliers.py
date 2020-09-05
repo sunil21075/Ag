@@ -11,32 +11,29 @@
 import csv
 import numpy as np
 import pandas as pd
-# import geopandas as gpd
-from IPython.display import Image
-# from shapely.geometry import Point, Polygon
-from math import factorial
+
 import scipy
 import scipy.signal
 import os, os.path
 
-from datetime import date
-import datetime
 import time
-
-from statsmodels.sandbox.regression.predstd import wls_prediction_std
-from sklearn.linear_model import LinearRegression
+import datetime
+from datetime import date
 from patsy import cr
 
+from IPython.display import Image
+from sklearn.linear_model import LinearRegression
+from statsmodels.sandbox.regression.predstd import wls_prediction_std
+
 # from pprint import pprint
-import matplotlib.pyplot as plt
 import seaborn as sb
+import matplotlib.pyplot as plt
 
 import sys
 start_time = time.time()
 
 # search path for modules
 # look @ https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
-
 
 ####################################################################################
 ###
@@ -106,9 +103,9 @@ data_dir = data_base + cloud_type + "/"
 ########################################################################################
 
 if "max" in cloud_type:
-  f_name = "Eastern_WA_" + str(SF_year) + "_" + cloud_type.split("_")[0] + "cloud_selectors_max.csv"
+    f_name = "Eastern_WA_" + str(SF_year) + "_" + cloud_type.split("_")[0] + "cloud_selectors_max.csv"
 else:
-  f_name = "Eastern_WA_" + str(SF_year) + "_" + cloud_type.split("_")[0] + "cloud_selectors.csv"
+    f_name = "Eastern_WA_" + str(SF_year) + "_" + cloud_type.split("_")[0] + "cloud_selectors.csv"
 
 an_EE_TS = pd.read_csv(data_dir + f_name, low_memory=False)
 
@@ -123,7 +120,7 @@ print (an_EE_TS.county.unique())
 an_EE_TS = an_EE_TS[an_EE_TS['county'] == county] # Filter county
 
 if not('SF_year' in an_EE_TS.columns):
-  an_EE_TS['SF_year'] = SF_year
+    an_EE_TS['SF_year'] = SF_year
 
 print ("Dimension of the data is: ")
 print (an_EE_TS.shape)
@@ -141,7 +138,6 @@ os.makedirs(output_dir, exist_ok=True)
 an_EE_TS = rc.initial_clean(df = an_EE_TS, column_to_be_cleaned = indeks)
 print ("After initial cleaning we have: ")
 print (an_EE_TS.shape)
-
 
 ###
 ### List of unique polygons
@@ -183,9 +179,9 @@ for a_poly in polygon_list:
     use for interpolation. So, hopefully interpolate_outliers_EVI_NDVI is returning an empty data table.
     """
     if len(no_Outlier_TS) > 0:
-      output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
-      counter += 1
-      row_pointer += curr_field.shape[0]
+        output_df[row_pointer: row_pointer + curr_field.shape[0]] = no_Outlier_TS.values
+        counter += 1
+        row_pointer += curr_field.shape[0]
 
 ####################################################################################
 ###

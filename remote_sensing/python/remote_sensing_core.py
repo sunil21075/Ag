@@ -504,7 +504,7 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
 
     # DF_C.image_year = DF_C.image_year.astype(float)
     DF_C.doy = DF_C.doy.astype(int)
-    DF_C['human_system_start_time'] = pd.to_datetime(DF_C['image_year'] * 1000 + DF_C['doy'], format='%Y%j')
+    DF_C['human_system_start_time'] = pd.to_datetime(DF_C['image_year'].astype(int) * 1000 + DF_C['doy'], format='%Y%j')
 
     # DF_C.reset_index(drop=True, inplace=True)
     # DF_C['human_system_start_time'] = "1"

@@ -154,7 +154,8 @@ if (("human_system_start_time" in list(a_df.columns))):
 """
 
 a_df = a_df[a_df['county']== given_county.replace("_", " ")] # Filter the given county; given_county
-a_df = a_df[a_df['image_year']== SF_year]
+
+
 a_df.reset_index(drop=True, inplace=True)
 
 # a_df = filter_out_NASS(a_df) # Toss NASS
@@ -208,7 +209,6 @@ if not('DataSrc' in a_df.columns):
     print ("Data source is being set to NA")
     a_df['DataSrc'] = "NA"
 
-
 a_df = rc.initial_clean(df = a_df, column_to_be_cleaned = indeks)
 a_df = a_df.copy()
 
@@ -236,9 +236,9 @@ all_poly_and_SEOS = pd.DataFrame(data = None,
                                  index = np.arange(4*len(a_df)), 
                                  columns = SEOS_output_columns)
 
-pointer_SEOS_tab = 0
-counter = 0
 
+counter = 0
+pointer_SEOS_tab = 0
 
 ###########
 ###########  Re-order columns of the read data table to be consistent with the output columns
@@ -257,7 +257,8 @@ for a_poly in polygon_list:
 
     ################################################################
     # Sort by DoY (sanitary check)
-    curr_field.sort_values(by=['image_year', 'doy'], inplace=True)
+    if "system_start_time" in curr_field.columns:
+        curr_field.sort_values(by=['system_start_time'], inplace=True)
 
     ################################################################
 

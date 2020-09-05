@@ -38,13 +38,10 @@ start_time = time.time()
 ###                      Aeolus Core path
 ###
 ####################################################################################
-
-sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
 import remote_sensing_core as rc
 import remote_sensing_core as rcp
-
 
 ####################################################################################
 ###

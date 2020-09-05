@@ -89,6 +89,7 @@ jumps = sys.argv[1]
 indeks = sys.argv[2]
 irrigated_only = int(sys.argv[3])
 SF_year = int(sys.argv[4])
+given_county = sys.argv[5]
 regularized = True
 
 sos_thresh = 0.4
@@ -108,18 +109,17 @@ else:
 
 regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
 
-if jumps == "yes":
+# if jumps == "yes":
+#     regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_wJumps/" + \
+#                          str(SF_year) + "_regular_" + output_Irr + "_" + indeks + \
+#                          "_SOS" + str(int(sos_thresh*10))+ "_EOS" + str(int(eos_thresh*10)) + "/"
+# else:
+regular_data_dir = regular_data_dir + "/noJump_Regularized/"
+regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_noJumps/" + \
+                     str(SF_year) + "_regular_" + output_Irr + "_" + indeks + \
+                     "_SOS" + str(int(sos_thresh*10)) + "_EOS" + str(int(eos_thresh*10)) + "/"
 
-    regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_wJumps/" + \
-                         given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
-    # f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
-
-else:
-    regular_data_dir = regular_data_dir + "/noJump_Regularized/"
-    regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_noJumps/" + \
-                         given_county + "_" + str(SF_year) + "_regular_" + output_Irr + "_" + indeks + "/"
-
-    f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
+f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 plot_dir_base = regular_output_dir
 print ("plot_dir_base is " + plot_dir_base)
@@ -128,7 +128,7 @@ param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 #####################################################################################
 data_dir = regular_data_dir
 output_dir = regular_output_dir
-plot_dir_base = output_dir
+plot_dir_base = output_dir 
 print ("plot_dir_base is " + plot_dir_base)
 
 os.makedirs(output_dir, exist_ok=True)
@@ -163,12 +163,10 @@ if 'Date' in a_df.columns:
 ##################################################################
 ##################################################################
 
-a_df = a_df[a_df['county']== given_county] # Filter Grant
+a_df = a_df[a_df['county'] == given_county.replace("_", " ")] # Filter Grant
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
 a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
 a_df['SF_year'] = SF_year
-
-# a_df = a_df[a_df['image_year'] == SF_year]
 
 if irrigated_only == True:
     a_df = rc.filter_out_nonIrrigated(a_df)
@@ -274,10 +272,10 @@ for a_poly in polygon_list:
 
         fig_name = plot_path + county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
 
-        os.makedirs(output_dir, exist_ok=True)
         os.makedirs(plot_dir_base, exist_ok=True)
 
         plt.savefig(fname = fig_name, dpi=250, bbox_inches='tight')
+        plt.close('all')
         counter += 1
 
 
