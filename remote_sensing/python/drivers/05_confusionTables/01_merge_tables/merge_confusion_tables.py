@@ -136,12 +136,16 @@ for a_list in list_of_lists:
         eastern_out_name = curr_output_dir + "eastern_2018_confusion.csv"
 
     output_df.to_csv(output_name, index = False)
-
+    
     eastern_confusion = output_df.groupby(['parameters']).sum()
+    eastern_confusion['parameters'] = eastern_confusion.index # parameters are converted to index. Convert it back to a column
+
+    columnss = output_df.columns[0:5]
+    eastern_confusion = eastern_confusion[columnss]
     eastern_confusion.to_csv(eastern_out_name, index = False)
 
 
-
+print ("it took {:.2f} seconds to run this code.".format(time.time() - start_time))
 
 
 

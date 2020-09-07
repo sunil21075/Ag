@@ -92,8 +92,8 @@ SF_year = int(sys.argv[4])
 given_county = sys.argv[5]
 regularized = True
 
-sos_thresh = 0.4
-eos_thresh = 0.4
+sos_thresh = 0.5
+eos_thresh = 0.5
 minFinderDetla = 0.4
 ####################################################################################
 ###
@@ -234,7 +234,7 @@ for a_poly in polygon_list:
     plot_path = plot_path   # +  str(len(SG_max_DoYs_series)) + "_peaks/"
     os.makedirs(plot_path, exist_ok=True)
     # print ("plot_path is " + plot_path)
-    if (len(os.listdir(plot_path)) < 100):
+    if (len(os.listdir(plot_path)) < 130):
         # 
         #  Set up Canvas
         #
