@@ -11,16 +11,23 @@ library(sp)
 ###########
 ############################################
 ############################################
+
+
+########################################################################
 toss_Nass <- function(sfe){
   sfe <- sfe[sfe@data$DataSrc != "NASS", ]
   return(sfe)
 }
+
+########################################################################
 
 add_identifier <- function(dt_df, year){
   dt_df@data <- tibble::rowid_to_column(dt_df@data, "ID")
   dt_df@data$ID <- paste0(dt_df@data$ID, "_WSDA_SF_", year)
   return(dt_df)
 }
+
+########################################################################
 
 transfer_projection_to_lat_long <- function(shape_file){
   crs <- CRS("+proj=lcc 
@@ -33,12 +40,16 @@ transfer_projection_to_lat_long <- function(shape_file){
   return(shape_file)
 }
 
+########################################################################
+
 pick_correct_year <- function(a_shape_file, year){
   year_chr <- as.character(year)
   a_shape_file <- a_shape_file[grepl(year_chr, a_shape_file$LstSrvD), ]
   a_shape_file$year <- year
   return(a_shape_file)
 }
+
+########################################################################
 
 pick_proper_cols_w_notes <- function(a_shape_file){
   cols_to_keep <- c("ID", "LstSrvD", "CropGrp", "CropTyp", "ExctAcr", "county",
@@ -59,6 +70,8 @@ filter_lastSrvyDate <- function(dt, year){
   return(dt_LstSrvD)
 }
 
+########################################################################
+
 filter_double_by_Notes <- function(dt){
   
   dt$Notes <- tolower(dt$Notes)
@@ -67,6 +80,8 @@ filter_double_by_Notes <- function(dt){
 
   return(rbind(dt_doube_by_notes, dt_dbl_by_notes))
 }
+
+########################################################################
 
 filter_out_non_irrigated_datatable <- function(dt){
   dt <- data.table(dt)
@@ -87,6 +102,8 @@ filter_out_non_irrigated_datatable <- function(dt){
   return(dt)
 }
 
+########################################################################
+
 filter_out_non_irrigated_shapefile <- function (dt){
   dt@data$Irrigtn <- tolower(dt@data$Irrigtn)
   dt@data$Irrigtn[is.na(dt@data$Irrigtn$Irrigtn)] <- "na"
@@ -99,6 +116,7 @@ filter_out_non_irrigated_shapefile <- function (dt){
 
 }
 
+########################################################################
 
 pick_eastern_counties <- function(sff){
   Okanogan <- sff[grepl('Okanogan', sff$county), ]
@@ -139,6 +157,8 @@ pick_eastern_counties <- function(sff){
 
 }
 
+########################################################################
+
 pick_eastern_counties_noGrant <- function(sff){
   Okanogan <- sff[grepl('Okanogan', sff$county), ]
   Chelan <- sff[grepl('Chelan', sff$county), ]
@@ -177,5 +197,5 @@ pick_eastern_counties_noGrant <- function(sff){
 
 }
 
-
+########################################################################
 

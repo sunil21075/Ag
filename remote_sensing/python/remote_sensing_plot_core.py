@@ -68,6 +68,10 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
 
     SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
 
+    # SG might violate the boundaries. clip them:
+    SG_pred[SG_pred > 1 ] = 1
+    SG_pred[SG_pred < -1 ] = -1
+
     #############################################
     ###
     ###   Form a data table of X and Y values

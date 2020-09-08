@@ -28,6 +28,21 @@ from datetime import date
 #####
 ################################################################
 
+def create_calendar_table(SF_year = 2017):
+    start = str(SF_year) + "-01-01"
+    end = str(SF_year) + "-12-31"
+    
+    df = pd.DataFrame({"Date": pd.date_range(start, end)})
+    df["SF_year"] = df.Date.dt.year
+    
+    # add day of year
+    df["doy"] = 1 + np.arange(len(df))
+    # df['Weekday'] = df['Date'].dt.day_name()
+    
+    return df
+
+########################################################################
+
 def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=40):
     """
     input: pd_TS is a pandas dataframe
@@ -121,6 +136,7 @@ def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=40):
         
     return(pd_TS_DoYDiff)
 
+########################################################################
 
 def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.15, offset_thresh=0.15):
     """
@@ -157,6 +173,8 @@ def addToDF_SOS_EOS_White(pd_TS, VegIdx = "EVI", onset_thresh=0.15, offset_thres
 
     return(pandaFrame)
 
+########################################################################
+
 def find_signChange_locs_DifferentOnOffset(SOS_candids, EOS_candids):
     if type(SOS_candids) != np.ndarray:
         SOS_candids = SOS_candids.values
@@ -179,6 +197,8 @@ def find_signChange_locs_DifferentOnOffset(SOS_candids, EOS_candids):
 
     # sign_change = SOS_sign_change + EOS_sign_change
     return (SOS_sign_change, EOS_sign_change) # sign_change
+
+########################################################################
 
 def find_signChange_locs_EqualOnOffset(a_vec):
     asign = np.sign(a_vec) # we can drop .values here.
@@ -208,6 +228,8 @@ def find_signChange_locs_EqualOnOffset(a_vec):
     """
 
     return(sign_change)
+
+########################################################################
 
 def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.015):
     """
@@ -269,6 +291,8 @@ def correct_big_jumps_1DaySeries(dataTMS_jumpie, give_col, maxjump_perDay = 0.01
     dataTMS[give_col] = Veg_indks
     return(dataTMS)
 
+########################################################################
+
 def correct_big_jumps_preDefinedJumpDays(dataTS_jumpy, given_col, jump_amount = 0.4, no_days_between_points=20):
     dataTS = dataTS_jumpy.copy()
     dataTS = initial_clean(df = dataTS, column_to_be_cleaned = given_col)
@@ -310,6 +334,8 @@ def correct_big_jumps_preDefinedJumpDays(dataTS_jumpy, given_col, jump_amount = 
     dataTS[given_col] = Veg_indks
 
     return(dataTS)
+
+########################################################################
 
 def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
     """
@@ -416,6 +442,8 @@ def interpolate_outliers_EVI_NDVI(outlier_input, given_col):
     outlier_df[given_col] = vec
     return (outlier_df)
 
+########################################################################
+
 def initial_clean_NDVI(df):
     dt_copy = df.copy()
     # remove the useles system:index column
@@ -432,6 +460,8 @@ def initial_clean_NDVI(df):
     if ("image_year" in list(dt_copy.columns)):
         dt_copy.image_year = dt_copy.image_year.astype(int)
     return (dt_copy)
+
+########################################################################
 
 def initial_clean_EVI(df):
     dt_copy = df.copy()
@@ -451,6 +481,8 @@ def initial_clean_EVI(df):
     
     return (dt_copy)
 
+########################################################################
+
 def initial_clean(df, column_to_be_cleaned):
     dt_copy = df.copy()
     # remove the useles system:index column
@@ -465,6 +497,8 @@ def initial_clean(df, column_to_be_cleaned):
         dt_copy.loc[dt_copy[column_to_be_cleaned] < -1, column_to_be_cleaned] = -1.5
 
     return (dt_copy)
+
+########################################################################
 
 def convert_human_system_start_time_to_systemStart_time(humantimeDF):
     epoch_vec = pd.to_datetime(humantimeDF['human_system_start_time']).values.astype(np.int64) // 10 ** 6
@@ -482,6 +516,7 @@ def convert_human_system_start_time_to_systemStart_time(humantimeDF):
     humantimeDF = convert_human_system_start_time_to_systemStart_time(humantimeDF)
     Then humantimeDF will be nothing, since we are not returning anything.
     """
+########################################################################
 
 def add_human_start_time_by_YearDoY(a_Reg_DF):
     """
@@ -516,6 +551,8 @@ def add_human_start_time_by_YearDoY(a_Reg_DF):
     #     DF_C.loc[row_no, 'human_system_start_time'] = x
 
     return(DF_C)
+
+########################################################################
 
 def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, veg_idxs, window_size=10):
     #
@@ -634,6 +671,7 @@ def regularize_movingWindow_windowSteps_2Yrs(one_field_df, SF_yr, veg_idxs, wind
         regular_df.loc[row_or_count, 'doy'] = full_year_steps[curr_count]
     return(regular_df)
 
+########################################################################
 
 #
 #   These will not give what we want. It is a 10-days window
@@ -648,6 +686,8 @@ def add_human_start_time(HDF):
     HDF["human_system_start_time"] = human_time_array
     return(HDF)
 
+########################################################################
+
 def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
 
     a_regularized_TS = regular_TS.copy()
@@ -656,6 +696,8 @@ def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
         x_axis = extract_XValues_of_2Yrs_TS(regularized_TS = a_regularized_TS, SF_yr = SF_year)
     elif (len(a_regularized_TS.image_year.unique()) == 3):
         x_axis = extract_XValues_of_3Yrs_TS(regularized_TS = a_regularized_TS, SF_yr = SF_year)
+    elif (len(a_regularized_TS.image_year.unique()) == 1):
+        x_axis = a_regularized_TS["doy"].values.copy()
 
     TS_array = a_regularized_TS[V_idx].copy().values
 
@@ -701,7 +743,6 @@ def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
     while len(missing_indicies) > 0:
         left_pointer = missing_indicies[0] - 1
         left_value = TS_array[left_pointer]
-        
         right_pointer = missing_indicies[0]
         
         while TS_array[right_pointer] == -1.5:
@@ -726,6 +767,8 @@ def fill_theGap_linearLine(regular_TS, V_idx, SF_year):
     a_regularized_TS[V_idx] = TS_array
     return (a_regularized_TS)
 
+########################################################################
+
 def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
     # old name extract_XValues_of_RegularizedTS_2Yrs().
     # I do not know why I had Regularized in it.
@@ -747,6 +790,8 @@ def extract_XValues_of_2Yrs_TS(regularized_TS, SF_yr):
     else:
         X_values_full_year = X_values_full_year + 365
     return (np.concatenate([X_values_prev_year, X_values_full_year]))
+
+########################################################################
 
 def extract_XValues_of_3Yrs_TS(regularized_TS, SF_yr):
     # old name extract_XValues_of_RegularizedTS_3Yrs().
@@ -778,6 +823,8 @@ def extract_XValues_of_3Yrs_TS(regularized_TS, SF_yr):
     
     return (np.concatenate([X_values_prev_year, X_values_full_year, X_values_next_year]))
 
+########################################################################
+
 def check_leap_year(year):
     if (year % 4) == 0:
         if (year % 100) == 0:
@@ -789,6 +836,8 @@ def check_leap_year(year):
             return (True)
     else:
         return (False)
+
+########################################################################
 
 def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, V_idks, window_size=10):
     #
@@ -922,6 +971,8 @@ def regularize_movingWindow_windowSteps_18Months(one_field_df, SF_yr, V_idks, wi
         
     return (regular_df)
 
+########################################################################
+
 def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, V_idxs, window_size=10):
     #
     #  This function almost returns a data frame with data
@@ -991,6 +1042,8 @@ def regularize_movingWindow_windowSteps_12Months(one_field_df, SF_yr, V_idxs, wi
         
     return (regular_df)
 
+########################################################################
+
 def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
     """
     This function moves the window by a step size of window_size.
@@ -1014,6 +1067,8 @@ def max_movingWindow_windowSteps(VI_TS_npArray, window_size):
         output[count] = max(curr_window)
     return(output)
 
+########################################################################
+
 def max_movingWindow_1Steps(VI_TS_npArray, window_size):
     """
     This function moves the window by a step size of 1.
@@ -1032,6 +1087,8 @@ def max_movingWindow_1Steps(VI_TS_npArray, window_size):
         output[count] = max(VI_TS_npArray[window_start : window_end])
     return(output)
 
+########################################################################
+
 def find_difference_date_by_systemStartTime(earlier_day_epoch, later_day_epoch):
     #
     #  Given two epoch time, find the difference between them in number of days
@@ -1042,10 +1099,14 @@ def find_difference_date_by_systemStartTime(earlier_day_epoch, later_day_epoch):
     diff = ( late - early).days
     return (diff)
 
+########################################################################
+
 def correct_timeColumns_dataTypes(dtf):
     dtf.system_start_time = dtf.system_start_time/1000
     dtf = dtf.astype({'doy': 'int', 'image_year': 'int'})
     return(dtf)
+
+########################################################################
 
 def divide_double_nonDouble_peaks(dt_dt):
     
