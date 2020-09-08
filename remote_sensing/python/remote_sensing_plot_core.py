@@ -152,7 +152,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
                                                           height = min_val_for_being_peak, 
                                                           threshold = None, 
                                                           distance = 3, #  
-                                                          prominence = 0.3, 
+                                                          prominence = 0.2, 
                                                           width = 3, 
                                                           wlen = None, 
                                                           rel_height = 0.5, 
@@ -214,7 +214,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
     ax.set_ylim([-1.15, 1.15])
     # sb.set();
 
-    ax.scatter(date_df.Date.values, y.values, label="processed data", s=20, c='#E4D00A');
+    ax.scatter(date_df.Date.values, y.values, label="processed data", s=7, c='#E4D00A');
 
     for co, ite in enumerate(plotting_dic):
         lbl = ite # + ", Peaks: " + str(len(plotting_dic[ite][2]))

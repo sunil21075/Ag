@@ -78,18 +78,23 @@ eleven_colors = ["gray", "lightcoral", "red", "peru",
 # irrigated_only = 1
 # SF_year = 2017
 
-given_county = "Grant"
+# given_county = "Grant"
+# sos_thresh = 0.5
+# eos_thresh = 0.5
+
+regularized = True
+minFinderDetla = 0.4
 
 jumps = sys.argv[1]
 indeks = sys.argv[2]
 irrigated_only = int(sys.argv[3])
 SF_year = int(sys.argv[4])
 given_county = sys.argv[5]
-regularized = True
+SEOS_cut = int(sys.argv[6])
 
-sos_thresh = 0.5
-eos_thresh = 0.5
-minFinderDetla = 0.4
+sos_thresh = int(SEOS_cut / 10)/10 # grab the first digit as SOS cut
+eos_thresh = (SEOS_cut % 10) / 10  # grab the second digit as EOS cut
+
 ####################################################################################
 ###
 ###                   Aeolus Directories

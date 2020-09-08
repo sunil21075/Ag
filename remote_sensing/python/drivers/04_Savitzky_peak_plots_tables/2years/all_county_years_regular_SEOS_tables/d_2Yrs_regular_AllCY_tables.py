@@ -73,12 +73,24 @@ SG_win_size = 5
 SG_order = 3
 delt = 0.4
 SF_year = 2017
+regularized = True
+
+onset_cut = 0.5
+offset_cut = 0.5
 
 given_county = sys.argv[1]
 SF_year = int(sys.argv[2])
 indeks = sys.argv[3]
 SG_params = int(sys.argv[4])
 delt = float(sys.argv[5])
+SEOS_cut = int(sys.argv[6])
+
+###
+### White SOS and EOS params
+###
+
+onset_cut = int(SEOS_cut / 10)/10 # grab the first digit as SOS cut
+offset_cut = (SEOS_cut % 10) / 10  # grab the second digit as EOS cut
 
 SG_win_size = int(SG_params / 10) # grab the first digit as window size
 SG_order = SG_params % 10 # grab the second digit as poly. order
@@ -86,15 +98,6 @@ SG_order = SG_params % 10 # grab the second digit as poly. order
 print ("given_county is " + given_county.replace("_", " "))
 print("SG_params is {}.".format(SG_params))
 print("SG_win_size is {} and SG_order is {}.".format(SG_win_size, SG_order))
-
-###
-### White SOS and EOS params
-###
-onset_cut = 0.5
-offset_cut = 0.5
-
-regularized = True
-
 
 print ("delta = {fileShape}.".format(fileShape = delt))
 
@@ -104,15 +107,15 @@ print ("delta = {fileShape}.".format(fileShape = delt))
 ###
 ####################################################################################
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-annual_crops = pd.read_csv(param_dir, "double_crop_potential_plants.csv")
+annual_crops = pd.read_csv(param_dir + "double_crop_potential_plants.csv")
 
 regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/noJump_Regularized/"
-regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/2Yrs_tables_regular/"
+regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/"
 
 f_name = "01_Regular_filledGap_" + given_county + "_SF_" + str(SF_year) + "_" + indeks + ".csv"
 
 data_dir = regular_data_dir
-output_dir = regular_output_dir
+output_dir = regular_output_dir + "2Yrs_tbl_reg_fineGranular_SOS" + str(int(onset_cut*10)) + "_EOS" + str(int(offset_cut*10)) + "/"
 
 os.makedirs(output_dir, exist_ok=True)
 
@@ -247,6 +250,7 @@ for a_poly in polygon_list:
     if (counter % 10 == 0):
         print ("_________________________________________________________")
         print ("counter: " + str(counter))
+        print (a_poly)
     curr_field = a_df[a_df['ID']==a_poly].copy()
     curr_field.reset_index(drop=True, inplace=True)
     
@@ -256,10 +260,6 @@ for a_poly in polygon_list:
     ################################################################
     # Sort by DoY (sanitary check)
     curr_field.sort_values(by=['human_system_start_time'], inplace=True)
-
-    if len(curr_field.image_year.unique()) != 1:
-        print (curr_field.image_year.unique())
-        raise ValueError("image year must be unique at this point!!!")
 
     ### 
     ###  There is a chance that a polygon is repeated twice?
@@ -283,6 +283,12 @@ for a_poly in polygon_list:
 
     curr_field[indeks] = SG_pred
 
+    curr_field = curr_field[curr_field['image_year'] == SF_year]
+
+    if len(curr_field.image_year.unique()) != 1:
+        print (curr_field.image_year.unique())
+        raise ValueError("image year must be unique at this point!!!")
+
     y_orchard = curr_field[curr_field['doy'] >= 122]
     y_orchard = y_orchard[y_orchard['doy'] <= 305]
     y_orchard_range = max(y_orchard[indeks]) - min(y_orchard[indeks])
@@ -293,8 +299,6 @@ for a_poly in polygon_list:
         ###             find SOS and EOS, and add them to the table
         ###
         #######################################################################
-        curr_field = curr_field[curr_field['image_year'] == SF_year]
-
 
         # create the full calenadr to make better estimation of SOS and EOS.
         fine_granular_table = rc.create_calendar_table(SF_year = SF_year)
@@ -328,7 +332,7 @@ for a_poly in polygon_list:
         fine_granular_table.fillna(value={indeks:-1.5}, inplace=True)
         fine_granular_table = rc.fill_theGap_linearLine(regular_TS = fine_granular_table, V_idx=indeks, SF_year=SF_year)
 
-        curr_field = rc.addToDF_SOS_EOS_White(pd_TS = curr_field, 
+        fine_granular_table = rc.addToDF_SOS_EOS_White(pd_TS = fine_granular_table, 
                                               VegIdx = indeks, 
                                               onset_thresh = onset_cut, 
                                               offset_thresh = offset_cut)
@@ -336,21 +340,21 @@ for a_poly in polygon_list:
         ##
         ##  Kill false detected seasons 
         ##
-        curr_field = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = curr_field, min_season_length=40)
+        fine_granular_table = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = fine_granular_table, min_season_length=40)
 
         #
         # extract the SOS and EOS rows 
         #
-        SEOS = curr_field[(curr_field['SOS'] != 0) | curr_field['EOS'] != 0]
+        SEOS = fine_granular_table[(fine_granular_table['SOS'] != 0) | fine_granular_table['EOS'] != 0]
         SEOS = SEOS.copy()
         # SEOS = SEOS.reset_index() # not needed really
-        SOS_tb = curr_field[curr_field['SOS'] != 0]
+        SOS_tb = fine_granular_table[fine_granular_table['SOS'] != 0]
         if len(SOS_tb) >= 2:
             SEOS["season_count"] = len(SOS_tb)
             all_poly_and_SEOS[pointer_SEOS_tab:(pointer_SEOS_tab+len(SEOS))] = SEOS.values
             pointer_SEOS_tab += len(SEOS)
         else:
-            aaa = curr_field.iloc[0].values.reshape(1, len(curr_field.iloc[0]))
+            aaa = fine_granular_table.iloc[0].values.reshape(1, len(fine_granular_table.iloc[0]))
             aaa = np.append(aaa, [1])
             aaa = aaa.reshape(1, len(aaa))
 

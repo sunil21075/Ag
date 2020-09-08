@@ -12,15 +12,19 @@ do
       for SG_params in 51 53 73 93
       do  
         for delt in .4
-        do
-          cp template.sh ./qsubs/q_$outer.sh
-          sed -i s/outer/"$outer"/g      ./qsubs/q_$outer.sh
-          sed -i s/county/"$county"/g    ./qsubs/q_$outer.sh
-          sed -i s/SF_year/"$SF_year"/g  ./qsubs/q_$outer.sh
-          sed -i s/indeks/"$indeks"/g    ./qsubs/q_$outer.sh
-          sed -i s/SG_params/"$SG_params"/g  ./qsubs/q_$outer.sh
-          sed -i s/delt/"$delt"/g      ./qsubs/q_$outer.sh
-          let "outer+=1" 
+        do 
+          for SEOS_cut in 33 44 55
+          do
+            cp template.sh ./qsubs/q_$outer.sh
+            sed -i s/outer/"$outer"/g      ./qsubs/q_$outer.sh
+            sed -i s/delt/"$delt"/g      ./qsubs/q_$outer.sh
+            sed -i s/county/"$county"/g    ./qsubs/q_$outer.sh
+            sed -i s/indeks/"$indeks"/g    ./qsubs/q_$outer.sh
+            sed -i s/SF_year/"$SF_year"/g  ./qsubs/q_$outer.sh
+            sed -i s/SEOS_cut/"$SEOS_cut"/g  ./qsubs/q_$outer.sh
+            sed -i s/SG_params/"$SG_params"/g  ./qsubs/q_$outer.sh
+            let "outer+=1" 
+          done
         done
       done  
     done

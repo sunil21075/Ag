@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regular_AllCY_tables.py county SF_year indeks SG_params delt
+python3 ./d_2Yrs_regular_AllCY_tables.py county SF_year indeks SG_params delt SEOS_cut
 
 
 
