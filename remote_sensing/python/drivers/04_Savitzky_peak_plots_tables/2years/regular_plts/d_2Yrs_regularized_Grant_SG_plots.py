@@ -239,30 +239,30 @@ for a_poly in polygon_list:
         (ax1, ax2), (ax3, ax4) = axs;
         ax1.grid(True); ax2.grid(True); ax3.grid(True); ax4.grid(True);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, 
-                                                   SG_params=[5, 1], 
-                                                   SFYr = SF_year, ax=ax1, deltA= minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh);
+        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                                   idx=indeks, 
+                                                                   SG_params=[5, 1], 
+                                                                   SFYr = SF_year, ax=ax1, deltA= minFinderDetla,
+                                                                   onset_cut = sos_thresh, 
+                                                                   offset_cut = eos_thresh);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, SG_params=[5, 3], 
-                                                   SFYr=SF_year, ax=ax2, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh); 
+        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                                   idx=indeks, SG_params=[5, 3], 
+                                                                   SFYr=SF_year, ax=ax2, deltA=minFinderDetla,
+                                                                   onset_cut = sos_thresh, 
+                                                                   offset_cut = eos_thresh); 
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx = indeks, SG_params=[7, 3],
-                                                   SFYr = SF_year, ax=ax3, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh);
+        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                                  idx = indeks, SG_params=[7, 3],
+                                                                   SFYr = SF_year, ax=ax3, deltA=minFinderDetla,
+                                                                   onset_cut = sos_thresh, 
+                                                                   offset_cut = eos_thresh);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB = curr_field, 
-                                                   idx=indeks, SG_params=[9, 3],
-                                                   SFYr=SF_year, ax=ax4, deltA=minFinderDetla,
-                                                   onset_cut = sos_thresh, 
-                                                   offset_cut = eos_thresh)
+        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                                   idx=indeks, SG_params=[9, 3],
+                                                                   SFYr=SF_year, ax=ax4, deltA=minFinderDetla,
+                                                                   onset_cut = sos_thresh, 
+                                                                   offset_cut = eos_thresh)
 
         fig_name = plot_path + given_county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
 

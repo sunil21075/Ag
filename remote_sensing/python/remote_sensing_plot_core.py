@@ -31,6 +31,279 @@ import remote_sensing_core as rc
 #####
 ################################################################
 
+def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4, onset_cut=0.5, offset_cut=0.5):
+    """
+    This function has additional part to plot SOS and EOS.
+    and it is updated version of the function savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(.)
+    """
+    crr_fld = dataAB.copy()
+    if (not("human_system_start_time" in list(crr_fld.columns))):
+        crr_fld = rc.add_human_start_time(crr_fld)
+
+    eleven_colors = ["gray", "lightcoral", "red", "peru",
+                     "darkorange", "gold", "olive", "green",
+                     "blue", "violet", "deepskyblue"]
+
+    plant = crr_fld['CropTyp'].unique()[0]
+    # Take care of names, replace "/" and "," and " " by "_"
+    plant = plant.replace("/", "_")
+    plant = plant.replace(",", "_")
+    plant = plant.replace(" ", "_")
+    plant = plant.replace("__", "_")
+
+    county = crr_fld['county'].unique()[0]
+    ID = crr_fld['ID'].unique()[0]
+
+    y = crr_fld[idx].copy()
+
+    #############################################
+    ###
+    ###             Smoothen
+    ###
+    #############################################
+    # differences are minor, but lets keep using Pythons function
+    # my_savitzky_pred = rc.savitzky_golay(y, window_size=Sav_win_size, order=sav_order)
+    window_len = SG_params[0]
+    poly_order = SG_params[1]
+
+    SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
+
+    # SG might violate the boundaries. clip them:
+    SG_pred[SG_pred > 1 ] = 1
+    SG_pred[SG_pred < -1 ] = -1
+    
+    crr_fld[idx] = SG_pred
+    
+    #############################################
+    ###
+    ###             fine granularity table
+    ###
+    #############################################
+    # create the full calenadr to make better estimation of SOS and EOS.
+    fine_granular_table = rc.create_calendar_table(SF_year = SFYr)
+    fine_granular_table = pd.merge(fine_granular_table, crr_fld, on=['Date', 'SF_year', 'doy'], how='left')
+
+    ###### We need to fill the NAs that are created because they were not created in fine_granular_table
+    fine_granular_table["image_year"] = crr_fld["image_year"].unique()[0]
+    fine_granular_table["ID"]     = crr_fld["ID"].unique()[0]
+    fine_granular_table["Acres"]  = crr_fld["Acres"].unique()[0]
+    fine_granular_table["county"] = crr_fld["county"].unique()[0]
+
+    fine_granular_table["CropGrp"] = crr_fld["CropGrp"].unique()[0]
+    fine_granular_table["CropTyp"] = crr_fld["CropTyp"].unique()[0]
+    fine_granular_table["DataSrc"] = crr_fld["DataSrc"].unique()[0]
+    fine_granular_table["ExctAcr"] = crr_fld["ExctAcr"].unique()[0]
+
+    fine_granular_table["IntlSrD"] = crr_fld["IntlSrD"].unique()[0]
+    fine_granular_table["Irrigtn"] = crr_fld["Irrigtn"].unique()[0]
+
+    fine_granular_table["LstSrvD"] = crr_fld["LstSrvD"].unique()[0]
+    fine_granular_table["Notes"]   = crr_fld["Notes"].unique()[0]
+    fine_granular_table["RtCrpTy"] = crr_fld["RtCrpTy"].unique()[0]
+    fine_granular_table["Shap_Ar"] = crr_fld["Shap_Ar"].unique()[0]
+    fine_granular_table["Shp_Lng"] = crr_fld["Shp_Lng"].unique()[0]
+    fine_granular_table["TRS"] = crr_fld["TRS"].unique()[0]
+
+    fine_granular_table = rc.add_human_start_time_by_YearDoY(fine_granular_table)
+
+    # replace NAs with -1.5. Because, that is what the function fill_theGap_linearLine()
+    # uses as indicator for missing values
+    fine_granular_table.fillna(value={idx:-1.5}, inplace=True)
+    
+    fine_granular_table = rc.fill_theGap_linearLine(regular_TS = fine_granular_table, 
+                                                    V_idx=idx, 
+                                                    SF_year=SFYr)
+    
+    # update SG_pred so that we do not have to update too many other stuff.
+    SG_pred = fine_granular_table[idx].values.copy()
+    crr_fld = fine_granular_table
+    y = fine_granular_table[idx].copy()
+    #############################################
+    ###
+    ###   Form a data table of X and Y values
+    ###
+    #############################################
+
+    if len(fine_granular_table['image_year'].unique()) == 2:
+        X = rc.extract_XValues_of_2Yrs_TS(fine_granular_table, SF_yr = SFYr)
+    elif len(fine_granular_table['image_year'].unique()) == 1:
+        X = fine_granular_table['doy']
+
+    d = {'DoY': X, 'Date': pd.to_datetime(fine_granular_table.human_system_start_time.values).values}
+    date_df = pd.DataFrame(data=d)
+
+    min_val_for_being_peak = 0.5
+
+    #############################################
+    ###
+    ###             find peaks scipy
+    ###
+    #############################################
+    """
+    distance : Required minimal horizontal distance (>= 1) in samples 
+               between neighbouring peaks. Smaller peaks are removed first 
+               until the condition is fulfilled for all remaining peaks.
+
+    This is gonna prevent detecting false peaks.
+    """
+
+    # scipy.signal.argrelextrema(SG_pred, np.greater)
+    peaks_indxs, all_properties = scipy.signal.find_peaks(x = SG_pred, 
+                                                          height = min_val_for_being_peak, 
+                                                          threshold = None, 
+                                                          distance = 3, #  
+                                                          prominence = 0.3, 
+                                                          width = 3, 
+                                                          wlen = None, 
+                                                          rel_height = 0.5, 
+                                                          plateau_size=None)
+
+    scipy_SG_max_DoYs_series = X.iloc[peaks_indxs]
+    scipy_SG_max_series = pd.Series(all_properties['peak_heights'])
+
+    # keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    # plotting_dic = { keyy : [SG_pred, SG_max_DoYs_series, SG_max_series]}
+
+    #############################################
+    ###
+    ###             find troughs scipy
+    ###
+    #############################################
+
+    scipy_miminum_indexes = scipy.signal.argrelextrema(SG_pred, np.less)[0]
+    scipy_SG_min_DoYs_series = X.iloc[scipy_miminum_indexes]
+    scipy_SG_min_series = pd.Series(SG_pred[scipy_miminum_indexes])
+
+    #############################################
+    ###
+    ###  find peaks and troughs of MATLAB
+    ###
+    #############################################
+    my_SG_max_min = rc.my_peakdetect(y_axis = SG_pred, x_axis = X, delta=deltA);
+    my_SG_max =  my_SG_max_min[0]; my_SG_min =  my_SG_max_min[1];
+    my_SG_max = rc.separate_x_and_y(m_list = my_SG_max);
+    my_SG_min = rc.separate_x_and_y(m_list = my_SG_min);
+    my_SG_max_DoYs_series = pd.Series(my_SG_max[0]);
+    my_SG_max_series = pd.Series(my_SG_max[1]);
+    my_SG_min_DoYs_series = pd.Series(my_SG_min[0]);
+    my_SG_min_series = pd.Series(my_SG_min[1]);
+
+    #############################################
+    ###
+    ###      Form a dictionary for plotting
+    ###
+    #############################################
+
+    keyy = "SG: [" + str(window_len) + ", " + str(poly_order) + "]"
+    plotting_dic = { keyy : [SG_pred, 
+                             scipy_SG_max_DoYs_series, scipy_SG_max_series, # Scipy peak and troughs
+                             scipy_SG_min_DoYs_series, scipy_SG_min_series,
+
+                             my_SG_max_DoYs_series, my_SG_max_series, # my peak and troughs
+                             my_SG_min_DoYs_series, my_SG_min_series,
+
+                            ]}
+
+    #############################################
+    ###
+    ###             plot
+    ###
+    #############################################
+
+    plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
+    ax.set_ylim([-1.15, 1.15])
+    # sb.set();
+
+    ax.scatter(date_df.Date.values, y.values, label="processed data", s=20, c='#E4D00A');
+
+    for co, ite in enumerate(plotting_dic):
+        lbl = ite # + ", Peaks: " + str(len(plotting_dic[ite][2]))
+        ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
+
+        ############################################
+        #
+        # plot the SciPy outputs
+        #
+        ############################################
+        # plot the SciPy peaks
+        Scipy_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][1])]
+        ax.scatter(Scipy_date_df_specific.Date.values, 
+                   plotting_dic[ite][2], s=150, marker='*', c = '#00CC99');
+
+    
+        # plot My peaks
+        my_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][5])]
+        ax.scatter(my_date_df_specific.Date.values, plotting_dic[ite][6], s=100, marker=4, c = "r");
+
+        # plot My Troughs
+        My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
+        ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
+
+        # annotate My troughs
+        for min_count in np.arange(0, len(My_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = My_date_df_specific.iloc[min_count]['Date'].date(), 
+                    y = -0.7, 
+                    s = 'DoY=' + str(My_date_df_specific.iloc[min_count]['DoY']), 
+                    **style)
+
+    ###
+    ###   plot SOS and EOS
+    ###
+    # Update the EVI/NDVI values to the smoothed version.
+    crr_fld [idx] = SG_pred
+    crr_fld = rc.addToDF_SOS_EOS_White(pd_TS = crr_fld, 
+                                       VegIdx = idx, 
+                                       onset_thresh = onset_cut, 
+                                       offset_thresh = offset_cut)
+
+    ##
+    ##  Kill bad detected seasons 
+    ##
+    crr_fld = rc.Null_SOS_EOS_by_DoYDiff(pd_TS = crr_fld, min_season_length=40)
+
+    #
+    #  Start of the season
+    #
+    SOS = crr_fld[crr_fld['SOS'] != 0]
+    ax.scatter(SOS['Date'], SOS['SOS'], marker='+', s=155, c='g')
+
+    # annotate  EOS
+    for ii in np.arange(0, len(SOS)):
+        style = dict(size=10, color='grey', rotation='vertical')
+        ax.text(x = SOS.iloc[ii]['Date'].date(), 
+                y = -0.7, 
+                s = 'DoY=' + str(SOS.iloc[ii]['doy']), 
+                **style)
+
+    #
+    #  End of the season
+    #
+
+    EOS = crr_fld[crr_fld['EOS'] != 0]
+    ax.scatter(EOS['Date'], EOS['EOS'], marker='+', s=155, c='r')
+
+    # annotate EOS
+    for ii in np.arange(0, len(EOS)):
+        style = dict(size=10, color='grey', rotation='vertical')
+        ax.text(x = EOS.iloc[ii]['Date'].date(), 
+                y = -0.7, 
+                s = 'DoY=' + str(EOS.iloc[ii]['doy']), 
+                **style)
+
+    # Plot ratios:
+    # ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='r', label="EVI Ratio")
+
+    ax.axhline(0 , color = 'r', linewidth=.5)
+    ax.axhline(1 , color = 'r', linewidth=.5)
+    ax.axhline(-1, color = 'r', linewidth=.5)
+
+    ax.set_title(plot_title);
+    ax.set(ylabel=idx)
+    ax.legend(loc="best");
+
+#####################################################################################################################
+
 def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4, onset_cut=0.5, offset_cut=0.5):
     """
     This function has additional part to plot SOS and EOS.
@@ -168,7 +441,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     ax.set_ylim([-1.15, 1.15])
     # sb.set();
 
-    ax.scatter(date_df.Date.values, y.values, label="processed data", s=20, c='#E4D00A');
+    ax.scatter(date_df.Date.values, y.values, label="processed data", s=10, c='#E4D00A');
 
     for co, ite in enumerate(plotting_dic):
         lbl = ite # + ", Peaks: " + str(len(plotting_dic[ite][2]))
@@ -267,6 +540,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     ax.set(ylabel=idx)
     ax.legend(loc="best");
 
+#####################################################################################################################
 
 def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SFYr, ax, deltA = 0.4, min_val_for_being_peak = 0.5):
     
@@ -458,6 +732,7 @@ def savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(A_Data, idx, SG_params, SF
     ax.set(ylabel=idx)
     ax.legend(loc="best");
 
+#####################################################################################################################
 
 def savitzky_1yr_panels_clean_myPeak(crr_fld, idx, SG_params, SFYr, ax, deltA = 0.4):
     """
@@ -575,6 +850,7 @@ def savitzky_1yr_panels_clean_myPeak(crr_fld, idx, SG_params, SFYr, ax, deltA = 
     ax.set(ylabel=idx)
     ax.legend(loc="best");
 
+#####################################################################################################################
 
 def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
 
@@ -804,6 +1080,7 @@ def savitzky_2yrs_panel(crr_fld, idx, deltA, SFYr, ax):
     ax.set(ylabel=idx) # xlabel='Time', 
     ax.legend(loc="best");
 
+#####################################################################################################################
 
 # def subplots_savitzky_2_yrs(crr_fld, idx, deltA, SFYr):
 #     #

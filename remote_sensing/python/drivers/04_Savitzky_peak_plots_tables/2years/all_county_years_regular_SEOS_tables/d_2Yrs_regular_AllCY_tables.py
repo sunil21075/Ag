@@ -62,7 +62,7 @@ start_time = time.time()
 sys.path.append('/home/hnoorazar/remote_sensing_codes/')
 
 import remote_sensing_core as rc
-import remote_sensing_core as rcp
+import remote_sensing_plot_core as rcp
 
 ####################################################################################
 ###
