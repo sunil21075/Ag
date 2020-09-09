@@ -3,6 +3,10 @@
 #### Sept. 1
 ####
 
+####
+#### Sept. 9, edit to include more threshold directories.
+####
+
 """
 Jupyter Notebook is called on iMac:
 Acreages_ConfusionStyle_raw_n_regular_SOS
@@ -72,12 +76,39 @@ param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
 SF_data_dir = "/data/hydro/users/Hossein/remote_sensing/01_shapefiles_data_part_not_filtered/"
 
 # the following data came from 70% cloud.
-regular_in_dir = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/2Yrs_tables_regular/"
-regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/05_Regular_SOS_confusions/00_allYCtables_separate/"
+regular_in_base = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/"
 
-data_dir = regular_in_dir    
-output_dir = regular_output_dir
+# regular_coarse_in_dir = regular_in_base + "/2Yrs_tables_regular_coarse_SEOS5/"
+regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/05_Regular_SOS_confusions/"
+
+###################################
+#
+#  First I had written for loop for years and counties!
+#  on Sept. 9 changed it to terminal arguments
+#
+SF_years = [2016, 2017, 2018]
+counties = ["Grant", "Whitman", "Asotin",
+            "Garfield", "Ferry", "Franklin",
+            "Columbia", "Adams","Benton",
+            "Chelan", "Douglas", "Kittitas", "Klickitat",
+            "Lincoln", "Okanogan", "Spokane", "Stevens",
+            "Yakima",'Pend_Oreille', 'Walla_Walla']
+
+
+counties = sys.argv[1]
+SF_years = int(sys.argv[2])
+indekses = sys.argv[3]
+SEOS_cut = int(sys.argv[4])
+
+sos_thresh = int(SEOS_cut / 10)/10 # grab the first digit as SOS cut
+eos_thresh = (SEOS_cut % 10) / 10  # grab the second digit as EOS cut
+
+data_dir = regular_in_base + "2Yrs_tbl_reg_fineGranular_SOS" + str(int(sos_thresh*10)) + "_" + "EOS" + str(int(eos_thresh*10)) + "/"
+output_dir = regular_output_dir + "fine_SOS" + str(int(sos_thresh*10)) + "_" + "EOS" + str(int(eos_thresh*10))  + "/00_allYCtables_separate/"
 os.makedirs(output_dir, exist_ok=True)
+
+#############################################################################################
+
 
 print ("_________________________________________________________")
 print ("data dir is: " + data_dir)
@@ -91,17 +122,8 @@ delta_windows_degrees = [[5, 1], [5, 3], [7, 3], [9, 3]]
 output_columns = ['parameters', 'actual_2_pred_2', 'actual_2_pred_Not2',
                   'actual_Not2_pred_2', 'actual_Not2_pred_Not2']
 
-
-SF_years = [2016, 2017, 2018]
-counties = ["Grant", "Whitman", "Asotin",
-            "Garfield", "Ferry", "Franklin",
-            "Columbia", "Adams","Benton",
-            "Chelan", "Douglas", "Kittitas", "Klickitat",
-            "Lincoln", "Okanogan", "Spokane", "Stevens",
-            "Yakima",'Pend_Oreille', 'Walla_Walla']
-
-for given_county in counties:
-    for SF_year in SF_years:
+for given_county in [counties]:
+    for SF_year in [SF_years]:
         print ("given_county is " + given_county.replace("_", " "))
 
         ####################################################################################
@@ -168,7 +190,6 @@ for given_county in counties:
                                 else:
                                     Pere_name = "_PereIn_"
 
-
                                 print ("NASS_out: " + str(NASS_out) + ", non_Irr_out: " + str(non_Irr_out) + \
                                        ", perennials_out: " + str(perennials_out))
 
@@ -201,7 +222,7 @@ for given_county in counties:
                                         print ("line 214")
                                         print (doubl_season_table.shape)
                                 
-                                    doubl_season_table.drop(['doy', 'EVI', 'system_start_time', 'Date', 
+                                    doubl_season_table.drop(['doy', 'EVI', 'Date', 
                                                            'human_system_start_time', 
                                                            'EVI_ratio','SOS', 'EOS'], axis=1, inplace=True)
 
@@ -269,7 +290,7 @@ for given_county in counties:
                                 ###########
                                 output['parameters'] = output['parameters'].astype("str")
 
-                                filename = regular_output_dir + given_county + "_" + str(SF_year) + \
+                                filename = output_dir + given_county + "_" + str(SF_year) + \
                                            "_" + indeks + \
                                            Pere_name + NASS_name + non_Irr_name + dbl_name + \
                                            "confusion_Acr_" + exactly_2_seasons_name + "_" + \
@@ -287,5 +308,5 @@ for given_county in counties:
 
 
 
-
-
+print ("done")
+print (time.time() - start_time)
