@@ -7,7 +7,7 @@
 #PBS -N outer_regular_jumps_jump_plt
 
 ## Define compute options
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=1:ppn=3
 #PBS -l mem=60gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regularized_Grant_SG_plots.py jumps indeks irrigated_only SF_year county SEOS_cut
+python3 ./d_2Yrs_regularized_SG_plots.py jumps indeks irrigated_only SF_year county SEOS_cut
 
 
 

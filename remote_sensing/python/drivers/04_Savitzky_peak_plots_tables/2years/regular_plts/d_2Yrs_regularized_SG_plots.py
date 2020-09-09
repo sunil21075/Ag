@@ -233,7 +233,14 @@ for a_poly in polygon_list:
     plot_path = plot_path   # +  str(len(SG_max_DoYs_series)) + "_peaks/"
     os.makedirs(plot_path, exist_ok=True)
     # print ("plot_path is " + plot_path)
-    if (len(os.listdir(plot_path)) < 130):
+    if given_county == "Grant":
+      max_plt_count = 50
+    elif given_county == "Walla_Walla":
+      max_plt_count = 80
+    else:
+      max_plt_count = 100
+
+    if (len(os.listdir(plot_path)) < max_plt_count):
         # 
         #  Set up Canvas
         #
