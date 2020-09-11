@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/hnoorazar/remote_sensing_codes/04_Savitzky_peak_plots_tables/00_peak_tables_and_plots_Aug26/01_2Yrs_regular_plots/
+cd /home/hnoorazar/remote_sensing_codes/04_Savitzky_peak_plots_tables/00_peak_tables_and_plots_Aug26/01_2Yrs_regular_plots/allYCF_plots/
 
 outer=1
 
@@ -9,7 +9,7 @@ do
   do
     for indeks in EVI
     do
-      for SF_year in 2017
+      for SF_year in 2016 2017 2018
       do
         for jumps in no
         do 

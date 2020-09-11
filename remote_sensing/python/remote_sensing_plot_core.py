@@ -295,7 +295,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
                 **style)
 
     # Plot ratios:
-    # ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='r', label="EVI Ratio")
+    ax.plot(crr_fld['Date'], crr_fld['EVI_ratio'], c='gray', label="EVI Ratio")
 
     ax.axhline(0 , color = 'r', linewidth=.5)
     ax.axhline(1 , color = 'r', linewidth=.5)

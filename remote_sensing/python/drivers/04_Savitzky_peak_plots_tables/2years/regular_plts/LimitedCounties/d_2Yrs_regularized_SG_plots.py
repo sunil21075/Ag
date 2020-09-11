@@ -244,6 +244,7 @@ for a_poly in polygon_list:
       max_plt_count = 100
 
     if (len(os.listdir(plot_path)) < max_plt_count):
+
     # if curr_count <= max_plt_count
         # 
         #  Set up Canvas
@@ -282,11 +283,11 @@ for a_poly in polygon_list:
 
         fig_name = plot_path + given_county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
 
-        os.makedirs(plot_dir_base, exist_ok=True)
+        os.makedirs(plot_path, exist_ok=True)
 
         plt.savefig(fname = fig_name, dpi=250, bbox_inches='tight')
         plt.close('all')
-  counter += 1
+    counter += 1
 
 
 print ("done")
