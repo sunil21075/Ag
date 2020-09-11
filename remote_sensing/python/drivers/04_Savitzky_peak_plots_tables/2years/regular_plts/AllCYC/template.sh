@@ -8,9 +8,9 @@
 
 ## Define compute options
 #PBS -l nodes=1:ppn=3
-#PBS -l mem=60gb
-#PBS -l walltime=06:00:00
-#PBS -q batch
+#PBS -l mem=40gb
+#PBS -l walltime=99:00:00
+#PBS -q hydro
 
 ## Define path for output & error logs
 #PBS -k o
@@ -52,7 +52,7 @@ echo "--------- continue on ---------"
 # Run python code for matrix
 # ----------------------------------------------------------------
 
-python3 ./d_2Yrs_regularized_SG_plots.py jumps indeks irrigated_only SF_year county SEOS_cut
+python3 ./d_2Yrs_regularized_SG_plots_AllCYC.py jumps indeks irrigated_only SF_year county SEOS_cut
 
 
 

@@ -1,5 +1,5 @@
 ####
-#### Aug. 31
+#### Sept. 9
 ####
 
 
@@ -32,27 +32,6 @@ start_time = time.time()
 # look @ https://stackoverflow.com/questions/67631/how-to-import-a-module-given-the-full-path
 
 
-# ####################################################################################
-# ###
-# ###                      Local
-# ###
-# ####################################################################################
-
-# ################################################################################
-# ###
-# ### Core path
-# ###
-
-# sys.path.append('/Users/hn/Documents/00_GitHub/Ag/remote_sensing/python/')
-
-# ################
-# ###
-# ### Directories
-# ###
-# data_dir = "/Users/hn/Documents/01_research_data/remote_sensing/" + \
-#            "01_NDVI_TS/04_Irrigated_eastern_Cloud70/Grant_2018_irrigated/"
-
-# param_dir = "/Users/hn/Documents/00_GitHub/Ag/remote_sensing/parameters/"
 ####################################################################################
 ###
 ###                      Aeolus Core path
@@ -69,14 +48,8 @@ import remote_sensing_plot_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
-SG_win_size = 5
-SG_order = 3
-delt = 0.4
-SF_year = 2017
-regularized = True
 
-onset_cut = 0.5
-offset_cut = 0.5
+regularized = True
 
 given_county = sys.argv[1]
 SF_year = int(sys.argv[2])
@@ -99,6 +72,11 @@ print ("given_county is " + given_county.replace("_", " "))
 print("SG_params is {}.".format(SG_params))
 print("SG_win_size is {} and SG_order is {}.".format(SG_win_size, SG_order))
 
+
+print("SEOS_cut is {}.".format(SEOS_cut))
+print("onset_cut is {} and offset_cut is {}.".format(onset_cut, offset_cut))
+
+
 print ("delta = {fileShape}.".format(fileShape = delt))
 
 ####################################################################################
@@ -107,7 +85,7 @@ print ("delta = {fileShape}.".format(fileShape = delt))
 ###
 ####################################################################################
 param_dir = "/home/hnoorazar/remote_sensing_codes/parameters/"
-annual_crops = pd.read_csv(param_dir + "double_crop_potential_plants.csv")
+# annual_crops = pd.read_csv(param_dir + "double_crop_potential_plants.csv")
 
 regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/noJump_Regularized/"
 regular_output_dir = "/data/hydro/users/Hossein/remote_sensing/04_noJump_Regularized_plt_tbl_SOSEOS/"
@@ -333,9 +311,9 @@ for a_poly in polygon_list:
         fine_granular_table = rc.fill_theGap_linearLine(regular_TS = fine_granular_table, V_idx=indeks, SF_year=SF_year)
 
         fine_granular_table = rc.addToDF_SOS_EOS_White(pd_TS = fine_granular_table, 
-                                              VegIdx = indeks, 
-                                              onset_thresh = onset_cut, 
-                                              offset_thresh = offset_cut)
+                                                       VegIdx = indeks, 
+                                                       onset_thresh = onset_cut, 
+                                                       offset_thresh = offset_cut)
 
         ##
         ##  Kill false detected seasons 
@@ -351,13 +329,17 @@ for a_poly in polygon_list:
         SOS_tb = fine_granular_table[fine_granular_table['SOS'] != 0]
         if len(SOS_tb) >= 2:
             SEOS["season_count"] = len(SOS_tb)
+            # re-order columns of SEOS so they match!!!
+            SEOS = SEOS[all_poly_and_SEOS.columns]
             all_poly_and_SEOS[pointer_SEOS_tab:(pointer_SEOS_tab+len(SEOS))] = SEOS.values
             pointer_SEOS_tab += len(SEOS)
         else:
-            aaa = fine_granular_table.iloc[0].values.reshape(1, len(fine_granular_table.iloc[0]))
-            aaa = np.append(aaa, [1])
-            aaa = aaa.reshape(1, len(aaa))
+            # re-order columns of fine_granular_table so they match!!!
+            fine_granular_table["season_count"] = 1
+            fine_granular_table = fine_granular_table[all_poly_and_SEOS.columns]
 
+            aaa = fine_granular_table.iloc[0].values.reshape(1, len(fine_granular_table.iloc[0]))
+            
             all_poly_and_SEOS.iloc[pointer_SEOS_tab:(pointer_SEOS_tab+1)] = aaa
             pointer_SEOS_tab += 1
     else: # here are potentially apples, cherries, etc.

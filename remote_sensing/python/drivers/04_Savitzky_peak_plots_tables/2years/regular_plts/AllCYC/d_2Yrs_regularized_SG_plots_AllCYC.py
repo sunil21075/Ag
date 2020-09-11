@@ -110,13 +110,8 @@ else:
 
 regular_data_dir = "/data/hydro/users/Hossein/remote_sensing/03_Regularized_TS/70_cloud/2Yrs/"
 
-# if jumps == "yes":
-#     regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_wJumps/" + \
-#                          str(SF_year) + "_regular_" + output_Irr + "_" + indeks + \
-#                          "_SOS" + str(int(sos_thresh*10))+ "_EOS" + str(int(eos_thresh*10)) + "/"
-# else:
 regular_data_dir = regular_data_dir + "/noJump_Regularized/"
-regular_output_dir = output_base + "/2Yrs_plots_70Cloud_Regular_noJumps/" + \
+regular_output_dir = output_base + "/plots_fine_granularity/" + \
                      str(SF_year) + "_regular_" + output_Irr + "_" + indeks + \
                      "_SOS" + str(int(sos_thresh*10)) + "_EOS" + str(int(eos_thresh*10)) + "/"
 
@@ -204,7 +199,7 @@ print ("_____________________________________")
 counter = 0
 
 for a_poly in polygon_list:
-    if (counter%10 == 0):
+    if (counter%100 == 0):
         print ("_____________________________________")
         print ("counter: " + str(counter))
         print (a_poly)
@@ -233,56 +228,47 @@ for a_poly in polygon_list:
     plot_path = plot_path   # +  str(len(SG_max_DoYs_series)) + "_peaks/"
     os.makedirs(plot_path, exist_ok=True)
     # print ("plot_path is " + plot_path)
-    if given_county == "Grant":
-      max_plt_count = 50
-    elif given_county == "Walla_Walla":
-      max_plt_count = 80
-    else:
-      max_plt_count = 100
 
-    if (len(os.listdir(plot_path)) < max_plt_count):
-        # 
-        #  Set up Canvas
-        #
-        fig, axs = plt.subplots(2, 2, figsize=(20,12),
-                        sharex='col', sharey='row',
-                        gridspec_kw={'hspace': 0.1, 'wspace': .1});
+    
+    fig, axs = plt.subplots(2, 2, figsize=(20,12),
+                            sharex='col', sharey='row',
+                            gridspec_kw={'hspace': 0.1, 'wspace': .1});
 
-        (ax1, ax2), (ax3, ax4) = axs;
-        ax1.grid(True); ax2.grid(True); ax3.grid(True); ax4.grid(True);
+    (ax1, ax2), (ax3, ax4) = axs;
+    ax1.grid(True); ax2.grid(True); ax3.grid(True); ax4.grid(True);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
-                                                                   idx=indeks, 
-                                                                   SG_params=[5, 1], 
-                                                                   SFYr = SF_year, ax=ax1, deltA= minFinderDetla,
-                                                                   onset_cut = sos_thresh, 
-                                                                   offset_cut = eos_thresh);
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                               idx = indeks, 
+                                                               SG_params = [5, 1], 
+                                                               SFYr = SF_year, ax=ax1, deltA= minFinderDetla,
+                                                               onset_cut = sos_thresh, 
+                                                               offset_cut = eos_thresh);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
-                                                                   idx=indeks, SG_params=[5, 3], 
-                                                                   SFYr=SF_year, ax=ax2, deltA=minFinderDetla,
-                                                                   onset_cut = sos_thresh, 
-                                                                   offset_cut = eos_thresh); 
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                               idx=indeks, SG_params=[5, 3], 
+                                                               SFYr=SF_year, ax=ax2, deltA=minFinderDetla,
+                                                               onset_cut = sos_thresh, 
+                                                               offset_cut = eos_thresh); 
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
-                                                                  idx = indeks, SG_params=[7, 3],
-                                                                   SFYr = SF_year, ax=ax3, deltA=minFinderDetla,
-                                                                   onset_cut = sos_thresh, 
-                                                                   offset_cut = eos_thresh);
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                              idx = indeks, SG_params=[7, 3],
+                                                               SFYr = SF_year, ax=ax3, deltA=minFinderDetla,
+                                                               onset_cut = sos_thresh, 
+                                                               offset_cut = eos_thresh);
 
-        rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
-                                                                   idx=indeks, SG_params=[9, 3],
-                                                                   SFYr=SF_year, ax=ax4, deltA=minFinderDetla,
-                                                                   onset_cut = sos_thresh, 
-                                                                   offset_cut = eos_thresh)
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+                                                               idx=indeks, SG_params=[9, 3],
+                                                               SFYr=SF_year, ax=ax4, deltA=minFinderDetla,
+                                                               onset_cut = sos_thresh, 
+                                                               offset_cut = eos_thresh)
 
-        fig_name = plot_path + given_county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
+    fig_name = plot_path + given_county + "_" + plant + "_SF_year_" + str(SF_year) + "_" + ID + '.png'
 
-        os.makedirs(plot_dir_base, exist_ok=True)
+    os.makedirs(plot_dir_base, exist_ok=True)
 
-        plt.savefig(fname = fig_name, dpi=250, bbox_inches='tight')
-        plt.close('all')
-        counter += 1
+    plt.savefig(fname = fig_name, dpi=100, bbox_inches='tight')
+    plt.close('all')
+  counter += 1
 
 
 print ("done")

@@ -7,8 +7,8 @@
 #PBS -N outer_2Yr_regular_Grant_2017_indeks_tbl
 
 ## Define compute options
-#PBS -l nodes=1:ppn=5
-#PBS -l mem=60gb
+#PBS -l nodes=1:ppn=10
+#PBS -l mem=5gb
 #PBS -l walltime=06:00:00
 #PBS -q batch
 

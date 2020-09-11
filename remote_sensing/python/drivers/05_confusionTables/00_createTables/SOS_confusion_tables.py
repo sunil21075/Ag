@@ -52,19 +52,7 @@ import remote_sensing_core as rcp
 ###      Parameters                   
 ###
 ####################################################################################
-SG_win_size = 5
-SG_order = 3
-delt = 0.4
-do_plot  = 0
-SF_year = 2017
 
-
-
-given_county = "Grant"
-SF_year = 2016
-indekses = "EVI"
-
-regularized = True
 raw_or_regular = "regular"
 
 ####################################################################################
@@ -107,14 +95,13 @@ data_dir = regular_in_base + "2Yrs_tbl_reg_fineGranular_SOS" + str(int(sos_thres
 output_dir = regular_output_dir + "fine_SOS" + str(int(sos_thresh*10)) + "_" + "EOS" + str(int(eos_thresh*10))  + "/00_allYCtables_separate/"
 os.makedirs(output_dir, exist_ok=True)
 
-#############################################################################################
-
-
 print ("_________________________________________________________")
 print ("data dir is: " + data_dir)
 print ("_________________________________________________________")
 print ("output_dir is: " +  output_dir)
 print ("_________________________________________________________")
+
+#############################################################################################
 
 deltas = [0.1, 0.2, 0.3, 0.4]
 delta_windows_degrees = [[5, 1], [5, 3], [7, 3], [9, 3]]

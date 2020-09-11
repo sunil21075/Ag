@@ -63,10 +63,10 @@ def Null_SOS_EOS_by_DoYDiff(pd_TS, min_season_length=40):
     EOS_indexes = pd_TS_DoYDiff.index[pd_TS_DoYDiff['EOS'] != 0].tolist()
 
     """
-    It seems it is possible to only have 1 SOS with no EOS. (or perhaps vice versa).
+    It seems it is possible to only have 1 SOS with no EOS. (or vice versa).
     In this case we can consider we only have 1 season!
     """
-    if len(SOS_indexes)==0 or len(EOS_indexes)==0:
+    if len(SOS_indexes) == 0 or len(EOS_indexes) == 0:
         return pd_TS_DoYDiff
 
     """

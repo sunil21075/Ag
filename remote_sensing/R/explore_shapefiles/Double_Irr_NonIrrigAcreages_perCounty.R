@@ -69,7 +69,7 @@ for (yr in years){
     output_tbl[row, 7] <- row_vals[6]
   }
 
-  cols <- names(output_tbl)[2:7]
+  cols <- names(output_tbl)[2:dim(output_tbl)[2]]
   output_tbl[,(cols) := round(.SD, 2), .SDcols=cols]
 
   main_out <- "/Users/hn/Documents/01_research_data/remote_sensing/Irr_NonIrr_Acr_perCounty/"
