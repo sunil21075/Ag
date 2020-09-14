@@ -122,6 +122,12 @@ print ("plot_dir_base is " + plot_dir_base)
 
 
 #####################################################################################
+
+raw_dir = "/data/hydro/users/Hossein/remote_sensing/02_Eastern_WA_EE_TS/2Years/70_cloud/"
+raw_f_name = "Eastern_WA_" + str(SF_year) + "_70cloud_selectors.csv"
+
+#####################################################################################
+
 data_dir = regular_data_dir
 output_dir = regular_output_dir
 plot_dir_base = output_dir 
@@ -145,6 +151,7 @@ print ("_________________________________________________________")
 ####################################################################################
 
 a_df = pd.read_csv(data_dir + f_name, low_memory=False)
+raw_df = pd.read_csv(raw_dir + raw_f_name, low_memory=False)
 
 if 'Date' in a_df.columns:
     if type(a_df.Date.iloc[0]) == str:
@@ -163,6 +170,13 @@ a_df = a_df[a_df['county'] == given_county.replace("_", " ")] # Filter Grant
 a_df = rc.filter_out_NASS(a_df) # Toss NASS
 a_df = rc.filter_by_lastSurvey(a_df, year = SF_year) # filter by last survey date
 a_df['SF_year'] = SF_year
+
+################################################################################
+raw_df = raw_df[raw_df['county'] == given_county.replace("_", " ")] # Filter Grant
+raw_df = rc.filter_out_NASS(raw_df) # Toss NASS
+raw_df = rc.filter_by_lastSurvey(raw_df, year = SF_year) # filter by last survey date
+# a_df['SF_year'] = SF_year
+################################################################################
 
 if irrigated_only == True:
     a_df = rc.filter_out_nonIrrigated(a_df)
@@ -184,7 +198,27 @@ if not('CovrCrp' in a_df.columns):
     a_df['CovrCrp'] = "NA"
 
 
+if not('DataSrc' in raw_df.columns):
+    print ("Data source is being set to NA")
+    raw_df['DataSrc'] = "NA"
+    
+if not('CovrCrp' in raw_df.columns):
+    print ("CovrCrp is being set to NA")
+    raw_df['CovrCrp'] = "NA"
+
+
 a_df = rc.initial_clean(df = a_df, column_to_be_cleaned = indeks)
+raw_df = rc.initial_clean(df = raw_df, column_to_be_cleaned = indeks)
+
+if not("human_system_start_time" in raw_df.columns):
+    raw_df = rc.add_human_start_time_by_YearDoY(raw_df)
+
+if 'Date' in raw_df.columns:
+    if type(raw_df.Date.iloc[0]) == str:
+        raw_df['Date'] = pd.to_datetime(raw_df.Date.values).values
+else: 
+    raw_df['Date'] = pd.to_datetime(raw_df.human_system_start_time.values).values
+
 
 an_EE_TS = a_df.copy()
 del(a_df)
@@ -205,11 +239,13 @@ for a_poly in polygon_list:
         print (a_poly)
 
     curr_field = an_EE_TS[an_EE_TS['ID']==a_poly].copy()
+    curr_raw = raw_df[raw_df['ID'] == a_poly].copy()
 
     #
     #  filter just one year to have a clean SOS, EOS stuff
     #
     curr_field = curr_field[curr_field.image_year == SF_year]
+    curr_raw.sort_values(by=['image_year', 'doy'], inplace=True)
     
     ################################################################
     # Sort by DoY (sanitary check)
@@ -237,26 +273,34 @@ for a_poly in polygon_list:
     (ax1, ax2), (ax3, ax4) = axs;
     ax1.grid(True); ax2.grid(True); ax3.grid(True); ax4.grid(True);
 
-    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(twoYears_raw = curr_raw,
+                                                               twoYears_regular = curr_field_two_years,
+                                                               # dataAB = curr_field, 
                                                                idx = indeks, 
                                                                SG_params = [5, 1], 
                                                                SFYr = SF_year, ax=ax1, deltA = minFinderDetla,
                                                                onset_cut = sos_thresh, 
                                                                offset_cut = eos_thresh);
 
-    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(twoYears_raw = curr_raw,
+                                                               twoYears_regular = curr_field_two_years,
+                                                               # dataAB = curr_field, 
                                                                idx=indeks, SG_params=[5, 3], 
                                                                SFYr=SF_year, ax=ax2, deltA = minFinderDetla,
                                                                onset_cut = sos_thresh, 
                                                                offset_cut = eos_thresh); 
 
-    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
-                                                              idx = indeks, SG_params=[7, 3],
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(twoYears_raw = curr_raw,
+                                                               twoYears_regular = curr_field_two_years,
+                                                               # dataAB = curr_field, 
+                                                               idx = indeks, SG_params=[7, 3],
                                                                SFYr = SF_year, ax=ax3, deltA = minFinderDetla,
                                                                onset_cut = sos_thresh, 
                                                                offset_cut = eos_thresh);
 
-    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB = curr_field, 
+    rcp.SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(twoYears_raw = curr_raw,
+                                                               twoYears_regular = curr_field_two_years,
+                                                               # dataAB = curr_field, 
                                                                idx = indeks, SG_params = [9, 3],
                                                                SFYr = SF_year, ax=ax4, deltA = minFinderDetla,
                                                                onset_cut = sos_thresh, 

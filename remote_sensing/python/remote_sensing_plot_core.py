@@ -31,32 +31,38 @@ import remote_sensing_core as rc
 #####
 ################################################################
 
-def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4, onset_cut=0.5, offset_cut=0.5):
+def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(twoYears_raw, twoYears_regular, 
+                                                           idx, SG_params, SFYr, ax, deltA = 0.4, 
+                                                           onset_cut=0.5, offset_cut=0.5):
     """
     This function has additional part to plot SOS and EOS.
     and it is updated version of the function savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(.)
     """
-    crr_fld = dataAB.copy()
-    if (not("human_system_start_time" in list(crr_fld.columns))):
-        crr_fld = rc.add_human_start_time(crr_fld)
+    ## crr_fld = dataAB.copy() #***
+    crr_fld_twoYrs_regular = twoYears_regular.copy() #***
+    if (not("human_system_start_time" in list(crr_fld_twoYrs_regular.columns))):
+        crr_fld_twoYrs_regular = rc.add_human_start_time(crr_fld_twoYrs_regular)
 
     eleven_colors = ["gray", "lightcoral", "red", "peru",
                      "darkorange", "gold", "olive", "green",
                      "blue", "violet", "deepskyblue"]
 
-    plant = crr_fld['CropTyp'].unique()[0]
+    plant = crr_fld_twoYrs_regular['CropTyp'].unique()[0]
     # Take care of names, replace "/" and "," and " " by "_"
     plant = plant.replace("/", "_")
     plant = plant.replace(",", "_")
     plant = plant.replace(" ", "_")
     plant = plant.replace("__", "_")
 
-    county = crr_fld['county'].unique()[0]
-    ID = crr_fld['ID'].unique()[0]
+    county = crr_fld_twoYrs_regular['county'].unique()[0]
+    ID = crr_fld_twoYrs_regular['ID'].unique()[0]
 
-    y = crr_fld[idx].copy()
-    processed_Idx = crr_fld[idx].copy()
-    processed_Dates = crr_fld['Date'].copy()
+    ## y = crr_fld[idx].copy() #***
+    ###
+    ### Copy the regularized values that are processed up to SG smoothing.
+    ###
+    twoYrs_regular_Yvalues = crr_fld_twoYrs_regular[idx].copy()
+    twoYrs_regular_Xvalues = crr_fld_twoYrs_regular['Date'].copy()
 
     #############################################
     ###
@@ -68,14 +74,19 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
     window_len = SG_params[0]
     poly_order = SG_params[1]
 
-    SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order)
+    ## SG_pred = scipy.signal.savgol_filter(y, window_length= window_len, polyorder=poly_order) #***
+
+    SG_pred_twoYears = scipy.signal.savgol_filter(twoYrs_regular_Yvalues, window_length= window_len, polyorder=poly_order)
 
     # SG might violate the boundaries. clip them:
-    SG_pred[SG_pred > 1 ] = 1
-    SG_pred[SG_pred < -1 ] = -1
+    SG_pred_twoYears[SG_pred_twoYears > 1 ] = 1
+    SG_pred_twoYears[SG_pred_twoYears < -1 ] = -1
     
-    crr_fld[idx] = SG_pred
+    crr_fld_twoYrs_regular[idx] = SG_pred_twoYears
     
+    # crr_fld will be one year from now on
+    crr_fld = crr_fld_twoYrs_regular.copy()
+    crr_fld = crr_fld[crr_fld.image_year == SFYr]
     #############################################
     ###
     ###             fine granularity table
@@ -215,13 +226,26 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
     plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
     ax.set_ylim([-1.15, 1.15])
     # sb.set();
+    # plot raw data of two years
+    ax.scatter(twoYears_raw['Date'].values, twoYears_raw[idx], label="raw data", s=7, c='dodgerblue');
+
+    # plot regularized version of two years
+    ax.scatter(twoYrs_regular_Xvalues.values, twoYrs_regular_Yvalues, label="2YRs process. data", s=7, c='#E4D00A');
+
+    # plot SG smoothed version of two years
+    ax.plot(crr_fld_twoYrs_regular['Date'].values, crr_fld_twoYrs_regular[idx], label= keyy, c='k');
+
 
     ax.scatter(date_df.Date.values, y.values, label="1-Day Time Series", s=7, c='b');
-    ax.scatter(processed_Dates.values, processed_Idx, label="processed data", s=7, c='#E4D00A');
+
+    
 
     for co, ite in enumerate(plotting_dic):
         lbl = ite # + ", Peaks: " + str(len(plotting_dic[ite][2]))
-        ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
+        """
+        The following is now plotted above. So, we comment it out here.
+        """
+        # ax.plot(date_df.Date.values, plotting_dic[ite][0], label = lbl, c = 'k')
 
         ############################################
         #
@@ -241,6 +265,14 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
         # plot My Troughs
         My_date_df_specific = date_df[date_df.DoY.isin(plotting_dic[ite][7])]
         ax.scatter(My_date_df_specific.Date.values, plotting_dic[ite][8], s=100, marker=4, c = 'r');
+
+        # annotate SciPy peaks
+        for max_count in np.arange(0, len(Scipy_date_df_specific)):
+            style = dict(size=10, color='grey', rotation='vertical')
+            ax.text(x = Scipy_date_df_specific.iloc[max_count]['Date'].date(), 
+                    y = -0.7, 
+                    s = 'DoY=' + str(Scipy_date_df_specific.iloc[max_count]['DoY']), 
+                    **style)
 
         # annotate My troughs
         for min_count in np.arange(0, len(My_date_df_specific)):
@@ -307,7 +339,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS_fineGranularity(dataAB, idx, SG_param
 
 #####################################################################################################################
 
-def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA = 0.4, onset_cut=0.5, offset_cut=0.5):
+def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, deltA=0.4, onset_cut=0.5, offset_cut=0.5):
     """
     This function has additional part to plot SOS and EOS.
     and it is updated version of the function savitzky_1yr_panels_clean_sciPy_and_My_PeakFinder(.)
@@ -440,7 +472,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     ###
     #############################################
 
-    plot_title = county + ", " + plant + " (" + ID + "), delta = " + str(deltA)
+    plot_title = county + ", " + plant + " (" + ID + ")" # + ", delta =" + str(deltA)
     ax.set_ylim([-1.15, 1.15])
     # sb.set();
 
@@ -509,7 +541,7 @@ def SG_1yr_panels_clean_sciPy_My_Peaks_SOS(dataAB, idx, SG_params, SFYr, ax, del
     SOS = crr_fld[crr_fld['SOS'] != 0]
     ax.scatter(SOS['Date'], SOS['SOS'], marker='+', s=155, c='g')
 
-    # annotate  EOS
+    # annotate EOS
     for ii in np.arange(0, len(SOS)):
         style = dict(size=10, color='grey', rotation='vertical')
         ax.text(x = SOS.iloc[ii]['Date'].date(), 
